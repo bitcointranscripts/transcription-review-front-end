@@ -1,26 +1,45 @@
 import useTranscripts from "@/hooks/useTranscripts";
 import QueueTable from "@/components/tables/QueueTable";
 import type { TableStructure } from "@/components/tables/types";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getCount } from "@/utils";
 import { Transcript } from "../../types";
-import { useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { transcripts, claimTranscript } = useTranscripts();
-  const { data, isLoading, isRefetching, isError, refetch } = transcripts;
+  const { data, isLoading, isError, refetch } = transcripts;
+
+  const retriedClaim = useRef(0);
+  const auth_url = useRef(process.env.NEXT_PUBLIC_AUTH_URL);
 
   const [claimState, setClaimState] = useState({
     claim: claimTranscript,
     rowIndex: -1,
   });
 
+  useEffect(() => {
+    if (!auth_url.current) {
+      auth_url.current = process.env.NEXT_PUBLIC_AUTH_URL;
+    }
+  }, []);
+
+  const retryLoginAndClaim = async (idx: number, transcriptId: number) => {
+    await signOut({ redirect: false });
+    if (retriedClaim.current < 2) {
+      retriedClaim.current += 1;
+      await signIn("github", {
+        callbackUrl: `${auth_url.current}?reclaim=true&idx=${idx}&txId=${transcriptId}`,
+      });
+    }
+    return;
+  };
+
   const handleClaim = useCallback(
-    (idx: number, transcriptId: number) => {
-      setClaimState((prev) => ({ ...prev, rowIndex: idx }));
+    async (idx: number, transcriptId: number) => {
       if (status === "loading") {
         alert("Authenticating.... please wait.");
         return;
@@ -32,18 +51,42 @@ export default function Home() {
         claimTranscript.mutate(
           { userId: session.user.id, transcriptId },
           {
-            onSuccess: (_data) => {
+            onSuccess: async (data) => {
               setClaimState((prev) => ({ ...prev, rowIndex: -1 }));
+              if (data instanceof Error) {
+                await retryLoginAndClaim(idx, transcriptId);
+              }
               router.push(`/transcripts/${transcriptId}`);
             },
-            onError: (err) => alert("failed to claim: " + err),
+
+            onError: (err) => {
+              setClaimState((prev) => ({ ...prev, rowIndex: -1 }));
+              alert("failed to claim: " + err);
+            },
           }
         );
+      } else {
+        await retryLoginAndClaim(idx, transcriptId);
       }
-      console.log({ session, idx, transcriptId });
     },
     [session, status, claimTranscript, router]
   );
+
+  // Reclaim transcript when there's a reclaimquery
+  useEffect(() => {
+    const { reclaim, idx, txId } = router.query;
+    if (
+      reclaim &&
+      idx &&
+      txId &&
+      data &&
+      status === "authenticated" &&
+      retriedClaim.current < 2
+    ) {
+      retriedClaim.current = 2;
+      handleClaim(Number(idx), Number(txId));
+    }
+  }, [data, router, handleClaim, status]);
 
   const tableStructure = useMemo(
     () =>
