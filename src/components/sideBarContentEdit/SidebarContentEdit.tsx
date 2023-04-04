@@ -45,7 +45,6 @@ const SidebarContentEdit = ({
   const updateCategories = (categories: string[]) => {
     setEditedCategories(categories);
   };
-
   return (
     <Box
       w="full"
