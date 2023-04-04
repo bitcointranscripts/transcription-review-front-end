@@ -1,20 +1,49 @@
-## Node api for Bitcoin Transcripts
+## Transcription Review Frontend
+
+This repo house the frontend for transaction review website
+
+### Getting Started
+
+1. Clone the repo
+2. Install dependencies
+3. Update environment variables
+4. Run the app
 
 ### Prerequisites
 
-- Docker and docker-compose(preferrably latest stable versions)
-- Ensure ports 8080,5433 and 5432 are open and accept connections (to access the backend api)
-- Ensure port 3000 is open to accept connections (to access the frontend client)
-    
-### Steps to set up
+- Node.js
+- Yarn
+- Docker (optional)
 
-- Clone the repository
-- Copy content from .env.example in frontend-next to .env
-- Inside the root directory ,run `docker-compose up -d`
-- Access the api here: `http://localhost:8080`
-- Access the frontend client here: `http://localhost:3000`
+### Installing
 
-### Some endpoints to check out 
+1. Clone the repo
 
-- Access the endpoints documentation here: `http://localhost:8080/api/docs`
+```sh
+git clone
+```
 
+2. Install dependencies
+
+```sh
+yarn
+```
+
+3. Update environment variables
+
+```sh
+cp .env.example .env && cp .env.local.example .env.local
+```
+
+4. Run the app
+
+```sh
+yarn dev
+```
+
+4. You can also run with Docker for development
+
+```sh
+docker build -t transcription-review-frontend .
+docker run -p 3000:3000 transcription-review-frontend
+```
