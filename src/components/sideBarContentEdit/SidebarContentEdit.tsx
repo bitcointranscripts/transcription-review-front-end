@@ -1,12 +1,14 @@
-import { dateFormatGeneral, getTimeLeftText } from "@/utils";
-import { Box, Flex, Input, Text } from "@chakra-ui/react";
+import { getTimeLeftText } from "@/utils";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState } from "react";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
 import { Transcript } from "../../../types";
-import CustomDatePicker from "./CustomDatePicker";
 import SelectField from "./SelectField";
 import TextField from "./TextField";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import styles from "./sidebarContentEdit.module.css";
 
 export type RenderProps = {
   // eslint-disable-next-line no-unused-vars
@@ -14,7 +16,7 @@ export type RenderProps = {
     editedTitle: string;
     editedSpeakers: string[];
     editedCategories: string[];
-    editedDate: string;
+    editedDate: Date | null;
   }): React.ReactNode;
 };
 
@@ -29,8 +31,10 @@ const SidebarContentEdit = ({
   const [editedSpeakers, setEditedSpeakers] = useState<string[]>([]);
   const [editedCategories, setEditedCategories] = useState<string[]>([]);
 
-  const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;
-  const [editedDate, setEditedDate] = useState<string>(dateStringFormat || "");
+  // const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;
+  const [editedDate, setEditedDate] = useState<Date | null>(
+    new Date(data?.createdAt ?? "")
+  );
 
   const updateTitle = (newTitle: string) => {
     setEditedTitle(newTitle);
@@ -45,8 +49,6 @@ const SidebarContentEdit = ({
     <Box
       w="full"
       flex="1 1 30%"
-      top={14}
-      position="sticky"
       p={4}
       boxShadow="lg"
       borderRadius="lg"
@@ -73,19 +75,10 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Original Media
           </Text>
-          <Link href={data.originalContent?.media || ""}>
-            <Box
-              display="inline-block"
-              bgColor="red.600"
-              p={2}
-              fontSize="12px"
-              borderRadius="md"
-              color="white"
-              fontWeight={700}
-              width="auto"
-            >
-              Youtube
-            </Box>
+          <Link href={data.originalContent?.media || ""} target="_blank">
+            <Button colorScheme="orange" size="sm">
+              Source
+            </Button>
           </Link>
         </Box>
         <Box>
@@ -93,7 +86,7 @@ const SidebarContentEdit = ({
             Title
           </Text>
           <TextField
-            data={data.originalContent.title}
+            data={data.originalContent?.title ?? ""}
             editedData={editedTitle}
             updateData={updateTitle}
           />
@@ -117,7 +110,13 @@ const SidebarContentEdit = ({
             YYYY-MM-DD format
           </Text>
 
-          <CustomDatePicker date={editedDate} onChange={setEditedDate} />
+          {/* <CustomDatePicker date={editedDate} onChange={setEditedDate} /> */}
+          <DatePicker
+            selected={editedDate}
+            onChange={(date) => setEditedDate(date)}
+            dateFormat="yyyy-MM-dd"
+            className={styles.customDatePicker}
+          />
 
           {/* <Input
             fontSize="12px"
