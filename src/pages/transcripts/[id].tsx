@@ -1,11 +1,14 @@
 /* eslint-disable no-unused-vars */
-import { Button, Flex } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
+import { GetServerSideProps, NextPage } from "next";
+import { signIn, useSession } from "next-auth/react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Transcript } from "../../../types";
 import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
 import EditTranscript from "@/components/editTranscript/EditTranscript";
 import useTranscripts from "@/hooks/useTranscripts";
 import { useRouter } from "next/router";
+import RedirectToLogin from "@/components/RedirectToLogin";
 
 const TranscriptPage = () => {
   const { status } = useSession();
@@ -26,7 +29,7 @@ const TranscriptPage = () => {
     );
   }
   if (status === "unauthenticated") {
-    return <h4>You have to Login to view this page</h4>;
+    return <RedirectToLogin />;
   }
 
   // if (data.status === "queued") {
