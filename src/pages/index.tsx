@@ -21,6 +21,7 @@ export default function Home() {
     rowIndex: -1,
   });
 
+  // console.log({session})
   useEffect(() => {
     if (!auth_url.current) {
       auth_url.current = process.env.NEXT_PUBLIC_AUTH_URL;
@@ -34,7 +35,6 @@ export default function Home() {
       await signIn("github", {
         callbackUrl: `${auth_url.current}?reclaim=true&idx=${idx}&txId=${transcriptId}`,
       });
-      console.log("I got here")
     }
   };
 
