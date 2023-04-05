@@ -41,9 +41,11 @@ cp .env.example .env && cp .env.local.example .env.local
 yarn dev
 ```
 
-4. You can also run with Docker for development
+5. You can also run with Docker for development
 
 ```sh
 docker build -t transcription-review-frontend .
 docker run -p 3000:3000 transcription-review-frontend
 ```
+6. Here is the backend that powers it: 
+   [https://github.com/bitcointranscripts/transcription-review-backend](https://github.com/bitcointranscripts/transcription-review-backend)
