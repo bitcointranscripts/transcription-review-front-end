@@ -192,7 +192,12 @@ export const RowData = ({ row, tableItem, actionState }: TableDataElement) => {
 
     case "action":
       return (
-        <TableAction key={tableItem.name} tableItem={tableItem} row={row} actionState={actionState} />
+        <TableAction
+          key={tableItem.name}
+          tableItem={tableItem}
+          row={row}
+          actionState={actionState}
+        />
       );
 
     default:

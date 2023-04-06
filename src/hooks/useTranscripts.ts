@@ -19,7 +19,7 @@ const useTranscripts = () => {
       .catch((err) => err);
   };
 
-  const addReview = async (body: { userId: number, transcriptId: number }) => {
+  const addReview = async (body: { userId: number; transcriptId: number }) => {
     return axios
       .post(endpoints.REVIEWS(), body)
       .then((res) => {

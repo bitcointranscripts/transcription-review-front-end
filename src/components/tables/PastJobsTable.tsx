@@ -79,13 +79,8 @@ const PastJobsTable: React.FC<Props> = ({ data, isLoading, refetch }) => {
 const TableRow = ({ row, ts }: { row: Transcript; ts: TableStructure[] }) => {
   return (
     <Tr>
-      {ts.map((tableItem, index) => (
-        <RowData
-          key={tableItem.name}
-          index={index}
-          tableItem={tableItem}
-          row={row}
-        />
+      {ts.map((tableItem) => (
+        <RowData key={tableItem.name} tableItem={tableItem} row={row} />
       ))}
     </Tr>
   );

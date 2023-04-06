@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { Box, Heading, Table, Tbody, Thead, Tr } from "@chakra-ui/react";
-import { AxiosResponse } from "axios";
 import React from "react";
-import { QueryObserverResult, RefetchOptions, RefetchQueryFilters, UseMutationResult } from "react-query";
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  RefetchQueryFilters,
+} from "react-query";
 import type { Transcript } from "../../../types";
 import {
   DataEmpty,
@@ -27,7 +30,7 @@ type Props = {
   tableHeader?: string;
 };
 
-const BaseTable: React.FC<Props> = ({ 
+const BaseTable: React.FC<Props> = ({
   data,
   isLoading,
   isError,
@@ -74,7 +77,15 @@ const BaseTable: React.FC<Props> = ({
   );
 };
 
-const TableRow = ({ row, ts, actionState }: { row: Transcript; ts: TableStructure[], actionState: Props["actionState"] }) => {
+const TableRow = ({
+  row,
+  ts,
+  actionState,
+}: {
+  row: Transcript;
+  ts: TableStructure[];
+  actionState: Props["actionState"];
+}) => {
   return (
     <Tr>
       {ts.map((tableItem) => (
