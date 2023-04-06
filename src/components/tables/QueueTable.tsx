@@ -1,102 +1,145 @@
-/* eslint-disable no-unused-vars */
+import useTranscripts from "@/hooks/useTranscripts";
 import { getCount } from "@/utils";
-import { Box, Heading, Table, Tbody, Thead, Tr } from "@chakra-ui/react";
-import { AxiosResponse } from "axios";
-import React from "react";
-import { QueryObserverResult, RefetchOptions, RefetchQueryFilters, UseMutationResult } from "react-query";
-import type { Transcript } from "../../../types";
-import {
-  DataEmpty,
-  LoadingSkeleton,
-  RefetchButton,
-  RowData,
-  TableHeader,
-} from "./TableItems";
-import type { TableStructure } from "./types";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Transcript } from "../../../types";
+import BaseTable from "./BaseTable";
+import { TableStructure } from "./types";
 
-type Props = {
-  data: Transcript[];
-  isLoading: boolean;
-  isError: boolean;
-  refetch?: <TPageData>(
-    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
-  ) => Promise<QueryObserverResult<any, unknown>>;
-  handleAction?: (idx: number, row: any) => void;
-  claimState?: {
-    claim: UseMutationResult<
-      AxiosResponse<any, any> | Error,
-      unknown,
-      {
-        userId: number;
-        transcriptId: number;
-      },
-      unknown
-    >;
-    rowIndex: number;
+const QueueTable = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { transcripts, claimTranscript } = useTranscripts();
+  const { data, isLoading, isError, refetch } = transcripts;
+
+  const retriedClaim = useRef(0);
+  const auth_url = useRef(process.env.NEXT_PUBLIC_AUTH_URL);
+
+  const [claimState, setClaimState] = useState({
+    rowId: -1,
+  });
+
+  // console.log({session})
+  useEffect(() => {
+    if (!auth_url.current) {
+      auth_url.current = process.env.NEXT_PUBLIC_AUTH_URL;
+    }
+  }, []);
+
+  const retryLoginAndClaim = async (transcriptId: number) => {
+    await signOut({ redirect: false });
+    if (retriedClaim.current < 2) {
+      retriedClaim.current += 1;
+      await signIn("github", {
+        callbackUrl: `/?reclaim=true&txId=${transcriptId}`,
+      });
+    }
   };
-  tableStructure: TableStructure[];
-  tableHeader?: string;
-};
 
-const QueueTable: React.FC<Props> = ({ 
-  data,
-  isLoading,
-  isError,
-  refetch,
-  handleAction,
-  claimState,
-  tableStructure,
-  tableHeader,
-}) => {
-  return (
-    <Box fontSize="sm" py={4} isolation="isolate">
-      {tableHeader && (
-        <Heading size="md" mb={6}>
-          {tableHeader}
-        </Heading>
-      )}
-      {refetch && <RefetchButton refetch={refetch} />}
-      <Table
-        boxShadow="lg"
-        borderTop="4px solid"
-        borderTopColor="orange.400"
-        borderRadius="xl"
-      >
-        <Thead>
-          <TableHeader tableStructure={tableStructure} />
-        </Thead>
-        <Tbody fontWeight="medium">
-          {isLoading ? (
-            <LoadingSkeleton rowsLength={tableStructure.length} />
-          ) : data?.length ? (
-            data.map((dataRow, idx) => (
-              <TableRow
-                key={`data-row-${dataRow.id}`}
-                row={dataRow}
-                ts={tableStructure}
-              />
-            ))
-          ) : (
-            <DataEmpty />
-          )}
-        </Tbody>
-      </Table>
-    </Box>
+  const handleClaim = useCallback(
+    async (transcriptId: number) => {
+      if (status === "loading") {
+        alert("Authenticating.... please wait.");
+        return;
+      } else if (status === "unauthenticated") {
+        alert("You have to login to claim a transcript");
+        return;
+      }
+      if (session?.user?.id) {
+        setClaimState((prev) => ({ ...prev, rowId: transcriptId }));
+        claimTranscript.mutate(
+          { userId: session.user.id, transcriptId },
+          {
+            onSuccess: async (data) => {
+              setClaimState((prev) => ({ ...prev, rowId: -1 }));
+              if (data instanceof Error) {
+                await retryLoginAndClaim(transcriptId);
+                return;
+              }
+              router.push(`/transcripts/${transcriptId}`);
+            },
+
+            onError: (err) => {
+              setClaimState((prev) => ({ ...prev, rowId: -1 }));
+              alert("failed to claim: " + err);
+            },
+          }
+        );
+      } else {
+        await retryLoginAndClaim(transcriptId);
+      }
+    },
+    [session, status, claimTranscript, router]
   );
-};
 
-const TableRow = ({ row, ts }: { row: Transcript; ts: TableStructure[] }) => {
+  // Reclaim transcript when there's a reclaimquery
+  useEffect(() => {
+    const { reclaim, txId } = router.query;
+    if (
+      reclaim &&
+      txId &&
+      data &&
+      status === "authenticated" &&
+      retriedClaim.current < 2
+    ) {
+      retriedClaim.current = 2;
+      handleClaim(Number(txId));
+    }
+  }, [data, router, handleClaim, status]);
+
+  const tableStructure = useMemo(
+    () =>
+      [
+        { name: "date", type: "date", modifier: (data) => data?.createdAt },
+        {
+          name: "title",
+          type: "text-long",
+          modifier: (data) => data.originalContent.title,
+        },
+        {
+          name: "speakers",
+          type: "tags",
+          modifier: (data) => data.originalContent.speakers,
+        },
+        {
+          name: "category",
+          type: "tags",
+          modifier: (data) => data.originalContent.categories,
+        },
+        {
+          name: "tags",
+          type: "tags",
+          modifier: (data) => data.originalContent.tags,
+        },
+        {
+          name: "word count",
+          type: "text-short",
+          modifier: (data) =>
+            `${getCount(data.originalContent.body) ?? "-"} words`,
+        },
+        // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
+        {
+          name: "",
+          type: "action",
+          modifier: (data) => data.id,
+          action: (data: Transcript) => handleClaim(data.id),
+        },
+      ] as TableStructure[],
+    [handleClaim]
+  );
+
   return (
-    <Tr>
-      {ts.map((tableItem, index) => (
-        <RowData
-          key={tableItem.name}
-          index={index}
-          tableItem={tableItem}
-          row={row}
-        />
-      ))}
-    </Tr>
+    <>
+      <BaseTable
+        data={data ?? []}
+        isLoading={isLoading}
+        isError={isError}
+        refetch={refetch}
+        actionState={claimState}
+        tableStructure={tableStructure}
+      />
+    </>
   );
 };
 
