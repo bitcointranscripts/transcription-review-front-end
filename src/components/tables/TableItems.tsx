@@ -91,15 +91,28 @@ export const Tags = ({ tableItem, row }: TableDataElement) => {
   );
 };
 
-export const TableAction = ({ tableItem, row }: TableDataElement) => {
-  const linkId = tableItem.modifier(row);
+export const TableAction = ({
+  tableItem,
+  row,
+  actionState,
+}: TableDataElement) => {
+  // const linkId = row.id;
+  const handleClick = () => {
+    if (!tableItem.action) return;
+    tableItem.action(row);
+  };
+
+  const isLoading = row.id === actionState?.rowId;
   return (
     <Td>
-      <Link href={`/transcripts/${linkId}`}>
-        <Button colorScheme="orange" size="sm">
-          Claim
-        </Button>
-      </Link>
+      <Button
+        isLoading={isLoading}
+        colorScheme="orange"
+        size="sm"
+        onClick={handleClick}
+      >
+        Claim
+      </Button>
     </Td>
   );
 };
@@ -163,15 +176,7 @@ export const DataEmpty = ({
   );
 };
 
-export const RowData = ({
-  index,
-  row,
-  tableItem,
-}: {
-  index: number;
-  row: Transcript;
-  tableItem: TableStructure;
-}) => {
+export const RowData = ({ row, tableItem, actionState }: TableDataElement) => {
   switch (tableItem.type) {
     case "date":
       return <DateText key={tableItem.name} tableItem={tableItem} row={row} />;
@@ -187,11 +192,11 @@ export const RowData = ({
 
     case "action":
       return (
-        <TableAction key={tableItem.name} tableItem={tableItem} row={row} />
+        <TableAction key={tableItem.name} tableItem={tableItem} row={row} actionState={actionState} />
       );
 
     default:
-      return <Td key={`table-data-${index}`}>N/A</Td>;
+      return <Td key={`table-data`}>N/A</Td>;
   }
 };
 
