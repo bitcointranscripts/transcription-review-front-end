@@ -144,6 +144,7 @@ const QueueTable = () => {
         refetch={refetch}
         actionState={claimState}
         tableStructure={tableStructure}
+        tableHeader="Transcripts waiting for review..."
       />
     </>
   );
