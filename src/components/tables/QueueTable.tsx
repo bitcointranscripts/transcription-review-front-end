@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { getCount } from "@/utils";
 import { Box, Heading, Table, Tbody, Thead, Tr } from "@chakra-ui/react";
+import { AxiosResponse } from "axios";
 import React from "react";
+import { QueryObserverResult, RefetchOptions, RefetchQueryFilters, UseMutationResult } from "react-query";
 import type { Transcript } from "../../../types";
 import {
   DataEmpty,
@@ -16,42 +18,43 @@ type Props = {
   data: Transcript[];
   isLoading: boolean;
   isError: boolean;
-  refetch?: () => Promise<unknown>;
+  refetch?: <TPageData>(
+    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
+  ) => Promise<QueryObserverResult<any, unknown>>;
+  handleAction?: (idx: number, row: any) => void;
+  claimState?: {
+    claim: UseMutationResult<
+      AxiosResponse<any, any> | Error,
+      unknown,
+      {
+        userId: number;
+        transcriptId: number;
+      },
+      unknown
+    >;
+    rowIndex: number;
+  };
+  tableStructure: TableStructure[];
+  tableHeader?: string;
 };
 
-const tableStructure: TableStructure[] = [
-  { name: "date", type: "date", modifier: (data) => data?.createdAt },
-  {
-    name: "title",
-    type: "text-long",
-    modifier: (data) => data.originalContent.title,
-  },
-  {
-    name: "speakers",
-    type: "tags",
-    modifier: (data) => data.originalContent.speakers,
-  },
-  {
-    name: "category",
-    type: "tags",
-    modifier: (data) => data.originalContent.categories,
-  },
-  { name: "tags", type: "tags", modifier: (data) => data.originalContent.tags },
-  {
-    name: "word count",
-    type: "text-short",
-    modifier: (data) => `${getCount(data.originalContent.body) ?? "-"} words`,
-  },
-  // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
-  { name: "", type: "action", modifier: (data) => data.id },
-];
-
-const QueueTable: React.FC<Props> = ({ data, isLoading, refetch }) => {
+const QueueTable: React.FC<Props> = ({ 
+  data,
+  isLoading,
+  isError,
+  refetch,
+  handleAction,
+  claimState,
+  tableStructure,
+  tableHeader,
+}) => {
   return (
     <Box fontSize="sm" py={4} isolation="isolate">
-      <Heading size="md" mb={6}>
-        Transcripts waiting for review...
-      </Heading>
+      {tableHeader && (
+        <Heading size="md" mb={6}>
+          {tableHeader}
+        </Heading>
+      )}
       {refetch && <RefetchButton refetch={refetch} />}
       <Table
         boxShadow="lg"

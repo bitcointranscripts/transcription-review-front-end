@@ -133,7 +133,7 @@ export default function Home() {
   return (
     <>
       <QueueTable
-        data={data}
+        data={data ?? []}
         isLoading={isLoading}
         isError={isError}
         refetch={refetch}
