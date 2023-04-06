@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import MdEditor, { ExposeParam, ToolbarNames } from "md-editor-rt";
+import MdEditor, { ExposeParam } from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 
 import sanitize from "sanitize-html";
@@ -30,7 +30,6 @@ const EditTranscript = ({
   // eslint-disable-next-line no-unused-vars
   update: (x: any) => void;
 }) => {
-
   const editorRef = useRef<ExposeParam>();
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
   // Ensure editorData is updated

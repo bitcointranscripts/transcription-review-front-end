@@ -2,7 +2,13 @@ import useTranscripts from "@/hooks/useTranscripts";
 import { getCount } from "@/utils";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
 import { TableStructure } from "./types";

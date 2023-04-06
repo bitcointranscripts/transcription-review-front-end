@@ -8,6 +8,7 @@ const CustomDatePicker = ({
   onChange,
 }: {
   date: string;
+  // eslint-disable-next-line no-unused-vars
   onChange: (x: string) => void;
 }) => {
   const dateRef = useRef<HTMLInputElement>(null);
