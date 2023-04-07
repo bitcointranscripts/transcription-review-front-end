@@ -45,12 +45,8 @@ const EditTranscript = ({
 
   // delays may prevent editor data from being synced with data, this ensures the sync
   useEffect(() => {
-    if (
-      data.originalContent?.body &&
-      !mdData &&
-      !hasUpdatedEditorData.current
-    ) {
-      update(data.originalContent?.body);
+    if (data.content?.body && !mdData && !hasUpdatedEditorData.current) {
+      update(data.content?.body);
       hasUpdatedEditorData.current = true;
     }
     return () => {
