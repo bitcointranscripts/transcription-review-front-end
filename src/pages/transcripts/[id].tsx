@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
+import { Button, Container, Flex, Heading, Text, Toast, useToast } from "@chakra-ui/react";
 import { GetServerSideProps, NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import React, { useCallback, useEffect, useState } from "react";
@@ -20,8 +20,10 @@ const TranscriptPage = () => {
   const { SingleTranscript, updateTranscript } = useTranscripts();
 
   const { data, isLoading } = SingleTranscript(Number(id));
-  const { mutate, isLoading: saveLoading, isError: saveError } = updateTranscript;
+  const { mutate, isLoading: saveLoading } = updateTranscript;
   const [editedData, setEditedData] = useState(data?.content?.body ?? "");
+
+  const toast = useToast();
 
   if (status === "loading") {
     return (
@@ -61,9 +63,18 @@ const TranscriptPage = () => {
       { content: updatedContent, transcriptId: Number(id) },
       {
         onSettled(data, error, context) {
-          console.log("post data", data);
-          console.log({error, context})
-          // if (data instanceof Error || error) return;
+          if (data instanceof Error) {
+            toast({
+              status: "error",
+              title: "Error while saving",
+              description: data.message,
+            });
+          } else if (data?.statusText === "OK") {
+            toast({
+              status: "success",
+              title: "Saved successfully",
+            });
+          }
         },
       }
     );
@@ -88,6 +99,7 @@ const TranscriptPage = () => {
                     colorScheme="orange"
                     variant="outline"
                     onClick={() => handleSave(editedContent)}
+                    isLoading={saveLoading}
                   >
                     Save
                   </Button>
