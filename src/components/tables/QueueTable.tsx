@@ -20,18 +20,10 @@ const QueueTable = () => {
   const { data, isLoading, isError, refetch } = transcripts;
 
   const retriedClaim = useRef(0);
-  const auth_url = useRef(process.env.NEXT_PUBLIC_AUTH_URL);
 
   const [claimState, setClaimState] = useState({
     rowId: -1,
   });
-
-  // console.log({session})
-  useEffect(() => {
-    if (!auth_url.current) {
-      auth_url.current = process.env.NEXT_PUBLIC_AUTH_URL;
-    }
-  }, []);
 
   const retryLoginAndClaim = async (transcriptId: number) => {
     await signOut({ redirect: false });
