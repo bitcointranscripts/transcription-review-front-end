@@ -32,6 +32,27 @@ const useTranscripts = () => {
       });
   };
 
+  const saveEdit = async (body: {
+    content: any;
+    originalContent?: any;
+    transcriptId: number;
+  }) => {
+    const { content, originalContent } = body;
+    return axios
+      .put(endpoints.GET_TRANSCRIPTS_BY_ID(body.transcriptId), {
+        content,
+        originalContent,
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        const errMessage =
+          err?.response?.data?.message || "Please try again later";
+        return new Error(errMessage);
+      });
+  };
+
   const transcripts = useQuery("trancripts", getAllTranscripts, {
     refetchOnWindowFocus: false,
   });
@@ -47,7 +68,9 @@ const useTranscripts = () => {
 
   const claimTranscript = useMutation(addReview);
 
-  return { transcripts, SingleTranscript, claimTranscript };
+  const updateTranscript = useMutation(saveEdit);
+
+  return { transcripts, SingleTranscript, claimTranscript, updateTranscript };
 };
 
 export default useTranscripts;

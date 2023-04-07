@@ -9,8 +9,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { BiCheck, BiPencil, BiX } from "react-icons/bi";
 
-const SelectField = ({ name, data, editedData, updateData }: any) => {
-  let _data = data;
+const SelectField = ({ name, editedData, updateData }: any) => {
+  let _data = editedData;
   if (_data[0] === "[") {
     // eslint-disable-next-line prettier/prettier
     _data = _data
@@ -20,9 +20,7 @@ const SelectField = ({ name, data, editedData, updateData }: any) => {
   } else if (!Array.isArray(_data)) {
     _data = [];
   }
-  if (editedData.length) {
-    _data = editedData;
-  }
+
   const [isNew, setIsNew] = useState(false);
 
   const handleUpdateEdit = (value: string, idx: number, name?: string) => {
