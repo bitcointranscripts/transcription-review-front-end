@@ -8,9 +8,9 @@ import {
 import { useState } from "react";
 import { BiCheck, BiPencil, BiX } from "react-icons/bi";
 
-const TextField = ({ data, editedData, updateData }: any) => {
+const TextField = ({ editedData, updateData }: any) => {
   const [isEdit, setIsEdit] = useState(false);
-  const [state, setState] = useState(data);
+  const [state, setState] = useState(editedData);
 
   const handleUpdateEdit = () => {
     setIsEdit(false);
@@ -64,7 +64,7 @@ const TextField = ({ data, editedData, updateData }: any) => {
         </FormControl>
       ) : (
         <Flex justifyContent="space-between" gap={1} alignItems="center">
-          <Text>{editedData ? editedData : data}</Text>
+          <Text>{editedData}</Text>
           {/* <Button onClick={() => setIsEdit(true)}><BiPencil /></Button> */}
           <IconButton
             fontSize="16px"

@@ -10,14 +10,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./sidebarContentEdit.module.css";
 
-export type RenderProps = {
+type RenderProps = {
   // eslint-disable-next-line no-unused-vars
-  (editedContent: {
-    editedTitle: string;
-    editedSpeakers: string[];
-    editedCategories: string[];
-    editedDate: Date | null;
-  }): React.ReactNode;
+  (editedContent: EditedContent): React.ReactNode;
+};
+
+export type EditedContent = {
+  editedTitle: string;
+  editedSpeakers: string[];
+  editedCategories: string[];
+  editedDate: Date | null;
 };
 
 const SidebarContentEdit = ({
@@ -27,9 +29,9 @@ const SidebarContentEdit = ({
   data: Transcript;
   children?: RenderProps;
 }) => {
-  const [editedTitle, setEditedTitle] = useState("");
-  const [editedSpeakers, setEditedSpeakers] = useState<string[]>([]);
-  const [editedCategories, setEditedCategories] = useState<string[]>([]);
+  const [editedTitle, setEditedTitle] = useState(data.content?.title ?? "");
+  const [editedSpeakers, setEditedSpeakers] = useState<string[]>(data.content.speakers ?? []);
+  const [editedCategories, setEditedCategories] = useState<string[]>(data.content.categories ?? []);
 
   // const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;
   const [editedDate, setEditedDate] = useState<Date | null>(
@@ -97,7 +99,6 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="speakers"
-            data={data.originalContent?.speakers ?? []}
             editedData={editedSpeakers}
             updateData={updateSpeaker}
           />
@@ -131,7 +132,6 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="categories"
-            data={data?.originalContent?.categories ?? []}
             editedData={editedCategories}
             updateData={updateCategories}
           />
