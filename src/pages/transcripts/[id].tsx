@@ -11,11 +11,14 @@ import EditTranscript from "@/components/editTranscript/EditTranscript";
 import useTranscripts from "@/hooks/useTranscripts";
 import { useRouter } from "next/router";
 import RedirectToLogin from "@/components/RedirectToLogin";
+import { useQueryClient } from "react-query";
 
 const TranscriptPage = () => {
   const { status } = useSession();
   const router = useRouter();
   const { id } = router.query;
+
+  const queryClient = useQueryClient();
 
   const { SingleTranscript, updateTranscript } = useTranscripts();
 
@@ -74,6 +77,7 @@ const TranscriptPage = () => {
               status: "success",
               title: "Saved successfully",
             });
+            queryClient.invalidateQueries(["transcript", Number(id)]);
           }
         },
       }
