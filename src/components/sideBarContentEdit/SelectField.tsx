@@ -9,9 +9,17 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { BiCheck, BiPencil, BiX } from "react-icons/bi";
 
-const SelectField = ({ name, editedData, updateData }: any) => {
+type Props = {
+  name: string;
+  editedData: string[] | string;
+  // eslint-disable-next-line no-unused-vars
+  updateData: (x: string[]) => void;
+  autoCompleteList?: Array<{ slug: string; value: string }>;
+};
+
+const SelectField = ({ name, editedData, updateData }: Props) => {
   let _data = editedData;
-  if (_data[0] === "[") {
+  if (typeof _data === "string" && _data[0] === "[") {
     // eslint-disable-next-line prettier/prettier
     _data = _data
       .substring(1, _data.length - 1)

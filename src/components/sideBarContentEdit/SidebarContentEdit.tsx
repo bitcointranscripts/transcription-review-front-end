@@ -9,6 +9,7 @@ import TextField from "./TextField";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./sidebarContentEdit.module.css";
+import speakersList from "@/config/speakers.json";
 
 type RenderProps = {
   // eslint-disable-next-line no-unused-vars
@@ -101,6 +102,7 @@ const SidebarContentEdit = ({
             name="speakers"
             editedData={editedSpeakers}
             updateData={updateSpeaker}
+            autoCompleteList={speakersList}
           />
         </Box>
         <Box>
