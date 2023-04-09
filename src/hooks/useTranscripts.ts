@@ -63,7 +63,6 @@ const useTranscripts = () => {
       () => getSingleTranscripts(transcriptId),
       {
         refetchOnWindowFocus: false,
-        cacheTime: 0,
       }
     );
 
