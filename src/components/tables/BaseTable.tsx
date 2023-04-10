@@ -28,6 +28,7 @@ type Props = {
   };
   tableStructure: TableStructure[];
   tableHeader?: string;
+  tableHeaderComponent?: React.ReactNode;
 };
 
 const BaseTable: React.FC<Props> = ({
@@ -38,14 +39,17 @@ const BaseTable: React.FC<Props> = ({
   actionState,
   tableStructure,
   tableHeader,
+  tableHeaderComponent,
 }) => {
   return (
     <Box fontSize="sm" py={4} isolation="isolate">
-      {tableHeader && (
-        <Heading size="md" mb={6}>
-          {tableHeader}
-        </Heading>
-      )}
+      {tableHeaderComponent
+        ? tableHeaderComponent
+        : tableHeader && (
+            <Heading size="md" mb={6}>
+              {tableHeader}
+            </Heading>
+          )}
       {refetch && <RefetchButton refetch={refetch} />}
       <Table
         boxShadow="lg"
