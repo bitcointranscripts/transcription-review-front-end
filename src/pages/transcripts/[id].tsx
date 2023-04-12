@@ -14,7 +14,7 @@ import RedirectToLogin from "@/components/RedirectToLogin";
 import { useQueryClient } from "react-query";
 
 const TranscriptPage = () => {
-  const { status } = useSession();
+  const { status, data: sessionData } = useSession();
   const router = useRouter();
   const { id } = router.query;
 
@@ -53,7 +53,6 @@ const TranscriptPage = () => {
     const { editedCategories, editedDate, editedSpeakers, editedTitle } =
       editedContent;
     const content = data.content;
-    // console.log({content})
     const updatedContent = {
       ...content,
       title: editedTitle,

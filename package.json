@@ -18,6 +18,7 @@
     "date-fns": "^2.29.3",
     "easymde": "^2.18.0",
     "framer-motion": "^10.0.1",
+    "match-sorter": "^6.3.1",
     "md-editor-rt": "^2.10.1",
     "next": "13.2.3",
     "next-auth": "^4.20.1",
