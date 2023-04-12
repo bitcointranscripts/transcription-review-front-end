@@ -39,7 +39,6 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ isNewUser, token, ...response }) {
       const profile = response.profile as GhExtendedProfile | undefined;
-
       const createAndSetNewUser = async (
         username: string,
         permissions?: string
@@ -67,7 +66,10 @@ export const authOptions: NextAuthOptions = {
                 (user: any) => user.githubUsername === profile?.login
               );
               if (user) {
-                token.user = user;
+                token.user = {
+                  ...user,
+                  access_token: response.account?.access_token,
+                };
               } else {
                 await createAndSetNewUser(profile?.login);
               }

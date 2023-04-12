@@ -31,8 +31,12 @@ const SidebarContentEdit = ({
   children?: RenderProps;
 }) => {
   const [editedTitle, setEditedTitle] = useState(data.content?.title ?? "");
-  const [editedSpeakers, setEditedSpeakers] = useState<string[]>(data.content.speakers ?? []);
-  const [editedCategories, setEditedCategories] = useState<string[]>(data.content.categories ?? []);
+  const [editedSpeakers, setEditedSpeakers] = useState<string[]>(
+    data.content.speakers ?? []
+  );
+  const [editedCategories, setEditedCategories] = useState<string[]>(
+    data.content.categories ?? []
+  );
 
   // const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;
   const [editedDate, setEditedDate] = useState<Date | null>(

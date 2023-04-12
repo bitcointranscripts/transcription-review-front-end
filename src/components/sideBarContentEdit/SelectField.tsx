@@ -1,26 +1,41 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  IconButton,
-  Input,
-  Text,
-} from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import { BiCheck, BiPencil, BiX } from "react-icons/bi";
+import { Button, Flex, IconButton, Text } from "@chakra-ui/react";
+import { useState } from "react";
+import { BiPencil } from "react-icons/bi";
+import SelectBox from "./selectbox";
 
 type Props = {
   name: string;
   editedData: string[] | string;
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string[]) => void;
-  autoCompleteList?: Array<{ slug: string; value: string }>;
+  autoCompleteList?: Array<AutoCompleteData>;
 };
 
-const SelectField = ({ name, editedData, updateData }: Props) => {
+export type AutoCompleteData = {
+  slug: string;
+  value: string;
+};
+
+export type SelectEditState = {
+  idx: number;
+  value: string;
+  autoCompleteValue: string;
+};
+
+const initialEditState: SelectEditState = {
+  idx: -1,
+  value: "",
+  autoCompleteValue: "",
+};
+
+const SelectField = ({
+  name,
+  editedData,
+  updateData,
+  autoCompleteList,
+}: Props) => {
   let _data = editedData;
   if (typeof _data === "string" && _data[0] === "[") {
-    // eslint-disable-next-line prettier/prettier
     _data = _data
       .substring(1, _data.length - 1)
       .replaceAll("'", "")
@@ -31,52 +46,111 @@ const SelectField = ({ name, editedData, updateData }: Props) => {
 
   const [isNew, setIsNew] = useState(false);
 
-  const handleUpdateEdit = (value: string, idx: number, name?: string) => {
+  const [editState, setEditState] = useState<SelectEditState>(initialEditState);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value;
+    setEditState((prev) => ({
+      ...prev,
+      value: inputValue,
+      autoCompleteValue: "",
+    }));
+  };
+
+  const handleUpdateEdit = (idx: number, name?: string) => {
     if (name && name === "remove") {
+      toggleEdit(idx);
       return;
     }
     let updatedSpeakers = [..._data];
-    if (!value.trim()) {
-      // console.log("remove idx", idx)
+    if (!editState.value.trim()) {
       updatedSpeakers.splice(idx, 1);
     } else {
-      updatedSpeakers[idx] = value;
+      updatedSpeakers[idx] = editState.value;
     }
     updateData(updatedSpeakers);
+    toggleEdit(idx);
   };
 
-  const handleNewSpeaker = (value: string, idx: number, name?: string) => {
+  const handleNewSpeaker = (idx: number, name?: string) => {
     setIsNew(false);
     if (name && name === "remove") {
       return;
     }
     let updatedSpeakers = [..._data];
-    if (!value) {
+    if (!editState.value) {
       return;
     } else {
-      updatedSpeakers.push(value);
+      updatedSpeakers.push(editState.value);
     }
     updateData(updatedSpeakers);
+  };
+
+  const handleAutoCompleteSelect = (data: AutoCompleteData) => {
+    setEditState((prev) => ({
+      ...prev,
+      value: data.value,
+      autoCompleteValue: data.value,
+    }));
+  };
+
+  const toggleEdit = (idx: number) => {
+    // ensure only one select at a time
+    if (idx !== -1 && isNew) {
+      setIsNew(false);
+    }
+    editState.idx === idx
+      ? setEditState(initialEditState)
+      : setEditState((prev) => ({
+          ...prev,
+          idx,
+          value: _data[idx] ?? "",
+        }));
+  };
+
+  const addNewSpeaker = () => {
+    toggleEdit(-1);
+    setIsNew(true);
   };
 
   return (
     <>
       {_data?.map((speaker: string, idx: number) => {
-        return (
+        return idx === editState.idx ? (
           <SelectBox
             key={speaker}
-            speaker={speaker}
             idx={idx}
+            editState={editState}
+            handleInputChange={handleInputChange}
             handleUpdateEdit={handleUpdateEdit}
+            autoCompleteList={autoCompleteList}
+            handleAutoCompleteSelect={handleAutoCompleteSelect}
           />
+        ) : (
+          <Flex justifyContent="space-between" gap={1} alignItems="center">
+            <Text fontSize="14px">{speaker}</Text>
+            <IconButton
+              fontSize="16px"
+              p="6px"
+              size="sm"
+              minW="auto"
+              h="auto"
+              variant="ghost"
+              onClick={() => toggleEdit(idx)}
+              aria-label="edit speaker"
+              icon={<BiPencil />}
+            />
+          </Flex>
         );
       })}
       {isNew ? (
         <SelectBox
-          speaker=""
           idx={-1}
+          editState={editState}
+          handleInputChange={handleInputChange}
           handleUpdateEdit={handleNewSpeaker}
-          isNew={isNew}
+          autoCompleteList={autoCompleteList}
+          handleAutoCompleteSelect={handleAutoCompleteSelect}
         />
       ) : (
         <Button
@@ -84,102 +158,12 @@ const SelectField = ({ name, editedData, updateData }: Props) => {
           variant="ghost"
           colorScheme="blue"
           size="sm"
-          onClick={() => setIsNew(true)}
+          onClick={addNewSpeaker}
         >
           <Text textTransform="uppercase" fontSize="12px">
             Add {name} +
           </Text>
         </Button>
-      )}
-    </>
-  );
-};
-
-const SelectBox = ({
-  speaker,
-  idx,
-  handleUpdateEdit,
-  isNew,
-}: {
-  speaker: string;
-  idx: number;
-  // eslint-disable-next-line no-unused-vars
-  handleUpdateEdit: (state: string, idx: number, name?: string) => void;
-  isNew?: boolean;
-}) => {
-  const [isEdit, setIsEdit] = useState(isNew);
-  const [state, setState] = useState(speaker);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let inputValue = e.target.value;
-    setState(inputValue);
-  };
-  const handleIndividualEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const name = e.currentTarget.name;
-    setIsEdit(false);
-    handleUpdateEdit(state, idx, name);
-  };
-
-  useEffect(() => {
-    if (isEdit) {
-      inputRef.current?.focus();
-    }
-  }, [isEdit]);
-
-  return (
-    <>
-      {isEdit ? (
-        <FormControl>
-          <Flex gap={1} alignItems="center">
-            <Input
-              p={1}
-              h="auto"
-              fontSize="inherit"
-              value={state}
-              onChange={handleInputChange}
-              ref={inputRef}
-            />
-            <Flex direction="row" justifyContent="space-around" gap={1}>
-              <IconButton
-                name="add"
-                size="sm"
-                fontSize="16px"
-                colorScheme="green"
-                variant="outline"
-                onClick={handleIndividualEdit}
-                aria-label="confirm speaker editing"
-                icon={<BiCheck />}
-              />
-              <IconButton
-                name="remove"
-                size="sm"
-                fontSize="16px"
-                colorScheme="red"
-                variant="outline"
-                onClick={handleIndividualEdit}
-                aria-label="reject speaker editing"
-                icon={<BiX />}
-              />
-            </Flex>
-          </Flex>
-        </FormControl>
-      ) : (
-        <Flex justifyContent="space-between" gap={1} alignItems="center">
-          <Text fontSize="14px">{speaker}</Text>
-          <IconButton
-            fontSize="16px"
-            p="6px"
-            size="sm"
-            minW="auto"
-            h="auto"
-            variant="ghost"
-            onClick={() => setIsEdit(true)}
-            aria-label="edit speaker"
-            icon={<BiPencil />}
-          />
-        </Flex>
       )}
     </>
   );
