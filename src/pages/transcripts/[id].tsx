@@ -1,5 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { Button, Container, Flex, Heading, Text, Toast, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Heading,
+  Text,
+  Toast,
+  useToast,
+} from "@chakra-ui/react";
 import { GetServerSideProps, NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import React, { useCallback, useEffect, useState } from "react";
@@ -12,6 +20,7 @@ import useTranscripts from "@/hooks/useTranscripts";
 import { useRouter } from "next/router";
 import RedirectToLogin from "@/components/RedirectToLogin";
 import { useQueryClient } from "react-query";
+import axios from "axios";
 
 const TranscriptPage = () => {
   const { status, data: sessionData } = useSession();
@@ -25,6 +34,7 @@ const TranscriptPage = () => {
   const { data, isLoading } = SingleTranscript(Number(id));
   const { mutate, isLoading: saveLoading } = updateTranscript;
   const [editedData, setEditedData] = useState(data?.content?.body ?? "");
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const toast = useToast();
 
@@ -83,7 +93,18 @@ const TranscriptPage = () => {
     );
   };
 
-  const handleSubmit = (editedContent: EditedContent) => {
+  const handleSubmit = async (editedContent: EditedContent) => {
+    setSubmitLoading(true);
+    axios
+      .post("/api/github", {
+        directoryName: "test-branch",
+        fileName: "test",
+      })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setSubmitLoading(false);
+      });
     return;
   };
 
@@ -110,6 +131,7 @@ const TranscriptPage = () => {
                     size="sm"
                     colorScheme="orange"
                     onClick={() => handleSubmit(editedContent)}
+                    isLoading={submitLoading}
                   >
                     Submit
                   </Button>

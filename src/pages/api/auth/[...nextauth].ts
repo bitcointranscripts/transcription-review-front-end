@@ -35,9 +35,10 @@ export const authOptions: NextAuthOptions = {
         ...token.user,
         ...defaultSessionUser,
       };
+      session.accessToken = token.user.access_token;
       return session;
     },
-    async jwt({ isNewUser, token, ...response }) {
+    async jwt({ isNewUser, token, account, ...response }) {
       const profile = response.profile as GhExtendedProfile | undefined;
       const createAndSetNewUser = async (
         username: string,
@@ -45,7 +46,10 @@ export const authOptions: NextAuthOptions = {
       ) => {
         const res = await createNewUser({ username, permissions });
         if (res.data) {
-          token.user = res.data;
+          token.user = {
+            ...res.data,
+            access_token: account?.access_token,
+          };
         } else {
           throw new Error("Unable to create user");
         }
@@ -68,7 +72,7 @@ export const authOptions: NextAuthOptions = {
               if (user) {
                 token.user = {
                   ...user,
-                  access_token: response.account?.access_token,
+                  access_token: account?.access_token,
                 };
               } else {
                 await createAndSetNewUser(profile?.login);
