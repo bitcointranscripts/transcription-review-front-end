@@ -97,8 +97,10 @@ const TranscriptPage = () => {
     setSubmitLoading(true);
     axios
       .post("/api/github", {
-        directoryName: "test-branch",
-        fileName: "test",
+        directoryPath: data?.content.loc ?? "bitcointranscripts/misc",
+        fileName: "Sample Test Transcript",
+        url: data?.content.media,
+        transcribedText: editedData,
       })
       .then((res) => console.log(res))
       .catch((err) => console.log(err))

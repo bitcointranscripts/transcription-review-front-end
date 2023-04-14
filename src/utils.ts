@@ -71,3 +71,64 @@ export const getCount = (item: number | string) => {
   const formattedItem = typeof item === "string" ? item.length : item;
   return wordsFormat.format(formattedItem);
 };
+
+export class Metadata {
+  private metaData: string;
+  public username: string;
+  public fileTitle: string;
+  public source: string;
+
+  constructor(fileTitle: string, username: string, url: string, tags?: string[], speakers?: string[], categories?: string[]) {
+
+    this.username = username;
+    this.fileTitle = fileTitle;
+    this.source = url;
+
+    this.metaData = `---\n` +
+                    `title: ${fileTitle}\n` +
+                    `transcript_by: ${username} \n`;
+
+    this.metaData += `media: ${url}\n`;
+
+    if (tags) {
+      this.metaData += this.formatList("tags", tags);
+    }
+
+    if (speakers) {
+      this.metaData += this.formatList("speakers", speakers);
+    }
+
+    if (categories) {
+      this.metaData += this.formatList("categories", categories);
+    }
+  }
+
+  private formatList(keyword: string, values: string[]): string {
+    values = values.map((value) => value.trim());
+    const formattedList = `${keyword}: ${values.join(", ")}\n`;
+    return formattedList;
+  }
+
+  public toString(): string {
+    return this.metaData;
+  }
+}
+
+export async function retryApiCall<T>(
+  apiCallFunc: () => Promise<T>,
+  retries: number = 3,
+  delay: number = 1000
+): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await apiCallFunc();
+      return response;
+    } catch (error) {
+      if (i === retries - 1) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error(`API call failed after ${retries} attempts`);
+}

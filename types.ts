@@ -21,6 +21,7 @@ type TranscriptContent = {
   tags: string[];
   title: string;
   transcript_by: Nullable<string>;
+  loc?: string;
 };
 
 type Nullable<T> = T | null;
