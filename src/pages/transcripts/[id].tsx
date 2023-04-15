@@ -96,7 +96,7 @@ const TranscriptPage = () => {
   const handleSubmit = async (editedContent: EditedContent) => {
     setSubmitLoading(true);
     axios
-      .post("/api/github", {
+      .post("/api/github/pr", {
         directoryPath: data?.content.loc ?? "bitcointranscripts/misc",
         fileName: "Sample Test Transcript",
         url: data?.content.media,

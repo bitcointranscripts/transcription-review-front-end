@@ -1,5 +1,6 @@
 import useTranscripts from "@/hooks/useTranscripts";
 import { getCount } from "@/utils";
+import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, {
@@ -46,6 +47,10 @@ const QueueTable = () => {
       }
       if (session?.user?.id) {
         setClaimState((prev) => ({ ...prev, rowId: transcriptId }));
+        // Fork repo
+        axios.post("/api/github/fork");
+
+        // Claim transcript
         claimTranscript.mutate(
           { userId: session.user.id, transcriptId },
           {

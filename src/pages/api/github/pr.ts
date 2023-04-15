@@ -1,7 +1,8 @@
-import { Metadata } from "@/utils";
+import { getRequestUrl, Metadata } from "@/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { Octokit } from "@octokit/core"
+import axios from "axios";
 
 const fs = require("fs");
 
@@ -22,6 +23,8 @@ async function createForkAndPR(
     owner: upstreamOwner,
     repo: upstreamRepo,
   });
+
+  console.log(forkResult);
 
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
@@ -120,12 +123,6 @@ export default async function handler(
       url
     );
 
-    // const dir = './tmp';
-    // if (!fs.existsSync(dir)) {
-    //   fs.mkdirSync(dir);
-    //   console.log("Folder tmp created successfully");
-    // }
-
     // Call the createForkAndPR function
     const prResult = await createForkAndPR(
       octokit,
@@ -134,10 +131,8 @@ export default async function handler(
       transcribedText,
       newMetadata
     );
-    // const prResult = await createForkAndPR(octokit, directoryPath, fileName);
 
     // Return the result
-    // res.status(200).json("end");
     res.status(200).json(prResult.data);
   } catch (error) {
     console.error(error);
