@@ -118,7 +118,8 @@ const QueueTable = () => {
         {
           name: "word count",
           type: "text-short",
-          modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
+          modifier: (data) =>
+            `${getCount(data.content.body) ?? "-"} words`,
         },
         // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
         {
