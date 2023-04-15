@@ -24,8 +24,6 @@ async function createForkAndPR(
     repo: upstreamRepo,
   });
 
-  console.log(forkResult);
-
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
 
@@ -41,7 +39,6 @@ async function createForkAndPR(
       ref: `heads/${baseBranchName}`,
     }
   );
-  // console.log(baseBranch.data)
 
   // Create new branch
   const timeInSeconds = Math.floor(Date.now() / 1000);
@@ -55,22 +52,10 @@ async function createForkAndPR(
     sha: baseRefSha,
   });
 
-  // // GET content of file to update
-  // const { data } = await octokit.request(
-  //   "GET /repos/:owner/:repo/contents/:path",
-  //   {
-  //     owner: forkOwner,
-  //     repo: forkRepo,
-  //     path: "README.md",
-  //     branch: newBranchName,
-  //   }
-  // );
-
   // Make edits to the file on the new branch
   const metadata = metaData.toString();
   const transcriptData = `${metadata}\n${transcribedText}\n`;
   const fileContent = Buffer.from(transcriptData).toString("base64");
-  // const { sha } = data;
 
   // Create new file on the branch
   const path = directoryPath.split("/").slice(1).join("/");

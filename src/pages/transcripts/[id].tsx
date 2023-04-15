@@ -1,17 +1,12 @@
 /* eslint-disable no-unused-vars */
 import {
   Button,
-  Container,
   Flex,
-  Heading,
-  Text,
-  Toast,
   useToast,
 } from "@chakra-ui/react";
 import { GetServerSideProps, NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
-import React, { useCallback, useEffect, useState } from "react";
-import { Transcript } from "../../../types";
+import React, { useState } from "react";
 import SidebarContentEdit, {
   EditedContent,
 } from "@/components/sideBarContentEdit/SidebarContentEdit";
@@ -22,6 +17,17 @@ import RedirectToLogin from "@/components/RedirectToLogin";
 import { useQueryClient } from "react-query";
 import axios from "axios";
 import { dateFormat, formatDataForMetadata } from "@/utils";
+import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
+import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
+
+const defaultSubmitState = {
+  stepIdx: 0,
+  steps: ["saving transcript to review", "fork and create pr"],
+  isLoading: false,
+  isError: false,
+  isModalOpen: false,
+  prResult: null,
+};
 
 const TranscriptPage = () => {
   const { status, data: sessionData } = useSession();
@@ -35,7 +41,7 @@ const TranscriptPage = () => {
   const { data, isLoading } = SingleTranscript(Number(id));
   const { mutate, isLoading: saveLoading } = updateTranscript;
   const [editedData, setEditedData] = useState(data?.content?.body ?? "");
-  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitState, setSubmitState] = useState<SubmitState>(defaultSubmitState);
 
   const toast = useToast();
 
@@ -59,7 +65,7 @@ const TranscriptPage = () => {
   //   return <h4>Transcript has been claimed</h4>;
   // }
 
-  const handleSave = (editedContent: EditedContent) => {
+  const saveTranscript = async (editedContent: EditedContent) => {
     if (!data) return;
     const { editedCategories, editedDate, editedSpeakers, editedTitle } =
       editedContent;
@@ -77,43 +83,64 @@ const TranscriptPage = () => {
       {
         onSettled(data, error, context) {
           if (data instanceof Error) {
-            toast({
-              status: "error",
-              title: "Error while saving",
-              description: data.message,
-            });
+            throw data;
           } else if (data?.statusText === "OK") {
-            toast({
-              status: "success",
-              title: "Saved successfully",
-            });
             queryClient.invalidateQueries(["transcript", Number(id)]);
+          } else if (error) {
+            throw error;
           }
         },
       }
     );
   };
 
+  const handleSave = async (editedContent: EditedContent) => {
+    try {
+      await saveTranscript(editedContent);
+      toast({
+        status: "success",
+        title: "Saved successfully",
+      });
+    } catch (err: any) {
+      toast({
+        status: "error",
+        title: "Error while saving",
+        description: err?.message,
+      });
+    }
+  };
+
   const handleSubmit = async (editedContent: EditedContent) => {
-    const {editedDate, editedTags, editedSpeakers, editedCategories} = editedContent;
-    setSubmitLoading(true);
-    axios
-      .post("/api/github/pr", {
+    const { editedTitle, editedDate, editedTags, editedSpeakers, editedCategories } =
+      editedContent;
+    setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
+    try {
+      // save transcript
+      await saveTranscript(editedContent);
+      setSubmitState((prev) => ({ ...prev, stepIdx: 1 }));
+
+      // fork and create pr
+      const prResult = await axios.post("/api/github/pr", {
         directoryPath: data?.content.loc ?? "bitcointranscripts/misc",
-        fileName: "Sample Test Transcript",
+        fileName: formatDataForMetadata(editedTitle),
         url: data?.content.media,
         date: editedDate && dateFormat(editedDate),
         tags: formatDataForMetadata(editedTags),
         speakers: formatDataForMetadata(editedSpeakers),
         categories: formatDataForMetadata(editedCategories),
         transcribedText: editedData,
-      })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err))
-      .finally(() => {
-        setSubmitLoading(false);
       });
-    return;
+      setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
+    } catch (err) {
+      setSubmitState((prev) => ({ ...prev, isLoading: false, isError: true }));
+    } finally {
+      setSubmitState((prev) => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const onExitModal = () => {
+    setSubmitState(defaultSubmitState);
+    router.push("/");
   };
 
   return (
@@ -139,7 +166,6 @@ const TranscriptPage = () => {
                     size="sm"
                     colorScheme="orange"
                     onClick={() => handleSubmit(editedContent)}
-                    isLoading={submitLoading}
                   >
                     Submit
                   </Button>
@@ -156,6 +182,10 @@ const TranscriptPage = () => {
           )}
         </Flex>
       )}
+      <SubmitTranscriptModal
+        submitState={submitState}
+        onClose={onExitModal}
+      />
     </>
   );
 };
