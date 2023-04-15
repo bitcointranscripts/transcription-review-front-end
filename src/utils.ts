@@ -1,5 +1,6 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
+import sanitize from "sanitize-html";
 import { MetadataProps } from "../types";
 import config from "./config/config.json";
 
@@ -166,3 +167,10 @@ export function formatDataForMetadata(data: string[] | string) {
     return undefined;
   }
 }
+
+// export const getTitleSlug = (title: string) => {
+//   let shortTitle = title.slice(0, 70);
+//   const _sanitized = sanitize(shortTitle);
+//   const formatted = _sanitized.replace(/[ \/]+/g, "-");
+//   return formatted;
+// };

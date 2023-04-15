@@ -2,6 +2,7 @@ import { Metadata } from "@/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { Octokit } from "@octokit/core";
+import slugify from "slugify";
 
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,
@@ -56,7 +57,7 @@ async function createForkAndPR(
 
   // Create new file on the branch
   const path = directoryPath.split("/").slice(1).join("/");
-  const fileSlug = fileName.toLowerCase().replaceAll(" ", "-");
+  const fileSlug = slugify(fileName, { remove: /[*+~.()'"!:@\\/]/g });
   await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
     owner: forkOwner,
     repo: forkRepo,
