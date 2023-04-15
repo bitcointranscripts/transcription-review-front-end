@@ -1,4 +1,5 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
+import { NextApiRequest } from "next";
 import config from "./config/config.json";
 
 const claim_duration_in_ms = hoursToMilliseconds(
@@ -78,7 +79,7 @@ export class Metadata {
   public fileTitle: string;
   public source: string;
 
-  constructor(fileTitle: string, username: string, url: string, tags?: string[], speakers?: string[], categories?: string[]) {
+  constructor(fileTitle: string, username: string, url: string, date: string, tags?: string[], speakers?: string[], categories?: string[]) {
 
     this.username = username;
     this.fileTitle = fileTitle;
@@ -101,11 +102,13 @@ export class Metadata {
     if (categories) {
       this.metaData += this.formatList("categories", categories);
     }
+    this.metaData += `date: ${date}\n`;
+
+    this.metaData += `---\n`;
   }
 
   private formatList(keyword: string, values: string[]): string {
-    values = values.map((value) => value.trim());
-    const formattedList = `${keyword}: ${values.join(", ")}\n`;
+    const formattedList = `${keyword}: ${JSON.stringify(values)}\n`;
     return formattedList;
   }
 
@@ -131,4 +134,26 @@ export async function retryApiCall<T>(
     }
   }
   throw new Error(`API call failed after ${retries} attempts`);
+}
+
+export function getRequestUrl(req: NextApiRequest) {
+  const host = req.headers.host || "localhost:3000";
+  const protocol = req.headers["x-forwarded-proto"] || "http";
+  const localUrl = `${protocol}://${host}`;
+  const requestUrl = process.env.VERCEL_URL ?? localUrl;
+  return requestUrl;
+}
+
+export function formatDataForMetadata(data: string[] | string) {
+  if (Array.isArray(data)) {
+    if (data.length) {
+      return JSON.stringify(data);
+    } else {
+      return undefined;
+    }
+  } else if (data.trim()) {
+    return data;
+  } else {
+    return undefined;
+  }
 }

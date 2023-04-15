@@ -113,14 +113,27 @@ export default async function handler(
   const octokit = new Octokit({ auth: session.accessToken });
 
   // Read directory path and fileName from the request
-  const { directoryPath, fileName, url, transcribedText } = req.body;
+  const {
+    directoryPath,
+    fileName,
+    url,
+    date,
+    tags,
+    speakers,
+    categories,
+    transcribedText,
+  } = req.body;
 
   try {
     // Create metadata
     const newMetadata = new Metadata(
       fileName,
       session.user.githubUsername,
-      url
+      url,
+      date,
+      tags,
+      speakers,
+      categories
     );
 
     // Call the createForkAndPR function

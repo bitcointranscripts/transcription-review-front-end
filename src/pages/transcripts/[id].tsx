@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import RedirectToLogin from "@/components/RedirectToLogin";
 import { useQueryClient } from "react-query";
 import axios from "axios";
+import { dateFormat, formatDataForMetadata } from "@/utils";
 
 const TranscriptPage = () => {
   const { status, data: sessionData } = useSession();
@@ -94,12 +95,17 @@ const TranscriptPage = () => {
   };
 
   const handleSubmit = async (editedContent: EditedContent) => {
+    const {editedDate, editedTags, editedSpeakers, editedCategories} = editedContent;
     setSubmitLoading(true);
     axios
       .post("/api/github/pr", {
         directoryPath: data?.content.loc ?? "bitcointranscripts/misc",
         fileName: "Sample Test Transcript",
         url: data?.content.media,
+        date: editedDate && dateFormat(editedDate),
+        tags: formatDataForMetadata(editedTags),
+        speakers: formatDataForMetadata(editedSpeakers),
+        categories: formatDataForMetadata(editedCategories),
         transcribedText: editedData,
       })
       .then((res) => console.log(res))
