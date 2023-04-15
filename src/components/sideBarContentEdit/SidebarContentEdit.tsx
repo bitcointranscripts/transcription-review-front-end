@@ -20,6 +20,7 @@ export type EditedContent = {
   editedTitle: string;
   editedSpeakers: string[];
   editedCategories: string[];
+  editedTags: string[];
   editedDate: Date | null;
 };
 
@@ -37,6 +38,9 @@ const SidebarContentEdit = ({
   const [editedCategories, setEditedCategories] = useState<string[]>(
     data.content.categories ?? []
   );
+  const [editedTags, setEditedTags] = useState<string[]>(
+    data.content.tags ?? []
+  );
 
   // const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;
   const [editedDate, setEditedDate] = useState<Date | null>(
@@ -51,6 +55,9 @@ const SidebarContentEdit = ({
   };
   const updateCategories = (categories: string[]) => {
     setEditedCategories(categories);
+  };
+  const updateTags = (categories: string[]) => {
+    setEditedTags(categories);
   };
   return (
     <Box
@@ -142,11 +149,22 @@ const SidebarContentEdit = ({
             updateData={updateCategories}
           />
         </Box>
+        <Box>
+          <Text fontWeight={600} mb={2}>
+            Tags
+          </Text>
+          <SelectField
+            name="tags"
+            editedData={editedTags}
+            updateData={updateTags}
+          />
+        </Box>
         {children &&
           children({
             editedTitle,
             editedSpeakers,
             editedCategories,
+            editedTags,
             editedDate,
           })}
       </Flex>
