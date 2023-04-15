@@ -1,10 +1,7 @@
-import { getRequestUrl, Metadata } from "@/utils";
+import { Metadata } from "@/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
-import { Octokit } from "@octokit/core"
-import axios from "axios";
-
-const fs = require("fs");
+import { Octokit } from "@octokit/core";
 
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,

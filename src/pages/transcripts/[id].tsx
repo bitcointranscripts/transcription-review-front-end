@@ -1,9 +1,5 @@
 /* eslint-disable no-unused-vars */
-import {
-  Button,
-  Flex,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Flex, useToast } from "@chakra-ui/react";
 import { GetServerSideProps, NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import React, { useState } from "react";
@@ -41,7 +37,8 @@ const TranscriptPage = () => {
   const { data, isLoading } = SingleTranscript(Number(id));
   const { mutate, isLoading: saveLoading } = updateTranscript;
   const [editedData, setEditedData] = useState(data?.content?.body ?? "");
-  const [submitState, setSubmitState] = useState<SubmitState>(defaultSubmitState);
+  const [submitState, setSubmitState] =
+    useState<SubmitState>(defaultSubmitState);
 
   const toast = useToast();
 
@@ -111,8 +108,13 @@ const TranscriptPage = () => {
   };
 
   const handleSubmit = async (editedContent: EditedContent) => {
-    const { editedTitle, editedDate, editedTags, editedSpeakers, editedCategories } =
-      editedContent;
+    const {
+      editedTitle,
+      editedDate,
+      editedTags,
+      editedSpeakers,
+      editedCategories,
+    } = editedContent;
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
     try {
       // save transcript
@@ -182,10 +184,7 @@ const TranscriptPage = () => {
           )}
         </Flex>
       )}
-      <SubmitTranscriptModal
-        submitState={submitState}
-        onClose={onExitModal}
-      />
+      <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
     </>
   );
 };
