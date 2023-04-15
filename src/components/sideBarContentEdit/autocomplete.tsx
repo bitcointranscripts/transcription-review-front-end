@@ -1,4 +1,4 @@
-// /* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars */
 // import useSelectNavigate from "@/hooks/useSelectNavigate";
 import { Box, Text } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";

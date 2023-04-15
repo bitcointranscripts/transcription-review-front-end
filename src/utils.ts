@@ -93,6 +93,7 @@ export class Metadata {
     this.fileTitle = fileTitle;
     this.source = url;
 
+    // eslint-disable-next-line prettier/prettier
     this.metaData = `---\n` +
                     `title: ${fileTitle}\n` +
                     `transcript_by: ${username} \n`;
