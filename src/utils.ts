@@ -1,5 +1,6 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
+import { MetadataProps } from "../types";
 import config from "./config/config.json";
 
 const claim_duration_in_ms = hoursToMilliseconds(
@@ -79,8 +80,15 @@ export class Metadata {
   public fileTitle: string;
   public source: string;
 
-  constructor(fileTitle: string, username: string, url: string, date: string, tags?: string[], speakers?: string[], categories?: string[]) {
-
+  constructor({
+    fileTitle,
+    username,
+    url,
+    date,
+    tags,
+    speakers,
+    categories,
+  }: MetadataProps) {
     this.username = username;
     this.fileTitle = fileTitle;
     this.source = url;

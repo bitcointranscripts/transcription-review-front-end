@@ -25,3 +25,13 @@ type TranscriptContent = {
 };
 
 type Nullable<T> = T | null;
+
+export type MetadataProps = {
+  fileTitle: string;
+  username: string;
+  url: string;
+  date: string;
+  tags?: string[];
+  speakers?: string[];
+  categories?: string[];
+};

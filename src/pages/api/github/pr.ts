@@ -126,15 +126,15 @@ export default async function handler(
 
   try {
     // Create metadata
-    const newMetadata = new Metadata(
-      fileName,
-      session.user.githubUsername,
+    const newMetadata = new Metadata({
+      fileTitle: fileName,
+      username: session.user.githubUsername,
       url,
       date,
       tags,
       speakers,
-      categories
-    );
+      categories,
+    });
 
     // Call the createForkAndPR function
     const prResult = await createForkAndPR(
