@@ -56,12 +56,13 @@ async function createForkAndPR(
   const fileContent = Buffer.from(transcriptData).toString("base64");
 
   // Create new file on the branch
-  const path = directoryPath.split("/").slice(1).join("/");
-  const fileSlug = slugify(fileName, { remove: /[*+~.()'"!:@\\/]/g });
+  const _trimmedFileName = fileName.trim();
+  const fileSlug = slugify(_trimmedFileName, { remove: /[*+~.()'"!:@\\/]/g });
+  console.log({directoryPath, fileSlug})
   await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
     owner: forkOwner,
     repo: forkRepo,
-    path: `${path}/${fileSlug}.md`,
+    path: `${directoryPath}/${fileSlug}.md`,
     message: `Added "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
     content: fileContent,
     branch: newBranchName,
