@@ -115,11 +115,6 @@ export class Metadata {
     this.metaData += `---\n`;
   }
 
-  private formatList(keyword: string, values: string[]): string {
-    const formattedList = `${keyword}: ${JSON.stringify(values)}\n`;
-    return formattedList;
-  }
-
   public toString(): string {
     return this.metaData;
   }
