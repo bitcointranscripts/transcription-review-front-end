@@ -104,7 +104,7 @@ export class Metadata {
     }
 
     if (speakers) {
-      this.metaData += `speakers: ${tags}\n`;
+      this.metaData += `speakers: ${speakers}\n`;
     }
 
     if (categories) {
