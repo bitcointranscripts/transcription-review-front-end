@@ -129,6 +129,7 @@ const QueueTable = () => {
   return (
     <>
       <BaseTable
+        showAdminControls
         data={data ?? []}
         isLoading={isLoading}
         isError={isError}
