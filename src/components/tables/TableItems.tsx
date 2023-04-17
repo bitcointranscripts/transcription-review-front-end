@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { dateFormat } from "@/utils";
 import {
-  Box,
   Button,
+  Checkbox,
   Flex,
   IconButton,
   Skeleton,
@@ -11,10 +11,10 @@ import {
   Th,
   Tr,
 } from "@chakra-ui/react";
-import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useMemo } from "react";
+import { MdOutlineArchive } from "react-icons/md";
 import { TbReload } from "react-icons/tb";
-import type { Transcript } from "../../../types";
 import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableDataElement, TableStructure } from "./types";
@@ -95,24 +95,32 @@ export const TableAction = ({
   tableItem,
   row,
   actionState,
-}: TableDataElement) => {
-  // const linkId = row.id;
+  showControls,
+}: TableDataElement & { showControls: boolean }) => {
+  const { data: userSession } = useSession();
+
   const handleClick = () => {
     if (!tableItem.action) return;
     tableItem.action(row);
   };
 
   const isLoading = row.id === actionState?.rowId;
+  const isAdmin = userSession?.user?.permissions === "admin";
+  const showCheckBox = isAdmin && showControls;
+
   return (
     <Td>
-      <Button
-        isLoading={isLoading}
-        colorScheme="orange"
-        size="sm"
-        onClick={handleClick}
-      >
-        Claim
-      </Button>
+      <Flex gap={5}>
+        <Button
+          isLoading={isLoading}
+          colorScheme="orange"
+          size="sm"
+          onClick={handleClick}
+        >
+          Claim
+        </Button>
+        {showCheckBox && <Checkbox value={String(row.id)} />}
+      </Flex>
     </Td>
   );
 };
@@ -176,7 +184,12 @@ export const DataEmpty = ({
   );
 };
 
-export const RowData = ({ row, tableItem, actionState }: TableDataElement) => {
+export const RowData = ({
+  row,
+  tableItem,
+  actionState,
+  showControls,
+}: TableDataElement & { showControls: boolean }) => {
   switch (tableItem.type) {
     case "date":
       return <DateText key={tableItem.name} tableItem={tableItem} row={row} />;
@@ -193,6 +206,7 @@ export const RowData = ({ row, tableItem, actionState }: TableDataElement) => {
     case "action":
       return (
         <TableAction
+          showControls={showControls}
           key={tableItem.name}
           tableItem={tableItem}
           row={row}
@@ -210,16 +224,31 @@ export const RefetchButton = ({
 }: {
   refetch: () => Promise<unknown>;
 }) => (
-  <Box display="flex" justifyContent="flex-end" mb={2}>
-    <IconButton
-      aria-label="refresh table"
-      minW="auto"
-      h="auto"
-      p="2px"
-      colorScheme="red"
-      variant="ghost"
-      icon={<TbReload />}
-      onClick={refetch}
-    />
-  </Box>
+  <IconButton
+    aria-label="refresh table"
+    minW="auto"
+    h="auto"
+    p="2px"
+    colorScheme="red"
+    variant="ghost"
+    icon={<TbReload />}
+    onClick={refetch}
+  />
+);
+
+export const ArchiveButton = ({
+  handleArchive,
+}: {
+  handleArchive: () => void;
+}) => (
+  <Button
+    size="sm"
+    gap={2}
+    aria-label="archive table"
+    colorScheme="orange"
+    onClick={handleArchive}
+  >
+    Archive
+    <MdOutlineArchive />
+  </Button>
 );
