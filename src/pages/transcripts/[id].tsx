@@ -131,6 +131,9 @@ const TranscriptPage = () => {
         speakers: formatDataForMetadata(editedSpeakers),
         categories: formatDataForMetadata(editedCategories),
         transcribedText: editedData,
+        transcript_by: formatDataForMetadata(
+          data?.content?.transcript_by ?? ""
+        ),
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
     } catch (err) {

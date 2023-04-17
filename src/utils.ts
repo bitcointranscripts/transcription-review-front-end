@@ -76,27 +76,25 @@ export const getCount = (item: number | string) => {
 
 export class Metadata {
   private metaData: string;
-  public username: string;
   public fileTitle: string;
   public source: string;
 
   constructor({
     fileTitle,
-    username,
+    transcript_by,
     url,
     date,
     tags,
     speakers,
     categories,
   }: MetadataProps) {
-    this.username = username;
     this.fileTitle = fileTitle;
     this.source = url;
 
     // eslint-disable-next-line prettier/prettier
     this.metaData = `---\n` +
                     `title: ${fileTitle}\n` +
-                    `transcript_by: ${username} \n`;
+                    `transcript_by: ${transcript_by} \n`;
 
     this.metaData += `media: ${url}\n`;
 

@@ -28,7 +28,7 @@ type Nullable<T> = T | null;
 
 export type MetadataProps = {
   fileTitle: string;
-  username: string;
+  transcript_by: string;
   url: string;
   date: string;
   tags?: string[];
