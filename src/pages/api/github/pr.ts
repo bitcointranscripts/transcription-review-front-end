@@ -58,7 +58,6 @@ async function createForkAndPR(
   // Create new file on the branch
   const _trimmedFileName = fileName.trim();
   const fileSlug = slugify(_trimmedFileName, { remove: /[*+~.()'"!:@\\/]/g });
-  console.log({directoryPath, fileSlug})
   await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
     owner: forkOwner,
     repo: forkRepo,

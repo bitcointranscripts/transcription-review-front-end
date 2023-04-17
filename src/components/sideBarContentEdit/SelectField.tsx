@@ -5,7 +5,7 @@ import SelectBox from "./selectbox";
 
 type Props = {
   name: string;
-  editedData: string[] | string;
+  editedData: string[];
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string[]) => void;
   autoCompleteList?: Array<AutoCompleteData>;
@@ -34,16 +34,6 @@ const SelectField = ({
   updateData,
   autoCompleteList,
 }: Props) => {
-  let _data = editedData;
-  if (typeof _data === "string" && _data[0] === "[") {
-    _data = _data
-      .substring(1, _data.length - 1)
-      .replaceAll("'", "")
-      .split(", ");
-  } else if (!Array.isArray(_data)) {
-    _data = [];
-  }
-
   const [isNew, setIsNew] = useState(false);
 
   const [editState, setEditState] = useState<SelectEditState>(initialEditState);
@@ -62,7 +52,7 @@ const SelectField = ({
       toggleEdit(idx);
       return;
     }
-    let updatedSpeakers = [..._data];
+    let updatedSpeakers = [...editedData];
     if (!editState.value.trim()) {
       updatedSpeakers.splice(idx, 1);
     } else {
@@ -77,7 +67,7 @@ const SelectField = ({
     if (name && name === "remove") {
       return;
     }
-    let updatedSpeakers = [..._data];
+    let updatedSpeakers = [...editedData];
     if (!editState.value) {
       return;
     } else {
@@ -104,7 +94,7 @@ const SelectField = ({
       : setEditState((prev) => ({
           ...prev,
           idx,
-          value: _data[idx] ?? "",
+          value: editedData[idx] ?? "",
         }));
   };
 
@@ -115,7 +105,7 @@ const SelectField = ({
 
   return (
     <>
-      {_data?.map((speaker: string, idx: number) => {
+      {editedData?.map((speaker: string, idx: number) => {
         return idx === editState.idx ? (
           <SelectBox
             key={speaker}

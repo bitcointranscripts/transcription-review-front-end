@@ -1,4 +1,4 @@
-import { getTimeLeftText } from "@/utils";
+import { getTimeLeftText, reconcileArray } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -33,13 +33,13 @@ const SidebarContentEdit = ({
 }) => {
   const [editedTitle, setEditedTitle] = useState(data.content?.title ?? "");
   const [editedSpeakers, setEditedSpeakers] = useState<string[]>(
-    data.content.speakers ?? []
+    reconcileArray(data?.content?.speakers)
   );
   const [editedCategories, setEditedCategories] = useState<string[]>(
-    data.content.categories ?? []
+    reconcileArray(data?.content?.categories)
   );
   const [editedTags, setEditedTags] = useState<string[]>(
-    data.content.tags ?? []
+    reconcileArray(data?.content?.tags)
   );
 
   // const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;

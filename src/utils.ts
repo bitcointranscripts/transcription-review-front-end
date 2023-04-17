@@ -1,6 +1,5 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
-import sanitize from "sanitize-html";
 import { MetadataProps } from "../types";
 import config from "./config/config.json";
 
@@ -95,22 +94,21 @@ export class Metadata {
     this.source = url;
 
     // eslint-disable-next-line prettier/prettier
-    this.metaData = `---\n` +
-                    `title: ${fileTitle}\n` +
-                    `transcript_by: ${username} \n`;
+    this.metaData =
+      `---\n` + `title: ${fileTitle}\n` + `transcript_by: ${username} \n`;
 
     this.metaData += `media: ${url}\n`;
 
     if (tags) {
-      this.metaData += this.formatList("tags", tags);
+      this.metaData += `tags: ${tags}\n`;
     }
 
     if (speakers) {
-      this.metaData += this.formatList("speakers", speakers);
+      this.metaData += `speakers: ${tags}\n`;
     }
 
     if (categories) {
-      this.metaData += this.formatList("categories", categories);
+      this.metaData += `categories: ${categories}\n`;
     }
     this.metaData += `date: ${date}\n`;
 
@@ -168,9 +166,30 @@ export function formatDataForMetadata(data: string[] | string) {
   }
 }
 
-// export const getTitleSlug = (title: string) => {
-//   let shortTitle = title.slice(0, 70);
-//   const _sanitized = sanitize(shortTitle);
-//   const formatted = _sanitized.replace(/[ \/]+/g, "-");
-//   return formatted;
-// };
+export function reconcileArray(possibleArray: unknown): string[] {
+  if (Array.isArray(possibleArray)) return possibleArray;
+  if (possibleArray === "None") return [];
+  if (typeof possibleArray === "string") {
+    if (
+      possibleArray[0] === "[" &&
+      possibleArray[possibleArray.length - 1] === "]"
+    ) {
+      const newArray = possibleArray
+        .substring(1, possibleArray.length - 1)
+        .replace(/['"]+/g, "")
+        .split(", ");
+      // .map((item) => item.trim());
+      return newArray;
+    } else if (possibleArray.includes(",")) {
+      const newArray = possibleArray
+        .replace(/['"]+/g, "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item);
+      return newArray;
+    } else {
+      return [];
+    }
+  }
+  return [];
+}
