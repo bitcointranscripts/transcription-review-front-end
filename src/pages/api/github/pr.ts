@@ -57,7 +57,7 @@ async function createForkAndPR(
 
   // Create new file on the branch
   const _trimmedFileName = fileName.trim();
-  const fileSlug = slugify(_trimmedFileName, { remove: /[*+~.()'"!:@\\/]/g });
+  const fileSlug = slugify(_trimmedFileName).replace(/[^\w-]+/g, "");
   await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
     owner: forkOwner,
     repo: forkRepo,
@@ -105,13 +105,14 @@ export default async function handler(
     speakers,
     categories,
     transcribedText,
+    transcript_by,
   } = req.body;
 
   try {
     // Create metadata
     const newMetadata = new Metadata({
       fileTitle: fileName,
-      username: session.user.githubUsername,
+      transcript_by: transcript_by,
       url,
       date,
       tags,
