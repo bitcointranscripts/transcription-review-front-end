@@ -187,3 +187,17 @@ export function reconcileArray(possibleArray: unknown): string[] {
   }
   return [];
 }
+
+export function newIndexFile(directoryName: string) {
+  const title = directoryName
+    .split("-")
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+  let file = "";
+  // eslint-disable-next-line prettier/prettier
+  file += `---\n` +
+          `title: ${title}\n` +
+          `---\n\n` +
+          `{{< childpages >}}`
+  return file;
+}

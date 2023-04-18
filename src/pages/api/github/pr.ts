@@ -1,4 +1,4 @@
-import { Metadata } from "@/utils";
+import { Metadata, newIndexFile } from "@/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { Octokit } from "@octokit/core";
@@ -54,6 +54,36 @@ async function createForkAndPR(
   const metadata = metaData.toString();
   const transcriptData = `${metadata}\n${transcribedText}\n`;
   const fileContent = Buffer.from(transcriptData).toString("base64");
+
+  // Check if _index.md exists in file
+  const pathHasIndexFile = await octokit
+    .request("GET /repos/:owner/:repo/contents/:path", {
+      owner: forkOwner,
+      repo: forkRepo,
+      path: `${directoryPath}/_index.md`,
+      branch: newBranchName,
+    })
+    .then((_data) => true)
+    .catch((err) => {
+      if (err?.status === 404) {
+        return false;
+      }
+      throw err;
+    });
+
+  // Create new _index.md file in given path on the branch
+  if (!pathHasIndexFile) {
+    const indexFile = newIndexFile(directoryName);
+    const indexContent = Buffer.from(indexFile).toString("base64");
+    await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
+      owner: forkOwner,
+      repo: forkRepo,
+      path: `${directoryPath}/_index.md`,
+      message: `Initialised _index.md file in ${directoryPath} directory`,
+      content: indexContent,
+      branch: newBranchName,
+    });
+  }
 
   // Create new file on the branch
   const _trimmedFileName = fileName.trim();
