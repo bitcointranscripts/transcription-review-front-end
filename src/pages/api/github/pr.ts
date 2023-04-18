@@ -55,35 +55,54 @@ async function createForkAndPR(
   const transcriptData = `${metadata}\n${transcribedText}\n`;
   const fileContent = Buffer.from(transcriptData).toString("base64");
 
-  // Check if _index.md exists in file
-  const pathHasIndexFile = await octokit
-    .request("GET /repos/:owner/:repo/contents/:path", {
-      owner: forkOwner,
-      repo: forkRepo,
-      path: `${directoryPath}/_index.md`,
-      branch: newBranchName,
-    })
-    .then((_data) => true)
-    .catch((err) => {
-      if (err?.status === 404) {
-        return false;
-      }
-      throw err;
-    });
+  // recursion, run through path delimited by `/` and create _index.md file if it doesn't exist
+  async function checkDirAndInitializeIndexFile(
+    path: string,
+    currentLevelIdx = 0,
+    maxNesting = 6
+  ) {
+    let pathLevels = path.split("/");
+    if (pathLevels.length > maxNesting) {
+      throw new Error("maximum nested directory depth reached");
+    }
+    const topPathLevel = pathLevels[currentLevelIdx];
+    if (!topPathLevel) return;
+    const currentDirPath = pathLevels.slice(0, currentLevelIdx + 1).join("/");
 
-  // Create new _index.md file in given path on the branch
-  if (!pathHasIndexFile) {
-    const indexFile = newIndexFile(directoryName);
-    const indexContent = Buffer.from(indexFile).toString("base64");
-    await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
-      owner: forkOwner,
-      repo: forkRepo,
-      path: `${directoryPath}/_index.md`,
-      message: `Initialised _index.md file in ${directoryPath} directory`,
-      content: indexContent,
-      branch: newBranchName,
-    });
+    // Check if _index.md exists in file
+    const pathHasIndexFile = await octokit
+      .request("GET /repos/:owner/:repo/contents/:path", {
+        owner: forkOwner,
+        repo: forkRepo,
+        path: `${currentDirPath}/_index.md`,
+        branch: newBranchName,
+      })
+      // eslint-disable-next-line no-unused-vars
+      .then((_data) => true)
+      .catch((err) => {
+        if (err?.status === 404) {
+          return false;
+        }
+        throw err;
+      });
+
+    // Create new _index.md file in given path on the branch
+    if (!pathHasIndexFile) {
+      const indexFile = newIndexFile(topPathLevel);
+      const indexContent = Buffer.from(indexFile).toString("base64");
+      await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
+        owner: forkOwner,
+        repo: forkRepo,
+        path: `${currentDirPath}/_index.md`,
+        message: `Initialised _index.md file in ${topPathLevel} directory`,
+        content: indexContent,
+        branch: newBranchName,
+      });
+    }
+    await checkDirAndInitializeIndexFile(path, currentLevelIdx + 1);
   }
+
+  await checkDirAndInitializeIndexFile(directoryPath);
 
   // Create new file on the branch
   const _trimmedFileName = fileName.trim();
