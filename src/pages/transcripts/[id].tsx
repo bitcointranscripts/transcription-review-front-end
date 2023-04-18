@@ -75,20 +75,23 @@ const TranscriptPage = () => {
       date: editedDate,
       body: editedData,
     };
-    mutate(
-      { content: updatedContent, transcriptId: Number(id) },
-      {
-        onSettled(data, error, context) {
-          if (data instanceof Error) {
-            throw data;
-          } else if (data?.statusText === "OK") {
-            queryClient.invalidateQueries(["transcript", Number(id)]);
-          } else if (error) {
-            throw error;
-          }
-        },
-      }
-    );
+    // create an awaitable promise for mutation
+    await new Promise((resolve, reject) => {
+      mutate(
+        { content: updatedContent, transcriptId: Number(id) },
+        {
+          onSettled(data, error, context) {
+            if (data instanceof Error || error) {
+              reject();
+              throw data;
+            } else if (data?.statusText === "OK") {
+              queryClient.invalidateQueries(["transcript", Number(id)]);
+              resolve(data);
+            }
+          },
+        }
+      );
+    });
   };
 
   const handleSave = async (editedContent: EditedContent) => {
@@ -123,7 +126,7 @@ const TranscriptPage = () => {
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
-        directoryPath: data?.content.loc ?? "misc",
+        directoryPath: "test/test-one/test-two/test-three/finally" ?? "misc",
         fileName: formatDataForMetadata(editedTitle),
         url: data?.content.media,
         date: editedDate && dateFormat(editedDate),
