@@ -89,7 +89,7 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Original Media
           </Text>
-          <Link href={data.originalContent?.media || ""} target="_blank">
+          <Link href={data.content?.media || ""} target="_blank">
             <Button colorScheme="orange" size="sm">
               Source
             </Button>
@@ -100,7 +100,7 @@ const SidebarContentEdit = ({
             Title
           </Text>
           <TextField
-            data={data.originalContent?.title ?? ""}
+            data={data.content?.title ?? ""}
             editedData={editedTitle}
             updateData={updateTitle}
           />
