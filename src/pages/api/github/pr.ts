@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { Octokit } from "@octokit/core";
 import slugify from "slugify";
+import config from "@/config/config.json";
 
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,
@@ -58,11 +59,10 @@ async function createForkAndPR(
   // recursion, run through path delimited by `/` and create _index.md file if it doesn't exist
   async function checkDirAndInitializeIndexFile(
     path: string,
-    currentLevelIdx = 0,
-    maxNesting = 6
+    currentLevelIdx = 0
   ) {
     let pathLevels = path.split("/");
-    if (pathLevels.length > maxNesting) {
+    if (pathLevels.length > config.maximum_nested_directory_depth) {
       throw new Error("maximum nested directory depth reached");
     }
     const topPathLevel = pathLevels[currentLevelIdx];
