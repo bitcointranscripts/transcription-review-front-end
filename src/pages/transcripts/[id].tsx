@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 import RedirectToLogin from "@/components/RedirectToLogin";
 import { useQueryClient } from "react-query";
 import axios from "axios";
-import { dateFormat, formatDataForMetadata } from "@/utils";
+import { dateFormat, dateFormatGeneral, formatDataForMetadata } from "@/utils";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 
@@ -130,7 +130,7 @@ const TranscriptPage = () => {
         directoryPath: data?.content?.loc ?? "misc",
         fileName: formatDataForMetadata(editedTitle),
         url: data?.content.media,
-        date: editedDate && dateFormat(editedDate),
+        date: editedDate && dateFormatGeneral(editedDate, true),
         tags: formatDataForMetadata(editedTags),
         speakers: formatDataForMetadata(editedSpeakers),
         categories: formatDataForMetadata(editedCategories),

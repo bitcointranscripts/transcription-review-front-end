@@ -16,28 +16,15 @@ export const dateFormatGeneral = (date: Date | null, stringFormat: boolean) => {
   if (!date) return null;
   const _date = dateFormat(date).split("/");
   const { day, month, year } = {
-    day: _date[0],
+    day: _date[2],
     month: _date[1],
-    year: _date[2],
+    year: _date[0],
   };
   if (stringFormat) {
     return `${year}-${month}-${day}`;
   }
   return { day, month, year };
 };
-// export const dateFormatGeneral = (date: Date | null, stringFormat: boolean) => {
-//   if (!date) return null;
-//   const _date = new Date(date);
-//   const { day, month, year } = {
-//     day: _date.getUTCDate(),
-//     month: _date.getUTCMonth() + 1,
-//     year: _date.getUTCFullYear(),
-//   };
-//   if (stringFormat) {
-//     return `${year}-${month}-${day}`;
-//   }
-//   return { day, month, year };
-// };
 
 export const getTimeLeft = (date: Date | null): number | null => {
   if (!date) {
@@ -94,7 +81,7 @@ export class Metadata {
     // eslint-disable-next-line prettier/prettier
     this.metaData = `---\n` +
                     `title: ${fileTitle}\n` +
-                    `transcript_by: ${transcript_by} \n`;
+                    `transcript_by: ${transcript_by}`;
 
     this.metaData += `media: ${url}\n`;
 
