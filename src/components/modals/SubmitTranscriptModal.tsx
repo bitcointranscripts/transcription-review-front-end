@@ -89,7 +89,9 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
                 {err?.response?.data?.message && (
                   <>
                     <Divider mt={1} mb={3} />
-                    <Text color="red.400" fontWeight={500}>Error:</Text>
+                    <Text color="red.400" fontWeight={500}>
+                      Error:
+                    </Text>
                     <Text color="red.400">{err?.response?.data?.message}</Text>
                   </>
                 )}
