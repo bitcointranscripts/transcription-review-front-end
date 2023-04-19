@@ -1,5 +1,5 @@
 
 {
   "claim_duration_in_hours": 24,
-  "maximum_nested_directory_depth": 2
+  "maximum_nested_directory_depth": 3
 }
