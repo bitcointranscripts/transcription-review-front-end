@@ -180,10 +180,10 @@ export default async function handler(
 
     // Return the result
     res.status(200).json(prResult.data);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     res
       .status(500)
-      .json({ message: "Error occurred while creating the fork and PR" });
+      .json({ message: error?.message ?? "Error occurred while creating the fork and PR" });
   }
 }

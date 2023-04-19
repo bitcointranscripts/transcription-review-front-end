@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Divider,
   Flex,
   Icon,
   Modal,
@@ -23,6 +24,7 @@ export type SubmitState = {
   isError: boolean;
   isModalOpen: boolean;
   prResult: null | any;
+  err: null | any;
 };
 
 type Props = {
@@ -31,7 +33,7 @@ type Props = {
 };
 
 const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
-  const { stepIdx, steps, isLoading, isError, isModalOpen, prResult } =
+  const { stepIdx, steps, isLoading, isError, isModalOpen, prResult, err } =
     submitState;
   return (
     <Modal isOpen={isModalOpen} onClose={onClose}>
@@ -79,7 +81,20 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
             })}
           </Box>
           <Box my={6}>
-            {isError && !isLoading && <Text>Unsucessful</Text>}
+            {isError && !isLoading && (
+              <Box>
+                <Text color="gray.400" fontWeight={500}>
+                  Unsucessful
+                </Text>
+                {err?.response?.data?.message && (
+                  <>
+                    <Divider mt={1} mb={3} />
+                    <Text color="red.400" fontWeight={500}>Error:</Text>
+                    <Text color="red.400">{err?.response?.data?.message}</Text>
+                  </>
+                )}
+              </Box>
+            )}
             {!isError && !isLoading && prResult?.data?.html_url && (
               <Flex gap={2} alignItems="center">
                 <Text fontWeight={600}>Sucessfully opened a PR at:</Text>

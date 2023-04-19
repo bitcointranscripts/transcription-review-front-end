@@ -23,6 +23,7 @@ const defaultSubmitState = {
   isError: false,
   isModalOpen: false,
   prResult: null,
+  err: null,
 };
 
 const TranscriptPage = () => {
@@ -126,7 +127,7 @@ const TranscriptPage = () => {
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
-        directoryPath: data?.content?.loc ?? "misc",
+        directoryPath: "yada/dada/papa" ?? "misc",
         fileName: formatDataForMetadata(editedTitle),
         url: data?.content.media,
         date: editedDate && dateFormat(editedDate),
@@ -140,7 +141,7 @@ const TranscriptPage = () => {
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
     } catch (err) {
-      setSubmitState((prev) => ({ ...prev, isLoading: false, isError: true }));
+      setSubmitState((prev) => ({ ...prev, isLoading: false, isError: true, err }));
     } finally {
       setSubmitState((prev) => ({ ...prev, isLoading: false }));
     }
