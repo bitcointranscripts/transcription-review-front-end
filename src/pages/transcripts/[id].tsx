@@ -126,7 +126,7 @@ const TranscriptPage = () => {
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
-        directoryPath: "test/test-one/test-two/test-three/finally" ?? "misc",
+        directoryPath: data?.content?.loc ?? "misc",
         fileName: formatDataForMetadata(editedTitle),
         url: data?.content.media,
         date: editedDate && dateFormat(editedDate),

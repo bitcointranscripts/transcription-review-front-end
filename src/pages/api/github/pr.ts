@@ -50,7 +50,7 @@ async function createForkAndPR(
     sha: baseRefSha,
   });
 
-  // Make edits to the file on the new branch
+  // Create the file to be inserted
   const metadata = metaData.toString();
   const transcriptData = `${metadata}\n${transcribedText}\n`;
   const fileContent = Buffer.from(transcriptData).toString("base64");
