@@ -117,7 +117,12 @@ const SelectField = ({
             handleAutoCompleteSelect={handleAutoCompleteSelect}
           />
         ) : (
-          <Flex justifyContent="space-between" gap={1} alignItems="center">
+          <Flex
+            key={speaker}
+            justifyContent="space-between"
+            gap={1}
+            alignItems="center"
+          >
             <Text fontSize="14px">{speaker}</Text>
             <IconButton
               fontSize="16px"
