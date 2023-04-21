@@ -15,6 +15,7 @@ declare module "next-auth" {
       githubUsername?: string;
     };
     expires: ISODateString;
+    accessToken?: string;
   }
 
   interface GhExtendedProfile extends Profile {

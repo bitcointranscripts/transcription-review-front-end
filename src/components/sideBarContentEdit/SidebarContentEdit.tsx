@@ -1,4 +1,4 @@
-import { getTimeLeftText } from "@/utils";
+import { getTimeLeftText, reconcileArray } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -20,6 +20,7 @@ export type EditedContent = {
   editedTitle: string;
   editedSpeakers: string[];
   editedCategories: string[];
+  editedTags: string[];
   editedDate: Date | null;
 };
 
@@ -32,10 +33,13 @@ const SidebarContentEdit = ({
 }) => {
   const [editedTitle, setEditedTitle] = useState(data.content?.title ?? "");
   const [editedSpeakers, setEditedSpeakers] = useState<string[]>(
-    data.content.speakers ?? []
+    reconcileArray(data?.content?.speakers)
   );
   const [editedCategories, setEditedCategories] = useState<string[]>(
-    data.content.categories ?? []
+    reconcileArray(data?.content?.categories)
+  );
+  const [editedTags, setEditedTags] = useState<string[]>(
+    reconcileArray(data?.content?.tags)
   );
 
   // const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;
@@ -51,6 +55,9 @@ const SidebarContentEdit = ({
   };
   const updateCategories = (categories: string[]) => {
     setEditedCategories(categories);
+  };
+  const updateTags = (categories: string[]) => {
+    setEditedTags(categories);
   };
   return (
     <Box
@@ -82,7 +89,7 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Original Media
           </Text>
-          <Link href={data.originalContent?.media || ""} target="_blank">
+          <Link href={data.content?.media || ""} target="_blank">
             <Button colorScheme="orange" size="sm">
               Source
             </Button>
@@ -93,7 +100,7 @@ const SidebarContentEdit = ({
             Title
           </Text>
           <TextField
-            data={data.originalContent?.title ?? ""}
+            data={data.content?.title ?? ""}
             editedData={editedTitle}
             updateData={updateTitle}
           />
@@ -142,11 +149,22 @@ const SidebarContentEdit = ({
             updateData={updateCategories}
           />
         </Box>
+        <Box>
+          <Text fontWeight={600} mb={2}>
+            Tags
+          </Text>
+          <SelectField
+            name="tags"
+            editedData={editedTags}
+            updateData={updateTags}
+          />
+        </Box>
         {children &&
           children({
             editedTitle,
             editedSpeakers,
             editedCategories,
+            editedTags,
             editedDate,
           })}
       </Flex>

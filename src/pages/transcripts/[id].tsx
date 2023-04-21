@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { Button, Container, Flex, Heading, Text, Toast, useToast } from "@chakra-ui/react";
+import { Button, Flex, useToast } from "@chakra-ui/react";
 import { GetServerSideProps, NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
-import React, { useCallback, useEffect, useState } from "react";
-import { Transcript } from "../../../types";
+import React, { useState } from "react";
 import SidebarContentEdit, {
   EditedContent,
 } from "@/components/sideBarContentEdit/SidebarContentEdit";
@@ -12,6 +11,20 @@ import useTranscripts from "@/hooks/useTranscripts";
 import { useRouter } from "next/router";
 import RedirectToLogin from "@/components/RedirectToLogin";
 import { useQueryClient } from "react-query";
+import axios from "axios";
+import { dateFormat, dateFormatGeneral, formatDataForMetadata } from "@/utils";
+import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
+import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
+
+const defaultSubmitState = {
+  stepIdx: 0,
+  steps: ["saving transcript to review", "fork and create pr"],
+  isLoading: false,
+  isError: false,
+  isModalOpen: false,
+  prResult: null,
+  err: null,
+};
 
 const TranscriptPage = () => {
   const { status, data: sessionData } = useSession();
@@ -25,6 +38,8 @@ const TranscriptPage = () => {
   const { data, isLoading } = SingleTranscript(Number(id));
   const { mutate, isLoading: saveLoading } = updateTranscript;
   const [editedData, setEditedData] = useState(data?.content?.body ?? "");
+  const [submitState, setSubmitState] =
+    useState<SubmitState>(defaultSubmitState);
 
   const toast = useToast();
 
@@ -48,7 +63,7 @@ const TranscriptPage = () => {
   //   return <h4>Transcript has been claimed</h4>;
   // }
 
-  const handleSave = (editedContent: EditedContent) => {
+  const saveTranscript = async (editedContent: EditedContent) => {
     if (!data) return;
     const { editedCategories, editedDate, editedSpeakers, editedTitle } =
       editedContent;
@@ -61,30 +76,85 @@ const TranscriptPage = () => {
       date: editedDate,
       body: editedData,
     };
-    mutate(
-      { content: updatedContent, transcriptId: Number(id) },
-      {
-        onSettled(data, error, context) {
-          if (data instanceof Error) {
-            toast({
-              status: "error",
-              title: "Error while saving",
-              description: data.message,
-            });
-          } else if (data?.statusText === "OK") {
-            toast({
-              status: "success",
-              title: "Saved successfully",
-            });
-            queryClient.invalidateQueries(["transcript", Number(id)]);
-          }
-        },
-      }
-    );
+    // create an awaitable promise for mutation
+    await new Promise((resolve, reject) => {
+      mutate(
+        { content: updatedContent, transcriptId: Number(id) },
+        {
+          onSettled(data, error, context) {
+            if (data instanceof Error || error) {
+              reject();
+              throw data;
+            } else if (data?.statusText === "OK") {
+              queryClient.invalidateQueries(["transcript", Number(id)]);
+              resolve(data);
+            }
+          },
+        }
+      );
+    });
   };
 
-  const handleSubmit = (editedContent: EditedContent) => {
-    return;
+  const handleSave = async (editedContent: EditedContent) => {
+    try {
+      await saveTranscript(editedContent);
+      toast({
+        status: "success",
+        title: "Saved successfully",
+      });
+    } catch (err: any) {
+      toast({
+        status: "error",
+        title: "Error while saving",
+        description: err?.message,
+      });
+    }
+  };
+
+  const handleSubmit = async (editedContent: EditedContent) => {
+    const {
+      editedTitle,
+      editedDate,
+      editedTags,
+      editedSpeakers,
+      editedCategories,
+    } = editedContent;
+    setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
+    try {
+      // save transcript
+      await saveTranscript(editedContent);
+      setSubmitState((prev) => ({ ...prev, stepIdx: 1 }));
+
+      // fork and create pr
+      const prResult = await axios.post("/api/github/pr", {
+        directoryPath: data?.content?.loc ?? "misc",
+        fileName: formatDataForMetadata(editedTitle),
+        url: data?.content.media,
+        date: editedDate && dateFormatGeneral(editedDate, true),
+        tags: formatDataForMetadata(editedTags),
+        speakers: formatDataForMetadata(editedSpeakers),
+        categories: formatDataForMetadata(editedCategories),
+        transcribedText: editedData,
+        transcript_by: formatDataForMetadata(
+          data?.content?.transcript_by ?? ""
+        ),
+      });
+      setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
+    } catch (err) {
+      setSubmitState((prev) => ({
+        ...prev,
+        isLoading: false,
+        isError: true,
+        err,
+      }));
+    } finally {
+      setSubmitState((prev) => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const onExitModal = () => {
+    setSubmitState(defaultSubmitState);
+    router.push("/");
   };
 
   return (
@@ -126,6 +196,7 @@ const TranscriptPage = () => {
           )}
         </Flex>
       )}
+      <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
     </>
   );
 };
