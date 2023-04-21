@@ -1,20 +1,19 @@
 /* eslint-disable no-unused-vars */
-import { Button, Flex, useToast } from "@chakra-ui/react";
-import { GetServerSideProps, NextPage } from "next";
-import { signIn, useSession } from "next-auth/react";
-import React, { useState } from "react";
+import EditTranscript from "@/components/editTranscript/EditTranscript";
+import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
+import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
+import RedirectToLogin from "@/components/RedirectToLogin";
 import SidebarContentEdit, {
   EditedContent,
 } from "@/components/sideBarContentEdit/SidebarContentEdit";
-import EditTranscript from "@/components/editTranscript/EditTranscript";
 import useTranscripts from "@/hooks/useTranscripts";
-import { useRouter } from "next/router";
-import RedirectToLogin from "@/components/RedirectToLogin";
-import { useQueryClient } from "react-query";
+import { dateFormatGeneral, formatDataForMetadata } from "@/utils";
+import { Button, Flex, useToast } from "@chakra-ui/react";
 import axios from "axios";
-import { dateFormat, dateFormatGeneral, formatDataForMetadata } from "@/utils";
-import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
-import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { useQueryClient } from "react-query";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -36,7 +35,7 @@ const TranscriptPage = () => {
   const { SingleTranscript, updateTranscript } = useTranscripts();
 
   const { data, isLoading } = SingleTranscript(Number(id));
-  const { mutate, isLoading: saveLoading } = updateTranscript;
+  const { mutateAsync, isLoading: saveLoading } = updateTranscript;
   const [editedData, setEditedData] = useState(data?.content?.body ?? "");
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
@@ -77,22 +76,20 @@ const TranscriptPage = () => {
       body: editedData,
     };
     // create an awaitable promise for mutation
-    await new Promise((resolve, reject) => {
-      mutate(
+    try {
+      await mutateAsync(
         { content: updatedContent, transcriptId: Number(id) },
         {
-          onSettled(data, error, context) {
-            if (data instanceof Error || error) {
-              reject();
-              throw data;
-            } else if (data?.statusText === "OK") {
+          onSettled(data) {
+            if (data?.statusText === "OK") {
               queryClient.invalidateQueries(["transcript", Number(id)]);
-              resolve(data);
             }
           },
         }
       );
-    });
+    } catch (error) {
+      throw error;
+    }
   };
 
   const handleSave = async (editedContent: EditedContent) => {
@@ -140,7 +137,8 @@ const TranscriptPage = () => {
         ),
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
-    } catch (err) {
+    } catch (error) {
+      const err = error as Error;
       setSubmitState((prev) => ({
         ...prev,
         isLoading: false,

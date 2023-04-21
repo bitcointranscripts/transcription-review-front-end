@@ -14,7 +14,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import React from "react";
 import { BiCheck, BiLink, BiX } from "react-icons/bi";
 
 export type SubmitState = {
@@ -24,7 +23,7 @@ export type SubmitState = {
   isError: boolean;
   isModalOpen: boolean;
   prResult: null | any;
-  err: null | any;
+  err: null | Error;
 };
 
 type Props = {
@@ -86,13 +85,13 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
                 <Text color="gray.400" fontWeight={500}>
                   Unsucessful
                 </Text>
-                {err?.response?.data?.message && (
+                {err?.message && (
                   <>
                     <Divider mt={1} mb={3} />
                     <Text color="red.400" fontWeight={500}>
                       Error:
                     </Text>
-                    <Text color="red.400">{err?.response?.data?.message}</Text>
+                    <Text color="red.400">{err?.message}</Text>
                   </>
                 )}
               </Box>
