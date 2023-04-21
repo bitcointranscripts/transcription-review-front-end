@@ -1,6 +1,15 @@
 /* eslint-disable no-unused-vars */
-import { Box, Heading, Table, Tbody, Thead, Tr } from "@chakra-ui/react";
-import React from "react";
+import {
+  Box,
+  CheckboxGroup,
+  Flex,
+  Heading,
+  Table,
+  Tbody,
+  Thead,
+  Tr,
+} from "@chakra-ui/react";
+import React, { useState } from "react";
 import {
   QueryObserverResult,
   RefetchOptions,
@@ -8,6 +17,7 @@ import {
 } from "react-query";
 import type { Transcript } from "../../../types";
 import {
+  ArchiveButton,
   DataEmpty,
   LoadingSkeleton,
   RefetchButton,
@@ -29,18 +39,29 @@ type Props = {
   tableStructure: TableStructure[];
   tableHeader?: string;
   tableHeaderComponent?: React.ReactNode;
+  showAdminControls?: boolean;
 };
 
 const BaseTable: React.FC<Props> = ({
   data,
   isLoading,
-  isError,
   refetch,
   actionState,
   tableStructure,
   tableHeader,
   tableHeaderComponent,
+  showAdminControls = false,
 }) => {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const handleCheckboxToggle = (values: (string | number)[]) => {
+    setSelectedIds(values.map(String));
+  };
+  const handleArchive = () => {
+    // const ids = selectedIds.map(Number);
+    // Implement logic for archiving transcripts
+  };
+
   return (
     <Box fontSize="sm" py={4} isolation="isolate">
       {tableHeaderComponent
@@ -50,7 +71,12 @@ const BaseTable: React.FC<Props> = ({
               {tableHeader}
             </Heading>
           )}
-      {refetch && <RefetchButton refetch={refetch} />}
+      <Flex gap={2} justifyContent="flex-end" mb={2}>
+        {selectedIds.length > 0 && (
+          <ArchiveButton handleArchive={handleArchive} />
+        )}
+        {refetch && <RefetchButton refetch={refetch} />}
+      </Flex>
       <Table
         boxShadow="lg"
         borderTop="4px solid"
@@ -60,22 +86,25 @@ const BaseTable: React.FC<Props> = ({
         <Thead>
           <TableHeader tableStructure={tableStructure} />
         </Thead>
-        <Tbody fontWeight="medium">
-          {isLoading ? (
-            <LoadingSkeleton rowsLength={tableStructure.length} />
-          ) : data?.length ? (
-            data.map((dataRow, idx) => (
-              <TableRow
-                key={`data-row-${dataRow.id}`}
-                row={dataRow}
-                ts={tableStructure}
-                actionState={actionState}
-              />
-            ))
-          ) : (
-            <DataEmpty />
-          )}
-        </Tbody>
+        <CheckboxGroup colorScheme="orange" onChange={handleCheckboxToggle}>
+          <Tbody fontWeight="medium">
+            {isLoading ? (
+              <LoadingSkeleton rowsLength={tableStructure.length} />
+            ) : data?.length ? (
+              data.map((dataRow, idx) => (
+                <TableRow
+                  showControls={showAdminControls}
+                  key={`data-row-${dataRow.id}`}
+                  row={dataRow}
+                  ts={tableStructure}
+                  actionState={actionState}
+                />
+              ))
+            ) : (
+              <DataEmpty />
+            )}
+          </Tbody>
+        </CheckboxGroup>
       </Table>
     </Box>
   );
@@ -85,15 +114,18 @@ const TableRow = ({
   row,
   ts,
   actionState,
+  showControls,
 }: {
   row: Transcript;
   ts: TableStructure[];
   actionState: Props["actionState"];
+  showControls: boolean;
 }) => {
   return (
     <Tr>
       {ts.map((tableItem) => (
         <RowData
+          showControls={showControls}
           key={tableItem.name}
           tableItem={tableItem}
           row={row}
