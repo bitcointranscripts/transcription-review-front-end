@@ -44,7 +44,7 @@ const SidebarContentEdit = ({
 
   // const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;
   const [editedDate, setEditedDate] = useState<Date | null>(
-    new Date(data?.createdAt ?? "")
+    new Date(data?.content?.date ?? "")
   );
 
   const updateTitle = (newTitle: string) => {
