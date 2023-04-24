@@ -56,6 +56,14 @@ const useTranscripts = () => {
   const transcripts = useQuery("trancripts", getAllTranscripts, {
     refetchOnWindowFocus: false,
   });
+  const activeTranscripts = useQuery("active_trancripts", getAllTranscripts, {
+    refetchOnWindowFocus: false,
+    select: (data) => {
+      return data.filter((transcript) =>
+        Boolean(!transcript.archivedAt && !transcript.archivedBy)
+      );
+    },
+  });
 
   const SingleTranscript = (transcriptId: number) =>
     useQuery(
@@ -70,7 +78,13 @@ const useTranscripts = () => {
 
   const updateTranscript = useMutation(saveEdit);
 
-  return { transcripts, SingleTranscript, claimTranscript, updateTranscript };
+  return {
+    transcripts,
+    activeTranscripts,
+    SingleTranscript,
+    claimTranscript,
+    updateTranscript,
+  };
 };
 
 export default useTranscripts;

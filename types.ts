@@ -1,7 +1,7 @@
 export type Transcript = {
   id: number;
   archivedAt: Nullable<Date>;
-  archivedBy: Nullable<string>;
+  archivedBy: Nullable<number>;
   createdAt: Nullable<Date>;
   content: TranscriptContent;
   status?: string;
