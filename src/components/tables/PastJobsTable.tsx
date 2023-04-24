@@ -38,7 +38,7 @@ const PastJobsTable = () => {
   return (
     <>
       <BaseTable
-        data={data ?? []}
+        data={data}
         isLoading={isLoading}
         isError={isError}
         refetch={refetch}
