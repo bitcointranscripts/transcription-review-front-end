@@ -77,8 +77,9 @@ const BaseTable: React.FC<Props> = ({
           <TableHeader tableStructure={tableStructure} />
         </Thead>
         <Tbody fontWeight="medium">
-          {isLoading && <LoadingSkeleton rowsLength={tableStructure.length} />}
-          {!data ? (
+          {isLoading ? (
+            <LoadingSkeleton rowsLength={tableStructure.length} />
+          ) : !data ? (
             <DataEmpty />
           ) : data?.length ? (
             data.map((dataRow, idx) => (
@@ -91,7 +92,7 @@ const BaseTable: React.FC<Props> = ({
               />
             ))
           ) : (
-            <DataEmpty />
+            <DataEmpty message="No Data" />
           )}
         </Tbody>
       </Table>
