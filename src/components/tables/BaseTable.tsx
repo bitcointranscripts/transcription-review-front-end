@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import useTranscripts from "@/hooks/useTranscripts";
 import {
   Box,
   CheckboxGroup,
@@ -8,12 +9,15 @@ import {
   Tbody,
   Thead,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import {
   QueryObserverResult,
   RefetchOptions,
   RefetchQueryFilters,
+  useQueryClient,
 } from "react-query";
 import type { Transcript } from "../../../types";
 import {
@@ -53,13 +57,39 @@ const BaseTable: React.FC<Props> = ({
   showAdminControls = false,
 }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const toast = useToast();
+  const { data: userSession } = useSession();
+  const queryClient = useQueryClient();
+  const archiveTranscript = useTranscripts().archiveTranscript;
 
   const handleCheckboxToggle = (values: (string | number)[]) => {
     setSelectedIds(values.map(String));
   };
-  const handleArchive = () => {
-    // const ids = selectedIds.map(Number);
-    // Implement logic for archiving transcripts
+  const handleArchive = async () => {
+    const ids = selectedIds.map(Number);
+    try {
+      await Promise.all(
+        ids.map((transcriptId) =>
+          archiveTranscript.mutateAsync({
+            transcriptId,
+            archivedBy: userSession?.user?.id ?? 0,
+          })
+        )
+      );
+
+      queryClient.invalidateQueries("transcripts");
+      toast({
+        status: "success",
+        title: "Archived successfully",
+      });
+    } catch (err) {
+      const error = err as Error;
+      toast({
+        status: "error",
+        title: "Error while archiving transcript",
+        description: error?.message,
+      });
+    }
   };
 
   return (
@@ -73,7 +103,10 @@ const BaseTable: React.FC<Props> = ({
           )}
       <Flex gap={2} justifyContent="flex-end" mb={2}>
         {selectedIds.length > 0 && (
-          <ArchiveButton handleArchive={handleArchive} />
+          <ArchiveButton
+            isArchiving={archiveTranscript.isLoading}
+            handleArchive={handleArchive}
+          />
         )}
         {refetch && <RefetchButton refetch={refetch} />}
       </Flex>
