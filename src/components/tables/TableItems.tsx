@@ -6,6 +6,7 @@ import {
   Flex,
   IconButton,
   Skeleton,
+  Spinner,
   Td,
   Text,
   Th,
@@ -170,11 +171,7 @@ export const LoadingSkeleton = ({ rowsLength }: { rowsLength: number }) => {
   return <>{getSkeleton}</>;
 };
 
-export const DataEmpty = ({
-  message = "Something went wrong",
-}: {
-  message?: string;
-}) => {
+export const DataEmpty = ({ message = "No Data" }: { message?: string }) => {
   return (
     <Tr position="relative" h={14}>
       <Td position="absolute" w="full" color="red.400" textAlign="center">
@@ -237,8 +234,10 @@ export const RefetchButton = ({
 );
 
 export const ArchiveButton = ({
+  isArchiving,
   handleArchive,
 }: {
+  isArchiving: boolean;
   handleArchive: () => void;
 }) => (
   <Button
@@ -249,6 +248,10 @@ export const ArchiveButton = ({
     onClick={handleArchive}
   >
     Archive
-    <MdOutlineArchive />
+    {isArchiving ? (
+      <Spinner color="white" size="sm" thickness="2px" />
+    ) : (
+      <MdOutlineArchive />
+    )}
   </Button>
 );
