@@ -237,8 +237,8 @@ export const ArchiveButton = ({
   isArchiving,
   handleArchive,
 }: {
-  isArchiving: boolean;
-  handleArchive: () => void;
+  isArchiving?: boolean;
+  handleArchive?: () => void;
 }) => (
   <Button
     size="sm"
