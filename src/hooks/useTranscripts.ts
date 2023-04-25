@@ -73,7 +73,7 @@ const useTranscripts = () => {
   const transcripts = useQuery("transcripts", getAllTranscripts, {
     refetchOnWindowFocus: false,
   });
-  const activeTranscripts = useQuery("active_trancripts", getAllTranscripts, {
+  const activeTranscripts = useQuery("active_transcripts", getAllTranscripts, {
     refetchOnWindowFocus: false,
     select: (data) => {
       return data.filter((transcript) =>

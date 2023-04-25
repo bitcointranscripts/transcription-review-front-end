@@ -50,7 +50,7 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
           )
         );
 
-        queryClient.invalidateQueries("transcripts");
+        queryClient.invalidateQueries("active_transcripts");
         setSelectedIds([]);
         toast({
           status: "success",
@@ -204,7 +204,7 @@ const QueueTable = () => {
         {({ handleArchive, hasAdminSelected, isArchiving }) => (
           <BaseTable
             actionState={claimState}
-            data={data ?? []}
+            data={data}
             handleArchive={handleArchive}
             hasAdminSelected={hasAdminSelected}
             isError={isError}
