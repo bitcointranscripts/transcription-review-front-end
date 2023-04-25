@@ -1,23 +1,10 @@
 /* eslint-disable no-unused-vars */
-import useTranscripts from "@/hooks/useTranscripts";
-import {
-  Box,
-  CheckboxGroup,
-  Flex,
-  Heading,
-  Table,
-  Tbody,
-  Thead,
-  Tr,
-  useToast,
-} from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import { Box, Flex, Heading, Table, Tbody, Thead, Tr } from "@chakra-ui/react";
+import React from "react";
 import {
   QueryObserverResult,
   RefetchOptions,
   RefetchQueryFilters,
-  useQueryClient,
 } from "react-query";
 import type { Transcript } from "../../../types";
 import {
@@ -44,6 +31,9 @@ type Props = {
   tableHeader?: string;
   tableHeaderComponent?: React.ReactNode;
   showAdminControls?: boolean;
+  handleArchive?: () => Promise<void>;
+  isArchiving?: boolean;
+  hasAdminSelected?: boolean;
 };
 
 const BaseTable: React.FC<Props> = ({
@@ -55,43 +45,10 @@ const BaseTable: React.FC<Props> = ({
   tableHeader,
   tableHeaderComponent,
   showAdminControls = false,
+  handleArchive,
+  isArchiving,
+  hasAdminSelected,
 }) => {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const toast = useToast();
-  const { data: userSession } = useSession();
-  const queryClient = useQueryClient();
-  const archiveTranscript = useTranscripts().archiveTranscript;
-
-  const handleCheckboxToggle = (values: (string | number)[]) => {
-    setSelectedIds(values.map(String));
-  };
-  const handleArchive = async () => {
-    const ids = selectedIds.map(Number);
-    try {
-      await Promise.all(
-        ids.map((transcriptId) =>
-          archiveTranscript.mutateAsync({
-            transcriptId,
-            archivedBy: userSession?.user?.id ?? 0,
-          })
-        )
-      );
-
-      queryClient.invalidateQueries("transcripts");
-      toast({
-        status: "success",
-        title: "Archived successfully",
-      });
-    } catch (err) {
-      const error = err as Error;
-      toast({
-        status: "error",
-        title: "Error while archiving transcript",
-        description: error?.message,
-      });
-    }
-  };
-
   return (
     <Box fontSize="sm" py={4} isolation="isolate">
       {tableHeaderComponent
@@ -102,9 +59,9 @@ const BaseTable: React.FC<Props> = ({
             </Heading>
           )}
       <Flex gap={2} justifyContent="flex-end" mb={2}>
-        {selectedIds.length > 0 && (
+        {hasAdminSelected && (
           <ArchiveButton
-            isArchiving={archiveTranscript.isLoading}
+            isArchiving={isArchiving}
             handleArchive={handleArchive}
           />
         )}
@@ -119,28 +76,24 @@ const BaseTable: React.FC<Props> = ({
         <Thead>
           <TableHeader tableStructure={tableStructure} />
         </Thead>
-        <CheckboxGroup colorScheme="orange" onChange={handleCheckboxToggle}>
-          <Tbody fontWeight="medium">
-            {isLoading && (
-              <LoadingSkeleton rowsLength={tableStructure.length} />
-            )}
-            {!data ? (
-              <DataEmpty />
-            ) : data?.length ? (
-              data.map((dataRow, idx) => (
-                <TableRow
-                  showControls={showAdminControls}
-                  key={`data-row-${dataRow.id}`}
-                  row={dataRow}
-                  ts={tableStructure}
-                  actionState={actionState}
-                />
-              ))
-            ) : (
-              <DataEmpty message="No Data" />
-            )}
-          </Tbody>
-        </CheckboxGroup>
+        <Tbody fontWeight="medium">
+          {isLoading && <LoadingSkeleton rowsLength={tableStructure.length} />}
+          {!data ? (
+            <DataEmpty />
+          ) : data?.length ? (
+            data.map((dataRow, idx) => (
+              <TableRow
+                showControls={showAdminControls}
+                key={`data-row-${dataRow.id}`}
+                row={dataRow}
+                ts={tableStructure}
+                actionState={actionState}
+              />
+            ))
+          ) : (
+            <DataEmpty />
+          )}
+        </Tbody>
       </Table>
     </Box>
   );

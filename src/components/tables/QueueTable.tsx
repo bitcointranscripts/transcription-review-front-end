@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import useTranscripts from "@/hooks/useTranscripts";
 import { getCount } from "@/utils";
+import { CheckboxGroup, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -10,9 +12,74 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useQueryClient } from "react-query";
 import { Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
 import { TableStructure } from "./types";
+
+type AdminArchiveSelectProps = {
+  children: (props: {
+    handleArchive: () => Promise<void>;
+    hasAdminSelected: boolean;
+    isArchiving: boolean;
+  }) => React.ReactNode;
+};
+
+const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const toast = useToast();
+  const { data: userSession } = useSession();
+  const queryClient = useQueryClient();
+  const archiveTranscript = useTranscripts().archiveTranscript;
+
+  const handleCheckboxToggle = (values: (string | number)[]) => {
+    setSelectedIds(values.map(String));
+  };
+  const handleArchive = async () => {
+    const ids = selectedIds.map(Number);
+
+    if (userSession?.user?.id) {
+      const archivedBy = userSession?.user.id;
+      try {
+        await Promise.all(
+          ids.map((transcriptId) =>
+            archiveTranscript.mutateAsync({
+              transcriptId,
+              archivedBy,
+            })
+          )
+        );
+
+        queryClient.invalidateQueries("transcripts");
+        setSelectedIds([]);
+        toast({
+          status: "success",
+          title: "Archived successfully",
+        });
+      } catch (err) {
+        const error = err as Error;
+        toast({
+          status: "error",
+          title: "Error while archiving transcript",
+          description: error?.message,
+        });
+      }
+    } else {
+      await signOut({ redirect: false });
+      signIn("github");
+    }
+  };
+
+  return (
+    <CheckboxGroup colorScheme="orange" onChange={handleCheckboxToggle}>
+      {children({
+        handleArchive,
+        hasAdminSelected: selectedIds.length > 0,
+        isArchiving: archiveTranscript.isLoading,
+      })}
+    </CheckboxGroup>
+  );
+};
 
 const QueueTable = () => {
   const { data: session, status } = useSession();
@@ -133,16 +200,23 @@ const QueueTable = () => {
 
   return (
     <>
-      <BaseTable
-        showAdminControls
-        data={data}
-        isLoading={isLoading}
-        isError={isError}
-        refetch={refetch}
-        actionState={claimState}
-        tableStructure={tableStructure}
-        tableHeader="Transcripts waiting for review..."
-      />
+      <AdminArchiveSelect>
+        {({ handleArchive, hasAdminSelected, isArchiving }) => (
+          <BaseTable
+            actionState={claimState}
+            data={data ?? []}
+            handleArchive={handleArchive}
+            hasAdminSelected={hasAdminSelected}
+            isError={isError}
+            isArchiving={isArchiving}
+            isLoading={isLoading}
+            refetch={refetch}
+            showAdminControls
+            tableHeader="Transcripts waiting for review..."
+            tableStructure={tableStructure}
+          />
+        )}
+      </AdminArchiveSelect>
     </>
   );
 };
