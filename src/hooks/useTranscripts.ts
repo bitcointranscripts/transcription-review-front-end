@@ -32,6 +32,23 @@ const useTranscripts = () => {
       });
   };
 
+  const archive = async ({
+    archivedBy,
+    transcriptId,
+  }: {
+    archivedBy: number;
+    transcriptId: number;
+  }) => {
+    return axios
+      .put(endpoints.ARCHIVE_TRANSCRIPTS_BY_ID(transcriptId), { archivedBy })
+      .then((res) => res)
+      .catch((err) => {
+        const errMessage =
+          err?.response?.data?.message || "Please try again later";
+        throw new Error(errMessage);
+      });
+  };
+
   const saveEdit = async (body: {
     content: any;
     originalContent?: any;
@@ -53,7 +70,7 @@ const useTranscripts = () => {
       });
   };
 
-  const transcripts = useQuery("trancripts", getAllTranscripts, {
+  const transcripts = useQuery("transcripts", getAllTranscripts, {
     refetchOnWindowFocus: false,
   });
   const activeTranscripts = useQuery("active_trancripts", getAllTranscripts, {
@@ -78,9 +95,12 @@ const useTranscripts = () => {
 
   const updateTranscript = useMutation(saveEdit);
 
+  const archiveTranscript = useMutation(archive);
+
   return {
-    transcripts,
     activeTranscripts,
+    archiveTranscript,
+    transcripts,
     SingleTranscript,
     claimTranscript,
     updateTranscript,
