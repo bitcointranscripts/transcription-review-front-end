@@ -27,7 +27,7 @@ import {
 import type { TableStructure } from "./types";
 
 type Props = {
-  data: Transcript[];
+  data: Transcript[] | undefined;
   isLoading: boolean;
   isError: boolean;
   refetch?: <TPageData>(
@@ -88,8 +88,11 @@ const BaseTable: React.FC<Props> = ({
         </Thead>
         <CheckboxGroup colorScheme="orange" onChange={handleCheckboxToggle}>
           <Tbody fontWeight="medium">
-            {isLoading ? (
+            {isLoading && (
               <LoadingSkeleton rowsLength={tableStructure.length} />
+            )}
+            {!data ? (
+              <DataEmpty />
             ) : data?.length ? (
               data.map((dataRow, idx) => (
                 <TableRow
@@ -101,7 +104,7 @@ const BaseTable: React.FC<Props> = ({
                 />
               ))
             ) : (
-              <DataEmpty />
+              <DataEmpty message="No Data" />
             )}
           </Tbody>
         </CheckboxGroup>

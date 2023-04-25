@@ -17,8 +17,8 @@ import { TableStructure } from "./types";
 const QueueTable = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { transcripts, claimTranscript } = useTranscripts();
-  const { data, isLoading, isError, refetch } = transcripts;
+  const { activeTranscripts, claimTranscript } = useTranscripts();
+  const { data, isLoading, isError, refetch } = activeTranscripts;
 
   const retriedClaim = useRef(0);
 
@@ -135,7 +135,7 @@ const QueueTable = () => {
     <>
       <BaseTable
         showAdminControls
-        data={data ?? []}
+        data={data}
         isLoading={isLoading}
         isError={isError}
         refetch={refetch}
