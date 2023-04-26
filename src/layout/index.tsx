@@ -12,7 +12,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <title>Bitcoin Transcription Reviews</title>
         <meta name="description" content="Bitcoin Transcription Review" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="./cryptocurrency.png" />
+        <link rel="icon" href="./btc-transcript-circle-128.png" />
       </Head>
       <Navbar />
       <GlobalContainer flexGrow={1} py={4} mt={12}>
