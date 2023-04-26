@@ -32,7 +32,7 @@ yarn
 3. Update environment variables
 
 ```sh
-cp .env.example .env && cp .env.local.example .env.local
+cp .env.local.example .env.local
 ```
 
 4. Run the app
