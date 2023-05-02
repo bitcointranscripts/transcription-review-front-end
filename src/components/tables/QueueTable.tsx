@@ -127,7 +127,7 @@ const QueueTable = () => {
                 await retryLoginAndClaim(transcriptId);
                 return;
               }
-              router.push(`/reviews/${data.id}`);
+              router.push(`/transcripts/${transcriptId}`);
             },
 
             onError: (err) => {

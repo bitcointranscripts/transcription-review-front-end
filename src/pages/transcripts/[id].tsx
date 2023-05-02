@@ -2,6 +2,7 @@
 import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
+import RedirectToLogin from "@/components/RedirectToLogin";
 import SidebarContentEdit, {
   EditedContent,
 } from "@/components/sideBarContentEdit/SidebarContentEdit";
@@ -13,7 +14,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQueryClient } from "react-query";
-import AuthStatus from "./AuthStatus";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -25,43 +25,42 @@ const defaultSubmitState = {
   err: null,
 };
 
-const Transcript = ({ transcriptId }: { transcriptId: number }) => {
+const TranscriptPage = () => {
+  const { status, data: sessionData } = useSession();
   const router = useRouter();
+  const { id } = router.query;
+
   const queryClient = useQueryClient();
 
   const { SingleTranscript, updateTranscript } = useTranscripts();
 
-  const { data, isLoading, error } = SingleTranscript(transcriptId);
-
-  const [editedData, setEditedData] = useState(data?.content?.body ?? "");
-
+  const { data, isLoading } = SingleTranscript(Number(id));
   const { mutateAsync, isLoading: saveLoading } = updateTranscript;
+  const [editedData, setEditedData] = useState(data?.content?.body ?? "");
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
 
   const toast = useToast();
 
-  if (isLoading) {
+  if (status === "loading") {
     return (
-      <AuthStatus
-        title="Authenticated"
-        message="Loading transcripts, Please wait"
-      />
+      <>
+        <h2>Authenticating...</h2>
+        <p>Please wait</p>
+      </>
     );
+  }
+  if (status === "unauthenticated") {
+    return <RedirectToLogin />;
   }
 
   if (!isLoading && !data) {
-    return (
-      <AuthStatus
-        title="Error"
-        message={`${
-          error?.message
-            ? error.message
-            : "Something went wrong. Please try again later"
-        }`}
-      />
-    );
+    return null;
   }
+
+  // if (data.status === "queued") {
+  //   return <h4>Transcript has been claimed</h4>;
+  // }
 
   const saveTranscript = async (editedContent: EditedContent) => {
     if (!data) return;
@@ -79,11 +78,11 @@ const Transcript = ({ transcriptId }: { transcriptId: number }) => {
     // create an awaitable promise for mutation
     try {
       await mutateAsync(
-        { content: updatedContent, transcriptId },
+        { content: updatedContent, transcriptId: Number(id) },
         {
           onSettled(data) {
             if (data?.statusText === "OK") {
-              queryClient.invalidateQueries(["transcript", transcriptId]);
+              queryClient.invalidateQueries(["transcript", Number(id)]);
             }
           },
         }
@@ -158,42 +157,61 @@ const Transcript = ({ transcriptId }: { transcriptId: number }) => {
 
   return (
     <>
-      <Flex gap={6} w="full" flexDir={{ base: "column", md: "row" }}>
-        {data && (
-          <SidebarContentEdit data={data}>
-            {(editedContent) => (
-              <Flex gap={2}>
-                <Button
-                  size="sm"
-                  colorScheme="orange"
-                  variant="outline"
-                  onClick={() => handleSave(editedContent)}
-                  isLoading={saveLoading}
-                >
-                  Save
-                </Button>
-                <Button
-                  size="sm"
-                  colorScheme="orange"
-                  onClick={() => handleSubmit(editedContent)}
-                >
-                  Submit
-                </Button>
-              </Flex>
-            )}
-          </SidebarContentEdit>
-        )}
-        {data && (
-          <EditTranscript
-            data={data}
-            mdData={editedData}
-            update={setEditedData}
-          />
-        )}
-      </Flex>
+      {isLoading ? (
+        <p> Loading...</p>
+      ) : (
+        <Flex gap={6} w="full" flexDir={{ base: "column", md: "row" }}>
+          {data && (
+            <SidebarContentEdit data={data}>
+              {(editedContent) => (
+                <Flex gap={2}>
+                  <Button
+                    size="sm"
+                    colorScheme="orange"
+                    variant="outline"
+                    onClick={() => handleSave(editedContent)}
+                    isLoading={saveLoading}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    size="sm"
+                    colorScheme="orange"
+                    onClick={() => handleSubmit(editedContent)}
+                  >
+                    Submit
+                  </Button>
+                </Flex>
+              )}
+            </SidebarContentEdit>
+          )}
+          {data && (
+            <EditTranscript
+              data={data}
+              mdData={editedData}
+              update={setEditedData}
+            />
+          )}
+        </Flex>
+      )}
       <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
     </>
   );
 };
 
-export default Transcript;
+// export const getServerSideProps: GetServerSideProps<{
+//   data: Transcript;
+// }> = async ({ params }) => {
+//   const id = params?.id;
+
+//   const fetchedData = await fetch(`${process.env.BASE_URL}/transcripts/${id}`);
+//   const data = await fetchedData.json();
+
+//   return {
+//     props: {
+//       data,
+//     },
+//   };
+// };
+
+export default TranscriptPage;
