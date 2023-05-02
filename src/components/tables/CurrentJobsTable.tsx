@@ -9,23 +9,23 @@ const tableStructure = [
   {
     name: "title",
     type: "text-long",
-    modifier: (data) => data.content.title,
+    modifier: (data) => data.originalContent.title,
   },
   {
     name: "speakers",
     type: "tags",
-    modifier: (data) => data.content.speakers,
+    modifier: (data) => data.originalContent.speakers,
   },
   {
     name: "category",
     type: "tags",
-    modifier: (data) => data.content.categories,
+    modifier: (data) => data.originalContent.categories,
   },
-  { name: "tags", type: "tags", modifier: (data) => data.content.tags },
+  { name: "tags", type: "tags", modifier: (data) => data.originalContent.tags },
   {
     name: "word count",
     type: "text-short",
-    modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
+    modifier: (data) => `${getCount(data.originalContent.body) ?? "-"} words`,
   },
   { name: "total bounty", type: "text-short", modifier: () => "N/A" },
   { name: "status", type: "action", modifier: (data) => data.id },
