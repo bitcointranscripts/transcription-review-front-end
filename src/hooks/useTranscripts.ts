@@ -19,10 +19,7 @@ const useTranscripts = () => {
       .catch((err) => err);
   };
 
-  const addReview = async (body: {
-    userId: number;
-    transcriptId: number;
-  }): Promise<Review> => {
+  const addReview = async (body: { userId: number; transcriptId: number }): Promise<Review> => {
     return axios
       .post(endpoints.REVIEWS(), body)
       .then((res) => {

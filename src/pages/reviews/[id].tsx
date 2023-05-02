@@ -12,11 +12,10 @@ const TranscriptPage = () => {
   const { id } = router.query;
 
   // get the review only if id is a number
-  const {
-    data: review,
-    status: reviewStatus,
-    error,
-  } = useReviews().SingleReview(Number(id), !!Number(id));
+  const { data: review, status: reviewStatus, error } = useReviews().SingleReview(
+    Number(id),
+    !!Number(id)
+  );
 
   if (status === "loading" || reviewStatus === "loading") {
     return <AuthStatus title="Authenticating" message="Please wait" />;
@@ -25,11 +24,7 @@ const TranscriptPage = () => {
     return <RedirectToLogin />;
   }
 
-  if (
-    reviewStatus === "success" &&
-    review?.userId &&
-    review?.userId !== sessionData?.user.id
-  ) {
+  if (reviewStatus === "success" && review?.userId && review?.userId !== sessionData?.user.id) {
     return (
       <AuthStatus
         title="Unauthorized"
@@ -50,13 +45,13 @@ const TranscriptPage = () => {
 
   return (
     <AuthStatus
-      title="Error"
-      message={`${
-        error?.message
-          ? error.message
-          : "Something went wrong. Please try again later"
-      }`}
-    />
+        title="Error"
+        message={`${
+          error?.message
+            ? error.message
+            : "Something went wrong. Please try again later"
+        }`}
+      />
   );
 };
 
