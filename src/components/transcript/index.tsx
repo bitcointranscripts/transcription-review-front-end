@@ -65,14 +65,20 @@ const Transcript = ({ transcriptId }: { transcriptId: number }) => {
 
   const saveTranscript = async (editedContent: EditedContent) => {
     if (!data) return;
-    const { editedCategories, editedDate, editedSpeakers, editedTitle } =
-      editedContent;
+    const {
+      editedCategories,
+      editedDate,
+      editedSpeakers,
+      editedTitle,
+      editedTags,
+    } = editedContent;
     const content = data.content;
     const updatedContent = {
       ...content,
       title: editedTitle,
       speakers: editedSpeakers,
       categories: editedCategories,
+      tags: editedTags,
       date: editedDate,
       body: editedData,
     };
