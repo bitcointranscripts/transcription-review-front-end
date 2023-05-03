@@ -1,6 +1,6 @@
 import endpoints from "@/api/endpoints";
 import { useMutation, useQuery } from "react-query";
-import { Transcript } from "../../types";
+import { Review, Transcript } from "../../types";
 import axios from "../api/axios";
 
 const useTranscripts = () => {
@@ -19,16 +19,19 @@ const useTranscripts = () => {
       .catch((err) => err);
   };
 
-  const addReview = async (body: { userId: number; transcriptId: number }) => {
+  const addReview = async (body: {
+    userId: number;
+    transcriptId: number;
+  }): Promise<Review> => {
     return axios
       .post(endpoints.REVIEWS(), body)
       .then((res) => {
-        return res;
+        return res.data;
       })
       .catch((err) => {
         const errMessage =
           err?.response?.data?.message || "Please try again later";
-        return new Error(errMessage);
+        throw new Error(errMessage);
       });
   };
 
@@ -82,12 +85,13 @@ const useTranscripts = () => {
     },
   });
 
-  const SingleTranscript = (transcriptId: number) =>
-    useQuery(
+  const SingleTranscript = (transcriptId: number, enabled: boolean = true) =>
+    useQuery<Transcript, Error>(
       ["transcript", transcriptId],
       () => getSingleTranscripts(transcriptId),
       {
         refetchOnWindowFocus: false,
+        enabled,
       }
     );
 

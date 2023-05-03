@@ -11,6 +11,16 @@ export type Transcript = {
   // reviewedAt: Nullable<Date>;
   // claimedBy:  Nullable<number>;
 };
+export type Review = {
+  id: number;
+  userId: number;
+  transcriptId: number;
+  updatedAt: Nullable<Date>;
+  createdAt: Date;
+  claimedAt: Nullable<Date>;
+  submittedAt: Nullable<Date>;
+  mergedAt: Nullable<Date>;
+};
 
 type TranscriptContent = {
   body: string;
