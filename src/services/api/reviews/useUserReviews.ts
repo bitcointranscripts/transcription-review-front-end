@@ -14,6 +14,11 @@ export const useUserReviews = (id: number | undefined) => {
   const queryInfo = useQuery({
     queryFn: () => userReviews(Number(id)),
     queryKey: ["user-reviews", id],
+    select: (data) => {
+      return data.filter((item) =>
+        Boolean(!item.transcript.archivedAt && !item.transcript.archivedBy)
+      );
+    },
     enabled: !!id,
   });
 
