@@ -7,10 +7,8 @@ export type Transcript = {
   status?: string;
   updatedAt: Nullable<Date>;
   originalContent: TranscriptContent;
-  // userId:     Nullable<number>;
-  // reviewedAt: Nullable<Date>;
-  // claimedBy:  Nullable<number>;
 };
+
 export type Review = {
   id: number;
   userId: number;
@@ -22,10 +20,10 @@ export type Review = {
   mergedAt: Nullable<Date>;
 };
 
-type TranscriptContent = {
+export type TranscriptContent = {
   body: string;
   categories: string[];
-  date: Date;
+  date: Nullable<Date>;
   media: Nullable<string>;
   speakers: string[];
   tags: string[];
