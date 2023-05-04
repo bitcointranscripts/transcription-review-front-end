@@ -21,9 +21,6 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
   const handleTogglePopOver = () => setIsOpen((value) => !value);
-  // useEffect(() => {
-  //   console.log({userSession})
-  // }, [userSession])
 
   return (
     <Box
@@ -63,9 +60,6 @@ const Navbar = () => {
                 >
                   <PopoverTrigger>
                     <Flex alignItems="center" gap={2}>
-                      <Text fontSize="12px" fontWeight="semibold">
-                        My Account
-                      </Text>
                       <Button
                         onClick={handleTogglePopOver}
                         variant="unstyled"
@@ -94,7 +88,7 @@ const Navbar = () => {
                     <PopoverBody>
                       <Link
                         onClick={handleClose}
-                        href={`/${userSession.user?.name}`}
+                        href={`/${userSession.user.githubUsername}`}
                       >
                         <Text>{userSession.user?.name}</Text>
                       </Link>
