@@ -1,6 +1,8 @@
-import { useTranscripts } from "@/services/api/transcripts";
+import { useUserReviews } from "@/services/api/reviews";
 import { getCount } from "@/utils";
 import { Heading } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import { useMemo } from "react";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 
@@ -27,17 +29,25 @@ const tableStructure = [
     type: "text-short",
     modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
   },
-  { name: "bounty rate", type: "text-short", modifier: () => "N/A" },
-  { name: "status", type: "action", modifier: (data) => data.id },
 ] satisfies TableStructure[];
 
 const PastJobsTable = () => {
-  const { data, isLoading, isError, refetch } = useTranscripts();
+  const { data: userSession } = useSession();
+  const { data, isLoading, isError, refetch } = useUserReviews(
+    userSession?.user?.id
+  );
+  const tableData = useMemo(
+    () =>
+      data
+        ?.filter((item) => Boolean(item.mergedAt))
+        ?.map((item) => item.transcript),
+    [data]
+  );
 
   return (
     <>
       <BaseTable
-        data={data}
+        data={tableData}
         isLoading={isLoading}
         isError={isError}
         refetch={refetch}
