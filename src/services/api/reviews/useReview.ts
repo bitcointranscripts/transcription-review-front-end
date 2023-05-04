@@ -1,7 +1,7 @@
-import axios from "@/api/axios";
-import endpoints from "@/api/endpoints";
 import { useQuery } from "@tanstack/react-query";
 import type { Review } from "../../../../types";
+import axios from "../axios";
+import endpoints from "../endpoints";
 
 const getReview = async (reviewId: number): Promise<Review> => {
   return axios

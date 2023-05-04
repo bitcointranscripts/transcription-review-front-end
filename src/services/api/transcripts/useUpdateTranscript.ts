@@ -1,7 +1,7 @@
-import axios from "@/api/axios";
-import endpoints from "@/api/endpoints";
 import { useMutation } from "@tanstack/react-query";
 import type { TranscriptContent } from "../../../../types";
+import axios from "../axios";
+import endpoints from "../endpoints";
 
 const updateTranscript = async (body: {
   content: TranscriptContent;

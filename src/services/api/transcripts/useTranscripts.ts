@@ -1,7 +1,7 @@
-import axios from "@/api/axios";
-import endpoints from "@/api/endpoints";
 import { useQuery } from "@tanstack/react-query";
 import type { Transcript } from "../../../../types";
+import axios from "../axios";
+import endpoints from "../endpoints";
 
 const getAllTranscripts = async (): Promise<Transcript[]> => {
   return axios

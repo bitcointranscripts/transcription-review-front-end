@@ -1,5 +1,5 @@
-import axios from "@/api/axios";
-import { createNewUser } from "@/api/lib";
+import axios from "@/services/api/axios";
+import { createNewUser } from "@/services/api/lib";
 import NextAuth, {
   GhExtendedProfile,
   NextAuthOptions,

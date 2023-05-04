@@ -1,7 +1,7 @@
-import axios from "@/api/axios";
-import endpoints from "@/api/endpoints";
 import { useMutation } from "@tanstack/react-query";
 import type { Review } from "../../../../types";
+import axios from "../axios";
+import endpoints from "../endpoints";
 
 const claimTranscript = async (body: {
   userId: number;

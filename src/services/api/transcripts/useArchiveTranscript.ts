@@ -1,6 +1,6 @@
-import axios from "@/api/axios";
-import endpoints from "@/api/endpoints";
 import { useMutation } from "@tanstack/react-query";
+import axios from "../axios";
+import endpoints from "../endpoints";
 
 const archiveTranscript = async ({
   archivedBy,
