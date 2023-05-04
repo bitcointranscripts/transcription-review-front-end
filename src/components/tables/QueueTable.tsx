@@ -91,6 +91,7 @@ const QueueTable = () => {
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts();
+  const toast = useToast();
 
   const retriedClaim = useRef(0);
 
@@ -111,10 +112,18 @@ const QueueTable = () => {
   const handleClaim = useCallback(
     async (transcriptId: number) => {
       if (status === "loading") {
-        alert("Authenticating.... please wait.");
+        toast({
+          status: "loading",
+          title: "Authenticating....",
+          description: "Authenticating.... please wait.",
+        });
         return;
       } else if (status === "unauthenticated") {
-        alert("You have to login to claim a transcript");
+        toast({
+          status: "warning",
+          title: "Unauthenticated",
+          description: "You have to login to claim a transcript",
+        });
         return;
       }
       if (session?.user?.id) {
@@ -136,8 +145,13 @@ const QueueTable = () => {
             },
 
             onError: (err) => {
+              const error = err as Error;
               setClaimState((prev) => ({ ...prev, rowId: -1 }));
-              alert("failed to claim: " + err);
+              toast({
+                status: "error",
+                title: "Failed to claim transcript",
+                description: error?.message,
+              });
             },
           }
         );
@@ -145,10 +159,10 @@ const QueueTable = () => {
         await retryLoginAndClaim(transcriptId);
       }
     },
-    [session, status, claimTranscript, router]
+    [status, session?.user?.id, claimTranscript, router, toast]
   );
 
-  // Reclaim transcript when there's a reclaimquery
+  // Reclaim transcript when there's a reclaim query
   useEffect(() => {
     const { reclaim, txId } = router.query;
     if (
