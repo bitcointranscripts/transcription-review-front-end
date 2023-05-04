@@ -4,9 +4,10 @@ export type Transcript = {
   archivedBy: Nullable<number>;
   createdAt: Nullable<Date>;
   content: TranscriptContent;
-  status?: string;
+  status?: "queued" | "not queued" | "requeued";
   updatedAt: Nullable<Date>;
   originalContent: TranscriptContent;
+  transcriptHash: string;
 };
 
 export type Review = {
@@ -18,6 +19,10 @@ export type Review = {
   claimedAt: Nullable<Date>;
   submittedAt: Nullable<Date>;
   mergedAt: Nullable<Date>;
+};
+
+export type UserReview = Review & {
+  transcript: Transcript;
 };
 
 export type TranscriptContent = {
