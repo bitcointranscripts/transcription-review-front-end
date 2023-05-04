@@ -1,5 +1,10 @@
 /* eslint-disable no-unused-vars */
-import useTranscripts from "@/hooks/useTranscripts";
+
+import {
+  useArchiveTranscript,
+  useClaimTranscript,
+  useTranscripts,
+} from "@/services/api/transcripts";
 import { getCount } from "@/utils";
 import { CheckboxGroup, useToast } from "@chakra-ui/react";
 import axios from "axios";
@@ -12,7 +17,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useQueryClient } from "react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
 import { TableStructure } from "./types";
@@ -30,7 +35,7 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
   const toast = useToast();
   const { data: userSession } = useSession();
   const queryClient = useQueryClient();
-  const archiveTranscript = useTranscripts().archiveTranscript;
+  const archiveTranscript = useArchiveTranscript();
 
   const handleCheckboxToggle = (values: (string | number)[]) => {
     setSelectedIds(values.map(String));
@@ -50,7 +55,7 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
           )
         );
 
-        queryClient.invalidateQueries("active_transcripts");
+        queryClient.invalidateQueries(["transcripts"]);
         setSelectedIds([]);
         toast({
           status: "success",
@@ -84,8 +89,8 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
 const QueueTable = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { activeTranscripts, claimTranscript } = useTranscripts();
-  const { data, isLoading, isError, refetch } = activeTranscripts;
+  const claimTranscript = useClaimTranscript();
+  const { data, isLoading, isError, refetch } = useTranscripts();
 
   const retriedClaim = useRef(0);
 

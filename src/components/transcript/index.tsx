@@ -5,14 +5,13 @@ import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
 import SidebarContentEdit, {
   EditedContent,
 } from "@/components/sideBarContentEdit/SidebarContentEdit";
-import useTranscripts from "@/hooks/useTranscripts";
+import { useTranscript, useUpdateTranscript } from "@/services/api/transcripts";
 import { dateFormatGeneral, formatDataForMetadata } from "@/utils";
 import { Button, Flex, useToast } from "@chakra-ui/react";
 import axios from "axios";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useQueryClient } from "react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import AuthStatus from "./AuthStatus";
 
 const defaultSubmitState = {
@@ -28,14 +27,11 @@ const defaultSubmitState = {
 const Transcript = ({ transcriptId }: { transcriptId: number }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  const { SingleTranscript, updateTranscript } = useTranscripts();
-
-  const { data, isLoading, error } = SingleTranscript(transcriptId);
+  const { data, isLoading, error } = useTranscript(transcriptId);
+  const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
 
   const [editedData, setEditedData] = useState(data?.content?.body ?? "");
 
-  const { mutateAsync, isLoading: saveLoading } = updateTranscript;
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
 

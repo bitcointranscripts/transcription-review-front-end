@@ -5,7 +5,7 @@ import {
   QueryObserverResult,
   RefetchOptions,
   RefetchQueryFilters,
-} from "react-query";
+} from "@tanstack/react-query";
 import type { Transcript } from "../../../types";
 import {
   ArchiveButton,
