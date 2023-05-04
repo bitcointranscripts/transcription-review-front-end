@@ -1,13 +1,11 @@
+import theme from "@/chakra/chakra-theme";
 import Layout from "@/layout";
+import { ApiProvider } from "@/services/api/provider";
 import "@/styles/globals.css";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
-import type { AppProps } from "next/app";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { SessionProvider } from "next-auth/react";
-import theme from "@/chakra/chakra-theme";
+import type { AppProps } from "next/app";
 import { useEffect } from "react";
-
-const queryClient = new QueryClient();
 
 export default function App({
   Component,
@@ -28,13 +26,13 @@ export default function App({
   return (
     <ChakraProvider theme={theme}>
       <ColorModeScript initialColorMode="light" />
-      <QueryClientProvider client={queryClient}>
+      <ApiProvider>
         <SessionProvider session={session}>
           <Layout>
             <Component {...pageProps} />
           </Layout>
         </SessionProvider>
-      </QueryClientProvider>
+      </ApiProvider>
     </ChakraProvider>
   );
 }
