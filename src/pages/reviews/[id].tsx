@@ -2,7 +2,7 @@
 import RedirectToLogin from "@/components/RedirectToLogin";
 import Transcript from "@/components/transcript";
 import AuthStatus from "@/components/transcript/AuthStatus";
-import useReviews from "@/hooks/useReviews";
+import { useReview } from "@/services/api/reviews";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
@@ -12,11 +12,7 @@ const TranscriptPage = () => {
   const { id } = router.query;
 
   // get the review only if id is a number
-  const {
-    data: review,
-    status: reviewStatus,
-    error,
-  } = useReviews().SingleReview(Number(id), !!Number(id));
+  const { data: review, status: reviewStatus, error } = useReview(Number(id));
 
   if (status === "loading" || reviewStatus === "loading") {
     return <AuthStatus title="Authenticating" message="Please wait" />;

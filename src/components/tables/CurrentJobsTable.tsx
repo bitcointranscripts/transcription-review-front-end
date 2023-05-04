@@ -1,4 +1,4 @@
-import useTranscripts from "@/hooks/useTranscripts";
+import { useTranscripts } from "@/services/api/transcripts";
 import { getCount } from "@/utils";
 import { Heading } from "@chakra-ui/react";
 import BaseTable from "./BaseTable";
@@ -32,8 +32,7 @@ const tableStructure = [
 ] satisfies TableStructure[];
 
 const CurrentJobsTable = () => {
-  const { transcripts } = useTranscripts();
-  const { data, isLoading, isError, refetch } = transcripts;
+  const { data, isLoading, isError, refetch } = useTranscripts();
 
   return (
     <>
