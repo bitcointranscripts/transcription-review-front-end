@@ -8,7 +8,9 @@ const claimTranscript = async (body: {
   transcriptId: number;
 }): Promise<Review> => {
   return axios
-    .post(endpoints.REVIEWS(), body)
+    .put(endpoints.CLAIM_TRANSCRIPT(body.transcriptId), {
+      claimedBy: body.userId,
+    })
     .then((res) => {
       return res.data;
     })
