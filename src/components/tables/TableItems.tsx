@@ -118,7 +118,7 @@ export const TableAction = ({
           size="sm"
           onClick={handleClick}
         >
-          {tableItem.name}
+          {tableItem.actionName}
         </Button>
         {showCheckBox && <Checkbox value={String(row.id)} />}
       </Flex>
@@ -142,7 +142,7 @@ export const TableHeader = ({
               fontSize="14px"
               color="gray.700"
             >
-              {tableItem.type !== "action" && tableItem.name}
+              {tableItem.name}
             </Text>
           </Th>
         );

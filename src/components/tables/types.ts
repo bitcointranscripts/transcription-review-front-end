@@ -10,6 +10,7 @@ export type tableStructureItemType =
 
 export type TableStructure = {
   name: string;
+  actionName?: string;
   type: tableStructureItemType;
   modifier: (data: Transcript) => any;
   action?: (data: Transcript) => void;
