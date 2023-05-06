@@ -208,7 +208,8 @@ const QueueTable = () => {
         },
         // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
         {
-          name: "Claim",
+          name: "status",
+          actionName: "claim",
           type: "action",
           modifier: (data) => data.id,
           action: (data: Transcript) => handleClaim(data.id),
