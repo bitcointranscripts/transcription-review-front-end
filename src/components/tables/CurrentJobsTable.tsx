@@ -2,48 +2,70 @@ import { useUserReviews } from "@/services/api/reviews";
 import { getCount } from "@/utils";
 import { Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useMemo } from "react";
+import { Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
-
-const tableStructure = [
-  { name: "date", type: "date", modifier: (data) => data?.createdAt },
-  {
-    name: "title",
-    type: "text-long",
-    modifier: (data) => data.content.title,
-  },
-  {
-    name: "speakers",
-    type: "tags",
-    modifier: (data) => data.content.speakers,
-  },
-  {
-    name: "category",
-    type: "tags",
-    modifier: (data) => data.content.categories,
-  },
-  { name: "tags", type: "tags", modifier: (data) => data.content.tags },
-  {
-    name: "word count",
-    type: "text-short",
-    modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
-  },
-  { name: "status", type: "action", modifier: (data) => data.id },
-] satisfies TableStructure[];
 
 const CurrentJobsTable = () => {
   const { data: userSession } = useSession();
   const { data, isLoading, isError, refetch } = useUserReviews(
     userSession?.user?.id
   );
+
+  const router = useRouter();
+
   const tableData = useMemo(
     () =>
       data
-        ?.filter((item) => Boolean(item.claimedAt))
-        ?.map((item) => item.transcript),
+        // ?.filter((item) => Boolean(item.claimedAt))
+        ?.map((item) => ({ ...item.transcript, reviewId: item.id })),
     [data]
   );
+
+  const tableStructure = useMemo(
+    () =>
+      [
+        { name: "date", type: "date", modifier: (data) => data?.createdAt },
+        {
+          name: "title",
+          type: "text-long",
+          modifier: (data) => data.content.title,
+        },
+        {
+          name: "speakers",
+          type: "tags",
+          modifier: (data) => data.content.speakers,
+        },
+        {
+          name: "category",
+          type: "tags",
+          modifier: (data) => data.content.categories,
+        },
+        { name: "tags", type: "tags", modifier: (data) => data.content.tags },
+        {
+          name: "word count",
+          type: "text-short",
+          modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
+        },
+        {
+          name: "resume",
+          type: "action",
+          modifier: (data) => data.id,
+          action: (data) => handleResume(data),
+        },
+      ] satisfies TableStructure[],
+    []
+  );
+
+  function handleResume(data: Transcript & { reviewId?: number }) {
+    if (!data.reviewId) {
+      alert("Error: No reviewId on this review");
+      return;
+    }
+    router.push(`/reviews/${data.reviewId}`);
+  }
 
   return (
     <>
