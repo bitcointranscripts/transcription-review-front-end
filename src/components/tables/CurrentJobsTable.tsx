@@ -50,13 +50,14 @@ const CurrentJobsTable = () => {
           modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
         },
         {
-          name: "resume",
+          name: "status",
+          actionName: "review",
           type: "action",
           modifier: (data) => data.id,
           action: (data) => handleResume(data),
         },
       ] satisfies TableStructure[],
-    []
+    [handleResume]
   );
 
   function handleResume(data: Transcript & { reviewId?: number }) {
