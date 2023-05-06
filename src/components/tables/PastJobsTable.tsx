@@ -39,7 +39,7 @@ const PastJobsTable = () => {
   const tableData = useMemo(
     () =>
       data
-        ?.filter((item) => Boolean(item.mergedAt))
+        // ?.filter((item) => Boolean(item.mergedAt))
         ?.map((item) => item.transcript),
     [data]
   );

@@ -18,7 +18,7 @@ import {
 import type { TableStructure } from "./types";
 
 type Props = {
-  data: Transcript[] | undefined;
+  data: (Transcript[] & { reviewId?: number }) | undefined;
   isLoading: boolean;
   isError: boolean;
   refetch?: <TPageData>(
