@@ -140,6 +140,19 @@ const Transcript = ({ transcriptId }: { transcriptId: number }) => {
         ),
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
+
+      // update pr_url
+      await mutateAsync(
+        { pr_url: prResult?.data?.html_url, transcriptId },
+        {
+          onSettled(data) {
+            if (data?.statusText === "OK") {
+              queryClient.invalidateQueries(["transcript", transcriptId]);
+            }
+          },
+        }
+      );
+
     } catch (error) {
       const err = error as Error;
       setSubmitState((prev) => ({
