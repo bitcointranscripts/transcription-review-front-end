@@ -4,15 +4,17 @@ import axios from "../axios";
 import endpoints from "../endpoints";
 
 const updateTranscript = async (body: {
-  content: TranscriptContent;
+  content?: TranscriptContent;
   originalContent?: TranscriptContent;
+  pr_url?: string;
   transcriptId: number;
 }) => {
-  const { content, originalContent } = body;
+  const { content, originalContent, pr_url } = body;
   return axios
     .put(endpoints.GET_TRANSCRIPTS_BY_ID(body.transcriptId), {
       content,
       originalContent,
+      pr_url,
     })
     .then((res) => {
       return res;
