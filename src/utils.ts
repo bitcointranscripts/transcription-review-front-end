@@ -36,7 +36,7 @@ export const getTimeLeft = (date: Date | null): number | null => {
   if (expiryDate < now) {
     return null;
   }
-  const timeLeft = millisecondsToHours(givenDate - now);
+  const timeLeft = millisecondsToHours(expiryDate - now);
   return timeLeft;
 };
 

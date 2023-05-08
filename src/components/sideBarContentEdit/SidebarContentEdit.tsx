@@ -3,7 +3,7 @@ import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState } from "react";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import { Transcript } from "../../../types";
+import { Review, Transcript } from "../../../types";
 import SelectField from "./SelectField";
 import TextField from "./TextField";
 import DatePicker from "react-datepicker";
@@ -26,9 +26,11 @@ export type EditedContent = {
 
 const SidebarContentEdit = ({
   data,
+  claimedAt,
   children,
 }: {
   data: Transcript;
+  claimedAt: Review["createdAt"];
   children?: RenderProps;
 }) => {
   const [editedTitle, setEditedTitle] = useState(data.content?.title ?? "");
@@ -83,7 +85,7 @@ const SidebarContentEdit = ({
           <span>
             <MdOutlineAccessTimeFilled />
           </span>
-          <span>{getTimeLeftText(data.createdAt)}</span>
+          <span>{getTimeLeftText(claimedAt)}</span>
         </Box>
         <Box>
           <Text fontWeight={600} mb={2}>
