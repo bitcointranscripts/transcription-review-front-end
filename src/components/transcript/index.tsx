@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AuthStatus from "./AuthStatus";
+import type { Review } from "../../../types";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -24,7 +25,8 @@ const defaultSubmitState = {
   err: null,
 };
 
-const Transcript = ({ transcriptId }: { transcriptId: number }) => {
+const Transcript = ({ reviewData }: { reviewData: Review }) => {
+  const { transcriptId } = reviewData;
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useTranscript(transcriptId);
@@ -175,7 +177,7 @@ const Transcript = ({ transcriptId }: { transcriptId: number }) => {
     <>
       <Flex gap={6} w="full" flexDir={{ base: "column", md: "row" }}>
         {data && (
-          <SidebarContentEdit data={data}>
+          <SidebarContentEdit data={data} claimedAt={reviewData.createdAt}>
             {(editedContent) => (
               <Flex gap={2}>
                 <Button
