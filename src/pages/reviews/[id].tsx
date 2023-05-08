@@ -41,7 +41,7 @@ const TranscriptPage = () => {
   }
 
   if (review?.transcriptId) {
-    return <Transcript transcriptId={review.transcriptId} />;
+    return <Transcript reviewData={review} />;
   }
 
   return (
