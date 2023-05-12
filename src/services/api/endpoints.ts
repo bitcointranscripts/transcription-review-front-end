@@ -10,7 +10,10 @@ const USERS = () => `users`;
 
 const USER_REVIEWS = (id: number) => `users/${id}/reviews`;
 
-const REVIEWS = (id?: number) => (id ? `reviews/${id}` : `reviews`);
+const REVIEWS = (userId?: number, isActive?: boolean, username?: string) =>
+  `reviews?username=${username}&isActive=${isActive}&${userId}`;
+
+const REVIEW_BY_ID = (id: number) => `reviews/${id}`;
 
 const endpoints = {
   ARCHIVE_TRANSCRIPTS_BY_ID,
@@ -20,6 +23,7 @@ const endpoints = {
   USERS,
   USER_REVIEWS,
   REVIEWS,
+  REVIEW_BY_ID,
 };
 
 export default endpoints;

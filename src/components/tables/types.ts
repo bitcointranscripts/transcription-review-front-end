@@ -14,6 +14,8 @@ export type TableStructure = {
   type: tableStructureItemType;
   modifier: (data: Transcript) => any;
   action?: (data: Transcript) => void;
+  isDisabled?: boolean;
+  isDisabledText?: string;
 };
 
 export type TableDataElement = {

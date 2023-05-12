@@ -8,7 +8,7 @@ export type Transcript = {
   updatedAt: Nullable<Date>;
   originalContent: TranscriptContent;
   transcriptHash: string;
-  claimedBy: Nullable<string>;
+  claimedBy: Nullable<number>;
 };
 
 export type Review = {
