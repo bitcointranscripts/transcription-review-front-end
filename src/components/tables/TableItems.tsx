@@ -113,6 +113,8 @@ export const TableAction = ({
     <Td>
       <Flex gap={5}>
         <Button
+          title={tableItem.isDisabledText}
+          isDisabled={tableItem.isDisabled}
           isLoading={isLoading}
           colorScheme="orange"
           size="sm"

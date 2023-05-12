@@ -154,7 +154,6 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
           },
         }
       );
-
     } catch (error) {
       const err = error as Error;
       setSubmitState((prev) => ({
