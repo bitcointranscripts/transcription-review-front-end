@@ -5,8 +5,8 @@ import {
   useClaimTranscript,
   useTranscripts,
 } from "@/services/api/transcripts";
-import { getCount } from "@/utils";
-import { CheckboxGroup, useToast } from "@chakra-ui/react";
+import { getCount, getTimeLeft } from "@/utils";
+import { Button, CheckboxGroup, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -18,9 +18,10 @@ import React, {
   useState,
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Transcript } from "../../../types";
+import { Review, Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
 import { TableStructure } from "./types";
+import { useUserReviews } from "@/services/api/reviews";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -91,6 +92,7 @@ const QueueTable = () => {
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts();
+  const { data: userReviews } = useUserReviews(session?.user?.id);
   const toast = useToast();
 
   const retriedClaim = useRef(0);
@@ -98,6 +100,16 @@ const QueueTable = () => {
   const [claimState, setClaimState] = useState({
     rowId: -1,
   });
+
+  const canClaimTranscript = useMemo(() => {
+    if (userReviews && Boolean(session?.user?.id)) {
+      const activeTranscripts = userReviews.filter(
+        (review) => getTimeLeft(review.createdAt) && !review.mergedAt
+      );
+      return Boolean(!activeTranscripts);
+    }
+    return false;
+  }, [userReviews, session]);
 
   const retryLoginAndClaim = async (transcriptId: number) => {
     await signOut({ redirect: false });
@@ -210,12 +222,14 @@ const QueueTable = () => {
         {
           name: "status",
           actionName: "claim",
+          isDisabled: !canClaimTranscript,
+          isDisabledText: "You must be loggedIn and have no active reviews",
           type: "action",
           modifier: (data) => data.id,
           action: (data: Transcript) => handleClaim(data.id),
         },
       ] as TableStructure[],
-    [handleClaim]
+    [handleClaim, canClaimTranscript]
   );
 
   return (

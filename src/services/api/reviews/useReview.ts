@@ -5,7 +5,7 @@ import endpoints from "../endpoints";
 
 const getReview = async (reviewId: number): Promise<Review> => {
   return axios
-    .get(endpoints.REVIEWS(reviewId))
+    .get(endpoints.REVIEW_BY_ID(reviewId))
     .then((res) => res.data)
     .catch((err) => err);
 };
