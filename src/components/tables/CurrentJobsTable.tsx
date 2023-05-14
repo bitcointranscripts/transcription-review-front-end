@@ -3,7 +3,7 @@ import { getCount } from "@/utils";
 import { Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
@@ -18,11 +18,19 @@ const CurrentJobsTable = () => {
   const router = useRouter();
 
   const tableData = useMemo(
-    () =>
-      data
-        // ?.filter((item) => Boolean(item.claimedAt))
-        ?.map((item) => ({ ...item.transcript, reviewId: item.id })),
+    () => data?.map((item) => ({ ...item.transcript, reviewId: item.id })),
     [data]
+  );
+
+  const handleResume = useCallback(
+    (data: Transcript & { reviewId?: number }) => {
+      if (!data.reviewId) {
+        alert("Error: No reviewId on this review");
+        return;
+      }
+      router.push(`/reviews/${data.reviewId}`);
+    },
+    [router]
   );
 
   const tableStructure = useMemo(
@@ -60,14 +68,6 @@ const CurrentJobsTable = () => {
       ] satisfies TableStructure[],
     [handleResume]
   );
-
-  function handleResume(data: Transcript & { reviewId?: number }) {
-    if (!data.reviewId) {
-      alert("Error: No reviewId on this review");
-      return;
-    }
-    router.push(`/reviews/${data.reviewId}`);
-  }
 
   return (
     <>
