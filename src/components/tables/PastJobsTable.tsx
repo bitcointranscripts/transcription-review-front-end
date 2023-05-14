@@ -33,16 +33,11 @@ const tableStructure = [
 
 const PastJobsTable = () => {
   const { data: userSession } = useSession();
-  const { data, isLoading, isError, refetch } = useUserReviews(
-    userSession?.user?.id
-  );
-  const tableData = useMemo(
-    () =>
-      data
-        // ?.filter((item) => Boolean(item.mergedAt))
-        ?.map((item) => item.transcript),
-    [data]
-  );
+  const { data, isLoading, isError, refetch } = useUserReviews({
+    userId: userSession?.user?.id,
+    isActive: false,
+  });
+  const tableData = useMemo(() => data?.map((item) => item.transcript), [data]);
 
   return (
     <>
