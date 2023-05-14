@@ -94,6 +94,7 @@ const QueueTable = () => {
   const { data, isLoading, isError, refetch } = useTranscripts();
   const { data: userReviews } = useUserReviews({
     userId: session?.user?.id,
+    isActive: true,
   });
   const toast = useToast();
 
@@ -103,14 +104,10 @@ const QueueTable = () => {
     rowId: -1,
   });
 
+  // Determines if current user can claim a review by checking for their active reviews
   const canClaimTranscript = useMemo(() => {
-    if (userReviews && Boolean(session?.user?.id)) {
-      const activeTranscripts = userReviews.filter(
-        (review) => getTimeLeft(review.createdAt) && !review.mergedAt
-      );
-      return Boolean(!activeTranscripts);
-    }
-    return false;
+    // logical operator is false by default
+    return !userReviews?.length && Boolean(session?.user?.id);
   }, [userReviews, session]);
 
   const retryLoginAndClaim = async (transcriptId: number) => {
