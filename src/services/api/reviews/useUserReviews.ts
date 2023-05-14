@@ -27,7 +27,7 @@ export const useUserReviews = ({
         Boolean(!item.transcript.archivedAt && !item.transcript.archivedBy)
       );
     },
-    enabled: !!userId,
+    enabled: Boolean(!!userId || username),
   });
 
   return {
