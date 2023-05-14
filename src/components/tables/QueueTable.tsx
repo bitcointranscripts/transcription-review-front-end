@@ -92,7 +92,9 @@ const QueueTable = () => {
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts();
-  const { data: userReviews } = useUserReviews(session?.user?.id);
+  const { data: userReviews } = useUserReviews({
+    userId: session?.user?.id,
+  });
   const toast = useToast();
 
   const retriedClaim = useRef(0);

@@ -10,9 +10,10 @@ import type { TableStructure } from "./types";
 
 const CurrentJobsTable = () => {
   const { data: userSession } = useSession();
-  const { data, isLoading, isError, refetch } = useUserReviews(
-    userSession?.user?.id
-  );
+  const { data, isLoading, isError, refetch } = useUserReviews({
+    userId: userSession?.user?.id,
+    isActive: true,
+  });
 
   const router = useRouter();
 

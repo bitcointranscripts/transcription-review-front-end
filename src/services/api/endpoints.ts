@@ -1,3 +1,9 @@
+export type ReviewQueryOptions = {
+  userId?: number;
+  username?: string;
+  isActive?: boolean;
+};
+
 const ARCHIVE_TRANSCRIPTS_BY_ID = (id: number) => `transcripts/${id}/archive`;
 
 const CLAIM_TRANSCRIPT = (id: number) => `transcripts/${id}/claim`;
@@ -10,8 +16,8 @@ const USERS = () => `users`;
 
 const USER_REVIEWS = (id: number) => `users/${id}/reviews`;
 
-const REVIEWS = (userId?: number, isActive?: boolean, username?: string) =>
-  `reviews?username=${username}&isActive=${isActive}&${userId}`;
+const REVIEWS = ({ userId, username, isActive }: ReviewQueryOptions) =>
+  `reviews?userId=${userId}&username=${username}&isActive=${isActive}`;
 
 const REVIEW_BY_ID = (id: number) => `reviews/${id}`;
 
