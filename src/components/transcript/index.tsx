@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AuthStatus from "./AuthStatus";
 import type { Review } from "../../../types";
+import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -31,6 +32,7 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useTranscript(transcriptId);
   const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
+  const { mutateAsync: asyncSubmitReview, isLoading: submitReviewIsLoading } = useSubmitReview();
 
   const [editedData, setEditedData] = useState(data?.content?.body ?? "");
 
@@ -144,12 +146,12 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
 
       // update pr_url
-      await mutateAsync(
-        { pr_url: prResult?.data?.html_url, transcriptId },
+      await asyncSubmitReview(
+        { pr_url: prResult?.data?.html_url, reviewId: reviewData.id },
         {
           onSettled(data) {
             if (data?.statusText === "OK") {
-              queryClient.invalidateQueries(["transcript", transcriptId]);
+              queryClient.invalidateQueries(["review", reviewData.id]);
             }
           },
         }

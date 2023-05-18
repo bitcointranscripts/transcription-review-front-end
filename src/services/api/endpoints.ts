@@ -37,6 +37,8 @@ const REVIEWS = ({ userId, username, isActive }: ReviewQueryOptions) => {
 
 const REVIEW_BY_ID = (id: number) => `reviews/${id}`;
 
+const SUBMIT_REVIEW = (id: number) => `reviews/${id}/submit`;
+
 const endpoints = {
   ARCHIVE_TRANSCRIPTS_BY_ID,
   CLAIM_TRANSCRIPT,
@@ -46,6 +48,7 @@ const endpoints = {
   USER_REVIEWS,
   REVIEWS,
   REVIEW_BY_ID,
+  SUBMIT_REVIEW,
 };
 
 export default endpoints;
