@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AuthStatus from "./AuthStatus";
-import type { Review } from "../../../types";
+import type { Review, UserReview } from "../../../types";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 
 const defaultSubmitState = {
@@ -26,45 +26,23 @@ const defaultSubmitState = {
   err: null,
 };
 
-const Transcript = ({ reviewData }: { reviewData: Review }) => {
-  const { transcriptId } = reviewData;
+const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
+  const transcriptId = reviewData.transcript.id;
+  const transcriptData = reviewData.transcript;
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data, isLoading, error } = useTranscript(transcriptId);
   const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
   const { mutateAsync: asyncSubmitReview, isLoading: submitReviewIsLoading } = useSubmitReview();
 
-  const [editedData, setEditedData] = useState(data?.content?.body ?? "");
+  const [editedData, setEditedData] = useState(transcriptData.content.body ?? "");
 
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
 
   const toast = useToast();
 
-  if (isLoading) {
-    return (
-      <AuthStatus
-        title="Authenticated"
-        message="Loading transcripts, Please wait"
-      />
-    );
-  }
-
-  if (!isLoading && !data) {
-    return (
-      <AuthStatus
-        title="Error"
-        message={`${
-          error?.message
-            ? error.message
-            : "Something went wrong. Please try again later"
-        }`}
-      />
-    );
-  }
-
   const saveTranscript = async (editedContent: EditedContent) => {
-    if (!data) return;
+    if (!transcriptData) return;
     const {
       editedCategories,
       editedDate,
@@ -72,7 +50,7 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
       editedTitle,
       editedTags,
     } = editedContent;
-    const content = data.content;
+    const content = transcriptData.content;
     const updatedContent = {
       ...content,
       title: editedTitle,
@@ -131,16 +109,16 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
-        directoryPath: data?.content?.loc ?? "misc",
+        directoryPath: transcriptData?.content?.loc ?? "misc",
         fileName: formatDataForMetadata(editedTitle),
-        url: data?.content.media,
+        url: transcriptData?.content.media,
         date: editedDate && dateFormatGeneral(editedDate, true),
         tags: formatDataForMetadata(editedTags),
         speakers: formatDataForMetadata(editedSpeakers),
         categories: formatDataForMetadata(editedCategories),
         transcribedText: editedData,
         transcript_by: formatDataForMetadata(
-          data?.content?.transcript_by ?? ""
+          transcriptData?.content?.transcript_by ?? ""
         ),
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
@@ -177,8 +155,8 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
   return (
     <>
       <Flex gap={6} w="full" flexDir={{ base: "column", md: "row" }}>
-        {data && (
-          <SidebarContentEdit data={data} claimedAt={reviewData.createdAt}>
+        {transcriptData && (
+          <SidebarContentEdit data={transcriptData} claimedAt={reviewData.createdAt}>
             {(editedContent) => (
               <Flex gap={2}>
                 <Button
@@ -201,9 +179,9 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
             )}
           </SidebarContentEdit>
         )}
-        {data && (
+        {editedData && (
           <EditTranscript
-            data={data}
+            data={transcriptData}
             mdData={editedData}
             update={setEditedData}
           />
