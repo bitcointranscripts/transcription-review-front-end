@@ -90,7 +90,7 @@ const Navbar = () => {
                         onClick={handleClose}
                         href={`/${userSession.user.githubUsername}`}
                       >
-                        <Text>{userSession.user?.name}</Text>
+                        <Text>Profile</Text>
                       </Link>
                       <Box color={"red"} mt={2} ml="auto">
                         <button type="button" onClick={() => signOut()}>
