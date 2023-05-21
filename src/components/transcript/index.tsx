@@ -3,14 +3,14 @@ import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
 import SidebarContentEdit, {
-  EditedContent,
+  EditedContent
 } from "@/components/sideBarContentEdit/SidebarContentEdit";
 import { useTranscript, useUpdateTranscript } from "@/services/api/transcripts";
-import { dateFormatGeneral, formatDataForMetadata } from "@/utils";
+import { dateFormatGeneral, formatDataForMetadata, reconcileArray } from "@/utils";
 import { Button, Flex, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AuthStatus from "./AuthStatus";
 import type { Review, UserReview } from "../../../types";
@@ -26,6 +26,30 @@ const defaultSubmitState = {
   err: null,
 };
 
+export type SideBarData = {
+  list: {
+    speakers: string[];
+    categories: string[];
+    tags: string[];
+  };
+  text: {
+    title: string;
+  };
+  date: {
+    date: Date | null;
+  };
+};
+
+export type SidebarType = keyof SideBarData;
+
+export type SidebarSubType<T extends SidebarType> = keyof SideBarData[T];
+
+export type sideBarContentUpdateParams<T, K> = {
+  data: string | string[] | Date | null;
+  type: T;
+  name: K;
+};
+
 const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const transcriptId = reviewData.transcript.id;
   const transcriptData = reviewData.transcript;
@@ -34,7 +58,60 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
   const { mutateAsync: asyncSubmitReview, isLoading: submitReviewIsLoading } = useSubmitReview();
 
+  const contentDate = useMemo(() => {
+    if (transcriptData?.content?.date) {
+      return new Date(transcriptData.content.date);
+    }
+    return null;
+  }, [transcriptData]);
+
   const [editedData, setEditedData] = useState(transcriptData.content.body ?? "");
+  const [sideBarData, setSideBarData] = useState({
+    list: {
+      speakers: reconcileArray(transcriptData?.content?.speakers),
+      categories: reconcileArray(transcriptData?.content?.categories),
+      tags: reconcileArray(transcriptData?.content?.tags),
+    },
+    text: {
+      title: transcriptData.content?.title ?? "",
+    },
+    date: {
+      date: contentDate,
+    },
+  });
+
+  const sideBarContentUpdater = <T extends keyof SideBarData, K extends SidebarSubType<T>>({
+    name,
+    data,
+    type,
+  }: sideBarContentUpdateParams<T, K>) => {
+    setSideBarData((prev) => ({
+      ...prev,
+      [type]: {
+        ...prev[type],
+        [name]: data,
+      },
+    }));
+    // switch (type) {
+    //   case "list":
+    //     setSideBarData((prev) => ({
+    //       ...prev,
+    //       list: {
+    //         ...prev.list,
+    //         [name]: data,
+    //       },
+    //     }));
+    //     break;
+    //   case "text": {
+    //     setSideBarData((prev) => ({
+    //       ...prev,
+    //       text
+    //     }))
+    //   }
+    //   default:
+    //     break;
+    // }
+  };
 
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
@@ -156,7 +233,12 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
     <>
       <Flex gap={6} w="full" flexDir={{ base: "column", md: "row" }}>
         {transcriptData && (
-          <SidebarContentEdit data={transcriptData} claimedAt={reviewData.createdAt}>
+          <SidebarContentEdit
+            data={transcriptData}
+            claimedAt={reviewData.createdAt}
+            sideBarData={sideBarData}
+            updater={sideBarContentUpdater}
+          >
             {(editedContent) => (
               <Flex gap={2}>
                 <Button

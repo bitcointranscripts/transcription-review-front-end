@@ -10,6 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./sidebarContentEdit.module.css";
 import speakersList from "@/config/speakers.json";
+import { sideBarContentUpdateParams, SideBarData, SidebarSubType } from "../transcript";
 
 type RenderProps = {
   // eslint-disable-next-line no-unused-vars
@@ -28,10 +29,14 @@ const SidebarContentEdit = ({
   data,
   claimedAt,
   children,
+  sideBarData,
+  updater,
 }: {
   data: Transcript;
   claimedAt: Review["createdAt"];
   children?: RenderProps;
+  sideBarData: SideBarData;
+  updater: <T extends keyof SideBarData, K extends SidebarSubType<T>>({ data, type, name }: sideBarContentUpdateParams<T, K>) => void;
 }) => {
   const [editedTitle, setEditedTitle] = useState(data.content?.title ?? "");
   const [editedSpeakers, setEditedSpeakers] = useState<string[]>(
@@ -54,16 +59,36 @@ const SidebarContentEdit = ({
   const [editedDate, setEditedDate] = useState<Date | null>(contentDate);
 
   const updateTitle = (newTitle: string) => {
-    setEditedTitle(newTitle);
+    // setEditedTitle(newTitle);
+    updater({
+      data: newTitle,
+      type: "text",
+      name: "title",
+    });
   };
   const updateSpeaker = (speakers: string[]) => {
-    setEditedSpeakers(speakers);
+    // setEditedSpeakers(speakers);
+    updater({
+      data: speakers,
+      type: "list",
+      name: "speakers",
+    });
   };
   const updateCategories = (categories: string[]) => {
-    setEditedCategories(categories);
+    // setEditedCategories(categories);
+    updater({
+      data: categories,
+      type: "list",
+      name: "categories",
+    });
   };
-  const updateTags = (categories: string[]) => {
-    setEditedTags(categories);
+  const updateTags = (tags: string[]) => {
+    // setEditedTags(tags);
+    updater({
+      data: tags,
+      type: "list",
+      name: "tags",
+    });
   };
   return (
     <Box
@@ -107,7 +132,8 @@ const SidebarContentEdit = ({
           </Text>
           <TextField
             data={data.content?.title ?? ""}
-            editedData={editedTitle}
+            // editedData={editedTitle}
+            editedData={sideBarData.text.title}
             updateData={updateTitle}
           />
         </Box>
@@ -117,7 +143,8 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="speakers"
-            editedData={editedSpeakers}
+            // editedData={editedSpeakers}
+            editedData={sideBarData.list.speakers}
             updateData={updateSpeaker}
             autoCompleteList={speakersList}
           />
@@ -132,8 +159,12 @@ const SidebarContentEdit = ({
 
           {/* <CustomDatePicker date={editedDate} onChange={setEditedDate} /> */}
           <DatePicker
-            selected={editedDate}
-            onChange={(date) => setEditedDate(date)}
+            // selected={editedDate}
+            // onChange={(date) => setEditedDate(date)}
+            selected={sideBarData.date.date}
+            onChange={(date) =>
+              updater({ data: date, type: "date", name: "date" })
+            }
             dateFormat="yyyy-MM-dd"
             className={styles.customDatePicker}
           />
@@ -151,7 +182,8 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="categories"
-            editedData={editedCategories}
+            // editedData={editedCategories}
+            editedData={sideBarData.list.categories}
             updateData={updateCategories}
           />
         </Box>
@@ -161,7 +193,8 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="tags"
-            editedData={editedTags}
+            // editedData={editedTags}
+            editedData={sideBarData.list.tags}
             updateData={updateTags}
           />
         </Box>
