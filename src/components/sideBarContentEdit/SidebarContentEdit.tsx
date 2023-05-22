@@ -35,7 +35,6 @@ const SidebarContentEdit = ({
   }: sideBarContentUpdateParams<T, K>) => void;
 }) => {
   const updateTitle = (newTitle: string) => {
-    // setEditedTitle(newTitle);
     updater({
       data: newTitle,
       type: "text",
@@ -43,7 +42,6 @@ const SidebarContentEdit = ({
     });
   };
   const updateSpeaker = (speakers: string[]) => {
-    // setEditedSpeakers(speakers);
     updater({
       data: speakers,
       type: "list",
@@ -51,7 +49,6 @@ const SidebarContentEdit = ({
     });
   };
   const updateCategories = (categories: string[]) => {
-    // setEditedCategories(categories);
     updater({
       data: categories,
       type: "list",
@@ -59,7 +56,6 @@ const SidebarContentEdit = ({
     });
   };
   const updateTags = (tags: string[]) => {
-    // setEditedTags(tags);
     updater({
       data: tags,
       type: "list",
@@ -108,7 +104,6 @@ const SidebarContentEdit = ({
           </Text>
           <TextField
             data={data.content?.title ?? ""}
-            // editedData={editedTitle}
             editedData={sideBarData.text.title}
             updateData={updateTitle}
           />
@@ -119,7 +114,6 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="speakers"
-            // editedData={editedSpeakers}
             editedData={sideBarData.list.speakers}
             updateData={updateSpeaker}
             autoCompleteList={speakersList}
@@ -135,8 +129,6 @@ const SidebarContentEdit = ({
 
           {/* <CustomDatePicker date={editedDate} onChange={setEditedDate} /> */}
           <DatePicker
-            // selected={editedDate}
-            // onChange={(date) => setEditedDate(date)}
             selected={sideBarData.date.date}
             onChange={(date) =>
               updater({ data: date, type: "date", name: "date" })
@@ -158,7 +150,6 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="categories"
-            // editedData={editedCategories}
             editedData={sideBarData.list.categories}
             updateData={updateCategories}
           />
@@ -169,7 +160,6 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="tags"
-            // editedData={editedTags}
             editedData={sideBarData.list.tags}
             updateData={updateTags}
           />
