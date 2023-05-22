@@ -50,6 +50,14 @@ export type sideBarContentUpdateParams<T, K> = {
   name: K;
 };
 
+const contentDate = (date: Date | null | undefined) => {
+  console.log("I keep running")
+  if (date) {
+    return new Date(date);
+  }
+  return null;
+};
+
 const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const transcriptId = reviewData.transcript.id;
   const transcriptData = reviewData.transcript;
@@ -57,13 +65,6 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const queryClient = useQueryClient();
   const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
   const { mutateAsync: asyncSubmitReview, isLoading: submitReviewIsLoading } = useSubmitReview();
-
-  const contentDate = useMemo(() => {
-    if (transcriptData?.content?.date) {
-      return new Date(transcriptData.content.date);
-    }
-    return null;
-  }, [transcriptData]);
 
   const [editedData, setEditedData] = useState(transcriptData.content.body ?? "");
   const [sideBarData, setSideBarData] = useState({
@@ -76,7 +77,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
       title: transcriptData.content?.title ?? "",
     },
     date: {
-      date: contentDate,
+      date: transcriptData.content?.date ? new Date(transcriptData.content?.date) : null,
     },
   });
 
@@ -92,31 +93,31 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
         [name]: data,
       },
     }));
-    // switch (type) {
-    //   case "list":
-    //     setSideBarData((prev) => ({
-    //       ...prev,
-    //       list: {
-    //         ...prev.list,
-    //         [name]: data,
-    //       },
-    //     }));
-    //     break;
-    //   case "text": {
-    //     setSideBarData((prev) => ({
-    //       ...prev,
-    //       text
-    //     }))
-    //   }
-    //   default:
-    //     break;
-    // }
   };
 
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
 
   const toast = useToast();
+
+  const restoreOriginal = () => {
+    if (!transcriptData?.originalContent) return;
+    // TODO: make an API call to update
+    setSideBarData({
+      list: {
+        speakers: reconcileArray(transcriptData.originalContent?.speakers),
+        categories: reconcileArray(transcriptData.originalContent?.categories),
+        tags: reconcileArray(transcriptData.originalContent?.tags),
+      },
+      text: {
+        title: transcriptData.originalContent.title,
+      },
+      date: {
+        date: transcriptData.originalContent?.date ? new Date(transcriptData.originalContent.date) : null,
+      },
+    });
+    setEditedData(transcriptData.originalContent.body ?? "");
+  };
 
   const saveTranscript = async (editedContent: EditedContent) => {
     if (!transcriptData) return;
@@ -261,13 +262,12 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
             )}
           </SidebarContentEdit>
         )}
-        {editedData && (
-          <EditTranscript
-            data={transcriptData}
-            mdData={editedData}
-            update={setEditedData}
-          />
-        )}
+        <EditTranscript
+          data={transcriptData}
+          mdData={editedData}
+          update={setEditedData}
+          restoreOriginal={restoreOriginal}
+        />
       </Flex>
       <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
     </>
