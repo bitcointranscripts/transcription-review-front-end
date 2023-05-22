@@ -122,7 +122,7 @@ const SelectField = ({
           />
         ) : (
           <Flex
-            key={speaker}
+            key={`${speaker}-idx-${idx}`}
             justifyContent="space-between"
             gap={1}
             alignItems="center"
