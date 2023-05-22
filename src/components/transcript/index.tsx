@@ -2,18 +2,19 @@
 import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
-import SidebarContentEdit, {
-  EditedContent
-} from "@/components/sideBarContentEdit/SidebarContentEdit";
-import { useTranscript, useUpdateTranscript } from "@/services/api/transcripts";
-import { dateFormatGeneral, formatDataForMetadata, reconcileArray } from "@/utils";
+import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
+import { useUpdateTranscript } from "@/services/api/transcripts";
+import {
+  dateFormatGeneral,
+  formatDataForMetadata,
+  reconcileArray,
+} from "@/utils";
 import { Button, Flex, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import AuthStatus from "./AuthStatus";
-import type { Review, UserReview } from "../../../types";
+import type { UserReview } from "../../../types";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 
 const defaultSubmitState = {
@@ -50,14 +51,6 @@ export type sideBarContentUpdateParams<T, K> = {
   name: K;
 };
 
-const contentDate = (date: Date | null | undefined) => {
-  console.log("I keep running")
-  if (date) {
-    return new Date(date);
-  }
-  return null;
-};
-
 const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const transcriptId = reviewData.transcript.id;
   const transcriptData = reviewData.transcript;
@@ -77,7 +70,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
       title: transcriptData.content?.title ?? "",
     },
     date: {
-      date: transcriptData.content?.date ? new Date(transcriptData.content?.date) : null,
+      date: transcriptData.content?.date ? new Date(transcriptData.content.date) : null,
     },
   });
 
@@ -119,23 +112,20 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
     setEditedData(transcriptData.originalContent.body ?? "");
   };
 
-  const saveTranscript = async (editedContent: EditedContent) => {
-    if (!transcriptData) return;
+  const saveTranscript = async () => {
     const {
-      editedCategories,
-      editedDate,
-      editedSpeakers,
-      editedTitle,
-      editedTags,
-    } = editedContent;
+      list: { speakers, categories, tags },
+      text: { title },
+      date: { date },
+    } = sideBarData;
     const content = transcriptData.content;
     const updatedContent = {
       ...content,
-      title: editedTitle,
-      speakers: editedSpeakers,
-      categories: editedCategories,
-      tags: editedTags,
-      date: editedDate,
+      title,
+      speakers,
+      categories,
+      tags,
+      date,
       body: editedData,
     };
     // create an awaitable promise for mutation
@@ -155,9 +145,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
     }
   };
 
-  const handleSave = async (editedContent: EditedContent) => {
+  const handleSave = async () => {
     try {
-      await saveTranscript(editedContent);
+      await saveTranscript();
       toast({
         status: "success",
         title: "Saved successfully",
@@ -171,29 +161,27 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
     }
   };
 
-  const handleSubmit = async (editedContent: EditedContent) => {
+  const handleSubmit = async () => {
     const {
-      editedTitle,
-      editedDate,
-      editedTags,
-      editedSpeakers,
-      editedCategories,
-    } = editedContent;
+      list: { speakers, categories, tags },
+      text: { title },
+      date: { date },
+    } = sideBarData;
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
     try {
       // save transcript
-      await saveTranscript(editedContent);
+      await saveTranscript();
       setSubmitState((prev) => ({ ...prev, stepIdx: 1 }));
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
         directoryPath: transcriptData?.content?.loc ?? "misc",
-        fileName: formatDataForMetadata(editedTitle),
+        fileName: formatDataForMetadata(title),
         url: transcriptData?.content.media,
-        date: editedDate && dateFormatGeneral(editedDate, true),
-        tags: formatDataForMetadata(editedTags),
-        speakers: formatDataForMetadata(editedSpeakers),
-        categories: formatDataForMetadata(editedCategories),
+        date: date && dateFormatGeneral(date, true),
+        tags: formatDataForMetadata(tags),
+        speakers: formatDataForMetadata(speakers),
+        categories: formatDataForMetadata(categories),
         transcribedText: editedData,
         transcript_by: formatDataForMetadata(
           transcriptData?.content?.transcript_by ?? ""
@@ -240,26 +228,20 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
             sideBarData={sideBarData}
             updater={sideBarContentUpdater}
           >
-            {(editedContent) => (
-              <Flex gap={2}>
-                <Button
-                  size="sm"
-                  colorScheme="orange"
-                  variant="outline"
-                  onClick={() => handleSave(editedContent)}
-                  isLoading={saveLoading}
-                >
-                  Save
-                </Button>
-                <Button
-                  size="sm"
-                  colorScheme="orange"
-                  onClick={() => handleSubmit(editedContent)}
-                >
-                  Submit
-                </Button>
-              </Flex>
-            )}
+            <Flex gap={2}>
+              <Button
+                size="sm"
+                colorScheme="orange"
+                variant="outline"
+                onClick={handleSave}
+                isLoading={saveLoading}
+              >
+                Save
+              </Button>
+              <Button size="sm" colorScheme="orange" onClick={handleSubmit}>
+                Submit
+              </Button>
+            </Flex>
           </SidebarContentEdit>
         )}
         <EditTranscript
