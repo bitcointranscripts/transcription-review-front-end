@@ -7,7 +7,6 @@ import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 
 const tableStructure = [
-  { name: "date", type: "date", modifier: (data) => data?.createdAt },
   {
     name: "title",
     type: "text-long",
@@ -17,6 +16,11 @@ const tableStructure = [
     name: "speakers",
     type: "tags",
     modifier: (data) => data.content.speakers,
+  },
+  {
+    name: "date",
+    type: "date",
+    modifier: (data) => data.content.date,
   },
   {
     name: "category",

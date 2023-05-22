@@ -180,7 +180,6 @@ const QueueTable = () => {
   const tableStructure = useMemo(
     () =>
       [
-        { name: "date", type: "date", modifier: (data) => data?.createdAt },
         {
           name: "title",
           type: "text-long",
@@ -190,6 +189,11 @@ const QueueTable = () => {
           name: "speakers",
           type: "tags",
           modifier: (data) => data.content.speakers,
+        },
+        {
+          name: "date",
+          type: "date",
+          modifier: (data) => data.content.date,
         },
         {
           name: "category",
@@ -208,7 +212,7 @@ const QueueTable = () => {
         },
         // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
         {
-          name: "status",
+          name: "Up for grabs",
           actionName: "claim",
           type: "action",
           modifier: (data) => data.id,

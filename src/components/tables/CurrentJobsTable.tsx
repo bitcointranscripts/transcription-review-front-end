@@ -27,7 +27,6 @@ const CurrentJobsTable = () => {
   const tableStructure = useMemo(
     () =>
       [
-        { name: "date", type: "date", modifier: (data) => data?.createdAt },
         {
           name: "title",
           type: "text-long",
@@ -37,6 +36,11 @@ const CurrentJobsTable = () => {
           name: "speakers",
           type: "tags",
           modifier: (data) => data.content.speakers,
+        },
+        {
+          name: "date",
+          type: "date",
+          modifier: (data) => data.content.date,
         },
         {
           name: "category",
