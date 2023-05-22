@@ -62,12 +62,12 @@ const SelectBox = ({
               icon={<BiCheck />}
             />
             <IconButton
-              name="remove"
+              name="cancel"
               size="sm"
               fontSize="16px"
               colorScheme="red"
               variant="outline"
-              onClick={() => handleUpdateEdit(idx, "remove")}
+              onClick={() => handleUpdateEdit(idx, "cancel")}
               aria-label="reject speaker editing"
               icon={<BiX />}
             />

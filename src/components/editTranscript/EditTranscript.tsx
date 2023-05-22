@@ -24,16 +24,17 @@ const EditTranscript = ({
   data,
   mdData,
   update,
+  restoreOriginal,
 }: {
   data: Transcript;
   mdData: string;
   // eslint-disable-next-line no-unused-vars
   update: (x: any) => void;
+  restoreOriginal: () => void;
 }) => {
   const editorRef = useRef<ExposeParam>();
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
-  // Ensure editorData is updated
-  const hasUpdatedEditorData = useRef<Boolean>(false);
+
   const [isModalOpen, setIsModalopen] = useState(false);
 
   // hijack params of mdEditor to change toolbar "preview" function
@@ -43,20 +44,10 @@ const EditTranscript = ({
     });
   }, []);
 
-  // delays may prevent editor data from being synced with data, this ensures the sync
-  useEffect(() => {
-    if (data.content?.body && !mdData && !hasUpdatedEditorData.current) {
-      update(data.content?.body);
-      hasUpdatedEditorData.current = true;
-    }
-    return () => {
-      hasUpdatedEditorData.current = false;
-    };
-  }, [data, mdData, update]);
-
   // restoreOriginal content function
-  const restoreOriginal = () => {
+  const onClickRestore = () => {
     update(data.originalContent?.body || "");
+    restoreOriginal();
     setIsModalopen(false);
   };
 
@@ -131,7 +122,7 @@ const EditTranscript = ({
               // variant="outline"
               colorScheme="red"
               size="sm"
-              onClick={restoreOriginal}
+              onClick={onClickRestore}
             >
               Yes, Restore!
             </Button>

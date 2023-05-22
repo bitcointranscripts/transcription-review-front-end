@@ -35,7 +35,7 @@ const PastJobsTable = () => {
   const { data: userSession } = useSession();
   const { data, isLoading, isError, refetch } = useUserReviews({
     userId: userSession?.user?.id,
-    isActive: false,
+    status: "inactive",
   });
   const tableData = useMemo(() => data?.map((item) => item.transcript), [data]);
 

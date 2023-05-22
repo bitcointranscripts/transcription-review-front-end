@@ -85,7 +85,7 @@ const BaseTable: React.FC<Props> = ({
             data.map((dataRow, idx) => (
               <TableRow
                 showControls={showAdminControls}
-                key={`data-row-${dataRow.id}`}
+                key={`data-id-${dataRow.id}-data-row-${idx}`}
                 row={dataRow}
                 ts={tableStructure}
                 actionState={actionState}

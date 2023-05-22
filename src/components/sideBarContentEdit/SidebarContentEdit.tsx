@@ -1,7 +1,8 @@
-import { getTimeLeftText, reconcileArray } from "@/utils";
+/* eslint-disable no-unused-vars */
+import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { useState } from "react";
+import { ReactNode } from "react";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
 import { Review, Transcript } from "../../../types";
 import SelectField from "./SelectField";
@@ -10,60 +11,56 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./sidebarContentEdit.module.css";
 import speakersList from "@/config/speakers.json";
-
-type RenderProps = {
-  // eslint-disable-next-line no-unused-vars
-  (editedContent: EditedContent): React.ReactNode;
-};
-
-export type EditedContent = {
-  editedTitle: string;
-  editedSpeakers: string[];
-  editedCategories: string[];
-  editedTags: string[];
-  editedDate: Date | null;
-};
+import {
+  sideBarContentUpdateParams,
+  SideBarData,
+  SidebarSubType,
+} from "../transcript";
 
 const SidebarContentEdit = ({
   data,
   claimedAt,
   children,
+  sideBarData,
+  updater,
 }: {
   data: Transcript;
   claimedAt: Review["createdAt"];
-  children?: RenderProps;
+  children?: ReactNode;
+  sideBarData: SideBarData;
+  updater: <T extends keyof SideBarData, K extends SidebarSubType<T>>({
+    data,
+    type,
+    name,
+  }: sideBarContentUpdateParams<T, K>) => void;
 }) => {
-  const [editedTitle, setEditedTitle] = useState(data.content?.title ?? "");
-  const [editedSpeakers, setEditedSpeakers] = useState<string[]>(
-    reconcileArray(data?.content?.speakers)
-  );
-  const [editedCategories, setEditedCategories] = useState<string[]>(
-    reconcileArray(data?.content?.categories)
-  );
-  const [editedTags, setEditedTags] = useState<string[]>(
-    reconcileArray(data?.content?.tags)
-  );
-
-  // const dateStringFormat = dateFormatGeneral(data?.createdAt, true) as string;
-  const contentDate = () => {
-    if (data?.content?.date) {
-      return new Date(data.content.date);
-    }
-    return null;
-  };
-  const [editedDate, setEditedDate] = useState<Date | null>(contentDate);
-
   const updateTitle = (newTitle: string) => {
-    setEditedTitle(newTitle);
+    updater({
+      data: newTitle,
+      type: "text",
+      name: "title",
+    });
   };
   const updateSpeaker = (speakers: string[]) => {
-    setEditedSpeakers(speakers);
+    updater({
+      data: speakers,
+      type: "list",
+      name: "speakers",
+    });
   };
   const updateCategories = (categories: string[]) => {
-    setEditedCategories(categories);
+    updater({
+      data: categories,
+      type: "list",
+      name: "categories",
+    });
   };
-  const updateTags = (categories: string[]) => {
-    setEditedTags(categories);
+  const updateTags = (tags: string[]) => {
+    updater({
+      data: tags,
+      type: "list",
+      name: "tags",
+    });
   };
   return (
     <Box
@@ -107,7 +104,7 @@ const SidebarContentEdit = ({
           </Text>
           <TextField
             data={data.content?.title ?? ""}
-            editedData={editedTitle}
+            editedData={sideBarData.text.title}
             updateData={updateTitle}
           />
         </Box>
@@ -117,7 +114,7 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="speakers"
-            editedData={editedSpeakers}
+            editedData={sideBarData.list.speakers}
             updateData={updateSpeaker}
             autoCompleteList={speakersList}
           />
@@ -132,8 +129,10 @@ const SidebarContentEdit = ({
 
           {/* <CustomDatePicker date={editedDate} onChange={setEditedDate} /> */}
           <DatePicker
-            selected={editedDate}
-            onChange={(date) => setEditedDate(date)}
+            selected={sideBarData.date.date}
+            onChange={(date) =>
+              updater({ data: date, type: "date", name: "date" })
+            }
             dateFormat="yyyy-MM-dd"
             className={styles.customDatePicker}
           />
@@ -151,7 +150,7 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="categories"
-            editedData={editedCategories}
+            editedData={sideBarData.list.categories}
             updateData={updateCategories}
           />
         </Box>
@@ -161,18 +160,11 @@ const SidebarContentEdit = ({
           </Text>
           <SelectField
             name="tags"
-            editedData={editedTags}
+            editedData={sideBarData.list.tags}
             updateData={updateTags}
           />
         </Box>
-        {children &&
-          children({
-            editedTitle,
-            editedSpeakers,
-            editedCategories,
-            editedTags,
-            editedDate,
-          })}
+        {children}
       </Flex>
     </Box>
   );

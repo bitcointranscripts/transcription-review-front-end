@@ -94,7 +94,7 @@ const QueueTable = () => {
   const { data, isLoading, isError, refetch } = useTranscripts();
   const { data: userReviews } = useUserReviews({
     userId: session?.user?.id,
-    isActive: true,
+    status: "active",
   });
   const toast = useToast();
 

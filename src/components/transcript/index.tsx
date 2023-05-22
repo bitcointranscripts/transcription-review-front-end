@@ -2,18 +2,19 @@
 import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
-import SidebarContentEdit, {
-  EditedContent,
-} from "@/components/sideBarContentEdit/SidebarContentEdit";
-import { useTranscript, useUpdateTranscript } from "@/services/api/transcripts";
-import { dateFormatGeneral, formatDataForMetadata } from "@/utils";
+import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
+import { useUpdateTranscript } from "@/services/api/transcripts";
+import {
+  dateFormatGeneral,
+  formatDataForMetadata,
+  reconcileArray,
+} from "@/utils";
 import { Button, Flex, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import AuthStatus from "./AuthStatus";
-import type { Review } from "../../../types";
+import type { UserReview } from "../../../types";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 
 const defaultSubmitState = {
@@ -26,60 +27,114 @@ const defaultSubmitState = {
   err: null,
 };
 
-const Transcript = ({ reviewData }: { reviewData: Review }) => {
-  const { transcriptId } = reviewData;
+export type SideBarData = {
+  list: {
+    speakers: string[];
+    categories: string[];
+    tags: string[];
+  };
+  text: {
+    title: string;
+  };
+  date: {
+    date: Date | null;
+  };
+};
+
+export type SidebarType = keyof SideBarData;
+
+export type SidebarSubType<T extends SidebarType> = keyof SideBarData[T];
+
+export type sideBarContentUpdateParams<T, K> = {
+  data: string | string[] | Date | null;
+  type: T;
+  name: K;
+};
+
+const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
+  const transcriptId = reviewData.transcript.id;
+  const transcriptData = reviewData.transcript;
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data, isLoading, error } = useTranscript(transcriptId);
   const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
-  const { mutateAsync: asyncSubmitReview, isLoading: submitReviewIsLoading } = useSubmitReview();
+  const { mutateAsync: asyncSubmitReview } = useSubmitReview();
 
-  const [editedData, setEditedData] = useState(data?.content?.body ?? "");
+  const [editedData, setEditedData] = useState(
+    transcriptData.content?.body ?? ""
+  );
+  const [sideBarData, setSideBarData] = useState({
+    list: {
+      speakers: reconcileArray(transcriptData?.content?.speakers),
+      categories: reconcileArray(transcriptData?.content?.categories),
+      tags: reconcileArray(transcriptData?.content?.tags),
+    },
+    text: {
+      title: transcriptData.content?.title ?? "",
+    },
+    date: {
+      date: transcriptData.content?.date
+        ? new Date(transcriptData.content.date)
+        : null,
+    },
+  });
+
+  const sideBarContentUpdater = <
+    T extends keyof SideBarData,
+    K extends SidebarSubType<T>
+  >({
+    name,
+    data,
+    type,
+  }: sideBarContentUpdateParams<T, K>) => {
+    setSideBarData((prev) => ({
+      ...prev,
+      [type]: {
+        ...prev[type],
+        [name]: data,
+      },
+    }));
+  };
 
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
 
   const toast = useToast();
 
-  if (isLoading) {
-    return (
-      <AuthStatus
-        title="Authenticated"
-        message="Loading transcripts, Please wait"
-      />
-    );
-  }
+  const restoreOriginal = () => {
+    if (!transcriptData?.originalContent) return;
+    // TODO: make an API call to update
+    setSideBarData({
+      list: {
+        speakers: reconcileArray(transcriptData.originalContent?.speakers),
+        categories: reconcileArray(transcriptData.originalContent?.categories),
+        tags: reconcileArray(transcriptData.originalContent?.tags),
+      },
+      text: {
+        title: transcriptData.originalContent.title,
+      },
+      date: {
+        date: transcriptData.originalContent?.date
+          ? new Date(transcriptData.originalContent.date)
+          : null,
+      },
+    });
+    setEditedData(transcriptData.originalContent.body ?? "");
+  };
 
-  if (!isLoading && !data) {
-    return (
-      <AuthStatus
-        title="Error"
-        message={`${
-          error?.message
-            ? error.message
-            : "Something went wrong. Please try again later"
-        }`}
-      />
-    );
-  }
-
-  const saveTranscript = async (editedContent: EditedContent) => {
-    if (!data) return;
+  const saveTranscript = async () => {
     const {
-      editedCategories,
-      editedDate,
-      editedSpeakers,
-      editedTitle,
-      editedTags,
-    } = editedContent;
-    const content = data.content;
+      list: { speakers, categories, tags },
+      text: { title },
+      date: { date },
+    } = sideBarData;
+    const content = transcriptData.content;
     const updatedContent = {
       ...content,
-      title: editedTitle,
-      speakers: editedSpeakers,
-      categories: editedCategories,
-      tags: editedTags,
-      date: editedDate,
+      title,
+      speakers,
+      categories,
+      tags,
+      date,
       body: editedData,
     };
     // create an awaitable promise for mutation
@@ -99,9 +154,9 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
     }
   };
 
-  const handleSave = async (editedContent: EditedContent) => {
+  const handleSave = async () => {
     try {
-      await saveTranscript(editedContent);
+      await saveTranscript();
       toast({
         status: "success",
         title: "Saved successfully",
@@ -115,32 +170,30 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
     }
   };
 
-  const handleSubmit = async (editedContent: EditedContent) => {
+  const handleSubmit = async () => {
     const {
-      editedTitle,
-      editedDate,
-      editedTags,
-      editedSpeakers,
-      editedCategories,
-    } = editedContent;
+      list: { speakers, categories, tags },
+      text: { title },
+      date: { date },
+    } = sideBarData;
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
     try {
       // save transcript
-      await saveTranscript(editedContent);
+      await saveTranscript();
       setSubmitState((prev) => ({ ...prev, stepIdx: 1 }));
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
-        directoryPath: data?.content?.loc ?? "misc",
-        fileName: formatDataForMetadata(editedTitle),
-        url: data?.content.media,
-        date: editedDate && dateFormatGeneral(editedDate, true),
-        tags: formatDataForMetadata(editedTags),
-        speakers: formatDataForMetadata(editedSpeakers),
-        categories: formatDataForMetadata(editedCategories),
+        directoryPath: transcriptData?.content?.loc ?? "misc",
+        fileName: formatDataForMetadata(title),
+        url: transcriptData?.content.media,
+        date: date && dateFormatGeneral(date, true),
+        tags: formatDataForMetadata(tags),
+        speakers: formatDataForMetadata(speakers),
+        categories: formatDataForMetadata(categories),
         transcribedText: editedData,
         transcript_by: formatDataForMetadata(
-          data?.content?.transcript_by ?? ""
+          transcriptData?.content?.transcript_by ?? ""
         ),
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
@@ -177,37 +230,35 @@ const Transcript = ({ reviewData }: { reviewData: Review }) => {
   return (
     <>
       <Flex gap={6} w="full" flexDir={{ base: "column", md: "row" }}>
-        {data && (
-          <SidebarContentEdit data={data} claimedAt={reviewData.createdAt}>
-            {(editedContent) => (
-              <Flex gap={2}>
-                <Button
-                  size="sm"
-                  colorScheme="orange"
-                  variant="outline"
-                  onClick={() => handleSave(editedContent)}
-                  isLoading={saveLoading}
-                >
-                  Save
-                </Button>
-                <Button
-                  size="sm"
-                  colorScheme="orange"
-                  onClick={() => handleSubmit(editedContent)}
-                >
-                  Submit
-                </Button>
-              </Flex>
-            )}
+        {transcriptData && (
+          <SidebarContentEdit
+            data={transcriptData}
+            claimedAt={reviewData.createdAt}
+            sideBarData={sideBarData}
+            updater={sideBarContentUpdater}
+          >
+            <Flex gap={2}>
+              <Button
+                size="sm"
+                colorScheme="orange"
+                variant="outline"
+                onClick={handleSave}
+                isLoading={saveLoading}
+              >
+                Save
+              </Button>
+              <Button size="sm" colorScheme="orange" onClick={handleSubmit}>
+                Submit
+              </Button>
+            </Flex>
           </SidebarContentEdit>
         )}
-        {data && (
-          <EditTranscript
-            data={data}
-            mdData={editedData}
-            update={setEditedData}
-          />
-        )}
+        <EditTranscript
+          data={transcriptData}
+          mdData={editedData}
+          update={setEditedData}
+          restoreOriginal={restoreOriginal}
+        />
       </Flex>
       <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
     </>
