@@ -57,9 +57,11 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
-  const { mutateAsync: asyncSubmitReview, isLoading: submitReviewIsLoading } = useSubmitReview();
+  const { mutateAsync: asyncSubmitReview } = useSubmitReview();
 
-  const [editedData, setEditedData] = useState(transcriptData.content.body ?? "");
+  const [editedData, setEditedData] = useState(
+    transcriptData.content?.body ?? ""
+  );
   const [sideBarData, setSideBarData] = useState({
     list: {
       speakers: reconcileArray(transcriptData?.content?.speakers),
@@ -70,11 +72,16 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
       title: transcriptData.content?.title ?? "",
     },
     date: {
-      date: transcriptData.content?.date ? new Date(transcriptData.content.date) : null,
+      date: transcriptData.content?.date
+        ? new Date(transcriptData.content.date)
+        : null,
     },
   });
 
-  const sideBarContentUpdater = <T extends keyof SideBarData, K extends SidebarSubType<T>>({
+  const sideBarContentUpdater = <
+    T extends keyof SideBarData,
+    K extends SidebarSubType<T>
+  >({
     name,
     data,
     type,
@@ -106,7 +113,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
         title: transcriptData.originalContent.title,
       },
       date: {
-        date: transcriptData.originalContent?.date ? new Date(transcriptData.originalContent.date) : null,
+        date: transcriptData.originalContent?.date
+          ? new Date(transcriptData.originalContent.date)
+          : null,
       },
     });
     setEditedData(transcriptData.originalContent.body ?? "");
