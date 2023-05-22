@@ -48,11 +48,13 @@ const SelectField = ({
   };
 
   const handleUpdateEdit = (idx: number, name?: string) => {
-    if (name && name === "remove") {
+    // cancel editing
+    if (name && name === "cancel") {
       toggleEdit(idx);
       return;
     }
     let updatedSpeakers = [...editedData];
+    // delete an item from list if item is blank
     if (!editState.value.trim()) {
       updatedSpeakers.splice(idx, 1);
     } else {
@@ -64,7 +66,8 @@ const SelectField = ({
 
   const handleNewSpeaker = (idx: number, name?: string) => {
     setIsNew(false);
-    if (name && name === "remove") {
+    // cancel editing
+    if (name && name === "cancel") {
       return;
     }
     let updatedSpeakers = [...editedData];
@@ -89,6 +92,7 @@ const SelectField = ({
     if (idx !== -1 && isNew) {
       setIsNew(false);
     }
+    // reset edit state after toggle off and fill in edit state on toggle on
     editState.idx === idx
       ? setEditState(initialEditState)
       : setEditState((prev) => ({
@@ -118,7 +122,7 @@ const SelectField = ({
           />
         ) : (
           <Flex
-            key={speaker}
+            key={`${speaker}-idx-${idx}`}
             justifyContent="space-between"
             gap={1}
             alignItems="center"

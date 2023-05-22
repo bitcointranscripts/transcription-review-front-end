@@ -5,6 +5,7 @@ import AuthStatus from "@/components/transcript/AuthStatus";
 import { useReview } from "@/services/api/reviews";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { UserReview } from "../../../types";
 
 const TranscriptPage = () => {
   const { status, data: sessionData } = useSession();
@@ -41,7 +42,7 @@ const TranscriptPage = () => {
   }
 
   if (review?.transcriptId) {
-    return <Transcript reviewData={review} />;
+    return <Transcript reviewData={review as UserReview} />;
   }
 
   return (

@@ -1,7 +1,7 @@
 export type ReviewQueryOptions = {
   userId?: number;
   username?: string;
-  isActive?: boolean;
+  status?: "active" | "pending" | "inactive";
 };
 
 function buildReviewQueryParams(reviewQueryOptions: ReviewQueryOptions) {
@@ -31,8 +31,8 @@ const USERS = () => `users`;
 
 const USER_REVIEWS = (id: number) => `users/${id}/reviews`;
 
-const REVIEWS = ({ userId, username, isActive }: ReviewQueryOptions) => {
-  return "reviews" + buildReviewQueryParams({ userId, username, isActive });
+const REVIEWS = ({ userId, username, status }: ReviewQueryOptions) => {
+  return "reviews" + buildReviewQueryParams({ userId, username, status });
 };
 
 const REVIEW_BY_ID = (id: number) => `reviews/${id}`;

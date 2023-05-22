@@ -6,10 +6,10 @@ import endpoints, { ReviewQueryOptions } from "../endpoints";
 const userReviews = async ({
   userId,
   username,
-  isActive,
+  status,
 }: ReviewQueryOptions): Promise<UserReview[]> => {
   return axios
-    .get(endpoints.REVIEWS({ userId, username, isActive }))
+    .get(endpoints.REVIEWS({ userId, username, status }))
     .then((res) => res.data)
     .catch((err) => err);
 };
@@ -17,11 +17,11 @@ const userReviews = async ({
 export const useUserReviews = ({
   userId,
   username,
-  isActive,
+  status,
 }: ReviewQueryOptions) => {
   const queryInfo = useQuery({
-    queryFn: () => userReviews({ userId, username, isActive }),
-    queryKey: ["user-reviews", { userId, username, isActive }],
+    queryFn: () => userReviews({ userId, username, status }),
+    queryKey: ["user-reviews", { userId, username, status }],
     select: (data) => {
       return data.filter((item) =>
         Boolean(!item.transcript.archivedAt && !item.transcript.archivedBy)

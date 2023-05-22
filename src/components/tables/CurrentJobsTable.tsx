@@ -12,7 +12,7 @@ const CurrentJobsTable = () => {
   const { data: userSession } = useSession();
   const { data, isLoading, isError, refetch } = useUserReviews({
     userId: userSession?.user?.id,
-    isActive: true,
+    status: "active",
   });
 
   const router = useRouter();
