@@ -4,7 +4,7 @@ import { Button, Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
-import { ReviewTranscript, UserReview } from "../../../types";
+import { ReviewTranscript } from "../../../types";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 
@@ -14,11 +14,7 @@ const CurrentJobsTable = () => {
     userId: userSession?.user?.id,
     status: "active",
   });
-  const {
-    data: pendingTranscripts,
-    isLoading: isLoadingPending,
-    refetch: refetchPending,
-  } = useUserReviews({
+  const { data: pendingReviews } = useUserReviews({
     userId: userSession?.user?.id,
     status: "pending",
   });
@@ -27,24 +23,41 @@ const CurrentJobsTable = () => {
 
   const tableData = useMemo(() => {
     let _activeData = data ?? [];
-    let _pendingData = pendingTranscripts ?? [];
+    let _pendingData = pendingReviews ?? [];
     let cummulativeCurrentJobs = _activeData.concat(_pendingData);
     if (!cummulativeCurrentJobs.length) return [];
     return cummulativeCurrentJobs.map((item) => ({
       ...item.transcript,
       reviewId: item.id,
     }));
-  }, [data, pendingTranscripts]);
+  }, [data, pendingReviews]);
 
-  const handleResume = useCallback(
-    (data: ReviewTranscript) => {
-      if (!data.reviewId) {
-        alert("Error: No reviewId on this review");
-        return;
-      }
-      router.push(`/reviews/${data.reviewId}`);
+  const ActionComponent = useCallback(
+    ({ data }: { data: ReviewTranscript }) => {
+      const pendingIndex = pendingReviews?.findIndex(
+        (review) => review.id === data.reviewId
+      );
+      const isPending = pendingIndex !== -1;
+
+      const handleResume = () => {
+        if (!data.reviewId) {
+          alert("Error: No reviewId on this review");
+          return;
+        }
+        router.push(`/reviews/${data.reviewId}`);
+      };
+      return (
+        <Button
+          isDisabled={isPending}
+          colorScheme={isPending ? "gray" : "orange"}
+          size="sm"
+          onClick={handleResume}
+        >
+          {isPending ? "Under Review" : "Review"}
+        </Button>
+      );
     },
-    [router]
+    [pendingReviews, router]
   );
 
   const tableStructure = useMemo(
@@ -78,28 +91,13 @@ const CurrentJobsTable = () => {
         },
         {
           name: "status",
-          actionName: "review",
           type: "action",
           modifier: (data) => data.id,
-          action: (data) => handleResume(data),
           component: (data) => <ActionComponent data={data} />,
         },
       ] satisfies TableStructure[],
-    [handleResume]
+    [ActionComponent]
   );
-
-  const ActionComponent = ({ data }: { data: ReviewTranscript }) => {
-    return (
-      <Button
-        // isDisabled={tableItem.isDisabled}
-        colorScheme="orange"
-        size="sm"
-        onClick={() => handleResume(data)}
-      >
-        Review
-      </Button>
-    );
-  };
 
   return (
     <>
