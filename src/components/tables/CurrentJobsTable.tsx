@@ -1,10 +1,10 @@
 import { useUserReviews } from "@/services/api/reviews";
 import { getCount } from "@/utils";
-import { Heading } from "@chakra-ui/react";
+import { Button, Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
-import { Transcript } from "../../../types";
+import { ReviewTranscript, UserReview } from "../../../types";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 
@@ -14,16 +14,30 @@ const CurrentJobsTable = () => {
     userId: userSession?.user?.id,
     status: "active",
   });
+  const {
+    data: pendingTranscripts,
+    isLoading: isLoadingPending,
+    refetch: refetchPending,
+  } = useUserReviews({
+    userId: userSession?.user?.id,
+    status: "pending",
+  });
 
   const router = useRouter();
 
-  const tableData = useMemo(
-    () => data?.map((item) => ({ ...item.transcript, reviewId: item.id })),
-    [data]
-  );
+  const tableData = useMemo(() => {
+    let _activeData = data ?? [];
+    let _pendingData = pendingTranscripts ?? [];
+    let cummulativeCurrentJobs = _activeData.concat(_pendingData);
+    if (!cummulativeCurrentJobs.length) return [];
+    return cummulativeCurrentJobs.map((item) => ({
+      ...item.transcript,
+      reviewId: item.id,
+    }));
+  }, [data, pendingTranscripts]);
 
   const handleResume = useCallback(
-    (data: Transcript & { reviewId?: number }) => {
+    (data: ReviewTranscript) => {
       if (!data.reviewId) {
         alert("Error: No reviewId on this review");
         return;
@@ -68,10 +82,24 @@ const CurrentJobsTable = () => {
           type: "action",
           modifier: (data) => data.id,
           action: (data) => handleResume(data),
+          component: (data) => <ActionComponent data={data} />,
         },
       ] satisfies TableStructure[],
     [handleResume]
   );
+
+  const ActionComponent = ({ data }: { data: ReviewTranscript }) => {
+    return (
+      <Button
+        // isDisabled={tableItem.isDisabled}
+        colorScheme="orange"
+        size="sm"
+        onClick={() => handleResume(data)}
+      >
+        Review
+      </Button>
+    );
+  };
 
   return (
     <>

@@ -11,6 +11,8 @@ export type Transcript = {
   claimedBy: Nullable<number>;
 };
 
+export type ReviewTranscript = Transcript & { reviewId?: number };
+
 export type Review = {
   id: number;
   userId: number;

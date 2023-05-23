@@ -112,16 +112,22 @@ export const TableAction = ({
   return (
     <Td>
       <Flex gap={5}>
-        <Button
-          title={tableItem.isDisabledText}
-          isDisabled={tableItem.isDisabled}
-          isLoading={isLoading}
-          colorScheme="orange"
-          size="sm"
-          onClick={handleClick}
-        >
-          {tableItem.actionName}
-        </Button>
+        {/* render a custom component if passed */}
+        {tableItem.component ? (
+          tableItem.component(row)
+        ) : (
+          <Button
+            title={tableItem.isDisabledText}
+            isDisabled={tableItem.isDisabled}
+            isLoading={isLoading}
+            colorScheme="orange"
+            size="sm"
+            onClick={handleClick}
+          >
+            {tableItem.actionName}
+          </Button>
+        )}
+        {/* checkbox */}
         {showCheckBox && <Checkbox value={String(row.id)} />}
       </Flex>
     </Td>
