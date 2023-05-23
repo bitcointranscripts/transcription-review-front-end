@@ -1,16 +1,17 @@
+import config from "@/config/config.json";
 import { Metadata, newIndexFile } from "@/utils";
+import { Octokit } from "@octokit/core";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
-import { Octokit } from "@octokit/core";
 import slugify from "slugify";
-import config from "@/config/config.json";
 
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,
   directoryPath: string,
   fileName: string,
   transcribedText: string,
-  metaData: Metadata
+  metaData: Metadata,
+  prRepo: "btc transcript" | "user"
 ) {
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
@@ -120,12 +121,12 @@ async function createForkAndPR(
   const prTitle = `Add ${fileSlug} to ${directoryPath}`;
   const prDescription = `This PR adds [${fileName}](${metaData.source}) transcript to the ${directoryPath} directory.`;
   const prResult = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
-    owner: forkOwner, // update to upstreamOwner once tested
-    repo: forkRepo,
+    owner: prRepo === "user" ? forkOwner : upstreamOwner, // update to upstreamOwner once tested
+    repo: prRepo === "user" ? forkRepo : upstreamRepo,
     title: prTitle,
     body: prDescription,
     head: `${forkOwner}:${newBranchName}`,
-    base: baseBranchName,
+    base: prRepo === "user" ? baseBranchName : "master", // get upstream base for btc transcript dynamically?,
   });
 
   return prResult;
@@ -155,6 +156,7 @@ export default async function handler(
     categories,
     transcribedText,
     transcript_by,
+    prRepo,
   } = req.body;
 
   try {
@@ -175,7 +177,8 @@ export default async function handler(
       directoryPath,
       fileName,
       transcribedText,
-      newMetadata
+      newMetadata,
+      prRepo
     );
 
     // Return the result
