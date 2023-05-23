@@ -3,19 +3,29 @@ import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
 import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
+import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 import { useUpdateTranscript } from "@/services/api/transcripts";
 import {
   dateFormatGeneral,
   formatDataForMetadata,
   reconcileArray,
 } from "@/utils";
-import { Button, Flex, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  useToast,
+} from "@chakra-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { MdArrowDropDown } from "react-icons/md";
 import type { UserReview } from "../../../types";
-import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -58,7 +68,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const queryClient = useQueryClient();
   const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
   const { mutateAsync: asyncSubmitReview } = useSubmitReview();
+  const { data: userSession } = useSession();
+  const isAdmin = userSession?.user?.permissions === "admin";
 
+  const [prRepo, setPrRepo] = useState<"btc transcript" | "user">("user");
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
@@ -195,6 +208,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
         transcript_by: formatDataForMetadata(
           transcriptData?.content?.transcript_by ?? ""
         ),
+        prRepo,
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
 
@@ -247,8 +261,38 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
               >
                 Save
               </Button>
-              <Button size="sm" colorScheme="orange" onClick={handleSubmit}>
-                Submit
+              <Button
+                gap={1}
+                size="sm"
+                colorScheme="orange"
+                onClick={handleSubmit}
+              >
+                Submit {isAdmin ? `(${prRepo})` : ""}
+                {isAdmin && (
+                  <Menu>
+                    <MenuButton onClick={(event) => event.stopPropagation()}>
+                      <MdArrowDropDown size={20} />
+                    </MenuButton>
+                    <MenuList color={"black"}>
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setPrRepo("user");
+                        }}
+                      >
+                        Submit (User PR)
+                      </MenuItem>
+                      <MenuItem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setPrRepo("btc transcript");
+                        }}
+                      >
+                        Submit (BTC Transcripts PR)
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                )}
               </Button>
             </Flex>
           </SidebarContentEdit>
