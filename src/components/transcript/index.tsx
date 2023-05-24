@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars */
+import SubmitTranscriptAlert from "@/components/alerts/SubmitTranscriptAlert";
 import EditTranscript from "@/components/editTranscript/EditTranscript";
+import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
+import SubmitTranscriptMenu from "@/components/menus/SubmitTranscriptMenu";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
 import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
@@ -10,21 +13,12 @@ import {
   formatDataForMetadata,
   reconcileArray,
 } from "@/utils";
-import {
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Flex, useDisclosure, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { MdArrowDropDown } from "react-icons/md";
 import type { UserReview } from "../../../types";
 
 const defaultSubmitState = {
@@ -71,7 +65,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const { data: userSession } = useSession();
   const isAdmin = userSession?.user?.permissions === "admin";
 
-  const [prRepo, setPrRepo] = useState<"btc transcript" | "user">("user");
+  const [prRepo, setPrRepo] = useState<TranscriptSubmitOptions>("user");
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
@@ -112,6 +106,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
     useState<SubmitState>(defaultSubmitState);
 
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
@@ -262,37 +257,13 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
                 Save
               </Button>
               <Button
-                gap={1}
+                gap={2}
                 size="sm"
                 colorScheme="orange"
-                onClick={handleSubmit}
+                onClick={!isAdmin ? onOpen : handleSubmit}
               >
                 Submit {isAdmin ? `(${prRepo})` : ""}
-                {isAdmin && (
-                  <Menu>
-                    <MenuButton onClick={(event) => event.stopPropagation()}>
-                      <MdArrowDropDown size={20} />
-                    </MenuButton>
-                    <MenuList color={"black"}>
-                      <MenuItem
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setPrRepo("user");
-                        }}
-                      >
-                        Submit (User PR)
-                      </MenuItem>
-                      <MenuItem
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setPrRepo("btc transcript");
-                        }}
-                      >
-                        Submit (BTC Transcripts PR)
-                      </MenuItem>
-                    </MenuList>
-                  </Menu>
-                )}
+                {isAdmin && <SubmitTranscriptMenu setPrRepo={setPrRepo} />}
               </Button>
             </Flex>
           </SidebarContentEdit>
@@ -305,6 +276,11 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
         />
       </Flex>
       <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
+      <SubmitTranscriptAlert
+        isOpen={isOpen}
+        onCancel={onClose}
+        onSubmit={handleSubmit}
+      />
     </>
   );
 };
