@@ -1,3 +1,4 @@
+import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
 import config from "@/config/config.json";
 import { Metadata, newIndexFile } from "@/utils";
 import { Octokit } from "@octokit/core";
@@ -11,7 +12,7 @@ async function createForkAndPR(
   fileName: string,
   transcribedText: string,
   metaData: Metadata,
-  prRepo: "btc transcript" | "user"
+  prRepo: TranscriptSubmitOptions
 ) {
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
