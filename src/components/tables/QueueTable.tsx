@@ -235,6 +235,8 @@ const QueueTable = () => {
     [handleClaim, canClaimTranscript]
   );
 
+  // TODO: extract and refactor claim logic into a claim ActionComponent
+
   return (
     <>
       <AdminArchiveSelect>
