@@ -1,3 +1,4 @@
+import { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -7,16 +8,21 @@ import {
   AlertDialogOverlay,
   Button,
 } from "@chakra-ui/react";
-
 import { useRef } from "react";
 
 type Props = {
   isOpen: boolean;
   onCancel: () => void;
   onSubmit: () => void;
+  prRepo: TranscriptSubmitOptions;
 };
 
-const SubmitTranscriptAlert = ({ isOpen, onCancel, onSubmit }: Props) => {
+const SubmitTranscriptAlert = ({
+  isOpen,
+  onCancel,
+  onSubmit,
+  prRepo,
+}: Props) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -31,8 +37,13 @@ const SubmitTranscriptAlert = ({ isOpen, onCancel, onSubmit }: Props) => {
             Submit Review?
           </AlertDialogHeader>
           <AlertDialogBody>
-            Are you sure you want to submit your review, this would create a PR
-            on the <b>Bitcoin Transcript</b> Repo
+            Are you sure you want to submit your review? This would create a PR
+            on{" "}
+            <b>
+              {prRepo === "btc transcript"
+                ? "the Bitcoin Transcript repo"
+                : "your repo"}
+            </b>{" "}
           </AlertDialogBody>
           <AlertDialogFooter gap={3}>
             <Button
