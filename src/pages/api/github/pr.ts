@@ -127,7 +127,7 @@ async function createForkAndPR(
     title: prTitle,
     body: prDescription,
     head: `${forkOwner}:${newBranchName}`,
-    base: prRepo === "user" ? baseBranchName : "master", // get upstream base for btc transcript dynamically?,
+    base: baseBranchName,
   });
 
   return prResult;
