@@ -256,15 +256,26 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
               >
                 Save
               </Button>
-              <Button
-                gap={2}
-                size="sm"
-                colorScheme="orange"
-                onClick={!isAdmin ? onOpen : handleSubmit}
+              <Flex
+                overflow="hidden"
+                borderRadius="md"
+                bg="orange.500"
+                dir="row"
               >
-                Submit {isAdmin ? `(${prRepo})` : ""}
-                {isAdmin && <SubmitTranscriptMenu setPrRepo={setPrRepo} />}
-              </Button>
+                <Button
+                  borderRadius="none"
+                  size="sm"
+                  colorScheme="orange"
+                  onClick={onOpen}
+                >
+                  Submit {isAdmin ? `(${prRepo})` : ""}
+                </Button>
+                {isAdmin && (
+                  <>
+                    <SubmitTranscriptMenu setPrRepo={setPrRepo} />
+                  </>
+                )}
+              </Flex>
             </Flex>
           </SidebarContentEdit>
         )}
@@ -277,6 +288,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
       </Flex>
       <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
       <SubmitTranscriptAlert
+        prRepo={prRepo}
         isOpen={isOpen}
         onCancel={onClose}
         onSubmit={handleSubmit}
