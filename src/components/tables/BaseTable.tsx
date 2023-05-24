@@ -6,7 +6,7 @@ import {
   RefetchOptions,
   RefetchQueryFilters,
 } from "@tanstack/react-query";
-import type { Transcript } from "../../../types";
+import type { ReviewTranscript } from "../../../types";
 import {
   ArchiveButton,
   DataEmpty,
@@ -18,7 +18,7 @@ import {
 import type { TableStructure } from "./types";
 
 type Props = {
-  data: (Transcript[] & { reviewId?: number }) | undefined;
+  data: ReviewTranscript[] | undefined;
   isLoading: boolean;
   isError: boolean;
   refetch?: <TPageData>(
@@ -106,7 +106,7 @@ const TableRow = ({
   actionState,
   showControls,
 }: {
-  row: Transcript;
+  row: ReviewTranscript;
   ts: TableStructure[];
   actionState: Props["actionState"];
   showControls: boolean;

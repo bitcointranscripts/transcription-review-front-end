@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-import { Transcript } from "../../../types";
+import { ReactElement } from "react";
+import { ReviewTranscript, Transcript } from "../../../types";
 
 export type tableStructureItemType =
   | "date"
@@ -12,15 +13,16 @@ export type TableStructure = {
   name: string;
   actionName?: string;
   type: tableStructureItemType;
-  modifier: (data: Transcript) => any;
-  action?: (data: Transcript) => void;
+  modifier: (data: ReviewTranscript) => any;
+  action?: (data: ReviewTranscript) => void;
   isDisabled?: boolean;
   isDisabledText?: string;
+  component?: (data: ReviewTranscript) => ReactElement;
 };
 
 export type TableDataElement = {
   tableItem: TableStructure;
-  row: Transcript;
+  row: ReviewTranscript;
   actionState?: {
     rowId: number;
   };
