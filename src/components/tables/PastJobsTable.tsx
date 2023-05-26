@@ -1,5 +1,5 @@
 import { useUserReviews } from "@/services/api/reviews";
-import { getCount } from "@/utils";
+import { getCount, wordsFormat } from "@/utils";
 import { Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";
@@ -31,7 +31,10 @@ const tableStructure = [
   {
     name: "word count",
     type: "text-short",
-    modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
+    modifier: (data) =>
+      Number(data.contentTotalWords)
+        ? `${wordsFormat.format(data.contentTotalWords)} words`
+        : "N/A",
   },
 ] satisfies TableStructure[];
 

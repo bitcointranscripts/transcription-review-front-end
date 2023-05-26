@@ -18,7 +18,7 @@ import "md-editor-rt/lib/style.css";
 
 import sanitize from "sanitize-html";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const EditTranscript = ({
   data,
@@ -36,6 +36,10 @@ const EditTranscript = ({
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
 
   const [isModalOpen, setIsModalopen] = useState(false);
+
+  const formattedMd = useMemo(() => {
+    return mdData?.replace(/\\n/g, "\n") ?? "";
+  }, [mdData]);
 
   // hijack params of mdEditor to change toolbar "preview" function
   useEffect(() => {
@@ -76,7 +80,7 @@ const EditTranscript = ({
             ref={editorRef}
             className={isPreviewOnly ? "hide-editor" : ""}
             sanitize={sanitize}
-            modelValue={mdData}
+            modelValue={formattedMd}
             onChange={update}
             language="en-US"
             toolbarsExclude={[

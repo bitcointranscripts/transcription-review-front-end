@@ -1,5 +1,5 @@
 import { useUserReviews } from "@/services/api/reviews";
-import { getCount } from "@/utils";
+import { getCount, wordsFormat } from "@/utils";
 import { Button, Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -87,7 +87,10 @@ const CurrentJobsTable = () => {
         {
           name: "word count",
           type: "text-short",
-          modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
+          modifier: (data) =>
+            Number(data.contentTotalWords)
+              ? `${wordsFormat.format(data.contentTotalWords)} words`
+              : "N/A",
         },
         {
           name: "status",
