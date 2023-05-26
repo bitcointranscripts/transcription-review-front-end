@@ -51,7 +51,7 @@ export const getTimeLeftText = (date: Date | null) => {
   return `${hours} hours left`;
 };
 
-const wordsFormat = new Intl.NumberFormat("en-US", {
+export const wordsFormat = new Intl.NumberFormat("en-US", {
   notation: "compact",
   compactDisplay: "short",
 });

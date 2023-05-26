@@ -9,6 +9,7 @@ export type Transcript = {
   originalContent: TranscriptContent;
   transcriptHash: string;
   claimedBy: Nullable<number>;
+  contentTotalWords: number;
 };
 
 export type ReviewTranscript = Transcript & { reviewId?: number };
