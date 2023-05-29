@@ -12,7 +12,10 @@ export type Transcript = {
   contentTotalWords: number;
 };
 
-export type ReviewTranscript = Transcript & { reviewId?: number };
+export type ReviewTranscript = Transcript & {
+  reviewId?: number;
+  pr_url?: Nullable<string>;
+};
 
 export type Review = {
   id: number;
@@ -23,6 +26,7 @@ export type Review = {
   claimedAt: Nullable<Date>;
   submittedAt: Nullable<Date>;
   mergedAt: Nullable<Date>;
+  pr_url: Nullable<string>;
 };
 
 export type UserReview = Review & {
