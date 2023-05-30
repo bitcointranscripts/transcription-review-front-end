@@ -1,5 +1,5 @@
 import { useUserReviews } from "@/services/api/reviews";
-import { getCount, wordsFormat } from "@/utils";
+import { wordsFormat } from "@/utils";
 import { Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";
@@ -47,20 +47,19 @@ const PastJobsTable = () => {
   const tableData = useMemo(() => data?.map((item) => item.transcript), [data]);
 
   return (
-    <>
-      <BaseTable
-        data={tableData}
-        isLoading={isLoading}
-        isError={isError}
-        refetch={refetch}
-        tableStructure={tableStructure}
-        tableHeaderComponent={
-          <Heading size="sm" mb={1}>
-            Past Jobs
-          </Heading>
-        }
-      />
-    </>
+    <BaseTable
+      data={tableData}
+      emptyText="No Past Jobs"
+      isLoading={isLoading}
+      isError={isError}
+      refetch={refetch}
+      tableStructure={tableStructure}
+      tableHeaderComponent={
+        <Heading size="sm" mb={1}>
+          Past Jobs
+        </Heading>
+      }
+    />
   );
 };
 
