@@ -65,7 +65,11 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
   const { data: userSession } = useSession();
   const isAdmin = userSession?.user?.permissions === "admin";
 
-  const [prRepo, setPrRepo] = useState<TranscriptSubmitOptions>("user");
+  const [prRepo, setPrRepo] = useState<TranscriptSubmitOptions>(
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+      ? "btc transcript"
+      : "user"
+  );
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );

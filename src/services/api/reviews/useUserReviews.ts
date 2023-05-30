@@ -22,11 +22,6 @@ export const useUserReviews = ({
   const queryInfo = useQuery({
     queryFn: () => userReviews({ userId, username, status }),
     queryKey: ["user-reviews", { userId, username, status }],
-    select: (data) => {
-      return data.filter((item) =>
-        Boolean(!item.transcript.archivedAt && !item.transcript.archivedBy)
-      );
-    },
     enabled: Boolean(!!userId || username),
   });
 

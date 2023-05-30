@@ -5,7 +5,7 @@ import {
   useClaimTranscript,
   useTranscripts,
 } from "@/services/api/transcripts";
-import { getCount, getTimeLeft } from "@/utils";
+import { getCount, getTimeLeft, wordsFormat } from "@/utils";
 import { Button, CheckboxGroup, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -219,7 +219,10 @@ const QueueTable = () => {
         {
           name: "word count",
           type: "text-short",
-          modifier: (data) => `${getCount(data.content.body) ?? "-"} words`,
+          modifier: (data) =>
+            Number(data.contentTotalWords)
+              ? `${wordsFormat.format(data.contentTotalWords)} words`
+              : "N/A",
         },
         // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
         {
