@@ -1,12 +1,14 @@
 /* eslint-disable no-unused-vars */
 
+import { useUserReviews } from "@/services/api/reviews";
 import {
   useArchiveTranscript,
   useClaimTranscript,
   useTranscripts,
 } from "@/services/api/transcripts";
-import { getCount, getTimeLeft, wordsFormat } from "@/utils";
-import { Button, CheckboxGroup, useToast } from "@chakra-ui/react";
+import { wordsFormat } from "@/utils";
+import { CheckboxGroup, useToast } from "@chakra-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -17,11 +19,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { Review, Transcript } from "../../../types";
+import { Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
 import { TableStructure } from "./types";
-import { useUserReviews } from "@/services/api/reviews";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -241,25 +241,24 @@ const QueueTable = () => {
   // TODO: extract and refactor claim logic into a claim ActionComponent
 
   return (
-    <>
-      <AdminArchiveSelect>
-        {({ handleArchive, hasAdminSelected, isArchiving }) => (
-          <BaseTable
-            actionState={claimState}
-            data={data}
-            handleArchive={handleArchive}
-            hasAdminSelected={hasAdminSelected}
-            isError={isError}
-            isArchiving={isArchiving}
-            isLoading={isLoading}
-            refetch={refetch}
-            showAdminControls
-            tableHeader="Transcripts waiting for review..."
-            tableStructure={tableStructure}
-          />
-        )}
-      </AdminArchiveSelect>
-    </>
+    <AdminArchiveSelect>
+      {({ handleArchive, hasAdminSelected, isArchiving }) => (
+        <BaseTable
+          actionState={claimState}
+          data={data}
+          emptyText="There are no transcripts awaiting review"
+          handleArchive={handleArchive}
+          hasAdminSelected={hasAdminSelected}
+          isError={isError}
+          isArchiving={isArchiving}
+          isLoading={isLoading}
+          refetch={refetch}
+          showAdminControls
+          tableHeader="Transcripts waiting for review..."
+          tableStructure={tableStructure}
+        />
+      )}
+    </AdminArchiveSelect>
   );
 };
 

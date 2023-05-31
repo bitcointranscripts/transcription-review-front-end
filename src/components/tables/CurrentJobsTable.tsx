@@ -125,20 +125,19 @@ const CurrentJobsTable = () => {
   );
 
   return (
-    <>
-      <BaseTable
-        data={tableData}
-        isLoading={isLoading}
-        isError={isError}
-        refetch={refetch}
-        tableStructure={tableStructure}
-        tableHeaderComponent={
-          <Heading size="sm" mb={1}>
-            Current Jobs
-          </Heading>
-        }
-      />
-    </>
+    <BaseTable
+      data={tableData}
+      emptyText="No Current Jobs"
+      isLoading={isLoading}
+      isError={isError}
+      refetch={refetch}
+      tableStructure={tableStructure}
+      tableHeaderComponent={
+        <Heading size="sm" mb={1}>
+          Current Jobs
+        </Heading>
+      }
+    />
   );
 };
 
