@@ -254,7 +254,6 @@ const QueueTable = () => {
           isLoading={isLoading}
           refetch={refetch}
           showAdminControls
-          tableHeader="Transcripts waiting for review..."
           tableStructure={tableStructure}
         />
       )}
