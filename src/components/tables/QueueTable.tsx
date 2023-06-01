@@ -125,8 +125,8 @@ const QueueTable = () => {
       if (status === "loading") {
         toast({
           status: "loading",
-          title: "Authenticating....",
-          description: "Authenticating.... please wait.",
+          title: "loading fun",
+          description: "loading up some fun for you... please wait.",
         });
         return;
       } else if (status === "unauthenticated") {
