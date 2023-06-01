@@ -130,10 +130,9 @@ const QueueTable = () => {
         });
         return;
       } else if (status === "unauthenticated") {
-        toast({
-          status: "warning",
-          title: "Unauthenticated",
-          description: "You have to login to claim a transcript",
+        // Sign-in user before trying to claim a transcript
+        await signIn("github", {
+          callbackUrl: `/?reclaim=true&txId=${transcriptId}`,
         });
         return;
       }
@@ -228,8 +227,6 @@ const QueueTable = () => {
         {
           name: "Up for grabs",
           actionName: "claim",
-          isDisabled: !canClaimTranscript,
-          isDisabledText: "You must be loggedIn and have no active reviews",
           type: "action",
           modifier: (data) => data.id,
           action: (data: Transcript) => handleClaim(data.id),
