@@ -40,7 +40,7 @@ const Navbar = () => {
         <Flex justifyContent="space-between" alignItems="center" h="full">
           <Link href="/">
             <Text color="gray.900" fontWeight={"semibold"}>
-              BTC Transcripts Queue
+              BTC Transcript Review
             </Text>
           </Link>
           {!userSession ? (

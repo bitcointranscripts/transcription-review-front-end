@@ -16,7 +16,7 @@ const TranscriptPage = () => {
   const { data: review, status: reviewStatus, error } = useReview(Number(id));
 
   if (status === "loading" || reviewStatus === "loading") {
-    return <AuthStatus title="Authenticating" message="Please wait" />;
+    return <AuthStatus title="Loading up some fun... " message="Please wait" />;
   }
   if (status === "unauthenticated" || !sessionData?.user?.id) {
     return <RedirectToLogin />;
