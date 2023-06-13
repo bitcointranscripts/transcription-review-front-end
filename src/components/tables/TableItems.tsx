@@ -15,6 +15,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { FaGithub } from "react-icons/fa";
@@ -116,7 +117,7 @@ export const TableAction = ({
 
   return (
     <Td>
-      <Flex gap={5}>
+      <Flex justifyContent="space-between" alignItems="center">
         {/* render a custom component if passed */}
         {tableItem.component ? (
           tableItem.component(row)
@@ -275,21 +276,16 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
 
   return (
     <>
-      <Box
-        cursor="default"
-        px={2}
-        py={1}
-        bgColor={isMerged ? "blue.200" : "red.100"}
-        rounded="md"
-      >
+      <Box cursor="default" minW={12}>
         <Text
           fontSize="12px"
-          fontWeight={600}
-          color={isMerged ? "blue.600" : "red.500"}
+          fontWeight={700}
+          color={isMerged ? "green.300" : "red.300"}
         >
           {isMerged ? "LIVE" : isSubmitted ? "CLOSED" : "EXPIRED"}
         </Text>
       </Box>
+      {/* <GroupedLinks data={data} /> */}
     </>
   );
 };
@@ -298,40 +294,30 @@ export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
   const { pr_url } = data.review!;
   const { media } = data.content;
 
-  // if (!pr_url) return null;
-
   return (
-    <Flex alignItems="center">
+    <Flex alignItems="center" gap={2}>
       {pr_url ? (
         <Link target="_blank" href={pr_url as any}>
-          <IconButton variant="link" aria-label="github" icon={<FaGithub />} />
+          <Icon
+            _hover={{
+              cursor: "pointer",
+              color: "orange.300",
+            }}
+            w="20px"
+            h="20px"
+            color="gray.500"
+            as={FaGithub}
+            display="block"
+          />
         </Link>
       ) : null}
       <Link target="_blank" href={media as any}>
-        <Box
-          display="grid"
-          placeItems="center"
-          textAlign="center"
-          w={7}
-          h={7}
-          bgColor="orange.400"
-          rounded="full"
-        >
-          <Box
-            display="grid"
-            placeItems="center"
-            letterSpacing="tight"
-            color="white"
-            fontWeight="bold"
-          >
-            <Text fontSize="8px" lineHeight="normal">
-              BTC
-            </Text>
-            <Text fontSize="4px" lineHeight="normal">
-              Transcripts
-            </Text>
-          </Box>
-        </Box>
+        <Image
+          alt="btctranscript"
+          height="20"
+          width="20"
+          src="/btctranscripts.png"
+        />
       </Link>
     </Flex>
   );
