@@ -4,7 +4,6 @@ import { deriveFileSlug, Metadata, newIndexFile } from "@/utils";
 import { Octokit } from "@octokit/core";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
-import slugify from "slugify";
 
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,

@@ -292,13 +292,13 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
 
 export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
   const { pr_url } = data.review!;
-  const { media } = data.content;
-  const isPublished = data.review?.mergedAt
-  let fileSlug = "",
-    publishUrl = "";
-  // const publishedUrl = derivePublishUrl
+  let publishUrl = "";
+  const isPublished =
+    data.review?.mergedAt &&
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
+
   if (isPublished) {
-    fileSlug = deriveFileSlug(data.content.title);
+    let fileSlug = deriveFileSlug(data.content.title);
     publishUrl = derivePublishUrl(fileSlug, data.content.loc);
   }
 
@@ -319,7 +319,7 @@ export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
           />
         </Link>
       ) : null}
-      {
+      {isPublished && (
         <Link target="_blank" href={publishUrl as any}>
           <Image
             alt="btctranscript"
@@ -328,7 +328,7 @@ export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
             src="/btctranscripts.png"
           />
         </Link>
-      }
+      )}
     </Flex>
   );
 };

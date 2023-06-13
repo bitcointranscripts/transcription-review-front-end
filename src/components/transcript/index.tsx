@@ -197,7 +197,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
-        directoryPath: transcriptData?.content?.loc ?? config.defaultDirectoryPath,
+        directoryPath:
+          transcriptData?.content?.loc ?? config.defaultDirectoryPath,
         fileName: formatDataForMetadata(title),
         url: transcriptData?.content.media,
         date: date && dateFormatGeneral(date, true),
