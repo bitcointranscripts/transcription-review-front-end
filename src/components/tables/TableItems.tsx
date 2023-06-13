@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { dateFormat } from "@/utils";
 import {
+  Box,
   Button,
   Checkbox,
   Flex,
+  Icon,
   IconButton,
   Skeleton,
   Spinner,
@@ -13,9 +15,12 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useMemo } from "react";
+import { FaGithub } from "react-icons/fa";
 import { MdOutlineArchive } from "react-icons/md";
 import { TbReload } from "react-icons/tb";
+import { ReviewTranscript } from "../../../types";
 import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableDataElement, TableStructure } from "./types";
@@ -263,3 +268,71 @@ export const ArchiveButton = ({
     )}
   </Button>
 );
+
+export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
+  const isMerged = data.review!.mergedAt;
+  const isSubmitted = data.review!.submittedAt;
+
+  return (
+    <>
+      <Box
+        cursor="default"
+        px={2}
+        py={1}
+        bgColor={isMerged ? "blue.200" : "red.100"}
+        rounded="md"
+      >
+        <Text
+          fontSize="12px"
+          fontWeight={600}
+          color={isMerged ? "blue.600" : "red.500"}
+        >
+          {isMerged ? "LIVE" : isSubmitted ? "CLOSED" : "EXPIRED"}
+        </Text>
+      </Box>
+    </>
+  );
+};
+
+export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
+  const { pr_url } = data.review!;
+  const { media } = data.content;
+
+  // if (!pr_url) return null;
+
+  return (
+    <Flex alignItems="center">
+      {pr_url ? (
+        <Link target="_blank" href={pr_url as any}>
+          <IconButton variant="link" aria-label="github" icon={<FaGithub />} />
+        </Link>
+      ) : null}
+      <Link target="_blank" href={media as any}>
+        <Box
+          display="grid"
+          placeItems="center"
+          textAlign="center"
+          w={7}
+          h={7}
+          bgColor="orange.400"
+          rounded="full"
+        >
+          <Box
+            display="grid"
+            placeItems="center"
+            letterSpacing="tight"
+            color="white"
+            fontWeight="bold"
+          >
+            <Text fontSize="8px" lineHeight="normal">
+              BTC
+            </Text>
+            <Text fontSize="4px" lineHeight="normal">
+              Transcripts
+            </Text>
+          </Box>
+        </Box>
+      </Link>
+    </Flex>
+  );
+};

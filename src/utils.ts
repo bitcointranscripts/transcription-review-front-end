@@ -188,3 +188,7 @@ export function newIndexFile(directoryName: string) {
           `{{< childpages >}}`
   return file;
 }
+
+// export function deriveMediaSource(media: string) {
+
+// }

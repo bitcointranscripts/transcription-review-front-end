@@ -3,7 +3,9 @@ import { wordsFormat } from "@/utils";
 import { Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";
+import type { ReviewTranscript } from "../../../types";
 import BaseTable from "./BaseTable";
+import { GroupedLinks, ReviewStatus } from "./TableItems";
 import type { TableStructure } from "./types";
 
 const tableStructure = [
@@ -29,12 +31,16 @@ const tableStructure = [
   },
   { name: "tags", type: "tags", modifier: (data) => data.content.tags },
   {
-    name: "word count",
-    type: "text-short",
-    modifier: (data) =>
-      Number(data.contentTotalWords)
-        ? `${wordsFormat.format(data.contentTotalWords)} words`
-        : "N/A",
+    name: "status",
+    type: "action",
+    modifier: (data) => data,
+    component: (data) => <ReviewStatus data={data} />,
+  },
+  {
+    name: "Links",
+    type: "action",
+    modifier: (data) => data,
+    component: (data) => <GroupedLinks data={data} />,
   },
 ] satisfies TableStructure[];
 
@@ -44,7 +50,17 @@ const PastJobsTable = () => {
     userId: userSession?.user?.id,
     status: "inactive",
   });
-  const tableData = useMemo(() => data?.map((item) => item.transcript), [data]);
+  const tableData = useMemo(() => {
+    return data?.map((item) => {
+      const { transcript, ...rest } = item;
+      return {
+        ...transcript,
+        review: {
+          ...rest,
+        },
+      };
+    }) as ReviewTranscript[];
+  }, [data]);
 
   return (
     <BaseTable

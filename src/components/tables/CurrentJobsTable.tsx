@@ -32,26 +32,32 @@ const CurrentJobsTable = () => {
     let _pendingData = pendingReviews ?? [];
     let cummulativeCurrentJobs = _activeData.concat(_pendingData);
     if (!cummulativeCurrentJobs.length) return [];
-    return cummulativeCurrentJobs.map((item) => ({
-      ...item.transcript,
-      reviewId: item.id,
-      pr_url: item.pr_url,
-    }));
+
+    // return data restructured as ReviewTranscript[]
+    return cummulativeCurrentJobs.map((item) => {
+      const { transcript, ...rest } = item;
+      return {
+        ...transcript,
+        review: {
+          ...rest,
+        },
+      };
+    }) as ReviewTranscript[];
   }, [activeReviews, pendingReviews]);
 
   const ActionComponent = useCallback(
     ({ data }: { data: ReviewTranscript }) => {
       const pendingIndex = pendingReviews?.findIndex(
-        (review) => review.id === data.reviewId
+        (review) => review.id === data.review?.id
       );
       const isPending = pendingIndex !== -1;
 
       const handleResume = () => {
-        if (!data.reviewId) {
+        if (!data.review?.id) {
           alert("Error: No reviewId on this review");
           return;
         }
-        router.push(`/reviews/${data.reviewId}`);
+        router.push(`/reviews/${data.review?.id}`);
       };
       return (
         <>
@@ -71,7 +77,7 @@ const CurrentJobsTable = () => {
                 color: "orange.400",
               }}
             >
-              <Link href={`${data.pr_url}`} target="_blank">
+              <Link href={`${data.review?.pr_url}`} target="_blank">
                 <Icon as={BiLink} />
               </Link>
             </Flex>
