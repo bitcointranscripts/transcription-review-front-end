@@ -20,6 +20,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import type { UserReview } from "../../../types";
+import config from "@/config/config.json";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -196,7 +197,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
-        directoryPath: transcriptData?.content?.loc ?? "misc",
+        directoryPath: transcriptData?.content?.loc ?? config.defaultDirectoryPath,
         fileName: formatDataForMetadata(title),
         url: transcriptData?.content.media,
         date: date && dateFormatGeneral(date, true),

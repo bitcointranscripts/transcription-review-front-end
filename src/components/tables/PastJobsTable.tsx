@@ -1,5 +1,4 @@
 import { useUserReviews } from "@/services/api/reviews";
-import { wordsFormat } from "@/utils";
 import { Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";

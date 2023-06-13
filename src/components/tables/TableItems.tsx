@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { dateFormat } from "@/utils";
+import { dateFormat, deriveFileSlug, derivePublishUrl } from "@/utils";
 import {
   Box,
   Button,
@@ -293,6 +293,14 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
 export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
   const { pr_url } = data.review!;
   const { media } = data.content;
+  const isPublished = data.review?.mergedAt
+  let fileSlug = "",
+    publishUrl = "";
+  // const publishedUrl = derivePublishUrl
+  if (isPublished) {
+    fileSlug = deriveFileSlug(data.content.title);
+    publishUrl = derivePublishUrl(fileSlug, data.content.loc);
+  }
 
   return (
     <Flex alignItems="center" gap={2}>
@@ -311,14 +319,16 @@ export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
           />
         </Link>
       ) : null}
-      <Link target="_blank" href={media as any}>
-        <Image
-          alt="btctranscript"
-          height="20"
-          width="20"
-          src="/btctranscripts.png"
-        />
-      </Link>
+      {
+        <Link target="_blank" href={publishUrl as any}>
+          <Image
+            alt="btctranscript"
+            height="20"
+            width="20"
+            src="/btctranscripts.png"
+          />
+        </Link>
+      }
     </Flex>
   );
 };
