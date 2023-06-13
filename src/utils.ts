@@ -188,7 +188,7 @@ export function newIndexFile(directoryName: string) {
 
 export function deriveFileSlug(title: string) {
   const _trimmedFileName = title.trim();
-  const fileSlug = slugify(_trimmedFileName).replace(/[^\w-]+/g, "");
+  const fileSlug = slugify(_trimmedFileName, { strict: true, lower: true });
   return fileSlug;
 }
 
