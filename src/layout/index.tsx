@@ -1,11 +1,13 @@
 import Footer from "@/components/footer/Footer";
 import GlobalContainer from "@/components/GlobalContainer";
 import Navbar from "@/components/navbar/Navbar";
+import useNoContainerLimit from "@/hooks/useNoContainerLimit";
 import Head from "next/head";
 import React from "react";
 import styles from "./layout.module.css";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { noRestriction } = useNoContainerLimit();
   return (
     <div className={styles.app_container}>
       <Head>
@@ -15,7 +17,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <link rel="icon" href="./btc-transcript-circle-128.png" />
       </Head>
       <Navbar />
-      <GlobalContainer flexGrow={1} py={4} mt={12}>
+      <GlobalContainer flexGrow={1} py={4} mt={12} maxW={noRestriction ? "none" : "container.xl"}>
         {children}
       </GlobalContainer>
       <Footer />
