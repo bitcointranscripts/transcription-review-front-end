@@ -293,9 +293,10 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
 export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
   const { pr_url } = data.review!;
   let publishUrl = "";
-  const isPublished =
-    data.review?.mergedAt &&
-    process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
+  const isPublished = data.review?.mergedAt;
+  // const isPublished =
+  //   data.review?.mergedAt &&
+  //   process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
 
   if (isPublished) {
     let fileSlug = deriveFileSlug(data.content.title);
