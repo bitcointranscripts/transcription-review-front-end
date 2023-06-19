@@ -5,7 +5,7 @@ import GlobalContainer from "../GlobalContainer";
 const Hero = ({ getStarted }: { getStarted: () => void }) => {
   return (
     <Box
-      backgroundImage="url('/bg_gray.jpg')"
+      backgroundImage="url('/home/bg_gray.jpg')"
       bgSize="cover"
       bgColor="whiteAlpha.700"
       bgBlendMode="lighten"
