@@ -17,7 +17,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <link rel="icon" href="./btc-transcript-circle-128.png" />
       </Head>
       <Navbar />
-      <GlobalContainer flexGrow={1} py={4} mt={12} {...(noRestriction ? {maxW : "none", p: 0} : {})}>
+      <GlobalContainer
+        flexGrow={1}
+        py={4}
+        mt={12}
+        {...(noRestriction ? { maxW: "none", p: 0 } : {})}
+      >
         {children}
       </GlobalContainer>
       <Footer />

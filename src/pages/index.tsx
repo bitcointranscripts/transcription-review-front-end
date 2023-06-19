@@ -12,7 +12,7 @@ export default function Home() {
     if (session.status === "unauthenticated") {
       router.push("/home");
     }
-  }, [session]);
+  }, [session, router]);
 
   // console.log({sessionData, sessionStatus})
   return (
