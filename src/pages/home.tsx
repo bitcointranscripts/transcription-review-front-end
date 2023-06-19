@@ -1,38 +1,16 @@
 import GlobalContainer from "@/components/GlobalContainer";
 import Hero from "@/components/home/Hero";
-import MediaScreen from "@/components/home/MediaScreen";
-import { FirstAccordion, StepOne, StepThree, StepTwo, StepZero } from "@/components/home/Steps";
-import YoutubePortal from "@/components/home/YoutubePortal";
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Heading,
-  ListItem,
-} from "@chakra-ui/react";
+  FirstAccordion,
+  StepOne,
+  StepThree,
+  StepTwo,
+  StepZero,
+} from "@/components/home/Steps";
+import { Accordion, Box, Button, Heading, Icon } from "@chakra-ui/react";
+import { signIn } from "next-auth/react";
 import React, { useRef } from "react";
-
-const StaticAccordionLists = [
-  {
-    title: "Why Edit Transcripts?",
-    list: [
-      "Build proof of work by contributing to bitcoin (we’ll write your GitHub name as a contributor)",
-      "Improve your comprehension of bitcoin and lightning",
-      "Make it easier to discover, search for, and use information about technical bitcoin concepts",
-    ],
-  },
-  {
-    title: "Step 0: What you’ll need",
-    list: [
-      "A computer (mobile not supported)",
-      "A GitHub account",
-      "A few hours in a 24 hour span to work on the transcript. You’ll need to submit the transcript within 24 hours of claiming it.",
-    ],
-  },
-];
+import { FaGithub } from "react-icons/fa";
 
 const HomePage = () => {
   const accordionRef = useRef<HTMLDivElement>(null);
@@ -66,6 +44,25 @@ const HomePage = () => {
               <StepTwo />
               <StepThree />
             </Accordion>
+          </Box>
+          <Box
+            display="grid"
+            placeItems="center"
+            width="full"
+            pt={8}
+            onClick={() => signIn("github", { callbackUrl: "/" })}
+          >
+            <Button variant="outline" mx="auto">
+              Sign In
+              <Icon
+                ml={2}
+                w="20px"
+                h="20px"
+                color="gray.500"
+                as={FaGithub}
+                display="block"
+              />
+            </Button>
           </Box>
         </GlobalContainer>
       </Box>

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import {
   AccordionButton,
   AccordionIcon,
@@ -15,6 +16,26 @@ import Link from "next/link";
 import React from "react";
 import { AbstractedChakraComponentProps } from "../../../types";
 import MediaScreen from "./MediaScreen";
+
+// eslint-disable-next-line no-unused-vars
+const StaticAccordionLists = [
+  {
+    title: "Why Edit Transcripts?",
+    list: [
+      "Build proof of work by contributing to bitcoin (we'll write your GitHub name as a contributor)",
+      "Improve your comprehension of bitcoin and lightning",
+      "Make it easier to discover, search for, and use information about technical bitcoin concepts",
+    ],
+  },
+  {
+    title: "Step 0: What you'll need",
+    list: [
+      "A computer (mobile not supported)",
+      "A GitHub account",
+      "A few hours in a 24 hour span to work on the transcript. You'll need to submit the transcript within 24 hours of claiming it.",
+    ],
+  },
+];
 
 export const FirstAccordion = () => {
   return (

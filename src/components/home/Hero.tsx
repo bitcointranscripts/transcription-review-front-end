@@ -11,10 +11,9 @@ const Hero = ({ getStarted }: { getStarted: () => void }) => {
     height: "390",
     width: "640",
     playerVars: {
-      // https://developers.google.com/youtube/player_parameters
       autoplay: 1,
-      start: 40,
       controls: 0,
+      rel: 0,
     },
   };
   const handleOnReady: YouTubeProps["onReady"] = (e) => {
@@ -73,22 +72,32 @@ const Hero = ({ getStarted }: { getStarted: () => void }) => {
             </Button>
           </Flex>
           <Box flex="1 1 50%">
-            <div className="iframe-wrapper">
-              <div style={Boolean(playerReady.player) ? {"opacity": 1} : {"opacity": 0}}>
-                <YouTube videoId='YNIFm0QFAuA' onReady={handleOnReady} {...opts} style={{borderRadius: "5px", overflow: "hidden", boxShadow: "10px 10px 40px 5px rgba(0, 0, 0, 0.2)"}}/>
-              </div>
-              <div style={Boolean(playerReady.player) ? {"opacity": 1} : {"opacity": 0}}>
-                <YouTube videoId='YNIFm0QFAuA' onReady={handleOnReady} {...opts} style={{borderRadius: "5px", overflow: "hidden", boxShadow: "10px 10px 40px 5px rgba(0, 0, 0, 0.2)"}}/>
-              </div>
-              {/* <iframe
+            <div
+              style={
+                Boolean(playerReady.player) ? { opacity: 1 } : { opacity: 0 }
+              }
+            >
+              <YouTube
+                videoId="YNIFm0QFAuA"
+                onReady={handleOnReady}
+                {...opts}
+                style={{
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  boxShadow: "10px 10px 40px 5px rgba(0, 0, 0, 0.2)",
+                }}
+              />
+            </div>
+            {/* <div className="iframe-wrapper">
+              <iframe
                 className="embedded-video protrude"
                 id="ytplayer"
                 // type="text/html"
                 width="500"
                 height="200"
                 src="https://www.youtube.com/embed/YNIFm0QFAuA?start=40&rel=0&fs=1"
-              ></iframe> */}
-            </div>
+              ></iframe>
+            </div> */}
           </Box>
         </Flex>
       </GlobalContainer>
