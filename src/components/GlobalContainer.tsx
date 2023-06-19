@@ -1,11 +1,8 @@
 import { Container, ContainerProps } from "@chakra-ui/react";
 import React from "react";
+import type { AbstractedChakraComponentProps } from "../../types";
 
-type Props = {
-  children: React.ReactNode;
-} & Omit<ContainerProps, "children">;
-
-const GlobalContainer: React.FC<Props> = ({ children, ...chakraProps }) => {
+const GlobalContainer: React.FC<AbstractedChakraComponentProps<ContainerProps>> = ({ children, ...chakraProps }) => {
   return (
     <Container maxW="container.xl" {...chakraProps}>
       {children}
