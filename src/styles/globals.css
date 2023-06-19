@@ -78,3 +78,8 @@ a {
     height: unset !important; */
 }
 
+.invisible {
+  visibility: hidden;
+  opacity: 0;
+}
+
