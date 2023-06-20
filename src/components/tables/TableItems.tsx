@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { dateFormat } from "@/utils";
+import { dateFormat, deriveFileSlug, derivePublishUrl } from "@/utils";
 import {
+  Box,
   Button,
   Checkbox,
   Flex,
+  Icon,
   IconButton,
   Skeleton,
   Spinner,
@@ -13,9 +15,13 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
 import { useMemo } from "react";
+import { FaGithub } from "react-icons/fa";
 import { MdOutlineArchive } from "react-icons/md";
 import { TbReload } from "react-icons/tb";
+import { ReviewTranscript } from "../../../types";
 import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableDataElement, TableStructure } from "./types";
@@ -111,7 +117,7 @@ export const TableAction = ({
 
   return (
     <Td>
-      <Flex gap={5}>
+      <Flex justifyContent="space-between" alignItems="center">
         {/* render a custom component if passed */}
         {tableItem.component ? (
           tableItem.component(row)
@@ -263,3 +269,67 @@ export const ArchiveButton = ({
     )}
   </Button>
 );
+
+export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
+  const isMerged = data.review!.mergedAt;
+  const isSubmitted = data.review!.submittedAt;
+
+  return (
+    <>
+      <Box cursor="default" minW={12}>
+        <Text
+          fontSize="12px"
+          fontWeight={700}
+          color={isMerged ? "green.300" : "red.300"}
+        >
+          {isMerged ? "LIVE" : isSubmitted ? "CLOSED" : "EXPIRED"}
+        </Text>
+      </Box>
+      {/* <GroupedLinks data={data} /> */}
+    </>
+  );
+};
+
+export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
+  const { pr_url } = data.review!;
+  let publishUrl = "";
+  const isPublished = data.review?.mergedAt;
+  // const isPublished =
+  //   data.review?.mergedAt &&
+  //   process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
+
+  if (isPublished) {
+    let fileSlug = deriveFileSlug(data.content.title);
+    publishUrl = derivePublishUrl(fileSlug, data.content.loc);
+  }
+
+  return (
+    <Flex alignItems="center" gap={2}>
+      {pr_url ? (
+        <Link target="_blank" href={pr_url as any}>
+          <Icon
+            _hover={{
+              cursor: "pointer",
+              color: "orange.300",
+            }}
+            w="20px"
+            h="20px"
+            color="gray.500"
+            as={FaGithub}
+            display="block"
+          />
+        </Link>
+      ) : null}
+      {isPublished && (
+        <Link target="_blank" href={publishUrl as any}>
+          <Image
+            alt="btctranscript"
+            height="20"
+            width="20"
+            src="/btctranscripts.png"
+          />
+        </Link>
+      )}
+    </Flex>
+  );
+};

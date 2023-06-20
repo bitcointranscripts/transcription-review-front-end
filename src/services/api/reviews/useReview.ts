@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Review } from "../../../../types";
+import type { UserReview } from "../../../../types";
 import axios from "../axios";
 import endpoints from "../endpoints";
 
-const getReview = async (reviewId: number): Promise<Review> => {
+const getReview = async (reviewId: number): Promise<UserReview> => {
   return axios
     .get(endpoints.REVIEW_BY_ID(reviewId))
     .then((res) => res.data)
@@ -11,7 +11,7 @@ const getReview = async (reviewId: number): Promise<Review> => {
 };
 
 export const useReview = (id: number) =>
-  useQuery<Review, Error>({
+  useQuery<UserReview, Error>({
     queryFn: () => getReview(id),
     queryKey: ["review", id],
     refetchOnWindowFocus: false,

@@ -1,10 +1,9 @@
 import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
 import config from "@/config/config.json";
-import { Metadata, newIndexFile } from "@/utils";
+import { deriveFileSlug, Metadata, newIndexFile } from "@/utils";
 import { Octokit } from "@octokit/core";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
-import slugify from "slugify";
 
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,
@@ -107,8 +106,8 @@ async function createForkAndPR(
   await checkDirAndInitializeIndexFile(directoryPath);
 
   // Create new file on the branch
-  const _trimmedFileName = fileName.trim();
-  const fileSlug = slugify(_trimmedFileName).replace(/[^\w-]+/g, "");
+  // const _trimmedFileName = fileName.trim();
+  const fileSlug = deriveFileSlug(fileName);
   await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
     owner: forkOwner,
     repo: forkRepo,
