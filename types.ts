@@ -13,8 +13,7 @@ export type Transcript = {
 };
 
 export type ReviewTranscript = Transcript & {
-  reviewId?: number;
-  pr_url?: Nullable<string>;
+  review?: Review;
 };
 
 export type Review = {

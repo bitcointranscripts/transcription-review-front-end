@@ -42,7 +42,7 @@ const TranscriptPage = () => {
   }
 
   if (review?.transcriptId) {
-    return <Transcript reviewData={review as UserReview} />;
+    return <Transcript reviewData={review} />;
   }
 
   return (

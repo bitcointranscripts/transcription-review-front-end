@@ -1,5 +1,7 @@
 
 {
   "claim_duration_in_hours": 24,
-  "maximum_nested_directory_depth": 3
+  "maximum_nested_directory_depth": 3,
+  "btctranscripts_base_url": "https://btctranscripts.com/",
+  "defaultDirectoryPath": "misc"
 }
