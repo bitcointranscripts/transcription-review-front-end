@@ -1,29 +1,9 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import React, { useState } from "react";
-import YouTube, { YouTubeProps } from "react-youtube";
+import React, { useEffect, useState } from "react";
+import YouTube, { YouTubeProps, YouTubePlayer } from "react-youtube";
 import GlobalContainer from "../GlobalContainer";
 
 const Hero = ({ getStarted }: { getStarted: () => void }) => {
-  const [playerReady, setPlayerReady] = useState({
-    player: null,
-  });
-  const opts: YouTubeProps["opts"] = {
-    // height: "390",
-    // width: "640",
-    playerVars: {
-      autoplay: 1,
-      controls: 0,
-      rel: 0,
-    },
-  };
-  const handleOnReady: YouTubeProps["onReady"] = (e) => {
-    // prevent flickering
-    setTimeout(() => {
-      setPlayerReady({
-        player: e.target,
-      });
-    }, 500);
-  };
   return (
     <Box
       backgroundImage="url('/home/bg_gray.jpg')"
@@ -71,24 +51,7 @@ const Hero = ({ getStarted }: { getStarted: () => void }) => {
               Get Started
             </Button>
           </Flex>
-          <Box flex="1 1 50%">
-            <div
-              style={
-                Boolean(playerReady.player) ? { opacity: 1 } : { opacity: 0 }
-              }
-            >
-              <YouTube
-                videoId="YNIFm0QFAuA"
-                onReady={handleOnReady}
-                {...opts}
-                className="iframe-wrapper"
-                // style={{
-                //   borderRadius: "10px",
-                //   overflow: "hidden",
-                //   boxShadow: "10px 10px 40px 5px rgba(0, 0, 0, 0.2)",
-                // }}
-              />
-            </div>
+          <Box flex="1 1 50%" id="hero-youtube-player">
             {/* <div className="iframe-wrapper">
               <iframe
                 className="embedded-video protrude"
