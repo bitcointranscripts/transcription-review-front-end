@@ -8,8 +8,8 @@ const Hero = ({ getStarted }: { getStarted: () => void }) => {
     player: null,
   });
   const opts: YouTubeProps["opts"] = {
-    height: "390",
-    width: "640",
+    // height: "390",
+    // width: "640",
     playerVars: {
       autoplay: 1,
       controls: 0,
@@ -81,11 +81,12 @@ const Hero = ({ getStarted }: { getStarted: () => void }) => {
                 videoId="YNIFm0QFAuA"
                 onReady={handleOnReady}
                 {...opts}
-                style={{
-                  borderRadius: "10px",
-                  overflow: "hidden",
-                  boxShadow: "10px 10px 40px 5px rgba(0, 0, 0, 0.2)",
-                }}
+                className="iframe-wrapper"
+                // style={{
+                //   borderRadius: "10px",
+                //   overflow: "hidden",
+                //   boxShadow: "10px 10px 40px 5px rgba(0, 0, 0, 0.2)",
+                // }}
               />
             </div>
             {/* <div className="iframe-wrapper">
