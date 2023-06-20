@@ -160,7 +160,7 @@ export const StepTwo = () => {
             />
           </ListItem>
           <ListItem>
-            <Flex gap={4}>
+            <Flex gap={4} direction={{ base: "column", md: "row" }}>
               <Spacedlist flex="0 1 40%" listStyleType="none">
                 <ListItem>
                   To the right you’ll see how this all comes together.
@@ -251,7 +251,7 @@ export const StepTwo = () => {
         </Heading>
         <Spacedlist>
           <ListItem>
-            <Flex gap={4}>
+            <Flex gap={4} direction={{ base: "column", md: "row" }}>
               <Spacedlist listStyleType="none">
                 <ListItem>
                   An ideal setup is using split screen to make edits while
