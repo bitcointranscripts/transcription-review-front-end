@@ -1,5 +1,6 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
+import slugify from "slugify";
 import { MetadataProps } from "../types";
 import config from "./config/config.json";
 
@@ -79,9 +80,8 @@ export class Metadata {
     this.source = url;
 
     // eslint-disable-next-line prettier/prettier
-    this.metaData = `---\n` +
-                    `title: ${fileTitle}\n` +
-                    `transcript_by: ${transcript_by}\n`;
+    this.metaData =
+      `---\n` + `title: ${fileTitle}\n` + `transcript_by: ${transcript_by}\n`;
 
     this.metaData += `media: ${url}\n`;
 
@@ -182,9 +182,21 @@ export function newIndexFile(directoryName: string) {
     .join(" ");
   let file = "";
   // eslint-disable-next-line prettier/prettier
-  file += `---\n` +
-          `title: ${title}\n` +
-          `---\n\n` +
-          `{{< childpages >}}`
+  file += `---\n` + `title: ${title}\n` + `---\n\n` + `{{< childpages >}}`;
   return file;
+}
+
+export function deriveFileSlug(title: string) {
+  const _trimmedFileName = title.trim();
+  const fileSlug = slugify(_trimmedFileName, { strict: true, lower: true });
+  return fileSlug;
+}
+
+export function derivePublishUrl(
+  fileName: string,
+  loc: string = config.defaultDirectoryPath
+) {
+  const base_url = config.btctranscripts_base_url;
+  const publishUrl = base_url + loc + "/" + fileName;
+  return publishUrl;
 }
