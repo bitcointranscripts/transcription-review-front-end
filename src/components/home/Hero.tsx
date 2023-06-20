@@ -1,6 +1,5 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import YouTube, { YouTubeProps, YouTubePlayer } from "react-youtube";
+import React from "react";
 import GlobalContainer from "../GlobalContainer";
 
 const Hero = ({ getStarted }: { getStarted: () => void }) => {

@@ -24,7 +24,7 @@ const MediaScreen = ({
     if (!wrapperRef.current) {
       wrapperRef.current = createWrapperElement(wrapperId);
     }
-  }, []);
+  }, [wrapperId]);
 
   const enableFullScreen = () => {
     setIsFullScreen(true);
@@ -35,9 +35,13 @@ const MediaScreen = ({
 
   return (
     <>
-      <Box position="relative" borderRadius="lg" overflow="hidden" onClick={enableFullScreen}
+      <Box
+        position="relative"
+        borderRadius="lg"
+        overflow="hidden"
+        onClick={enableFullScreen}
         role="group"
-        _hover={{filter: "drop-shadow(5px 5px 5px rgba(3, 25, 70, 0.2))"}}
+        _hover={{ filter: "drop-shadow(5px 5px 5px rgba(3, 25, 70, 0.2))" }}
       >
         {mediaElement}
         <Box
@@ -51,7 +55,17 @@ const MediaScreen = ({
           h="100%"
           _hover={{ bgColor: "whiteAlpha.700" }}
         >
-          <Box visibility="hidden" pointerEvents="none" bgColor="orange.200" px={2} rounded="lg" color="blackAlpha.700" fontWeight={600} fontSize="14px" _groupHover={{visibility: "visible"}}>
+          <Box
+            visibility="hidden"
+            pointerEvents="none"
+            bgColor="orange.200"
+            px={2}
+            rounded="lg"
+            color="blackAlpha.700"
+            fontWeight={600}
+            fontSize="14px"
+            _groupHover={{ visibility: "visible" }}
+          >
             Click To Expand
           </Box>
         </Box>
@@ -70,7 +84,13 @@ const MediaScreen = ({
             // bgColor="blackAlpha.800"
             // onClick={disableFullScreen}
           >
-            <Box pos="absolute" bgColor="blackAlpha.800" onClick={disableFullScreen} w="100%" h="100%"></Box>
+            <Box
+              pos="absolute"
+              bgColor="blackAlpha.800"
+              onClick={disableFullScreen}
+              w="100%"
+              h="100%"
+            ></Box>
             <Box pos="absolute" maxW="100%" maxH="100%" p={4} display="flex">
               {mediaElement}
             </Box>

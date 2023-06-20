@@ -12,29 +12,15 @@ import YoutubePortal from "@/components/home/YoutubePortal";
 import { Accordion, Box, Button, Heading, Icon } from "@chakra-ui/react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
-import { BiRightArrow } from "react-icons/bi";
 import { FaArrowRight, FaGithub } from "react-icons/fa";
-import { MdArrowRight } from "react-icons/md";
 import { YouTubePlayer } from "react-youtube";
-
 
 const HomePage = () => {
   const accordionRef = useRef<HTMLDivElement>(null);
   const { status: sessionStatus } = useSession();
-  const router = useRouter();
 
   const [player, setPlayer] = useState<YouTubePlayer>(null);
-
-  // const handleHomeProgress = () => {
-  //   const isUnAuthenticated = sessionStatus === "unauthenticated";
-  //   if (isUnAuthenticated) {
-  //     signIn("github", { callbackUrl: "/" });
-  //   } else {
-  //     router.push("/");
-  //   }
-  // };
 
   const getStarted = () => {
     // console.log(e)

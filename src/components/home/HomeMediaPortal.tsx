@@ -20,6 +20,7 @@ const HomeMediaPortal = ({
     return () => {
       root!.removeChild(_wrapperElement);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (wrapperElement === null) return null;

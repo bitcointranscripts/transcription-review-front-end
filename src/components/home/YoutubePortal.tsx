@@ -1,7 +1,5 @@
-import { Box } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import HomeMediaPortal from "./HomeMediaPortal";
 
 const wrapperId = "home-media-viewer";
 
@@ -9,7 +7,6 @@ const YoutubePortal = ({ children }: { children: React.ReactNode }) => {
   const heroYoutubeEmbed = useRef<HTMLElement | null>(null);
   useEffect(() => {
     heroYoutubeEmbed.current = document.getElementById("hero-youtube-player");
-    console.log("dsd", heroYoutubeEmbed.current);
   }, []);
 
   if (!heroYoutubeEmbed.current) return null;
@@ -50,6 +47,7 @@ const YoutubePortal = ({ children }: { children: React.ReactNode }) => {
 
 export default YoutubePortal;
 
+// eslint-disable-next-line no-unused-vars
 const Viewer = ({ children }: { children: React.ReactNode }) => {
   const wrapperRef = useRef<HTMLElement | null>(null);
   const viewerElement = useRef<HTMLElement | null>(null);

@@ -2,10 +2,11 @@ import YouTube, { YouTubeProps, YouTubePlayer } from "react-youtube";
 
 type YouTubePlayerProps = {
   player: YouTubePlayer;
+  // eslint-disable-next-line no-unused-vars
   setPlayer: (x: YouTubePlayer) => void;
 };
 
-const YoutubeComponent = ({player, setPlayer}: YouTubePlayerProps) => {
+const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
   const opts: YouTubeProps["opts"] = {
     playerVars: {
       autoplay: 1,
