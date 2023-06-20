@@ -96,7 +96,7 @@ export const StepThree = () => {
           </ListItem>
           <ListItem>
             <Flex gap={4}>
-              <Spacedlist flex="0 1 40%">
+              <Spacedlist flex="0 1 40%" listStyleType="none">
                 <ListItem>
                   If you want to see your transcript, visit your profile and
                   click the link.
@@ -161,7 +161,7 @@ export const StepTwo = () => {
           </ListItem>
           <ListItem>
             <Flex gap={4} direction={{ base: "column", md: "row" }}>
-              <Spacedlist flex="0 1 40%" listStyleType="none">
+              <Spacedlist flex="0 1 30%" listStyleType="none">
                 <ListItem>
                   To the right you’ll see how this all comes together.
                 </ListItem>

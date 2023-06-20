@@ -8,12 +8,25 @@ import {
   StepZero,
 } from "@/components/home/Steps";
 import { Accordion, Box, Button, Heading, Icon } from "@chakra-ui/react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useRef } from "react";
 import { FaGithub } from "react-icons/fa";
 
 const HomePage = () => {
   const accordionRef = useRef<HTMLDivElement>(null);
+  const { status: sessionStatus } = useSession();
+  const router = useRouter();
+
+  // const handleHomeProgress = () => {
+  //   const isUnAuthenticated = sessionStatus === "unauthenticated";
+  //   if (isUnAuthenticated) {
+  //     signIn("github", { callbackUrl: "/" });
+  //   } else {
+  //     router.push("/");
+  //   }
+  // };
 
   const getStarted = () => {
     // console.log(e)
@@ -45,24 +58,29 @@ const HomePage = () => {
               <StepThree />
             </Accordion>
           </Box>
-          <Box
-            display="grid"
-            placeItems="center"
-            width="full"
-            pt={8}
-            onClick={() => signIn("github", { callbackUrl: "/" })}
-          >
-            <Button variant="outline" mx="auto">
-              Sign In
-              <Icon
-                ml={2}
-                w="20px"
-                h="20px"
-                color="gray.500"
-                as={FaGithub}
-                display="block"
-              />
-            </Button>
+          <Box display="grid" placeItems="center" width="full" pt={8}>
+            {sessionStatus !== "authenticated" ? (
+              <Button
+                variant="outline"
+                mx="auto"
+                isLoading={sessionStatus === "loading"}
+                onClick={() => signIn("github", { callbackUrl: "/" })}
+              >
+                Sign In
+                <Icon
+                  ml={2}
+                  w="20px"
+                  h="20px"
+                  color="gray.500"
+                  as={FaGithub}
+                  display="block"
+                />
+              </Button>
+            ) : (
+              <Link href="/">
+                <Button variant="outline">Transcripts Queue</Button>
+              </Link>
+            )}
           </Box>
         </GlobalContainer>
       </Box>
