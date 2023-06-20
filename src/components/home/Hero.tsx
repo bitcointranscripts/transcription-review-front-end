@@ -4,12 +4,7 @@ import GlobalContainer from "../GlobalContainer";
 
 const Hero = ({ getStarted }: { getStarted: () => void }) => {
   return (
-    <Box
-      backgroundImage="url('/home/bg_gray.jpg')"
-      bgSize="cover"
-      bgColor="whiteAlpha.700"
-      bgBlendMode="lighten"
-    >
+    <Box bgColor="gray.100">
       {/* <Box pos="fixed" isolation="isolate" top="0" left="0" zIndex={0} w="100%" h="100%" bgColor="blackAlpha.800"></Box> */}
       <GlobalContainer py={4}>
         <Flex direction={{ base: "column", sm: "row" }} gap={4}>
