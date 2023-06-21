@@ -55,3 +55,7 @@ export type MetadataProps = {
   speakers?: string[];
   categories?: string[];
 };
+
+export type AbstractedChakraComponentProps<T> = {
+  children: React.ReactNode;
+} & Omit<T, "children">;
