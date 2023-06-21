@@ -33,3 +33,45 @@ a {
 .hide-editor .md-editor-input-wrapper {
   display: none;
 }
+
+.iframe-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  padding-bottom: 56.25%;
+}
+
+.iframe-wrapper iframe {
+  position: absolute;
+  width: 100% !important;
+  height: 100%;
+  border-radius: 0.5em;
+  box-shadow: 10px 10px 40px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* #home-media-viewer {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 2;
+} */
+
+.responsive-image {
+  object-fit: contain;
+  /* height: 100%; */
+  /* width: 100%; */
+  max-width: 100%;
+  max-height: 100%;
+    /* width: 100% !important;
+    position: relative !important;
+    height: unset !important; */
+}
+
+.invisible {
+  visibility: hidden;
+  opacity: 0;
+}
+
