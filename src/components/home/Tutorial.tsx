@@ -16,7 +16,7 @@ import React, { useRef, useState } from "react";
 import { FaArrowRight, FaGithub } from "react-icons/fa";
 import { YouTubePlayer } from "react-youtube";
 
-const HomePage = () => {
+const HomePageTutorial = () => {
   const accordionRef = useRef<HTMLDivElement>(null);
   const { status: sessionStatus } = useSession();
 
@@ -44,7 +44,7 @@ const HomePage = () => {
         <GlobalContainer py={16}>
           <Heading size="lg">How it works!</Heading>
           <Box mt={5}>
-            <Accordion ref={accordionRef}>
+            <Accordion ref={accordionRef} allowToggle>
               <FirstAccordion />
               <StepZero />
               <StepOne />
@@ -101,4 +101,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default HomePageTutorial;

@@ -25,7 +25,7 @@ const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
   return (
     <div style={Boolean(player) ? { opacity: 1 } : { opacity: 0 }}>
       <YouTube
-        videoId={config.youtube_video_id}
+        videoId="YNIFm0QFAuA"
         onReady={handleOnReady}
         {...opts}
         className="iframe-wrapper"
