@@ -1,4 +1,5 @@
 import YouTube, { YouTubeProps, YouTubePlayer } from "react-youtube";
+import config from "@/config/config.json";
 
 type YouTubePlayerProps = {
   player: YouTubePlayer;
@@ -24,7 +25,7 @@ const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
   return (
     <div style={Boolean(player) ? { opacity: 1 } : { opacity: 0 }}>
       <YouTube
-        videoId="YNIFm0QFAuA"
+        videoId={config.youtube_video_id}
         onReady={handleOnReady}
         {...opts}
         className="iframe-wrapper"
