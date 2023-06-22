@@ -6,9 +6,13 @@ import { useSession } from "next-auth/react";
 export default function Home() {
   const session = useSession();
 
+  if (session.status === "authenticated") {
+    return <HomePage />;
+  }
+
   if (session.status === "unauthenticated") {
     return <HomePageTutorial />;
   }
 
-  return <HomePage />;
+  return null;
 }
