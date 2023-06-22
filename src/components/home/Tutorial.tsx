@@ -59,6 +59,7 @@ const HomePageTutorial = () => {
     e,
     step
   ) => {
+    // continue from last playback if played on same accordion step
     const playFromTimestamp = step !== modalInfo.accordionStep;
     setModalInfo({ visible: true, accordionStep: step });
     if (playFromTimestamp) {

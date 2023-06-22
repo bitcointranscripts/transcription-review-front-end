@@ -1,9 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import QueueTable from "@/components/tables/QueueTable";
-import { Box, Heading, Text, Link } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { Box, Heading, Link, Text } from "@chakra-ui/react";
 
 export default function HomePage() {
   return (
