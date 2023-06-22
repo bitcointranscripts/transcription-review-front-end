@@ -23,14 +23,12 @@ const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
   };
 
   return (
-    <div style={Boolean(player) ? { opacity: 1 } : { opacity: 0 }}>
-      <YouTube
-        videoId="YNIFm0QFAuA"
-        onReady={handleOnReady}
-        {...opts}
-        className="iframe-wrapper"
-      />
-    </div>
+    <YouTube
+      videoId="YNIFm0QFAuA"
+      onReady={handleOnReady}
+      {...opts}
+      className={`${player ? "" : "invisible"} iframe-wrapper`}
+    />
   );
 };
 

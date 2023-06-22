@@ -12,15 +12,31 @@ import YoutubePortal from "@/components/home/YoutubePortal";
 import { Accordion, Box, Button, Heading, Icon } from "@chakra-ui/react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FaArrowRight, FaGithub } from "react-icons/fa";
 import { YouTubePlayer } from "react-youtube";
+
+export type YoutubeModalInfo = {
+  visible: boolean;
+  accordionStep: null | number;
+  initial: boolean;
+};
 
 const HomePageTutorial = () => {
   const accordionRef = useRef<HTMLDivElement>(null);
   const { status: sessionStatus } = useSession();
 
   const [player, setPlayer] = useState<YouTubePlayer>(null);
+  const [modalPlayer, setModalPlayer] = useState<YouTubePlayer>(null);
+  const [modalInfo, setModalInfo] = useState<YoutubeModalInfo>({
+    visible: false,
+    accordionStep: null,
+    initial: true,
+  });
+
+  const handleClose = () => {
+    setModalInfo((prev) => ({ ...prev, visible: false }));
+  };
 
   const getStarted = () => {
     // console.log(e)
@@ -29,7 +45,10 @@ const HomePageTutorial = () => {
     const firstAccordionElement = accordionRef.current
       .childNodes[0] as HTMLDivElement;
     const firstAccordionButton = firstAccordionElement.querySelector("button");
-    if (firstAccordionButton) {
+    if (
+      firstAccordionButton &&
+      firstAccordionButton?.ariaExpanded === "false"
+    ) {
       firstAccordionButton.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => {
         firstAccordionButton.click();
@@ -39,7 +58,10 @@ const HomePageTutorial = () => {
 
   return (
     <>
-      <Hero getStarted={getStarted} />
+      <Hero
+        getStarted={getStarted}
+        youtube={<YoutubeComponent player={player} setPlayer={setPlayer} />}
+      />
       <Box>
         <GlobalContainer py={16}>
           <Heading size="lg">How it works!</Heading>
@@ -94,8 +116,8 @@ const HomePageTutorial = () => {
           </Box>
         </GlobalContainer>
       </Box>
-      <YoutubePortal>
-        <YoutubeComponent player={player} setPlayer={setPlayer} />
+      <YoutubePortal modalInfo={modalInfo} handleClose={handleClose}>
+        <YoutubeComponent player={modalPlayer} setPlayer={setModalPlayer} />
       </YoutubePortal>
     </>
   );
