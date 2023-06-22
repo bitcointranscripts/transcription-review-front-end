@@ -22,7 +22,6 @@ import { YouTubePlayer } from "react-youtube";
 export type YoutubeModalInfo = {
   visible: boolean;
   accordionStep: null | number;
-  // initial: boolean;
 };
 
 const HomePageTutorial = () => {
@@ -34,7 +33,6 @@ const HomePageTutorial = () => {
   const [modalInfo, setModalInfo] = useState<YoutubeModalInfo>({
     visible: false,
     accordionStep: null,
-    // initial: true,
   });
 
   const handleClose = () => {
@@ -57,14 +55,21 @@ const HomePageTutorial = () => {
     }
   };
 
-  const handlePreferVideo: PreverVideoProps["handlePreferVideo"] = (e, step) => {
+  const handlePreferVideo: PreverVideoProps["handlePreferVideo"] = (
+    e,
+    step
+  ) => {
     const playFromTimestamp = step !== modalInfo.accordionStep;
-    setModalInfo({visible: true, accordionStep: step})
+    setModalInfo({ visible: true, accordionStep: step });
     if (playFromTimestamp) {
       const timeStamp = uiConfig.YOUTUBE_TIMESTAMP_IN_SECONDS[step];
+      modalPlayer.mute();
       modalPlayer.seekTo(timeStamp);
-      modalPlayer.playVideo();
-      modalPlayer.pauseVideo();
+      // some delay to load thumbnail before pause, prevents infinite ui loading
+      setTimeout(() => {
+        modalPlayer.pauseVideo();
+        modalPlayer.unMute();
+      }, 1000);
     }
   };
 
@@ -81,9 +86,30 @@ const HomePageTutorial = () => {
             <Accordion ref={accordionRef} allowToggle>
               <FirstAccordion />
               <StepZero />
-              <StepOne preferVideoComponent={<PreferVideoButton handlePreferVideo={handlePreferVideo} step={1} />} />
-              <StepTwo preferVideoComponent={<PreferVideoButton handlePreferVideo={handlePreferVideo} step={2} />} />
-              <StepThree preferVideoComponent={<PreferVideoButton handlePreferVideo={handlePreferVideo} step={3} />} />
+              <StepOne
+                preferVideoComponent={
+                  <PreferVideoButton
+                    handlePreferVideo={handlePreferVideo}
+                    step={1}
+                  />
+                }
+              />
+              <StepTwo
+                preferVideoComponent={
+                  <PreferVideoButton
+                    handlePreferVideo={handlePreferVideo}
+                    step={2}
+                  />
+                }
+              />
+              <StepThree
+                preferVideoComponent={
+                  <PreferVideoButton
+                    handlePreferVideo={handlePreferVideo}
+                    step={3}
+                  />
+                }
+              />
             </Accordion>
           </Box>
           <Box display="grid" placeItems="center" width="full" pt={8}>
