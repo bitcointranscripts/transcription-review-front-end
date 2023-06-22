@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  FULL_WIDTH_ROUTES: ["home"],
+  FULL_WIDTH_ROUTES: [""],
   YOUTUBE_TIMESTAMP_IN_SECONDS: {
     1: 136,
     2: 152,
