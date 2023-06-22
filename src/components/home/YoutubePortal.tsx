@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { CloseButton } from "./MediaScreen";
 import { YoutubeModalInfo } from "./Tutorial";
 
 const wrapperId = "home-media-viewer";
@@ -49,6 +50,7 @@ const YoutubePortal = ({
             >
               {children}
             </Box>
+            <CloseButton handleClose={handleClose} />
           </Box>
         </Viewer>
       }
