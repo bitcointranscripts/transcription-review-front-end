@@ -36,6 +36,7 @@ const HomePageTutorial = () => {
   });
 
   const handleClose = () => {
+    modalPlayer.pauseVideo();
     setModalInfo((prev) => ({ ...prev, visible: false }));
   };
 
