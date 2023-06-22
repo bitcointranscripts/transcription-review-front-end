@@ -2,6 +2,8 @@ import GlobalContainer from "@/components/GlobalContainer";
 import Hero from "@/components/home/Hero";
 import {
   FirstAccordion,
+  PreverVideoProps,
+  PreferVideoButton,
   StepOne,
   StepThree,
   StepTwo,
@@ -9,6 +11,7 @@ import {
 } from "@/components/home/Steps";
 import YoutubeComponent from "@/components/home/YoutubeComponent";
 import YoutubePortal from "@/components/home/YoutubePortal";
+import uiConfig from "@/config/ui-config";
 import { Accordion, Box, Button, Heading, Icon } from "@chakra-ui/react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -19,7 +22,7 @@ import { YouTubePlayer } from "react-youtube";
 export type YoutubeModalInfo = {
   visible: boolean;
   accordionStep: null | number;
-  initial: boolean;
+  // initial: boolean;
 };
 
 const HomePageTutorial = () => {
@@ -31,7 +34,7 @@ const HomePageTutorial = () => {
   const [modalInfo, setModalInfo] = useState<YoutubeModalInfo>({
     visible: false,
     accordionStep: null,
-    initial: true,
+    // initial: true,
   });
 
   const handleClose = () => {
@@ -39,9 +42,7 @@ const HomePageTutorial = () => {
   };
 
   const getStarted = () => {
-    // console.log(e)
     if (!accordionRef.current) return;
-    // accordionRef.current.scrollIntoView({ behavior: "smooth" });
     const firstAccordionElement = accordionRef.current
       .childNodes[0] as HTMLDivElement;
     const firstAccordionButton = firstAccordionElement.querySelector("button");
@@ -53,6 +54,17 @@ const HomePageTutorial = () => {
       setTimeout(() => {
         firstAccordionButton.click();
       }, 500);
+    }
+  };
+
+  const handlePreferVideo: PreverVideoProps["handlePreferVideo"] = (e, step) => {
+    const playFromTimestamp = step !== modalInfo.accordionStep;
+    setModalInfo({visible: true, accordionStep: step})
+    if (playFromTimestamp) {
+      const timeStamp = uiConfig.YOUTUBE_TIMESTAMP_IN_SECONDS[step];
+      modalPlayer.seekTo(timeStamp);
+      modalPlayer.playVideo();
+      modalPlayer.pauseVideo();
     }
   };
 
@@ -69,9 +81,9 @@ const HomePageTutorial = () => {
             <Accordion ref={accordionRef} allowToggle>
               <FirstAccordion />
               <StepZero />
-              <StepOne />
-              <StepTwo />
-              <StepThree />
+              <StepOne preferVideoComponent={<PreferVideoButton handlePreferVideo={handlePreferVideo} step={1} />} />
+              <StepTwo preferVideoComponent={<PreferVideoButton handlePreferVideo={handlePreferVideo} step={2} />} />
+              <StepThree preferVideoComponent={<PreferVideoButton handlePreferVideo={handlePreferVideo} step={3} />} />
             </Accordion>
           </Box>
           <Box display="grid" placeItems="center" width="full" pt={8}>

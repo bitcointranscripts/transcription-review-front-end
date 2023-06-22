@@ -41,7 +41,7 @@ const YoutubePortal = ({
             ></Box>
             <Box
               pos="absolute"
-              w="full"
+              w="min(1280px, 80%)"
               maxW="100%"
               maxH="100%"
               p={4}
