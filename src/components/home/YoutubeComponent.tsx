@@ -1,5 +1,4 @@
 import YouTube, { YouTubeProps, YouTubePlayer } from "react-youtube";
-import config from "@/config/config.json";
 
 type YouTubePlayerProps = {
   player: YouTubePlayer;
@@ -10,8 +9,6 @@ type YouTubePlayerProps = {
 const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
   const opts: YouTubeProps["opts"] = {
     playerVars: {
-      autoplay: 1,
-      controls: 0,
       rel: 0,
     },
   };
@@ -26,7 +23,7 @@ const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
     <YouTube
       videoId="YNIFm0QFAuA"
       onReady={handleOnReady}
-      {...opts}
+      opts={opts}
       className={`${player ? "" : "invisible"} iframe-wrapper`}
     />
   );
