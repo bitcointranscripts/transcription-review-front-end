@@ -2,25 +2,35 @@ import {
   Box,
   Button,
   Flex,
+  Icon,
   Popover,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
   Text,
-  Icon,
 } from "@chakra-ui/react";
-import Link from "next/link";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import GlobalContainer from "../GlobalContainer";
-import { useState } from "react";
+import Menu from "./Menu";
 
 const Navbar = () => {
   const { data: userSession } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
   const handleTogglePopOver = () => setIsOpen((value) => !value);
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  const openMenu = () => {
+    setMenuOpen(true);
+  };
 
   return (
     <Box
@@ -44,15 +54,6 @@ const Navbar = () => {
             </Text>
           </Link>
           <Flex gap={4} alignItems="center">
-            <Link href="/tutorial">
-              <Text
-                _hover={{ color: "gray.600" }}
-                color="gray.500"
-                fontWeight={"semibold"}
-              >
-                Tutorial
-              </Text>
-            </Link>
             {!userSession ? (
               <Button variant={"link"} onClick={() => signIn("github")}>
                 <Flex alignItems="center" gap={2}>
@@ -113,6 +114,7 @@ const Navbar = () => {
                 )}
               </Flex>
             )}
+            <Menu isOpen={menuOpen} onClose={closeMenu} onOpen={openMenu} />
           </Flex>
         </Flex>
       </GlobalContainer>

@@ -11,7 +11,7 @@ import {
 } from "@/components/home/Steps";
 import YoutubeComponent from "@/components/home/YoutubeComponent";
 import YoutubePortal from "@/components/home/YoutubePortal";
-import uiConfig from "@/config/ui-config";
+import { UI_CONFIG } from "@/config/ui-config";
 import { Accordion, Box, Button, Heading, Icon } from "@chakra-ui/react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -64,7 +64,7 @@ const HomePageTutorial = () => {
     const playFromTimestamp = step !== modalInfo.accordionStep;
     setModalInfo({ visible: true, accordionStep: step });
     if (playFromTimestamp) {
-      const timeStamp = uiConfig.YOUTUBE_TIMESTAMP_IN_SECONDS[step];
+      const timeStamp = UI_CONFIG.YOUTUBE_TIMESTAMP_IN_SECONDS[step];
       modalPlayer.mute();
       modalPlayer.seekTo(timeStamp);
       // some delay to load thumbnail before pause, prevents infinite ui loading
