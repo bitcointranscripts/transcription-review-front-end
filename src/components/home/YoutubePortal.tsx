@@ -1,46 +1,59 @@
+import { Box } from "@chakra-ui/react";
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { CloseButton } from "./MediaScreen";
+import { YoutubeModalInfo } from "./Tutorial";
 
 const wrapperId = "home-media-viewer";
 
-const YoutubePortal = ({ children }: { children: React.ReactNode }) => {
-  const heroYoutubeEmbed = useRef<HTMLElement | null>(null);
-  useEffect(() => {
-    heroYoutubeEmbed.current = document.getElementById("hero-youtube-player");
-  }, []);
+type YoutubePortalProps = {
+  children: React.ReactNode;
+  modalInfo: YoutubeModalInfo;
+  handleClose: () => void;
+};
 
-  if (!heroYoutubeEmbed.current) return null;
-
+const YoutubePortal = ({
+  children,
+  modalInfo,
+  handleClose,
+}: YoutubePortalProps) => {
   return (
     <>
-      {createPortal(children, heroYoutubeEmbed.current)}
-      {/* {
+      {
         <Viewer>
           <Box
             pos="fixed"
             top="0"
             left="0"
             zIndex={1}
-            display="grid"
+            // display="grid"
             placeItems="center"
             w="100%"
             h="100%"
+            display={modalInfo.visible ? "grid" : "none"}
             // bgColor="blackAlpha.800"
-            // onClick={disableFullScreen}
           >
             <Box
               pos="absolute"
               bgColor="blackAlpha.800"
-              onClick={disableFullScreen}
+              onClick={handleClose}
               w="100%"
               h="100%"
             ></Box>
-            <Box pos="absolute" maxW="100%" maxH="100%" p={4} display="flex">
+            <Box
+              pos="absolute"
+              w="min(1280px, 80%)"
+              maxW="100%"
+              maxH="100%"
+              p={4}
+              display="flex"
+            >
               {children}
             </Box>
+            <CloseButton handleClose={handleClose} />
           </Box>
         </Viewer>
-      } */}
+      }
     </>
   );
 };
@@ -66,6 +79,11 @@ const Viewer = ({ children }: { children: React.ReactNode }) => {
     let _viewerElement = document.createElement("div");
     _viewerElement.className = "media-viewer";
     viewerElement.current = wrapperRef.current.appendChild(_viewerElement);
+    return () => {
+      if (wrapperRef.current && viewerElement.current) {
+        wrapperRef.current.removeChild(viewerElement.current);
+      }
+    };
   }, []);
 
   if (viewerElement.current === null) return null;
