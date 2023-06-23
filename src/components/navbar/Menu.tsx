@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useEffect, useRef } from "react";
 import { BiMenu } from "react-icons/bi";
 import MenuNav from "./MenuNav";
 
@@ -28,6 +29,14 @@ type MenuProps = {
 const Menu = ({ isOpen, onClose, onOpen }: MenuProps) => {
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
+  const prevRoute = useRef(currentRoute);
+
+  useEffect(() => {
+    if (prevRoute.current === currentRoute) return;
+    prevRoute.current = currentRoute;
+    onClose();
+  }, [currentRoute, onClose]);
+
   return (
     <>
       <Button
@@ -64,8 +73,8 @@ const Menu = ({ isOpen, onClose, onOpen }: MenuProps) => {
                 BTC Transcript Review
               </Text>
             </Flex>
-            <Divider position="absolute" left={0} mt={2} h={2} />
-            <Heading size="sm" mt={8} color="gray.400">
+            <Divider my={4} />
+            <Heading size="sm" mt={6} color="gray.400">
               Pages
             </Heading>
             <Box mt={4}>
