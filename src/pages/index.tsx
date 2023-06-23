@@ -1,18 +1,33 @@
 /* eslint-disable react/no-unescaped-entities */
 import HomePage from "@/components/home/Queuer";
 import HomePageTutorial from "@/components/home/Tutorial";
-import { useSession } from "next-auth/react";
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
+import type { Session } from "next-auth"
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./api/auth/[...nextauth]";
 
-export default function Home() {
-  const session = useSession();
+type HomePageProps = {
+  serverSession: Session | null;
+};
 
-  if (session.status === "authenticated") {
+const Home: NextPage<HomePageProps> = ({ serverSession }) => {
+
+  if (serverSession) {
     return <HomePage />;
   }
 
-  if (session.status === "unauthenticated") {
-    return <HomePageTutorial />;
-  }
+  return <HomePageTutorial />;
+};
 
-  return null;
-}
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
+  context: GetServerSidePropsContext
+) => {
+  const session = await getServerSession(context.req, context.res, authOptions);
+  return {
+    props: {
+      serverSession: session,
+    },
+  };
+};
+
+export default Home;
