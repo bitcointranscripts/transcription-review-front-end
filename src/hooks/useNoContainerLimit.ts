@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
-import uiConfig from "@/config/ui-config";
+import { UI_CONFIG } from "@/config/ui-config";
 
 const useNoContainerLimit = () => {
   const router = useRouter();
   const path = router.asPath?.split("/")[1] ?? "";
-  const noRestriction = uiConfig.FULL_WIDTH_ROUTES.includes(path);
+  const noRestriction = UI_CONFIG.FULL_WIDTH_ROUTES.includes(path);
 
   return { noRestriction };
 };
