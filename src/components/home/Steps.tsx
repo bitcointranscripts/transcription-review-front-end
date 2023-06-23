@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 import {
   AccordionButton,
@@ -5,6 +6,7 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   Flex,
   Heading,
   ListItem,
@@ -17,7 +19,6 @@ import React from "react";
 import { AbstractedChakraComponentProps } from "../../../types";
 import MediaScreen from "./MediaScreen";
 
-// eslint-disable-next-line no-unused-vars
 const StaticAccordionLists = [
   {
     title: "Why Edit Transcripts?",
@@ -36,6 +37,18 @@ const StaticAccordionLists = [
     ],
   },
 ];
+
+export type PreverVideoProps = {
+  handlePreferVideo: (
+    e: React.MouseEvent<HTMLButtonElement>,
+    step: 1 | 2 | 3
+  ) => void;
+  step: 1 | 2 | 3;
+};
+
+type PreferVideoCompponent = {
+  preferVideoComponent: React.ReactNode;
+};
 
 export const FirstAccordion = () => {
   return (
@@ -67,7 +80,7 @@ export const FirstAccordion = () => {
   );
 };
 
-export const StepThree = () => {
+export const StepThree = ({ preferVideoComponent }: PreferVideoCompponent) => {
   return (
     <AccordionItem>
       <h2>
@@ -80,6 +93,7 @@ export const StepThree = () => {
       </h2>
       <AccordionPanel>
         <TLDRText text="Once you submit, you’re done! Submitted transcripts are reviewed by a human and then published through GitHub." />
+        {preferVideoComponent}
         <Spacedlist>
           <ListItem>
             Once you submit your transcript, it will create a PR (pull request)
@@ -132,7 +146,7 @@ export const StepThree = () => {
   );
 };
 
-export const StepTwo = () => {
+export const StepTwo = ({ preferVideoComponent }: PreferVideoCompponent) => {
   return (
     <AccordionItem>
       <h2>
@@ -145,6 +159,7 @@ export const StepTwo = () => {
       </h2>
       <AccordionPanel>
         <TLDRText text="Use markdown. Make sure stuff is accurate. Use “replace” in case of multispeaker transcripts. Use split screen to listen and edit transcript at the same time." />
+        {preferVideoComponent}
         <Heading size="sm" my={4}>
           Using Markdown
         </Heading>
@@ -283,7 +298,7 @@ export const StepTwo = () => {
     </AccordionItem>
   );
 };
-export const StepOne = () => {
+export const StepOne = ({ preferVideoComponent }: PreferVideoCompponent) => {
   return (
     <AccordionItem>
       <h2>
@@ -296,6 +311,7 @@ export const StepOne = () => {
       </h2>
       <AccordionPanel>
         <TLDRText text="Connect your GitHub to BTCTranscripts" />
+        {preferVideoComponent}
         <Spacedlist>
           <ListItem>
             Make sure you have a GitHub account (instructions
@@ -430,5 +446,24 @@ export const LinkText = ({ text, href }: { text: string; href: string }) => {
         {text}
       </Link>
     </span>
+  );
+};
+
+export const PreferVideoButton = ({
+  handlePreferVideo,
+  step,
+}: PreverVideoProps) => {
+  return (
+    <Box ml="auto" w="fit-content">
+      <Button
+        variant="link"
+        colorScheme="blue"
+        // _groupHover={{ textDecoration: "underline" }}
+        onClick={(e) => handlePreferVideo(e, step)}
+        size="sm"
+      >
+        prefer video?
+      </Button>
+    </Box>
   );
 };

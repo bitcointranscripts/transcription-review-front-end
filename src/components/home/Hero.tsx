@@ -2,7 +2,13 @@ import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import React from "react";
 import GlobalContainer from "../GlobalContainer";
 
-const Hero = ({ getStarted }: { getStarted: () => void }) => {
+const Hero = ({
+  getStarted,
+  youtube,
+}: {
+  getStarted: () => void;
+  youtube?: React.ReactNode;
+}) => {
   return (
     <Box bgColor="gray.100">
       {/* <Box pos="fixed" isolation="isolate" top="0" left="0" zIndex={0} w="100%" h="100%" bgColor="blackAlpha.800"></Box> */}
@@ -45,18 +51,7 @@ const Hero = ({ getStarted }: { getStarted: () => void }) => {
               Get Started
             </Button>
           </Flex>
-          <Box flex="1 1 50%" id="hero-youtube-player">
-            {/* <div className="iframe-wrapper">
-              <iframe
-                className="embedded-video protrude"
-                id="ytplayer"
-                // type="text/html"
-                width="500"
-                height="200"
-                src="https://www.youtube.com/embed/YNIFm0QFAuA?start=40&rel=0&fs=1"
-              ></iframe>
-            </div> */}
-          </Box>
+          <Box flex="1 1 50%">{youtube}</Box>
         </Flex>
       </GlobalContainer>
     </Box>

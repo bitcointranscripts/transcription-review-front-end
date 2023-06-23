@@ -1,5 +1,6 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Icon } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
+import { BiX } from "react-icons/bi";
 import HomeMediaPortal from "./HomeMediaPortal";
 
 const MediaScreen = ({
@@ -81,8 +82,6 @@ const MediaScreen = ({
             placeItems="center"
             w="100%"
             h="100%"
-            // bgColor="blackAlpha.800"
-            // onClick={disableFullScreen}
           >
             <Box
               pos="absolute"
@@ -94,6 +93,7 @@ const MediaScreen = ({
             <Box pos="absolute" maxW="100%" maxH="100%" p={4} display="flex">
               {mediaElement}
             </Box>
+            <CloseButton handleClose={disableFullScreen} />
           </Box>
         </HomeMediaPortal>
       )}
@@ -102,3 +102,13 @@ const MediaScreen = ({
 };
 
 export default MediaScreen;
+
+export const CloseButton = ({ handleClose }: { handleClose: () => void }) => {
+  return (
+    <Box position="absolute" top={0} right={0} mr={8} mt={4}>
+      <button aria-label="close-media" onClick={handleClose}>
+        <Icon w="30px" h="30px" color="red.500" as={BiX} display="block" />
+      </button>
+    </Box>
+  );
+};
