@@ -1,38 +1,46 @@
 import { Flex, Icon, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { HiOutlineBookOpen } from "react-icons/hi";
+import { IconType } from "react-icons";
 
 const MenuNav = ({
   currentRoute,
   routeName,
+  routeLink,
+  handleClose,
+  icon,
 }: {
   routeName: string;
+  routeLink: string;
   currentRoute: string;
+  handleClose?: () => void;
+  icon?: IconType;
 }) => {
-  const isCurrentRoute = currentRoute === routeName;
+  const isCurrentRoute = currentRoute === routeLink;
   return (
-    <Link href={`/${routeName}`}>
+    <Link onClick={handleClose} href={`/${routeLink}`}>
       <Flex
         role="group"
         justifyContent="space-between"
         alignItems="center"
-        // bgColor="blackAlpha.200"
-        py={1}
-        px={2}
-        bgColor={isCurrentRoute ? "orange.200" : "white"}
         rounded="lg"
-        _hover={isCurrentRoute ? {} : { bgColor: "gray.200" }}
-        _active={isCurrentRoute ? {} : { bgColor: "gray.300" }}
       >
-        <Icon
-          _groupHover={isCurrentRoute ? {} : { color: "gray.600" }}
-          color={isCurrentRoute ? "gray.800" : "gray.400"}
-          as={HiOutlineBookOpen}
-        />
+        {icon && (
+          <Icon
+            _groupHover={isCurrentRoute ? {} : { color: "gray.600" }}
+            color={isCurrentRoute ? "gray.800" : "gray.400"}
+            as={icon}
+          />
+        )}
         <Text
-          _groupHover={isCurrentRoute ? {} : { color: "gray.600" }}
-          color={isCurrentRoute ? "gray.800" : "gray.400"}
-          fontWeight={"semibold"}
+          alignSelf="flex-end"
+          _groupHover={
+            isCurrentRoute
+              ? {}
+              : { color: "gray.600", textDecoration: "underline" }
+          }
+          _groupActive={isCurrentRoute ? {} : { color: "gray.900" }}
+          color={isCurrentRoute ? "orange.400" : "gray.400"}
+          fontWeight={500}
           textTransform="capitalize"
         >
           {routeName}

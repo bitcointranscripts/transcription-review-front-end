@@ -82,6 +82,7 @@ const Menu = ({ isOpen, onClose, onOpen }: MenuProps) => {
                 <MenuNav
                   currentRoute={currentRoute}
                   routeName={ROUTES_CONFIG.TUTORIAL}
+                  routeLink={ROUTES_CONFIG.TUTORIAL}
                 />
               </Box>
             </Box>

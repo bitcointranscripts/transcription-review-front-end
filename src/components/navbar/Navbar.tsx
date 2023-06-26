@@ -1,6 +1,8 @@
+import { ROUTES_CONFIG } from "@/config/ui-config";
 import {
   Box,
   Button,
+  Divider,
   Flex,
   Icon,
   Popover,
@@ -12,25 +14,19 @@ import {
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import GlobalContainer from "../GlobalContainer";
-import Menu from "./Menu";
+import MenuNav from "./MenuNav";
 
 const Navbar = () => {
   const { data: userSession } = useSession();
+  const router = useRouter();
+  const currentRoute = router.asPath?.split("/")[1] ?? "";
   const [isOpen, setIsOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
   const handleTogglePopOver = () => setIsOpen((value) => !value);
-
-  const closeMenu = () => {
-    setMenuOpen(false);
-  };
-
-  const openMenu = () => {
-    setMenuOpen(true);
-  };
 
   return (
     <Box
@@ -95,18 +91,34 @@ const Navbar = () => {
                         </Button>
                       </Flex>
                     </PopoverTrigger>
-                    <PopoverContent w="auto" minW="200px">
+                    <PopoverContent w="auto" minW="150px">
                       <PopoverBody>
-                        <Link
-                          onClick={handleClose}
-                          href={`/${userSession.user.githubUsername}`}
-                        >
-                          <Text>Profile</Text>
-                        </Link>
-                        <Box color={"red"} mt={2} ml="auto">
-                          <button type="button" onClick={() => signOut()}>
+                        <Flex direction="column" gap={2} pb={4}>
+                          {userSession.user.githubUsername && (
+                            <MenuNav
+                              routeName="profile"
+                              routeLink={userSession.user.githubUsername}
+                              currentRoute={currentRoute}
+                              handleClose={handleClose}
+                            />
+                          )}
+                          <MenuNav
+                            routeName={ROUTES_CONFIG.TUTORIAL}
+                            routeLink={ROUTES_CONFIG.TUTORIAL}
+                            currentRoute={currentRoute}
+                            handleClose={handleClose}
+                          />
+                        </Flex>
+                        <Divider />
+                        <Box mt={4} ml="auto" w="fit-content">
+                          <Button
+                            colorScheme="red"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => signOut()}
+                          >
                             Sign out
-                          </button>
+                          </Button>
                         </Box>
                       </PopoverBody>
                     </PopoverContent>
@@ -114,7 +126,6 @@ const Navbar = () => {
                 )}
               </Flex>
             )}
-            <Menu isOpen={menuOpen} onClose={closeMenu} onOpen={openMenu} />
           </Flex>
         </Flex>
       </GlobalContainer>
