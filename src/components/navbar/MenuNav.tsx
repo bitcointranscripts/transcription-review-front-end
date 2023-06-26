@@ -22,21 +22,27 @@ const MenuNav = ({
         role="group"
         justifyContent="space-between"
         alignItems="center"
+        bgColor={isCurrentRoute ? "gray.600" : ""}
+        _hover={isCurrentRoute ? {} : { bgColor: "gray.100" }}
         rounded="lg"
+        py={1}
+        px={2}
       >
         {icon && (
           <Icon
             _groupHover={isCurrentRoute ? {} : { color: "gray.600" }}
-            color={isCurrentRoute ? "gray.800" : "gray.400"}
+            color={isCurrentRoute ? "orange.200" : "gray.600"}
             as={icon}
           />
         )}
         <Text
-          alignSelf="flex-end"
-          _groupHover={isCurrentRoute ? {} : { textDecoration: "underline" }}
+          textAlign="right"
+          flex="1 1 auto"
+          // ml="auto"
+          // _groupHover={isCurrentRoute ? {} : { textDecoration: "underline" }}
           _groupActive={isCurrentRoute ? {} : { color: "gray.900" }}
-          color={isCurrentRoute ? "orange.400" : "gray.600"}
-          fontWeight={500}
+          color={isCurrentRoute ? "orange.200" : "gray.600"}
+          fontWeight={isCurrentRoute ? 600 : 500}
           textTransform="capitalize"
         >
           {routeName}
