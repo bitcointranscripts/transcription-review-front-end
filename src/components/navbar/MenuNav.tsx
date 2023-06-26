@@ -42,13 +42,9 @@ const MenuNav = ({
         )}
         <Text
           alignSelf="flex-end"
-          _groupHover={
-            isCurrentRoute
-              ? {}
-              : { color: "gray.600", textDecoration: "underline" }
-          }
+          _groupHover={isCurrentRoute ? {} : { textDecoration: "underline" }}
           _groupActive={isCurrentRoute ? {} : { color: "gray.900" }}
-          color={isCurrentRoute ? "orange.400" : "gray.400"}
+          color={isCurrentRoute ? "orange.400" : "gray.600"}
           fontWeight={500}
           textTransform="capitalize"
         >
