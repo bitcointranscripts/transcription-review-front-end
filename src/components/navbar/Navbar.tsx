@@ -1,37 +1,9 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Icon,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  Text,
-} from "@chakra-ui/react";
-import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { useState } from "react";
-import { FaGithub } from "react-icons/fa";
 import GlobalContainer from "../GlobalContainer";
 import Menu from "./Menu";
 
 const Navbar = () => {
-  const { data: userSession } = useSession();
-  const [isOpen, setIsOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const handleClose = () => setIsOpen(false);
-  const handleTogglePopOver = () => setIsOpen((value) => !value);
-
-  const closeMenu = () => {
-    setMenuOpen(false);
-  };
-
-  const openMenu = () => {
-    setMenuOpen(true);
-  };
-
   return (
     <Box
       as="nav"
@@ -53,69 +25,7 @@ const Navbar = () => {
               BTC Transcript Review
             </Text>
           </Link>
-          <Flex gap={4} alignItems="center">
-            {!userSession ? (
-              <Button variant={"link"} onClick={() => signIn("github")}>
-                <Flex alignItems="center" gap={2}>
-                  <Text>Sign In</Text>
-                  <Icon as={FaGithub} />
-                </Flex>
-              </Button>
-            ) : (
-              <Flex>
-                {userSession.user?.image && (
-                  <Popover
-                    isOpen={isOpen}
-                    onClose={handleClose}
-                    placement="bottom-end"
-                  >
-                    <PopoverTrigger>
-                      <Flex alignItems="center" gap={2}>
-                        <Button
-                          onClick={handleTogglePopOver}
-                          variant="unstyled"
-                          h="auto"
-                          w="auto"
-                          minW="auto"
-                        >
-                          <Box
-                            p={1}
-                            border="2px solid"
-                            borderColor="orange.300"
-                            borderRadius="full"
-                          >
-                            <Image
-                              src={userSession.user?.image}
-                              width="24"
-                              height="24"
-                              alt="profile"
-                              style={{ borderRadius: "100%" }}
-                            />
-                          </Box>
-                        </Button>
-                      </Flex>
-                    </PopoverTrigger>
-                    <PopoverContent w="auto" minW="200px">
-                      <PopoverBody>
-                        <Link
-                          onClick={handleClose}
-                          href={`/${userSession.user.githubUsername}`}
-                        >
-                          <Text>Profile</Text>
-                        </Link>
-                        <Box color={"red"} mt={2} ml="auto">
-                          <button type="button" onClick={() => signOut()}>
-                            Sign out
-                          </button>
-                        </Box>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
-                )}
-              </Flex>
-            )}
-            <Menu isOpen={menuOpen} onClose={closeMenu} onOpen={openMenu} />
-          </Flex>
+          <Menu />
         </Flex>
       </GlobalContainer>
     </Box>
