@@ -39,122 +39,56 @@ const Menu = () => {
 
   return (
     <>
-      {!userSession ? (
-        <Button variant={"link"} onClick={() => signIn("github")}>
-          <Flex alignItems="center" gap={2}>
-            <Text>Sign In</Text>
-            <Icon as={FaGithub} />
-          </Flex>
-        </Button>
-      ) : (
-        <>
-          {userSession.user?.image && (
-            <Button
-              onClick={openMenu}
-              variant="unstyled"
-              h="auto"
-              w="auto"
-              minW="auto"
-            >
-              <Box
-                p={1}
-                border="2px solid"
-                borderColor="orange.300"
-                borderRadius="full"
-              >
-                <Image
-                  src={userSession.user?.image}
-                  width="24"
-                  height="24"
-                  alt="profile"
-                  style={{ borderRadius: "100%" }}
+      <Button
+        size="xs"
+        py={1}
+        px={1}
+        h="auto"
+        w="fit-content"
+        minW="auto"
+        aria-label="hamburger-menu"
+        onClick={onOpen}
+      >
+        <Icon as={BiMenu} fontSize="24px" color="gray.600" />
+      </Button>
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        blockScrollOnMount={true}
+      >
+        <DrawerOverlay />
+        <DrawerContent borderLeftRadius={"lg"}>
+          <DrawerCloseButton />
+          <DrawerHeader></DrawerHeader>
+          <DrawerBody>
+            <Flex alignItems="center" gap={4}>
+              <Image
+                src="/btc-transcript-circle-128.png"
+                width="56"
+                height="56"
+                alt="btc-transcript"
+              />
+              <Text color="gray.700" fontWeight={"semibold"}>
+                BTC Transcript Review
+              </Text>
+            </Flex>
+            <Divider my={4} />
+            <Heading size="sm" mt={6} color="gray.400">
+              Pages
+            </Heading>
+            <Box mt={4}>
+              <Box w="full">
+                <MenuNav
+                  currentRoute={currentRoute}
+                  routeName={ROUTES_CONFIG.TUTORIAL}
+                  routeLink={ROUTES_CONFIG.TUTORIAL}
                 />
               </Box>
-            </Button>
-          )}
-          <Drawer
-            isOpen={menuOpen}
-            placement="right"
-            onClose={closeMenu}
-            blockScrollOnMount={true}
-          >
-            <DrawerOverlay />
-            <DrawerContent borderLeftRadius={"lg"}>
-              <DrawerCloseButton />
-              <DrawerHeader></DrawerHeader>
-              <DrawerBody>
-                <Flex direction="column" h="full">
-                  <Box flex="1 1">
-                    <Flex gap={4}>
-                      <Image
-                        src={
-                          userSession.user?.image ??
-                          "/btc-transcript-circle-128.png"
-                        }
-                        width="56"
-                        height="56"
-                        style={{
-                          borderRadius: "50%",
-                          boxShadow: "var(--chakra-shadows-lg)",
-                        }}
-                        alt="profile"
-                      />
-                      <Flex direction="column" justifyContent="space-around">
-                        <Text color="gray.600" fontWeight={"semibold"}>
-                          {userSession.user?.githubUsername}
-                        </Text>
-                        <Text textTransform="capitalize" fontSize="14px">
-                          {userSession.user?.permissions}
-                        </Text>
-                      </Flex>
-                    </Flex>
-                    <Divider my={4} />
-                    <Heading size="sm" mt={6} color="gray.400">
-                      Pages
-                    </Heading>
-                    <Flex mt={4} direction="column" gap={2}>
-                      <MenuNav
-                        currentRoute={currentRoute}
-                        routeName="home"
-                        routeLink={ROUTES_CONFIG.HOME}
-                        handleClose={closeMenu}
-                        icon={FiHome}
-                      />
-                      {userSession?.user?.githubUsername && (
-                        <MenuNav
-                          routeName="profile"
-                          routeLink={userSession.user.githubUsername}
-                          currentRoute={currentRoute}
-                          handleClose={closeMenu}
-                          icon={FiUser}
-                        />
-                      )}
-                      <MenuNav
-                        currentRoute={currentRoute}
-                        routeName={ROUTES_CONFIG.TUTORIAL}
-                        routeLink={ROUTES_CONFIG.TUTORIAL}
-                        handleClose={closeMenu}
-                        icon={HiOutlineBookOpen}
-                      />
-                    </Flex>
-                  </Box>
-                  <Divider />
-                  <Box py={8} w="fit-content">
-                    <Button
-                      colorScheme="red"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => signOut()}
-                    >
-                      Sign out
-                    </Button>
-                  </Box>
-                </Flex>
-              </DrawerBody>
-            </DrawerContent>
-          </Drawer>
-        </>
-      )}
+            </Box>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };
