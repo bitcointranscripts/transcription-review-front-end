@@ -4,6 +4,7 @@
   "maximum_nested_directory_depth": 3,
   "btctranscripts_base_url": "https://btctranscripts.com/",
   "btctranscripts_tags_url": "https://btctranscripts.com/tags/",
+  "btctranscripts_speakers_url": "https://btctranscripts.com/speakers/",
   "btctranscripts_categories_url": "https://btctranscripts.com/categories/",
   "defaultDirectoryPath": "misc",
   "youtube_video_id": "YNIFm0QFAuA"

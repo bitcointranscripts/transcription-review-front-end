@@ -64,3 +64,9 @@ export type SelectableMetaDataType = {
   slug: string;
   value: string;
 };
+
+export type SelectableMetaDataList = {
+  categories: SelectableMetaDataType[];
+  speakers: SelectableMetaDataType[];
+  tags: SelectableMetaDataType[];
+};

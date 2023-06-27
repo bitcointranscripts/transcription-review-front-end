@@ -16,6 +16,7 @@ import {
   SideBarData,
   SidebarSubType,
 } from "../transcript";
+import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 
 const SidebarContentEdit = ({
   data,
@@ -34,6 +35,7 @@ const SidebarContentEdit = ({
     name,
   }: sideBarContentUpdateParams<T, K>) => void;
 }) => {
+  const { data: selectableListData, isLoading, error } = useGetMetaData();
   const updateTitle = (newTitle: string) => {
     updater({
       data: newTitle,
@@ -116,7 +118,7 @@ const SidebarContentEdit = ({
             name="speakers"
             editedData={sideBarData.list.speakers}
             updateData={updateSpeaker}
-            autoCompleteList={speakersList}
+            autoCompleteList={selectableListData?.speakers ?? []}
           />
         </Box>
         <Box>
