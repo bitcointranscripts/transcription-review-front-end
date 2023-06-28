@@ -9,6 +9,7 @@ type Props = {
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string[]) => void;
   autoCompleteList: Array<AutoCompleteData>;
+  userCanAddToList?: boolean;
 };
 
 export type AutoCompleteData = {
@@ -186,6 +187,7 @@ export const OnlySelectField = ({
   editedData,
   updateData,
   autoCompleteList,
+  userCanAddToList
 }: Props) => {
 
   const handleAddItem = (value: string) => {
@@ -209,7 +211,7 @@ export const OnlySelectField = ({
       <OnlySelectBox
         idx={-1}
         name={name}
-        addItem={handleAddItem}
+        addItem={userCanAddToList ? handleAddItem : undefined}
         autoCompleteList={autoCompleteList}
         handleAutoCompleteSelect={handleAutoCompleteSelect}
       />
