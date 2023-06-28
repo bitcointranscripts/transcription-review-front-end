@@ -1,3 +1,4 @@
+import { UI_CONFIG } from "@/config/ui-config";
 import { Button, Flex, IconButton, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { BiPencil, BiX } from "react-icons/bi";
@@ -187,9 +188,8 @@ export const OnlySelectField = ({
   editedData,
   updateData,
   autoCompleteList,
-  userCanAddToList
+  userCanAddToList,
 }: Props) => {
-
   const handleAddItem = (value: string) => {
     let updatedList = [...editedData];
     updatedList.push(value);
@@ -206,13 +206,19 @@ export const OnlySelectField = ({
     handleAddItem(data.value);
   };
 
+  // remove previuosly selected option from list
+  const newAutoCompleteList =
+    autoCompleteList.length > UI_CONFIG.MAX_AUTOCOMPLETE_LENGTH_TO_FILTER
+      ? autoCompleteList
+      : autoCompleteList.filter((item) => !editedData.includes(item.value));
+
   return (
     <>
       <OnlySelectBox
         idx={-1}
         name={name}
         addItem={userCanAddToList ? handleAddItem : undefined}
-        autoCompleteList={autoCompleteList}
+        autoCompleteList={newAutoCompleteList}
         handleAutoCompleteSelect={handleAutoCompleteSelect}
       />
       {editedData?.map((speaker: string, idx: number) => {
