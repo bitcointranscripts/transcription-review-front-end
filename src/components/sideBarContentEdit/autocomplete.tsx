@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 // import useSelectNavigate from "@/hooks/useSelectNavigate";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";
 import React, { RefObject, useEffect, useRef } from "react";
 import type { AutoCompleteData, SelectEditState } from "./SelectField";
@@ -8,56 +8,50 @@ import type { AutoCompleteData, SelectEditState } from "./SelectField";
 type AutoCompleteProps = {
   autoCompleteList: Array<AutoCompleteData>;
   editState: SelectEditState;
-  handleAutoCompleteSelect: (x: AutoCompleteData) => void;
+  onAutoCompleteSelect: (x: AutoCompleteData) => void;
   inputRef: RefObject<HTMLInputElement>;
+  embedded?: boolean;
 };
 
 const AutoComplete = ({
   autoCompleteList,
   editState,
-  handleAutoCompleteSelect,
+  onAutoCompleteSelect,
   inputRef,
+  embedded,
 }: AutoCompleteProps) => {
   const selectRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   const inputElement = inputRef?.current;
+  const boxContainerProps: BoxProps = embedded
+    ? { mt: 2 }
+    : {
+        position: "absolute",
+        top: 0,
+        mt: "34px",
+        borderRadius: "md",
+        boxShadow: "md",
+        bgColor: "white",
+      };
 
-  //   inputElement?.addEventListener("focusout", (e) => {
-  //     selectRef?.current?.style.display && selectRef?.current?.style = {display: "none"}
-  //   });
-
-  //   return () => {};
-  // }, [inputRef]);
   if (
     !autoCompleteList?.length ||
-    !editState.value ||
+    // !editState.value ||
     editState.autoCompleteValue
   )
     return null;
 
   const sortedSpeakers = matchSorter(autoCompleteList, editState.value, {
     keys: ["slug", "value"],
-  })?.slice(0, 6);
+  })?.slice(0, 50);
 
   const handleClick = (data: AutoCompleteData) => {
-    handleAutoCompleteSelect(data);
+    onAutoCompleteSelect(data);
   };
 
   if (!sortedSpeakers?.length) return null;
 
   return (
-    <Box
-      position="absolute"
-      top={0}
-      mt="34px"
-      zIndex={1}
-      bgColor="white"
-      w="full"
-      borderRadius="md"
-      boxShadow="md"
-      ref={selectRef}
-    >
+    <Box {...boxContainerProps} zIndex={1} w="full" maxH={48} overflow="scroll" ref={selectRef}>
       {sortedSpeakers.map((speaker) => {
         return (
           <Text

@@ -1,14 +1,14 @@
 import { Button, Flex, IconButton, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import { BiPencil } from "react-icons/bi";
-import SelectBox from "./selectbox";
+import { BiPencil, BiX } from "react-icons/bi";
+import SelectBox, { OnlySelectBox } from "./selectbox";
 
 type Props = {
   name: string;
   editedData: string[];
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string[]) => void;
-  autoCompleteList?: Array<AutoCompleteData>;
+  autoCompleteList: Array<AutoCompleteData>;
 };
 
 export type AutoCompleteData = {
@@ -114,6 +114,7 @@ const SelectField = ({
           <SelectBox
             key={speaker}
             idx={idx}
+            name={name}
             editState={editState}
             handleInputChange={handleInputChange}
             handleUpdateEdit={handleUpdateEdit}
@@ -142,9 +143,19 @@ const SelectField = ({
           </Flex>
         );
       })}
+      {/* <OnlySelectBox
+        idx={-1}
+        name={name}
+        editState={editState}
+        handleInputChange={handleInputChange}
+        handleUpdateEdit={handleNewSpeaker}
+        autoCompleteList={autoCompleteList}
+        handleAutoCompleteSelect={handleAutoCompleteSelect}
+      /> */}
       {isNew ? (
         <SelectBox
           idx={-1}
+          name={name}
           editState={editState}
           handleInputChange={handleInputChange}
           handleUpdateEdit={handleNewSpeaker}
@@ -169,3 +180,62 @@ const SelectField = ({
 };
 
 export default SelectField;
+
+export const OnlySelectField = ({
+  name,
+  editedData,
+  updateData,
+  autoCompleteList,
+}: Props) => {
+
+  const handleAddItem = (value: string) => {
+    let updatedList = [...editedData];
+    updatedList.push(value);
+    updateData(updatedList);
+  };
+
+  const handleRemoveItem = (idx: number) => {
+    let updatedList = [...editedData];
+    updatedList.splice(idx, 1);
+    updateData(updatedList);
+  };
+
+  const handleAutoCompleteSelect = (data: AutoCompleteData) => {
+    handleAddItem(data.value);
+  };
+
+  return (
+    <>
+      <OnlySelectBox
+        idx={-1}
+        name={name}
+        addItem={handleAddItem}
+        autoCompleteList={autoCompleteList}
+        handleAutoCompleteSelect={handleAutoCompleteSelect}
+      />
+      {editedData?.map((speaker: string, idx: number) => {
+        return (
+          <Flex
+            key={`${speaker}-idx-${idx}`}
+            justifyContent="space-between"
+            gap={1}
+            alignItems="center"
+          >
+            <Text fontSize="14px">{speaker}</Text>
+            <IconButton
+              fontSize="16px"
+              p="6px"
+              size="sm"
+              minW="auto"
+              h="auto"
+              variant="ghost"
+              onClick={() => handleRemoveItem(idx)}
+              aria-label="edit speaker"
+              icon={<BiX />}
+            />
+          </Flex>
+        );
+      })}
+    </>
+  );
+};
