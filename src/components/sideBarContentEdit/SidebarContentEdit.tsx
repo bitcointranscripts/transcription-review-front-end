@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
 import { Review, Transcript } from "../../../types";
-import SelectField from "./SelectField";
+import SelectField, { OnlySelectField } from "./SelectField";
 import TextField from "./TextField";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -150,20 +150,22 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Categories
           </Text>
-          <SelectField
+          <OnlySelectField
             name="categories"
             editedData={sideBarData.list.categories}
             updateData={updateCategories}
+            autoCompleteList={selectableListData?.categories ?? []}
           />
         </Box>
         <Box>
           <Text fontWeight={600} mb={2}>
             Tags
           </Text>
-          <SelectField
+          <OnlySelectField
             name="tags"
             editedData={sideBarData.list.tags}
             updateData={updateTags}
+            autoCompleteList={selectableListData?.tags ?? []}
           />
         </Box>
         {children}
