@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { UI_CONFIG } from "@/config/ui-config";
 import {
   Box,
   Button,
