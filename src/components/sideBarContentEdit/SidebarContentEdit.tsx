@@ -114,11 +114,12 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Speakers
           </Text>
-          <SelectField
+          <OnlySelectField
             name="speakers"
             editedData={sideBarData.list.speakers}
             updateData={updateSpeaker}
             autoCompleteList={selectableListData?.speakers ?? []}
+            userCanAddToList
           />
         </Box>
         <Box>

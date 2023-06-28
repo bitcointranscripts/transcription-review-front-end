@@ -129,7 +129,7 @@ export const OnlySelectBox = ({
   handleAutoCompleteSelect,
 }: OnlySelectBoxProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { onClose, onOpen, onToggle, isOpen } = useDisclosure();
+  const { onClose, onOpen, isOpen } = useDisclosure();
   const [confirmModal, setConfirmModal] = useState<ConfirmModalState>({
     isOpen: false,
     data: "",
@@ -138,6 +138,9 @@ export const OnlySelectBox = ({
   const onAutoCompleteSelect = (data: AutoCompleteData) => {
     onClose();
     handleAutoCompleteSelect(data);
+    setTimeout(() => {
+      setInputState("");
+    }, 500);
   };
 
   const handleClose = () => {
@@ -156,6 +159,7 @@ export const OnlySelectBox = ({
     if (typeof addItem !== "function") return;
     addItem(confirmModal.data);
     closeModal();
+    setInputState("");
   };
 
   const checkSpelling = () => {
@@ -194,7 +198,7 @@ export const OnlySelectBox = ({
               justifyContent="space-between"
             >
               <Text color="gray.600" fontSize="14px" fontWeight={500}>
-                Select {name}
+                Add {name}
               </Text>
               <Icon color="gray.600" as={FaSortDown} />
             </Flex>
@@ -262,10 +266,6 @@ const AddCustomItem = ({
   value: string;
   openModal: (data: string) => void;
 }) => {
-  const [confirmModal, setConfirmModal] = useState<ConfirmModalState>({
-    isOpen: false,
-    data: "",
-  });
   return (
     <>
       {value.trim() ? (
