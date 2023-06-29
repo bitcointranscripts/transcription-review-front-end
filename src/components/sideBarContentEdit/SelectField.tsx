@@ -283,6 +283,7 @@ export const SingleSelectField = ({
       icon={<FaSortDown fontSize="14px" transform="translate(0, -2)" />}
       onChange={handleSelect}
       size="sm"
+      defaultValue={editedData[0]}
     >
       {newAutoCompleteList.map((item) => (
         <option key={item.slug} value={item.value}>
