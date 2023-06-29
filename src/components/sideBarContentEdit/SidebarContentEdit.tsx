@@ -1,11 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { getTimeLeftText } from "@/utils";
-import {
-  Box,
-  Button,
-  Flex, Text
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { ReactNode } from "react";
 import DatePicker from "react-datepicker";
@@ -15,7 +11,7 @@ import { Review, Transcript } from "../../../types";
 import {
   sideBarContentUpdateParams,
   SideBarData,
-  SidebarSubType
+  SidebarSubType,
 } from "../transcript";
 import { OnlySelectField, SingleSelectField } from "./SelectField";
 import styles from "./sidebarContentEdit.module.css";
@@ -155,7 +151,7 @@ const SidebarContentEdit = ({
             Categories
           </Text>
           <SingleSelectField
-            name="categories"
+            name="category"
             editedData={sideBarData.list.categories}
             updateData={updateCategories}
             autoCompleteList={selectableListData?.categories ?? []}
