@@ -1,22 +1,25 @@
 /* eslint-disable no-unused-vars */
+import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { getTimeLeftText } from "@/utils";
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex, Text
+} from "@chakra-ui/react";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import { Review, Transcript } from "../../../types";
-import SelectField, { OnlySelectField } from "./SelectField";
-import TextField from "./TextField";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import styles from "./sidebarContentEdit.module.css";
-import speakersList from "@/config/speakers.json";
+import { MdOutlineAccessTimeFilled } from "react-icons/md";
+import { Review, Transcript } from "../../../types";
 import {
   sideBarContentUpdateParams,
   SideBarData,
-  SidebarSubType,
+  SidebarSubType
 } from "../transcript";
-import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
+import { OnlySelectField, SingleSelectField } from "./SelectField";
+import styles from "./sidebarContentEdit.module.css";
+import TextField from "./TextField";
 
 const SidebarContentEdit = ({
   data,
@@ -151,7 +154,7 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Categories
           </Text>
-          <OnlySelectField
+          <SingleSelectField
             name="categories"
             editedData={sideBarData.list.categories}
             updateData={updateCategories}
@@ -159,9 +162,20 @@ const SidebarContentEdit = ({
           />
         </Box>
         <Box>
-          <Text fontWeight={600} mb={2}>
-            Tags
-          </Text>
+          <Flex gap={2}>
+            <Text fontWeight={600} mb={2}>
+              Tags
+            </Text>
+            <span>
+              (
+              <Link href="https://btctranscripts.com/tags/" target="_blank">
+                <Text display="inline" color="blue.600" fontSize="12px">
+                  What&apos;s this?
+                </Text>
+              </Link>
+              )
+            </span>
+          </Flex>
           <OnlySelectField
             name="tags"
             editedData={sideBarData.list.tags}
