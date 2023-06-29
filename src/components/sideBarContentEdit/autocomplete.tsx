@@ -40,12 +40,14 @@ const AutoComplete = ({
   )
     return null;
 
-  let sortedSpeakers: AutoCompleteData[] = autoCompleteList;
-  if (editState.value.trim()) {
-    sortedSpeakers = matchSorter(autoCompleteList, editState.value, {
-      keys: ["slug", "value"],
-    })?.slice(0, 50);
-  }
+  let sortedSpeakers = matchSorter(autoCompleteList, editState.value, {
+    keys: ["key", "value"],
+  });
+  // if (editState.value.trim()) {
+  //   sortedSpeakers = matchSorter(autoCompleteList, editState.value, {
+  //     keys: ["slug", "value"],
+  //   })?.slice(0, 50);
+  // }
 
   const handleClick = (data: AutoCompleteData) => {
     onAutoCompleteSelect(data);
