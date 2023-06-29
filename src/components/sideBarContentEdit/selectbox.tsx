@@ -274,18 +274,19 @@ const AddCustomItem = ({
           <Divider />
           <Box
             role="button"
+            mt={1}
             py={1}
             px={2}
             rounded="md"
             _hover={{ bgColor: "gray.100" }}
-            _active={{ bgColor: "gray.800" }}
+            _active={{ bgColor: "gray.200" }}
             onClick={() => openModal(value)}
           >
             <Flex>
-              <Text mr={2} color="gray.400" fontWeight={500}>
+              <Text mr={2} color="green.700" fontWeight={800}>
                 Add:
               </Text>
-              <Text color="blue.700">{`"${value}"`}</Text>
+              <Text color="green.700">{`"${value}"`}</Text>
             </Flex>
           </Box>
         </Box>
