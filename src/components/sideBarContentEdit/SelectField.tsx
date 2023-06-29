@@ -1,7 +1,9 @@
 import { UI_CONFIG } from "@/config/ui-config";
-import { Button, Flex, IconButton, Text } from "@chakra-ui/react";
+import { Button, Flex, IconButton, Select, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { BiPencil, BiX } from "react-icons/bi";
+import { FaSortDown } from "react-icons/fa";
+import slugify from "slugify";
 import SelectBox, { OnlySelectBox } from "./selectbox";
 
 type Props = {
@@ -145,15 +147,6 @@ const SelectField = ({
           </Flex>
         );
       })}
-      {/* <OnlySelectBox
-        idx={-1}
-        name={name}
-        editState={editState}
-        handleInputChange={handleInputChange}
-        handleUpdateEdit={handleNewSpeaker}
-        autoCompleteList={autoCompleteList}
-        handleAutoCompleteSelect={handleAutoCompleteSelect}
-      /> */}
       {isNew ? (
         <SelectBox
           idx={-1}
@@ -245,5 +238,55 @@ export const OnlySelectField = ({
         );
       })}
     </>
+  );
+};
+
+export const SingleSelectField = ({
+  name,
+  editedData,
+  updateData,
+  autoCompleteList,
+}: Props) => {
+  const handleSelect = (e: any) => {
+    const value = e.target.value;
+    if (!value.trim()) {
+      updateData([]);
+      return;
+    }
+    updateData([value]);
+  };
+  const prevCategoryNotInList = () => {
+    let newListItems: AutoCompleteData[] = [];
+    if (!editedData.length) return newListItems;
+    const flattenedListData = autoCompleteList.map((item) => item.value);
+    const _newLitsItems = editedData.filter(
+      (item) => !flattenedListData.includes(item)
+    );
+    _newLitsItems.forEach((item) => {
+      const slug = slugify(item);
+      newListItems.push({ slug, value: item });
+    });
+    return newListItems;
+  };
+
+  const newAutoCompleteList = autoCompleteList.concat(prevCategoryNotInList());
+  return (
+    <Select
+      placeholder="Select a category"
+      bgColor="blackAlpha.100"
+      rounded="md"
+      border="2px solid"
+      borderColor="gray.200"
+      borderRadius="md"
+      icon={<FaSortDown fontSize="14px" transform="translate(0, -2)" />}
+      onChange={handleSelect}
+      size="sm"
+    >
+      {newAutoCompleteList.map((item) => (
+        <option key={item.slug} value={item.value}>
+          {item.value}
+        </option>
+      ))}
+    </Select>
   );
 };
