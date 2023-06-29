@@ -54,7 +54,14 @@ const AutoComplete = ({
   if (!sortedSpeakers?.length) return null;
 
   return (
-    <Box {...boxContainerProps} zIndex={1} w="full" maxH={48} overflow="scroll" ref={selectRef}>
+    <Box
+      {...boxContainerProps}
+      zIndex={1}
+      w="full"
+      maxH={48}
+      overflow="scroll"
+      ref={selectRef}
+    >
       {sortedSpeakers.map((speaker) => {
         return (
           <Text

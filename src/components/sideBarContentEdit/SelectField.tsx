@@ -255,7 +255,7 @@ export const SingleSelectField = ({
     }
     updateData([value]);
   };
-  const prevCategoryNotInList = () => {
+  const prevSelectedDataNotInList = () => {
     let newListItems: AutoCompleteData[] = [];
     if (!editedData.length) return newListItems;
     const flattenedListData = autoCompleteList.map((item) => item.value);
@@ -269,10 +269,12 @@ export const SingleSelectField = ({
     return newListItems;
   };
 
-  const newAutoCompleteList = autoCompleteList.concat(prevCategoryNotInList());
+  const newAutoCompleteList = autoCompleteList.concat(
+    prevSelectedDataNotInList()
+  );
   return (
     <Select
-      placeholder="Select a category"
+      placeholder={`Select a ${name}`}
       bgColor="blackAlpha.100"
       rounded="md"
       border="2px solid"
