@@ -185,7 +185,7 @@ export const LoadingSkeleton = ({ rowsLength }: { rowsLength: number }) => {
   return <>{getSkeleton}</>;
 };
 
-export const DataEmpty = ({ message = "No Data" }: { message?: string }) => {
+export const DataEmpty = ({ message = "No Data" }: { message?: React.ReactNode }) => {
   return (
     <Tr position="relative" h={14}>
       <Td position="absolute" w="full" color="red.400" textAlign="center">
