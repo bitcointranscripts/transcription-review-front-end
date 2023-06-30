@@ -3,6 +3,7 @@ import RedirectToLogin from "@/components/RedirectToLogin";
 import Transcript from "@/components/transcript";
 import AuthStatus from "@/components/transcript/AuthStatus";
 import { useReview } from "@/services/api/reviews";
+import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { UserReview } from "../../../types";
@@ -11,6 +12,9 @@ const TranscriptPage = () => {
   const { status, data: sessionData } = useSession();
   const router = useRouter();
   const { id } = router.query;
+
+  // optimistic fetch metadata, with staleTime of Infinity it is only called once throught the app session
+  useGetMetaData();
 
   // get the review only if id is a number
   const { data: review, status: reviewStatus, error } = useReview(Number(id));

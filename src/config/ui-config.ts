@@ -12,4 +12,5 @@ export const UI_CONFIG = {
     2: 152,
     3: 302,
   },
+  MAX_AUTOCOMPLETE_LENGTH_TO_FILTER: 1000,
 };
