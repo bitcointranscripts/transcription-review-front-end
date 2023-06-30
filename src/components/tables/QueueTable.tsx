@@ -243,7 +243,7 @@ const QueueTable = () => {
         <BaseTable
           actionState={claimState}
           data={data}
-          emptyText="There are no transcripts awaiting review"
+          emptyView="There are no transcripts awaiting review"
           handleArchive={handleArchive}
           hasAdminSelected={hasAdminSelected}
           isError={isError}

@@ -1,21 +1,21 @@
 /* eslint-disable no-unused-vars */
+import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import { Review, Transcript } from "../../../types";
-import SelectField from "./SelectField";
-import TextField from "./TextField";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import styles from "./sidebarContentEdit.module.css";
-import speakersList from "@/config/speakers.json";
+import { MdOutlineAccessTimeFilled } from "react-icons/md";
+import { Review, Transcript } from "../../../types";
 import {
   sideBarContentUpdateParams,
   SideBarData,
   SidebarSubType,
 } from "../transcript";
+import { OnlySelectField, SingleSelectField } from "./SelectField";
+import styles from "./sidebarContentEdit.module.css";
+import TextField from "./TextField";
 
 const SidebarContentEdit = ({
   data,
@@ -34,6 +34,7 @@ const SidebarContentEdit = ({
     name,
   }: sideBarContentUpdateParams<T, K>) => void;
 }) => {
+  const { data: selectableListData, isLoading, error } = useGetMetaData();
   const updateTitle = (newTitle: string) => {
     updater({
       data: newTitle,
@@ -112,11 +113,12 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Speakers
           </Text>
-          <SelectField
+          <OnlySelectField
             name="speakers"
             editedData={sideBarData.list.speakers}
             updateData={updateSpeaker}
-            autoCompleteList={speakersList}
+            autoCompleteList={selectableListData?.speakers ?? []}
+            userCanAddToList
           />
         </Box>
         <Box>
@@ -148,20 +150,33 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Categories
           </Text>
-          <SelectField
-            name="categories"
+          <SingleSelectField
+            name="category"
             editedData={sideBarData.list.categories}
             updateData={updateCategories}
+            autoCompleteList={selectableListData?.categories ?? []}
           />
         </Box>
         <Box>
-          <Text fontWeight={600} mb={2}>
-            Tags
-          </Text>
-          <SelectField
+          <Flex gap={2}>
+            <Text fontWeight={600} mb={2}>
+              Tags
+            </Text>
+            <span>
+              (
+              <Link href="https://btctranscripts.com/tags/" target="_blank">
+                <Text display="inline" color="blue.600" fontSize="12px">
+                  What&apos;s this?
+                </Text>
+              </Link>
+              )
+            </span>
+          </Flex>
+          <OnlySelectField
             name="tags"
             editedData={sideBarData.list.tags}
             updateData={updateTags}
+            autoCompleteList={selectableListData?.tags ?? []}
           />
         </Box>
         {children}

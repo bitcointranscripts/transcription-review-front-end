@@ -64,7 +64,7 @@ const PastJobsTable = () => {
   return (
     <BaseTable
       data={tableData}
-      emptyText="No Past Jobs"
+      emptyView="No Past Jobs 😭"
       isLoading={isLoading}
       isError={isError}
       refetch={refetch}
