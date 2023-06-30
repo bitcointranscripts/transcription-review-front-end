@@ -19,7 +19,7 @@ import type { TableStructure } from "./types";
 
 type Props = {
   data: ReviewTranscript[] | undefined;
-  emptyText?: string;
+  emptyView?: React.ReactNode;
   isLoading: boolean;
   isError: boolean;
   refetch?: <TPageData>(
@@ -39,7 +39,7 @@ type Props = {
 
 const BaseTable: React.FC<Props> = ({
   data,
-  emptyText,
+  emptyView,
   isLoading,
   refetch,
   actionState,
@@ -94,7 +94,7 @@ const BaseTable: React.FC<Props> = ({
               />
             ))
           ) : (
-            <DataEmpty message={emptyText} />
+            <DataEmpty message={emptyView} />
           )}
         </Tbody>
       </Table>

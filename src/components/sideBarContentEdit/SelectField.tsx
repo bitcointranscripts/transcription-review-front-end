@@ -1,14 +1,18 @@
-import { Button, Flex, IconButton, Text } from "@chakra-ui/react";
+import { UI_CONFIG } from "@/config/ui-config";
+import { Button, Flex, IconButton, Select, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import { BiPencil } from "react-icons/bi";
-import SelectBox from "./selectbox";
+import { BiPencil, BiX } from "react-icons/bi";
+import { FaSortDown } from "react-icons/fa";
+import slugify from "slugify";
+import SelectBox, { OnlySelectBox } from "./selectbox";
 
 type Props = {
   name: string;
   editedData: string[];
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string[]) => void;
-  autoCompleteList?: Array<AutoCompleteData>;
+  autoCompleteList: Array<AutoCompleteData>;
+  userCanAddToList?: boolean;
 };
 
 export type AutoCompleteData = {
@@ -114,6 +118,7 @@ const SelectField = ({
           <SelectBox
             key={speaker}
             idx={idx}
+            name={name}
             editState={editState}
             handleInputChange={handleInputChange}
             handleUpdateEdit={handleUpdateEdit}
@@ -145,6 +150,7 @@ const SelectField = ({
       {isNew ? (
         <SelectBox
           idx={-1}
+          name={name}
           editState={editState}
           handleInputChange={handleInputChange}
           handleUpdateEdit={handleNewSpeaker}
@@ -169,3 +175,121 @@ const SelectField = ({
 };
 
 export default SelectField;
+
+export const OnlySelectField = ({
+  name,
+  editedData,
+  updateData,
+  autoCompleteList,
+  userCanAddToList,
+}: Props) => {
+  const handleAddItem = (value: string) => {
+    let updatedList = [...editedData];
+    updatedList.push(value);
+    updateData(updatedList);
+  };
+
+  const handleRemoveItem = (idx: number) => {
+    let updatedList = [...editedData];
+    updatedList.splice(idx, 1);
+    updateData(updatedList);
+  };
+
+  const handleAutoCompleteSelect = (data: AutoCompleteData) => {
+    handleAddItem(data.value);
+  };
+
+  // remove previuosly selected option from list
+  const newAutoCompleteList =
+    autoCompleteList.length > UI_CONFIG.MAX_AUTOCOMPLETE_LENGTH_TO_FILTER
+      ? autoCompleteList
+      : autoCompleteList.filter((item) => !editedData.includes(item.value));
+
+  return (
+    <>
+      <OnlySelectBox
+        idx={-1}
+        name={name}
+        addItem={userCanAddToList ? handleAddItem : undefined}
+        autoCompleteList={newAutoCompleteList}
+        handleAutoCompleteSelect={handleAutoCompleteSelect}
+      />
+      {editedData?.map((speaker: string, idx: number) => {
+        return (
+          <Flex
+            key={`${speaker}-idx-${idx}`}
+            justifyContent="space-between"
+            gap={1}
+            alignItems="center"
+          >
+            <Text fontSize="14px">{speaker}</Text>
+            <IconButton
+              fontSize="16px"
+              p="6px"
+              size="sm"
+              minW="auto"
+              h="auto"
+              variant="ghost"
+              onClick={() => handleRemoveItem(idx)}
+              aria-label="edit speaker"
+              icon={<BiX />}
+            />
+          </Flex>
+        );
+      })}
+    </>
+  );
+};
+
+export const SingleSelectField = ({
+  name,
+  editedData,
+  updateData,
+  autoCompleteList,
+}: Props) => {
+  const handleSelect = (e: any) => {
+    const value = e.target.value;
+    if (!value.trim()) {
+      updateData([]);
+      return;
+    }
+    updateData([value]);
+  };
+  const prevSelectedDataNotInList = () => {
+    let newListItems: AutoCompleteData[] = [];
+    if (!editedData.length) return newListItems;
+    const flattenedListData = autoCompleteList.map((item) => item.value);
+    const _newLitsItems = editedData.filter(
+      (item) => !flattenedListData.includes(item)
+    );
+    _newLitsItems.forEach((item) => {
+      const slug = slugify(item);
+      newListItems.push({ slug, value: item });
+    });
+    return newListItems;
+  };
+
+  const newAutoCompleteList = autoCompleteList.concat(
+    prevSelectedDataNotInList()
+  );
+  return (
+    <Select
+      placeholder={`Select a ${name}`}
+      bgColor="blackAlpha.100"
+      rounded="md"
+      border="2px solid"
+      borderColor="gray.200"
+      borderRadius="md"
+      icon={<FaSortDown fontSize="14px" transform="translate(0, -2)" />}
+      onChange={handleSelect}
+      size="sm"
+      defaultValue={editedData[0]}
+    >
+      {newAutoCompleteList.map((item) => (
+        <option key={item.slug} value={item.value}>
+          {item.value}
+        </option>
+      ))}
+    </Select>
+  );
+};

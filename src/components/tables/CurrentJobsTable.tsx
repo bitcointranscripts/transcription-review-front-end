@@ -1,10 +1,9 @@
 import { useUserReviews } from "@/services/api/reviews";
 import { wordsFormat } from "@/utils";
-import { Button, Flex, Heading, Icon, Link } from "@chakra-ui/react";
+import { Button, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
-import { BiLink } from "react-icons/bi";
 import { ReviewTranscript } from "../../../types";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
@@ -61,27 +60,17 @@ const CurrentJobsTable = () => {
       };
       return (
         <>
-          <Button
-            isDisabled={isPending}
-            colorScheme={isPending ? "gray" : "orange"}
-            size="sm"
-            onClick={handleResume}
-          >
-            {isPending ? "Under Review" : "Review"}
-          </Button>
           {isPending ? (
-            <Flex
-              alignItems="center"
-              _hover={{
-                cursor: "pointer",
-                color: "orange.400",
-              }}
-            >
-              <Link href={`${data.review?.pr_url}`} target="_blank">
-                <Icon as={BiLink} />
-              </Link>
-            </Flex>
-          ) : null}
+            <Link href={`${data.review?.pr_url}`} target="_blank">
+              <Button colorScheme={"gray"} size="sm">
+                Under Review
+              </Button>
+            </Link>
+          ) : (
+            <Button colorScheme={"orange"} size="sm" onClick={handleResume}>
+              Review
+            </Button>
+          )}
         </>
       );
     },
@@ -133,7 +122,7 @@ const CurrentJobsTable = () => {
   return (
     <BaseTable
       data={tableData}
-      emptyText="No Current Jobs"
+      emptyView={<EmptyView />}
       isLoading={isLoading}
       isError={isError}
       refetch={refetch}
@@ -148,3 +137,14 @@ const CurrentJobsTable = () => {
 };
 
 export default CurrentJobsTable;
+
+const EmptyView = () => {
+  return (
+    <Flex w="full" justifyContent="center" alignItems="center" gap={2}>
+      <Text>No Current Jobs 😭</Text>
+      <Link href="/">
+        <Button size="xs" colorScheme="orange">Choose transcript to edit</Button>
+      </Link>
+    </Flex>
+  );
+};
