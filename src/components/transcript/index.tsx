@@ -207,7 +207,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
         categories: formatDataForMetadata(categories),
         transcribedText: editedData,
         transcript_by: formatDataForMetadata(
-          transcriptData?.content?.transcript_by ?? ""
+          userSession?.user?.githubUsername ?? ""
         ),
         prRepo,
       });

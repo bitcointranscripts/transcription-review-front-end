@@ -122,7 +122,7 @@ const Menu = () => {
                       />
                       {userSession?.user?.githubUsername && (
                         <MenuNav
-                          routeName="profile"
+                          routeName="account"
                           routeLink={userSession.user.githubUsername}
                           currentRoute={currentRoute}
                           handleClose={closeMenu}
