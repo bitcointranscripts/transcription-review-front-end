@@ -1,9 +1,10 @@
 import {
   Box,
-  Button,
   Divider,
   Flex,
+  Heading,
   Icon,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -13,8 +14,8 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import Link from "next/link";
-import { BiCheck, BiLink, BiX } from "react-icons/bi";
+import NextLink from "next/link";
+import { BiCheck, BiX } from "react-icons/bi";
 
 export type SubmitState = {
   stepIdx: number;
@@ -79,7 +80,7 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
               );
             })}
           </Box>
-          <Box my={6}>
+          <Box my={4}>
             {isError && !isLoading && (
               <Box>
                 <Text color="gray.400" fontWeight={500}>
@@ -97,21 +98,36 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
               </Box>
             )}
             {!isError && !isLoading && prResult?.data?.html_url && (
-              <Flex gap={2} alignItems="center">
-                <Text fontWeight={600}>Sucessfully opened a PR at:</Text>
-                <Link href={prResult?.data?.html_url} target="_blank">
-                  <Button
-                    size="sm"
-                    variant="unstyled"
-                    _hover={{ color: "blue.500" }}
-                  >
-                    <Flex gap={2} alignItems="center">
-                      <Icon as={BiLink} />
-                      <Text>PR Link</Text>
-                    </Flex>
-                  </Button>
-                </Link>
-              </Flex>
+              <>
+                <Heading size="md">Thanks for your help!</Heading>
+                <Flex
+                  fontSize="16px"
+                  color="gray.600"
+                  direction={"column"}
+                  pt={2}
+                  gap={1}
+                >
+                  <Text>The edits will be reviewed before publishing.</Text>
+                  <Text>
+                    You will receive a confirmation on GitHub once it is merged
+                    and live on btctranscripts.com.
+                  </Text>
+                  <Text>
+                    Corrections and conversations about this transcript will
+                    shift to GitHub on your PR linked
+                    <span> </span>
+                    <Link
+                      as={NextLink}
+                      href={prResult?.data?.html_url}
+                      target="_blank"
+                      color="blue.400"
+                    >
+                      here
+                    </Link>
+                    .
+                  </Text>
+                </Flex>
+              </>
             )}
           </Box>
         </ModalBody>
