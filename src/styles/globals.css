@@ -30,8 +30,14 @@ a {
   height: 70vh;
 }
 
-.hide-editor .md-editor-input-wrapper {
+
+.full {
+  min-width:100% !important
+}
+
+.hide-editor  {
   display: none;
+  width: 0px;
 }
 
 .iframe-wrapper {
