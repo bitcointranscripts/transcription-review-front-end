@@ -34,7 +34,10 @@ a {
 .full {
   min-width:100% !important
 }
-
+/* to stop the glitch while changing preview */
+.visible + section {
+  display: none;
+}
 .hide-editor  {
   display: none;
   width: 0px;
