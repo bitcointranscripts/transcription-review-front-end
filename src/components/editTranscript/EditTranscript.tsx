@@ -13,9 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import "md-editor-rt/lib/style.css";
 import MdEditor from "react-markdown-editor-lite";
-// import sanitize from "sanitize-html";
 import "react-markdown-editor-lite/lib/index.css";
 import { useEffect, useRef, useState } from "react";
 import MarkdownIt from "markdown-it";
