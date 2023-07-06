@@ -68,7 +68,7 @@ const CurrentJobsTable = () => {
             </Link>
           ) : (
             <Button colorScheme={"orange"} size="sm" onClick={handleResume}>
-              Review
+              Continue editing transcript
             </Button>
           )}
         </>
@@ -143,7 +143,9 @@ const EmptyView = () => {
     <Flex w="full" justifyContent="center" alignItems="center" gap={2}>
       <Text>No Current Jobs 😭</Text>
       <Link href="/">
-        <Button size="xs" colorScheme="orange">Choose transcript to edit</Button>
+        <Button size="xs" colorScheme="orange">
+          Choose transcript to edit
+        </Button>
       </Link>
     </Flex>
   );
