@@ -292,7 +292,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
           restoreOriginal={restoreOriginal}
         />
       </Flex>
-      <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
+      {isOpen && console.log(editedData)}
+      {/* <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} /> */}
       <SubmitTranscriptAlert
         prRepo={prRepo}
         isOpen={isOpen}
