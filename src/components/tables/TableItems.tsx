@@ -53,11 +53,7 @@ export const LongText = ({ tableItem, row }: TableDataElement) => {
 
 export const ShortText = ({ tableItem, row }: TableDataElement) => {
   const text = defaultUndefined(tableItem.modifier, row);
-  return (
-    <Td>
-      <Text>{text}</Text>
-    </Td>
-  );
+  return <Td>{typeof text === "string" ? <Text>{text}</Text> : text}</Td>;
 };
 
 export const Tags = ({ tableItem, row }: TableDataElement) => {
@@ -185,7 +181,11 @@ export const LoadingSkeleton = ({ rowsLength }: { rowsLength: number }) => {
   return <>{getSkeleton}</>;
 };
 
-export const DataEmpty = ({ message = "No Data" }: { message?: React.ReactNode }) => {
+export const DataEmpty = ({
+  message = "No Data",
+}: {
+  message?: React.ReactNode;
+}) => {
   return (
     <Tr position="relative" h={14}>
       <Td position="absolute" w="full" color="red.400" textAlign="center">
