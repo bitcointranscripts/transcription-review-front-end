@@ -1,13 +1,12 @@
 /* eslint-disable no-unused-vars */
-
 import { useUserReviews } from "@/services/api/reviews";
 import {
   useArchiveTranscript,
   useClaimTranscript,
   useTranscripts,
 } from "@/services/api/transcripts";
-import { wordsFormat } from "@/utils";
-import { CheckboxGroup, useToast } from "@chakra-ui/react";
+import { calculateReadingTime, wordsFormat } from "@/utils";
+import { Box, CheckboxGroup, Text, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -218,10 +217,20 @@ const QueueTable = () => {
         {
           name: "word count",
           type: "text-short",
-          modifier: (data) =>
-            Number(data.contentTotalWords)
-              ? `${wordsFormat.format(data.contentTotalWords)} words`
-              : "N/A",
+          modifier: (data) => (
+            <Box>
+              <Text>
+                {Number(data.contentTotalWords)
+                  ? `${wordsFormat.format(data.contentTotalWords)} words`
+                  : "N/A"}
+              </Text>
+              <Text fontWeight="bold">
+                {`Approx. editing time = ${calculateReadingTime(
+                  Number(data.contentTotalWords)
+                )}`}
+              </Text>
+            </Box>
+          ),
         },
         // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
         {
@@ -232,7 +241,7 @@ const QueueTable = () => {
           action: (data: Transcript) => handleClaim(data.id),
         },
       ] as TableStructure[],
-    [handleClaim, canClaimTranscript]
+    [handleClaim]
   );
 
   // TODO: extract and refactor claim logic into a claim ActionComponent
