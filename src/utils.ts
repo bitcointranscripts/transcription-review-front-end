@@ -81,7 +81,9 @@ export class Metadata {
 
     // eslint-disable-next-line prettier/prettier
     this.metaData =
-      `---\n` + `title: ${fileTitle}\n` + `transcript_by: ${transcript_by} via ${config.app_tag}\n`;
+      `---\n` +
+      `title: ${fileTitle}\n` +
+      `transcript_by: ${transcript_by} via ${config.app_tag}\n`;
 
     this.metaData += `media: ${url}\n`;
 
@@ -199,4 +201,17 @@ export function derivePublishUrl(
   const base_url = config.btctranscripts_base_url;
   const publishUrl = base_url + loc + "/" + fileName;
   return publishUrl;
+}
+
+export function calculateReadingTime(wordCount: number, wpm = 150) {
+  const minutes = wordCount / wpm;
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = Math.ceil(minutes % 60);
+
+  if (hours > 0) {
+    return `${hours} hr`;
+  } else {
+    return `${remainingMinutes} min`;
+  }
 }
