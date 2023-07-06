@@ -2994,11 +2994,6 @@ match-sorter@^6.3.1:
     "@babel/runtime" "^7.12.5"
     remove-accents "0.4.2"
 
-md-editor-rt@^2.10.1:
-  version "2.10.1"
-  resolved "https://registry.yarnpkg.com/md-editor-rt/-/md-editor-rt-2.10.1.tgz#529d51cf808d720857decb41c44e86699a2e215a"
-  integrity sha512-0rbytgoR2XG5GobBkoS/x9SckfwUOlS9aT34ltDxUM45h580Ud9lRbqzJiIkKdHnQqNUT901Z/4zJ/0xPuc8aw==
-
 mdurl@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/mdurl/-/mdurl-1.0.1.tgz#fe85b2ec75a59037f2adfec100fd6c601761152e"
