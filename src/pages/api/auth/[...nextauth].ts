@@ -1,5 +1,9 @@
 import axios from "@/services/api/axios";
-import { createNewUser } from "@/services/api/lib";
+import {
+  CreateUserProp,
+  createNewUser,
+  updateUserProfile,
+} from "@/services/api/lib";
 import NextAuth, {
   GhExtendedProfile,
   NextAuthOptions,
@@ -40,11 +44,12 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ isNewUser, token, account, ...response }) {
       const profile = response.profile as GhExtendedProfile | undefined;
-      const createAndSetNewUser = async (
-        username: string,
-        permissions?: string
-      ) => {
-        const res = await createNewUser({ username, permissions });
+      const createAndSetNewUser = async ({
+        username,
+        email,
+        permissions,
+      }: CreateUserProp) => {
+        const res = await createNewUser({ username, email, permissions });
         if (res.data) {
           token.user = {
             ...res.data,
@@ -56,7 +61,8 @@ export const authOptions: NextAuthOptions = {
       };
 
       if (isNewUser && profile?.login) {
-        await createAndSetNewUser(profile?.login);
+        const { email, login } = profile;
+        await createAndSetNewUser({ username: login, email });
       }
       // Temporary get userId
       // TODO: when resource is available send properties to backend and get id
@@ -74,8 +80,20 @@ export const authOptions: NextAuthOptions = {
                   ...user,
                   access_token: account?.access_token,
                 };
+                // TODO: remove this when auth is implemented in the backend
+                // Temporary update existing users without email
+                if (!user?.email && profile?.email) {
+                  await updateUserProfile({
+                    id: user.id,
+                    email: profile?.email,
+                    username: profile?.login,
+                  });
+                }
               } else {
-                await createAndSetNewUser(profile?.login);
+                await createAndSetNewUser({
+                  username: profile?.login,
+                  email: profile?.email,
+                });
               }
             }
           })
