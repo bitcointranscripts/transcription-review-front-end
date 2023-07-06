@@ -50,7 +50,7 @@ const EditTranscript = ({
 
   // Finish!
   function handleEditorChange({ text }: IHandleEditorChange) {
-    update(text);
+    update(text); // must be text else would render and send html values
   }
   // hijack params of mdEditor to change toolbar "preview" function
   useEffect(() => {
