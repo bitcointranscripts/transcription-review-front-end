@@ -112,10 +112,7 @@ const EditTranscript = ({
           <MdEditor
             ref={editorRef}
             defaultValue={mdData?.replace(/\\n/g, "\n") ?? ""}
-            renderHTML={(text) => {
-              console.log(mdParser.render(text));
-              return mdParser.render(text);
-            }}
+            renderHTML={(text) => mdParser.render(text)}
             onChange={handleEditorChange}
             htmlClass={isPreviewOnly ? "hide-editor" : ""}
             markdownClass="full"
