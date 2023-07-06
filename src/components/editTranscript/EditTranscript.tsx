@@ -49,8 +49,8 @@ const EditTranscript = ({
   const mdParser = new MarkdownIt(/* Markdown-it options */);
 
   // Finish!
-  function handleEditorChange({ html }: IHandleEditorChange) {
-    update(html);
+  function handleEditorChange({ text }: IHandleEditorChange) {
+    update(text);
   }
   // hijack params of mdEditor to change toolbar "preview" function
   useEffect(() => {
@@ -112,7 +112,10 @@ const EditTranscript = ({
           <MdEditor
             ref={editorRef}
             defaultValue={mdData?.replace(/\\n/g, "\n") ?? ""}
-            renderHTML={(text) => mdParser.render(text)}
+            renderHTML={(text) => {
+              console.log(mdParser.render(text));
+              return mdParser.render(text);
+            }}
             onChange={handleEditorChange}
             htmlClass={isPreviewOnly ? "hide-editor" : ""}
             markdownClass="full"
