@@ -21,6 +21,7 @@ declare module "next-auth" {
   interface GhExtendedProfile extends Profile {
     login: string;
     avatar_url: string;
+    email: string;
     [key]?: string;
   }
 }

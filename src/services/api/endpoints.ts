@@ -29,6 +29,8 @@ const GET_TRANSCRIPTS_BY_ID = (id: number) => `transcripts/${id}`;
 
 const USERS = () => `users`;
 
+const USER_BY_ID = (id: number) => `users/${id}`;
+
 const USER_REVIEWS = (id: number) => `users/${id}/reviews`;
 
 const REVIEWS = ({ userId, username, status }: ReviewQueryOptions) => {
@@ -45,6 +47,7 @@ const endpoints = {
   GET_TRANSCRIPTS,
   GET_TRANSCRIPTS_BY_ID,
   USERS,
+  USER_BY_ID,
   USER_REVIEWS,
   REVIEWS,
   REVIEW_BY_ID,
