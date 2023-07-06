@@ -30,8 +30,17 @@ a {
   height: 70vh;
 }
 
-.hide-editor .md-editor-input-wrapper {
+
+.full {
+  min-width:100% !important
+}
+/* to stop the glitch while changing preview */
+.visible + section {
   display: none;
+}
+.hide-editor  {
+  display: none;
+  width: 0px;
 }
 
 .iframe-wrapper {

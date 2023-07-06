@@ -13,13 +13,22 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import MdEditor, { ExposeParam } from "md-editor-rt";
-import "md-editor-rt/lib/style.css";
+import MdEditor from "react-markdown-editor-lite";
+import "react-markdown-editor-lite/lib/index.css";
+import { useEffect, useRef, useState } from "react";
+import MarkdownIt from "markdown-it";
 
-import sanitize from "sanitize-html";
+// Interfaces for react-markdown-editior
+export interface IHandleEditorChange {
+  text: string;
+  html: string;
+}
 
-import { useEffect, useMemo, useRef, useState } from "react";
-
+export interface IStateChange {
+  md: boolean;
+  html: boolean;
+  menu: true;
+}
 const EditTranscript = ({
   data,
   mdData,
@@ -32,21 +41,45 @@ const EditTranscript = ({
   update: (x: any) => void;
   restoreOriginal: () => void;
 }) => {
-  const editorRef = useRef<ExposeParam>();
+  const editorRef = useRef<MdEditor | null>(null);
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
 
   const [isModalOpen, setIsModalopen] = useState(false);
 
-  const formattedMd = useMemo(() => {
-    return mdData?.replace(/\\n/g, "\n") ?? "";
-  }, [mdData]);
+  const mdParser = new MarkdownIt(/* Markdown-it options */);
 
+  // Finish!
+  function handleEditorChange({ html }: IHandleEditorChange) {
+    update(html);
+  }
   // hijack params of mdEditor to change toolbar "preview" function
   useEffect(() => {
-    editorRef.current?.on("preview", (state) => {
-      setIsPreviewOnly(state);
+    editorRef.current?.on("viewchange", (state: IStateChange) => {
+      if (state.md && state.html) {
+        setIsPreviewOnly(false);
+      } else if (state.md) {
+        setIsPreviewOnly(false);
+      } else {
+        setIsPreviewOnly(true);
+      }
     });
   }, []);
+
+  useEffect(() => {
+    if (isPreviewOnly) {
+      editorRef?.current?.setView({
+        html: true,
+        md: false,
+        menu: true,
+      });
+    } else {
+      editorRef?.current?.setView({
+        html: false,
+        md: true,
+        menu: true,
+      });
+    }
+  }, [isPreviewOnly]);
 
   // restoreOriginal content function
   const onClickRestore = () => {
@@ -78,26 +111,11 @@ const EditTranscript = ({
         <Box h="full" id="simplemde-container-controller">
           <MdEditor
             ref={editorRef}
-            className={isPreviewOnly ? "hide-editor" : ""}
-            sanitize={sanitize}
-            modelValue={formattedMd}
-            onChange={update}
-            language="en-US"
-            toolbarsExclude={[
-              "image",
-              "table",
-              "mermaid",
-              "htmlPreview",
-              "github",
-              "prettier",
-              "save",
-              "code",
-              "catalog",
-              "katex",
-            ]}
-            preview={false}
-            previewTheme="github"
-            noMermaid
+            defaultValue={mdData?.replace(/\\n/g, "\n") ?? ""}
+            renderHTML={(text) => mdParser.render(text)}
+            onChange={handleEditorChange}
+            htmlClass={isPreviewOnly ? "hide-editor" : ""}
+            markdownClass="full"
           />
         </Box>
       </Box>
