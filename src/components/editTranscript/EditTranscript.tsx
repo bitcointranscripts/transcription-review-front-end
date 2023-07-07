@@ -49,8 +49,8 @@ const EditTranscript = ({
   const mdParser = new MarkdownIt(/* Markdown-it options */);
 
   // Finish!
-  function handleEditorChange({ html }: IHandleEditorChange) {
-    update(html);
+  function handleEditorChange({ text }: IHandleEditorChange) {
+    update(text);
   }
   // hijack params of mdEditor to change toolbar "preview" function
   useEffect(() => {
