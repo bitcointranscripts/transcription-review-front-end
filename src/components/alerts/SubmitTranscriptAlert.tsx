@@ -14,7 +14,7 @@ import {
   UnorderedList,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { Dispatch, forwardRef, SetStateAction, useRef, useState } from "react";
+import { forwardRef, useRef } from "react";
 
 type Props = {
   isOpen: boolean;
@@ -23,9 +23,7 @@ type Props = {
   prRepo: TranscriptSubmitOptions;
 };
 
-type PromptTwoProps = {
-  setPromptStep: Dispatch<SetStateAction<number>>;
-} & Omit<Props, "isOpen">;
+type PromptTwoProps = Omit<Props, "isOpen">;
 
 type PromptOneProps = Omit<PromptTwoProps, "prRepo" | "onSubmit">;
 
@@ -36,11 +34,9 @@ const SubmitTranscriptAlert = ({
   prRepo,
 }: Props) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const [promptStep, setPromptStep] = useState(1);
 
   const handleClose = () => {
     onCancel();
-    setPromptStep(1);
   };
 
   return (
@@ -51,21 +47,13 @@ const SubmitTranscriptAlert = ({
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
-          {promptStep === 1 ? (
-            <PromptStepOne
-              onCancel={onCancel}
-              ref={cancelRef}
-              setPromptStep={setPromptStep}
-            />
-          ) : (
-            <PromptStepTwo
-              setPromptStep={setPromptStep}
-              prRepo={prRepo}
-              onSubmit={onSubmit}
-              onCancel={handleClose}
-              ref={cancelRef}
-            />
-          )}
+          <PromptStepOne onCancel={onCancel} ref={cancelRef} />
+          <PromptStepTwo
+            prRepo={prRepo}
+            onSubmit={onSubmit}
+            onCancel={handleClose}
+            ref={cancelRef}
+          />
         </AlertDialogContent>
       </AlertDialogOverlay>
     </AlertDialog>
@@ -75,7 +63,7 @@ const SubmitTranscriptAlert = ({
 export default SubmitTranscriptAlert;
 
 const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
-  ({ onCancel, setPromptStep }, ref) => {
+  ({ onCancel }, ref) => {
     return (
       <>
         <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -127,15 +115,6 @@ const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
                 View tutorial
               </Button>
             </Link>
-            <Button
-              display="block"
-              size="sm"
-              mx="auto"
-              colorScheme="blue"
-              onClick={() => setPromptStep(2)}
-            >
-              Ready to ship! <span style={{}}>🚢</span>
-            </Button>
           </Flex>
         </AlertDialogBody>
       </>
@@ -146,14 +125,11 @@ const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
 PromptStepOne.displayName = "PromptStepOne";
 
 const PromptStepTwo = forwardRef<HTMLButtonElement, PromptTwoProps>(
-  ({ onCancel, prRepo, onSubmit }, ref) => {
+  ({ onCancel, prRepo, onSubmit }) => {
     return (
       <>
-        <AlertDialogHeader fontSize="lg" fontWeight="bold">
-          Let&apos;s review your edits
-        </AlertDialogHeader>
         <AlertDialogBody>
-          Are you sure you want to submit your review? This would create a PR on{" "}
+          By hitting submit, this would create a PR on{" "}
           <b>
             {prRepo === "btc transcript"
               ? "the Bitcoin Transcript repo"
@@ -161,15 +137,6 @@ const PromptStepTwo = forwardRef<HTMLButtonElement, PromptTwoProps>(
           </b>{" "}
         </AlertDialogBody>
         <AlertDialogFooter gap={3}>
-          <Button
-            size="sm"
-            colorScheme="orange"
-            variant={"outline"}
-            ref={ref}
-            onClick={onCancel}
-          >
-            Cancel
-          </Button>
           <Button
             size="sm"
             colorScheme="orange"
