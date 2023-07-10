@@ -43,7 +43,6 @@ const EditTranscript = ({
 }) => {
   const editorRef = useRef<MdEditor | null>(null);
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
-
   const [isModalOpen, setIsModalopen] = useState(false);
 
   const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -84,6 +83,7 @@ const EditTranscript = ({
   // restoreOriginal content function
   const onClickRestore = () => {
     update(data.originalContent?.body || "");
+    editorRef.current?.setText(data.originalContent?.body);
     restoreOriginal();
     setIsModalopen(false);
   };
@@ -140,12 +140,7 @@ const EditTranscript = ({
             >
               Cancel
             </Button>
-            <Button
-              // variant="outline"
-              colorScheme="red"
-              size="sm"
-              onClick={onClickRestore}
-            >
+            <Button colorScheme="red" size="sm" onClick={onClickRestore}>
               Yes, Restore!
             </Button>
           </ModalFooter>
