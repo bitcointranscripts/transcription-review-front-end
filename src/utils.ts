@@ -1,7 +1,7 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { MetadataProps } from "../types";
+import { MetadataProps, UserReview } from "../types";
 import config from "./config/config.json";
 
 const claim_duration_in_ms = hoursToMilliseconds(
@@ -214,4 +214,26 @@ export function calculateReadingTime(wordCount: number, wpm = 150) {
   } else {
     return `${remainingMinutes} min`;
   }
+}
+
+export function isReviewActive(review: UserReview) {
+  const currentTime = new Date().getTime();
+  const timeStringAt24HoursPrior = new Date(
+    currentTime - claim_duration_in_ms
+  ).toISOString();
+
+  return (
+    String(review.createdAt) >= timeStringAt24HoursPrior &&
+    review.mergedAt === null &&
+    review.archivedAt === null &&
+    review.submittedAt === null
+  );
+}
+
+export function isReviewPending(review: UserReview) {
+  return (
+    review.submittedAt !== null &&
+    review.mergedAt === null &&
+    review.archivedAt === null
+  );
 }
