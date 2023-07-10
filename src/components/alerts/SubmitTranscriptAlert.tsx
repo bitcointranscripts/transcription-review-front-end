@@ -138,14 +138,15 @@ const PromptStepTwo = forwardRef<HTMLButtonElement, PromptTwoProps>(
         </AlertDialogBody>
         <AlertDialogFooter gap={3}>
           <Button
+            display="block"
             size="sm"
-            colorScheme="orange"
+            colorScheme="blue"
             onClick={() => {
               onCancel();
               onSubmit();
             }}
           >
-            Submit
+            Ready to ship! <span>🚢</span>
           </Button>
         </AlertDialogFooter>
       </>
