@@ -1,6 +1,12 @@
+import config from "@/config/config.json";
 import { useUserReviews } from "@/services/api/reviews";
 import { useClaimTranscript, useTranscripts } from "@/services/api/transcripts";
-import { calculateReadingTime, wordsFormat } from "@/utils";
+import {
+  calculateReadingTime,
+  isReviewActive,
+  isReviewPending,
+  wordsFormat,
+} from "@/utils";
 import { Box, Heading, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -11,56 +17,53 @@ import BaseTable from "./BaseTable";
 import { TableStructure } from "./types";
 
 const EmptyText = ({
-  hasActiveTranscript,
-  hasMorePendingTranscript,
+  hasExceededActiveReviewLimit,
+  hasExceededPendingReviewLimit,
 }: {
-  hasMorePendingTranscript: boolean;
-  hasActiveTranscript: boolean;
+  hasExceededActiveReviewLimit: boolean;
+  hasExceededPendingReviewLimit: boolean;
 }) => {
   const props =
-    hasMorePendingTranscript || hasActiveTranscript
+    hasExceededPendingReviewLimit || hasExceededActiveReviewLimit
       ? {
           color: "black",
           fontWeight: "bold",
         }
       : undefined;
   const text = useMemo(() => {
-    if (hasActiveTranscript)
+    if (hasExceededActiveReviewLimit)
       return "Please finish editing & submit the transcript you're working on before choosing a new one";
-    if (hasMorePendingTranscript)
+    if (hasExceededPendingReviewLimit)
       return "You can only have 3 transcripts under review at once. Please wait until at least one is approved";
 
     return "There are no transcripts that you can edit";
-  }, [hasActiveTranscript, hasMorePendingTranscript]);
+  }, [hasExceededActiveReviewLimit, hasExceededPendingReviewLimit]);
 
   return <Text {...props}>{text}</Text>;
 };
 
-const activeLimit = 1;
-const pendingLimit = 3;
-
 const EditableTranscriptsTable = () => {
   const { data: session, status } = useSession();
-  const { data: activeReviews = [] } = useUserReviews({
+  const { data, isLoading, isError, refetch } = useTranscripts();
+  const claimTranscript = useClaimTranscript();
+  const { data: allReviews = [] } = useUserReviews({
     userId: session?.user?.id,
-    status: "active",
   });
-  const { data: pendingReviews = [] } = useUserReviews({
-    userId: session?.user?.id,
-    status: "pending",
-  });
+  const activeReviews = allReviews.filter(isReviewActive);
+  const pendingReviews = allReviews.filter(isReviewPending);
+  const hasExceededActiveReviewLimit =
+    activeReviews.length >= config.max_active_reviews;
+  const hasExceededPendingReviewLimit =
+    pendingReviews.length >= config.max_pending_reviews;
 
   const router = useRouter();
-  const claimTranscript = useClaimTranscript();
-  const { data, isLoading, isError, refetch } = useTranscripts();
   const toast = useToast();
-  const hasActiveTranscript = activeReviews.length >= activeLimit;
-  const hasMorePendingTranscript = pendingReviews.length >= pendingLimit;
   const editableData = useMemo(() => {
-    if (hasActiveTranscript || hasMorePendingTranscript) return [];
+    if (hasExceededActiveReviewLimit || hasExceededPendingReviewLimit)
+      return [];
 
     return data;
-  }, [data, hasActiveTranscript, hasMorePendingTranscript]);
+  }, [data, hasExceededActiveReviewLimit, hasExceededPendingReviewLimit]);
 
   const retriedClaim = useRef(0);
 
@@ -207,8 +210,8 @@ const EditableTranscriptsTable = () => {
       data={editableData}
       emptyView={
         <EmptyText
-          hasActiveTranscript={hasActiveTranscript}
-          hasMorePendingTranscript={hasMorePendingTranscript}
+          hasExceededActiveReviewLimit={hasExceededActiveReviewLimit}
+          hasExceededPendingReviewLimit={hasExceededPendingReviewLimit}
         />
       }
       isError={isError}
