@@ -1,4 +1,3 @@
-
 {
   "app_tag": "review.btctranscripts.com",
   "claim_duration_in_hours": 24,
@@ -8,5 +7,7 @@
   "btctranscripts_speakers_url": "https://btctranscripts.com/speakers/",
   "btctranscripts_categories_url": "https://btctranscripts.com/categories/",
   "defaultDirectoryPath": "misc",
-  "youtube_video_id": "YNIFm0QFAuA"
+  "youtube_video_id": "YNIFm0QFAuA",
+  "max_active_reviews": 1,
+  "max_pending_reviews": 3
 }

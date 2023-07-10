@@ -20,6 +20,7 @@ export type Review = {
   id: number;
   userId: number;
   transcriptId: number;
+  archivedAt: Nullable<Date>;
   updatedAt: Nullable<Date>;
   createdAt: Date;
   claimedAt: Nullable<Date>;
