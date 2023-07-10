@@ -76,7 +76,7 @@ const EditableTranscriptsTable = () => {
     if (retriedClaim.current < 2) {
       retriedClaim.current += 1;
       await signIn("github", {
-        callbackUrl: `/?reclaim=true&txId=${transcriptId}`,
+        callbackUrl: `/?reclaim=true&transcriptId=${transcriptId}`,
       });
     }
   };
@@ -93,20 +93,21 @@ const EditableTranscriptsTable = () => {
       } else if (status === "unauthenticated") {
         // Sign-in user before trying to claim a transcript
         await signIn("github", {
-          callbackUrl: `/?reclaim=true&txId=${transcriptId}`,
+          callbackUrl: `/?reclaim=true&transcriptId=${transcriptId}`,
         });
         return;
       }
       if (session?.user?.id) {
         setClaimState((prev) => ({ ...prev, rowId: transcriptId }));
-        // Fork repo
-        axios.post("/api/github/fork");
 
         // Claim transcript
         claimTranscript.mutate(
           { userId: session.user.id, transcriptId },
           {
             onSuccess: async (data) => {
+              // Fork repo
+              axios.post("/api/github/fork");
+
               setClaimState((prev) => ({ ...prev, rowId: -1 }));
               if (data instanceof Error) {
                 await retryLoginAndClaim(transcriptId);
@@ -134,16 +135,16 @@ const EditableTranscriptsTable = () => {
   );
 
   useEffect(() => {
-    const { reclaim, txId } = router.query;
+    const { reclaim, transcriptId } = router.query;
     if (
       reclaim &&
-      txId &&
+      transcriptId &&
       data &&
       status === "authenticated" &&
       retriedClaim.current < 2
     ) {
       retriedClaim.current = 2;
-      handleClaim(Number(txId));
+      handleClaim(Number(transcriptId));
     }
   }, [data, router, handleClaim, status]);
 
