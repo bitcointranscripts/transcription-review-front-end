@@ -1,4 +1,3 @@
-import { Transcript } from "../../../types";
 // import dynamic from "next/dynamic";
 import {
   Box,
@@ -15,7 +14,7 @@ import {
 
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
-import { useEffect, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import MarkdownIt from "markdown-it";
 
 // Interfaces for react-markdown-editior
@@ -30,18 +29,17 @@ export interface IStateChange {
   menu: true;
 }
 const EditTranscript = ({
-  data,
   mdData,
   update,
   restoreOriginal,
+  editorRef,
 }: {
-  data: Transcript;
   mdData: string;
+  editorRef: MutableRefObject<MdEditor | null>;
   // eslint-disable-next-line no-unused-vars
   update: (x: any) => void;
   restoreOriginal: () => void;
 }) => {
-  const editorRef = useRef<MdEditor | null>(null);
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
   const [isModalOpen, setIsModalopen] = useState(false);
 
@@ -62,7 +60,7 @@ const EditTranscript = ({
         setIsPreviewOnly(true);
       }
     });
-  }, []);
+  }, [editorRef]);
 
   useEffect(() => {
     if (isPreviewOnly) {
@@ -78,12 +76,10 @@ const EditTranscript = ({
         menu: true,
       });
     }
-  }, [isPreviewOnly]);
+  }, [editorRef, isPreviewOnly]);
 
   // restoreOriginal content function
   const onClickRestore = () => {
-    update(data.originalContent?.body || "");
-    editorRef.current?.setText(data.originalContent?.body);
     restoreOriginal();
     setIsModalopen(false);
   };

@@ -18,7 +18,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import MdEditor from "react-markdown-editor-lite";
 import type { UserReview } from "../../../types";
 import config from "@/config/config.json";
 
@@ -109,12 +110,13 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
 
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
-
+  const editorRef = useRef<MdEditor | null>(null);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
+    editorRef.current?.setText(transcriptData.originalContent?.body);
     // TODO: make an API call to update
     setSideBarData({
       list: {
@@ -286,9 +288,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
           </SidebarContentEdit>
         )}
         <EditTranscript
-          data={transcriptData}
           mdData={editedData}
           update={setEditedData}
+          editorRef={editorRef}
           restoreOriginal={restoreOriginal}
         />
       </Flex>
