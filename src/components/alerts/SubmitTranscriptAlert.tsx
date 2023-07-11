@@ -140,6 +140,7 @@ const PromptStepTwo = forwardRef<HTMLButtonElement, PromptTwoProps>(
           <Button
             display="block"
             size="sm"
+            mx="auto"
             colorScheme="blue"
             onClick={() => {
               onCancel();
