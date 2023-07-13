@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import { Review, Transcript } from "../../../types";
+import { Review, Transcript, TranscriptContent } from "../../../types";
 import {
   sideBarContentUpdateParams,
   SideBarData,
@@ -23,6 +23,8 @@ const SidebarContentEdit = ({
   children,
   sideBarData,
   updater,
+  getUpdatedTranscript,
+  saveTranscript,
 }: {
   data: Transcript;
   claimedAt: Review["createdAt"];
@@ -33,9 +35,15 @@ const SidebarContentEdit = ({
     type,
     name,
   }: sideBarContentUpdateParams<T, K>) => void;
+  getUpdatedTranscript: () => TranscriptContent;
+  saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
   const { data: selectableListData, isLoading, error } = useGetMetaData();
   const updateTitle = (newTitle: string) => {
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript.title = newTitle;
+    saveTranscript(updatedTranscript);
+
     updater({
       data: newTitle,
       type: "text",
@@ -43,13 +51,28 @@ const SidebarContentEdit = ({
     });
   };
   const updateSpeaker = (speakers: string[]) => {
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript.speakers = speakers;
+    saveTranscript(updatedTranscript);
+
     updater({
       data: speakers,
       type: "list",
       name: "speakers",
     });
   };
+  const updateDate = (date: Date) => {
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript.date = date;
+    saveTranscript(updatedTranscript);
+
+    updater({ data: date, type: "date", name: "date" });
+  };
   const updateCategories = (categories: string[]) => {
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript.categories = categories;
+    saveTranscript(updatedTranscript);
+
     updater({
       data: categories,
       type: "list",
@@ -57,6 +80,10 @@ const SidebarContentEdit = ({
     });
   };
   const updateTags = (tags: string[]) => {
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript.tags = tags;
+    saveTranscript(updatedTranscript);
+
     updater({
       data: tags,
       type: "list",
@@ -132,9 +159,7 @@ const SidebarContentEdit = ({
           {/* <CustomDatePicker date={editedDate} onChange={setEditedDate} /> */}
           <DatePicker
             selected={sideBarData.date.date}
-            onChange={(date) =>
-              updater({ data: date, type: "date", name: "date" })
-            }
+            onChange={updateDate}
             dateFormat="yyyy-MM-dd"
             className={styles.customDatePicker}
           />

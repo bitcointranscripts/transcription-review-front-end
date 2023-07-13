@@ -6,6 +6,7 @@ import SubmitTranscriptMenu from "@/components/menus/SubmitTranscriptMenu";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
 import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
+import config from "@/config/config.json";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 import { useUpdateTranscript } from "@/services/api/transcripts";
 import {
@@ -20,8 +21,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
-import type { UserReview } from "../../../types";
-import config from "@/config/config.json";
+import type { TranscriptContent, UserReview } from "../../../types";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -136,7 +136,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
     setEditedData(transcriptData.originalContent.body ?? "");
   };
 
-  const saveTranscript = async () => {
+  const getUpdatedContent = () => {
     const {
       list: { speakers, categories, tags },
       text: { title },
@@ -152,6 +152,11 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
       date,
       body: editedData,
     };
+
+    return updatedContent;
+  };
+
+  const saveTranscript = async (updatedContent: TranscriptContent) => {
     // create an awaitable promise for mutation
     try {
       await mutateAsync(
@@ -171,7 +176,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
 
   const handleSave = async () => {
     try {
-      await saveTranscript();
+      await saveTranscript(getUpdatedContent());
       toast({
         status: "success",
         title: "Saved successfully",
@@ -194,7 +199,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
     try {
       // save transcript
-      await saveTranscript();
+      await saveTranscript(getUpdatedContent());
       setSubmitState((prev) => ({ ...prev, stepIdx: 1 }));
 
       // fork and create pr
@@ -253,6 +258,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
             claimedAt={reviewData.createdAt}
             sideBarData={sideBarData}
             updater={sideBarContentUpdater}
+            getUpdatedTranscript={getUpdatedContent}
+            saveTranscript={saveTranscript}
           >
             <Flex gap={2}>
               <Button
