@@ -216,21 +216,14 @@ const QueueTable = () => {
           modifier: (data) => data.content.tags,
         },
         {
-          name: "word count",
+          name: "time to edit (min)",
           type: "text-short",
           modifier: (data) => (
-            <Box>
-              <Text>
-                {Number(data.contentTotalWords)
-                  ? `${wordsFormat.format(data.contentTotalWords)} words`
-                  : "N/A"}
-              </Text>
-              <Text fontWeight="bold">
-                {`Approx. editing time = ${calculateReadingTime(
-                  Number(data.contentTotalWords)
-                )}`}
-              </Text>
-            </Box>
+            <Text fontWeight="bold">
+              {`Approx. editing time = ${calculateReadingTime(
+                Number(data.contentTotalWords)
+              )}`}
+            </Text>
           ),
         },
         // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },

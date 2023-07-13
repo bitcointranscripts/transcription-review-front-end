@@ -1,5 +1,5 @@
 import { useUserReviews } from "@/services/api/reviews";
-import { wordsFormat } from "@/utils";
+import { calculateReadingTime } from "@/utils";
 import { Button, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -102,12 +102,15 @@ const CurrentJobsTable = () => {
         },
         { name: "tags", type: "tags", modifier: (data) => data.content.tags },
         {
-          name: "word count",
+          name: "time to edit (min)",
           type: "text-short",
-          modifier: (data) =>
-            Number(data.contentTotalWords)
-              ? `${wordsFormat.format(data.contentTotalWords)} words`
-              : "N/A",
+          modifier: (data) => (
+            <Text fontWeight="bold">
+              {`Approx. editing time = ${calculateReadingTime(
+                Number(data.contentTotalWords)
+              )}`}
+            </Text>
+          ),
         },
         {
           name: "status",
