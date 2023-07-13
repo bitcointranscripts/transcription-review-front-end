@@ -1,13 +1,8 @@
 import config from "@/config/config.json";
 import { useUserReviews } from "@/services/api/reviews";
 import { useClaimTranscript, useTranscripts } from "@/services/api/transcripts";
-import {
-  calculateReadingTime,
-  isReviewActive,
-  isReviewPending,
-  wordsFormat,
-} from "@/utils";
-import { Box, Heading, Text, useToast } from "@chakra-ui/react";
+import { calculateReadingTime, isReviewActive, isReviewPending } from "@/utils";
+import { Heading, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -177,21 +172,14 @@ const EditableTranscriptsTable = () => {
           modifier: (data) => data.content.tags,
         },
         {
-          name: "word count",
+          name: "time to edit (min)",
           type: "text-short",
           modifier: (data) => (
-            <Box>
-              <Text>
-                {Number(data.contentTotalWords)
-                  ? `${wordsFormat.format(data.contentTotalWords)} words`
-                  : "N/A"}
-              </Text>
-              <Text fontWeight="bold">
-                {`Approx. editing time = ${calculateReadingTime(
-                  Number(data.contentTotalWords)
-                )}`}
-              </Text>
-            </Box>
+            <Text fontWeight="bold">
+              {`Approx. editing time = ${calculateReadingTime(
+                Number(data.contentTotalWords)
+              )}`}
+            </Text>
           ),
         },
         {
