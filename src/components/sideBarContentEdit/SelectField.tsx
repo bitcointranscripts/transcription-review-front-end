@@ -4,13 +4,22 @@ import { useState } from "react";
 import { BiPencil, BiX } from "react-icons/bi";
 import { FaSortDown } from "react-icons/fa";
 import slugify from "slugify";
-import SelectBox, { OnlySelectBox } from "./selectbox";
+import SelectBox, { OnlySelectBox, OnlySelectDirectoryBox } from "./selectbox";
 
 type Props = {
   name: string;
   editedData: string[];
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string[]) => void;
+  autoCompleteList: Array<AutoCompleteData>;
+  userCanAddToList?: boolean;
+};
+
+type PropsDirectory = {
+  name: string;
+  editedData: string;
+  // eslint-disable-next-line no-unused-vars
+  updateData: (x: string) => void;
   autoCompleteList: Array<AutoCompleteData>;
   userCanAddToList?: boolean;
 };
@@ -291,5 +300,42 @@ export const SingleSelectField = ({
         </option>
       ))}
     </Select>
+  );
+};
+
+// To enable users input a custom directory
+export const OnlySelectDirectory = ({
+  name,
+  editedData,
+  updateData,
+  autoCompleteList,
+  userCanAddToList,
+}: PropsDirectory) => {
+  const handleAddItem = (value: string) => {
+    updateData(value);
+  };
+  const [value, setValue] = useState<string>(editedData);
+  const handleAutoCompleteSelect = (data: AutoCompleteData) => {
+    handleAddItem(data.value);
+    setValue(data.value);
+  };
+
+  // remove previuosly selected option from list
+  const newAutoCompleteList =
+    autoCompleteList.length > UI_CONFIG.MAX_AUTOCOMPLETE_LENGTH_TO_FILTER
+      ? autoCompleteList
+      : autoCompleteList.filter((item) => !editedData.includes(item.value));
+
+  return (
+    <>
+      <OnlySelectDirectoryBox
+        idx={-1}
+        name={name}
+        value={value}
+        addItem={userCanAddToList ? handleAddItem : undefined}
+        autoCompleteList={newAutoCompleteList}
+        handleAutoCompleteSelect={handleAutoCompleteSelect}
+      />
+    </>
   );
 };

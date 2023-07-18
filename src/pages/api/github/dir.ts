@@ -3,19 +3,28 @@ import { Octokit } from "@octokit/core";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 
-async function getAllRepoFolder(octokit: InstanceType<typeof Octokit>) {
+async function getAllRepoFolder(
+  octokit: InstanceType<typeof Octokit>,
+  path?: string
+) {
   const auth = await octokit.request("GET /user");
   // Fork the repository
   const contentsRepo = await octokit.request(
-    "GET /repos/{owner}/{repo}/contents/?ref=master",
+    "GET /repos/{owner}/{repo}/contents/{path}/?ref=master",
     {
       owner: auth.data.login, // username of the owner
       repo: "bitcointranscripts",
+      path: path || "",
     }
   );
-  return contentsRepo.data.filter(
-    (content: DirectoryRes) => content.type === "dir"
-  );
+  return contentsRepo.data
+    .filter(
+      ({ type, path }: DirectoryRes) => type === "dir" && path.match(/^[^\.]/) // removes hidden files
+    )
+    .map((content: DirectoryRes) => ({
+      slug: content.name,
+      value: content.path,
+    }));
 }
 
 export default async function handler(
@@ -30,15 +39,18 @@ export default async function handler(
 
   // Initialize Octokit with the user's access token
   const octokit = new Octokit({ auth: session.accessToken });
+  const path = req.query?.path as string;
   try {
     // getAllRepo Folders in the repo
-    const allRepoFolders: DirectoryRes[] = await getAllRepoFolder(octokit);
+    const allRepoFolders: DirectoryRes[] = await getAllRepoFolder(
+      octokit,
+      path
+    );
     // Return the result
     res.status(200).json(allRepoFolders);
   } catch (error: any) {
-    res.status(500).json({
-      message:
-        error?.message ?? "Error occurred while creating the fork and PR",
+    res.status(error.status).json({
+      message: error?.message,
     });
   }
 }

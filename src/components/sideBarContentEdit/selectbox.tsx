@@ -112,6 +112,7 @@ export default SelectBox;
 type OnlySelectBoxProps = {
   idx: number;
   name: string;
+  value?: string;
   addItem?: (_x: string) => void;
   autoCompleteList: Array<AutoCompleteData>;
   handleAutoCompleteSelect: (data: AutoCompleteData) => void;
@@ -260,12 +261,112 @@ export const OnlySelectBox = ({
   );
 };
 
+// Box for directory only
+export const OnlySelectDirectoryBox = ({
+  idx,
+  value,
+  addItem,
+  autoCompleteList,
+  handleAutoCompleteSelect,
+}: OnlySelectBoxProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { onClose, onOpen, isOpen } = useDisclosure();
+  const [confirmModal, setConfirmModal] = useState<ConfirmModalState>({
+    isOpen: false,
+    data: "",
+  });
+  const [inputState, setInputState] = useState("");
+  const onAutoCompleteSelect = (data: AutoCompleteData) => {
+    onClose();
+    handleAutoCompleteSelect(data);
+    setTimeout(() => {
+      setInputState("");
+    }, 500);
+  };
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  return (
+    <FormControl pb={2}>
+      <Box position="relative" w="full">
+        <Popover
+          isOpen={isOpen}
+          onClose={handleClose}
+          onOpen={onOpen}
+          placement="bottom-start"
+          returnFocusOnClose={false}
+          initialFocusRef={inputRef}
+          closeOnBlur={true}
+          closeOnEsc={true}
+          matchWidth={true}
+          gutter={0}
+        >
+          <PopoverTrigger>
+            <Flex
+              w="full"
+              bgColor="blackAlpha.100"
+              px={2}
+              py={1}
+              rounded="md"
+              border="2px solid"
+              borderColor="gray.200"
+              borderRadius="md"
+              cursor="pointer"
+              justifyContent="space-between"
+            >
+              <Text color="gray.600" fontSize="14px" fontWeight={500}>
+                {value}
+              </Text>
+              <Icon color="gray.600" as={FaSortDown} />
+            </Flex>
+          </PopoverTrigger>
+          <PopoverContent w="full">
+            <PopoverBody>
+              <Input
+                p={1}
+                h="auto"
+                placeholder="Add path"
+                fontSize="inherit"
+                value={inputState}
+                onChange={(e) => setInputState(e.target.value)}
+                ref={inputRef}
+              />
+              <AutoComplete
+                editState={{ value: inputState } as SelectEditState}
+                autoCompleteList={autoCompleteList}
+                onAutoCompleteSelect={onAutoCompleteSelect}
+                inputRef={inputRef}
+                embedded={true}
+              />
+              {addItem && (
+                <AddCustomItem
+                  value={inputState}
+                  onAutoComplete={onAutoCompleteSelect}
+                  type="dir"
+                />
+              )}
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+      </Box>
+    </FormControl>
+  );
+};
+
 const AddCustomItem = ({
   value,
-  openModal,
+  onAutoComplete = () => {},
+  openModal = () => {},
+  type,
+  text,
 }: {
   value: string;
-  openModal: (data: string) => void;
+  type?: "dir";
+  text?: string;
+  openModal?: (data: string) => void;
+  onAutoComplete?: (x: AutoCompleteData) => void;
 }) => {
   return (
     <>
@@ -280,11 +381,15 @@ const AddCustomItem = ({
             rounded="md"
             _hover={{ bgColor: "gray.100" }}
             _active={{ bgColor: "gray.200" }}
-            onClick={() => openModal(value)}
+            onClick={() =>
+              type === "dir"
+                ? onAutoComplete({ value, slug: value })
+                : openModal(value)
+            }
           >
             <Flex>
               <Text mr={2} color="green.700" fontWeight={800}>
-                Add:
+                {text ? text : "Add:"}
               </Text>
               <Text color="green.700">{`"${value}"`}</Text>
             </Flex>

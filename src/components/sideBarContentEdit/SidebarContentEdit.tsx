@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { useGetRepoDirectories } from "@/services/api/transcripts/useGetDirectories";
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
@@ -13,7 +14,11 @@ import {
   SideBarData,
   SidebarSubType,
 } from "../transcript";
-import { OnlySelectField, SingleSelectField } from "./SelectField";
+import {
+  OnlySelectDirectory,
+  OnlySelectField,
+  SingleSelectField,
+} from "./SelectField";
 import styles from "./sidebarContentEdit.module.css";
 import TextField from "./TextField";
 
@@ -39,6 +44,11 @@ const SidebarContentEdit = ({
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
   const { data: selectableListData, isLoading, error } = useGetMetaData();
+  const {
+    data: directoryPaths,
+    isLoading: pathIsLoading,
+    isError: pathError,
+  } = useGetRepoDirectories();
   const updateTitle = (newTitle: string) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.title = newTitle;
@@ -67,6 +77,17 @@ const SidebarContentEdit = ({
     saveTranscript(updatedTranscript);
 
     updater({ data: date, type: "date", name: "date" });
+  };
+  const updateDirectory = (dir: string) => {
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript.loc = dir;
+    saveTranscript(updatedTranscript);
+
+    updater({
+      data: dir,
+      type: "loc",
+      name: "loc",
+    });
   };
   const updateCategories = (categories: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
@@ -134,6 +155,18 @@ const SidebarContentEdit = ({
             data={data.content?.title ?? ""}
             editedData={sideBarData.text.title}
             updateData={updateTitle}
+          />
+        </Box>
+        <Box>
+          <Text fontWeight={600} mb={2}>
+            Choose Directory
+          </Text>
+          <OnlySelectDirectory
+            name="loc" // the key used for directory on transcripts
+            editedData={sideBarData.loc.loc}
+            updateData={updateDirectory}
+            autoCompleteList={directoryPaths ?? []}
+            userCanAddToList
           />
         </Box>
         <Box>
