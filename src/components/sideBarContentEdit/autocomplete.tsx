@@ -11,13 +11,14 @@ type AutoCompleteProps = {
   onAutoCompleteSelect: (x: AutoCompleteData) => void;
   inputRef: RefObject<HTMLInputElement>;
   embedded?: boolean;
+  type?: "dir";
 };
 
 const AutoComplete = ({
   autoCompleteList,
   editState,
   onAutoCompleteSelect,
-  inputRef,
+  type,
   embedded,
 }: AutoCompleteProps) => {
   const selectRef = useRef<HTMLDivElement>(null);
@@ -77,7 +78,7 @@ const AutoComplete = ({
             px={2}
             py={1}
           >
-            {speaker.value}
+            {type === "dir" ? speaker.slug : speaker.value}
           </Text>
         );
       })}

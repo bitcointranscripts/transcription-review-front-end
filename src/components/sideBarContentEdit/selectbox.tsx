@@ -339,6 +339,7 @@ export const OnlySelectDirectoryBox = ({
                 onAutoCompleteSelect={onAutoCompleteSelect}
                 inputRef={inputRef}
                 embedded={true}
+                type="dir"
               />
               {addItem && (
                 <AddCustomItem

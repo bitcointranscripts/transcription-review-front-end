@@ -19,7 +19,7 @@ async function getAllRepoFolder(
   );
   return contentsRepo.data
     .filter(
-      ({ type, path }: DirectoryRes) => type === "dir" && path.match(/^[^\.]/) // removes hidden files
+      ({ type, path }: DirectoryRes) => type === "dir" && path.match(/^[^\.]/) // removes hidden files / folder
     )
     .map((content: DirectoryRes) => ({
       slug: content.name,
@@ -47,7 +47,7 @@ export default async function handler(
       path
     );
     // Return the result
-    res.status(200).json(allRepoFolders);
+    res.status(200).json({ dir: allRepoFolders });
   } catch (error: any) {
     res.status(error.status).json({
       message: error?.message,

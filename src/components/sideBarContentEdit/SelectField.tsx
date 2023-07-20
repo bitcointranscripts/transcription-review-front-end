@@ -4,6 +4,7 @@ import { useState } from "react";
 import { BiPencil, BiX } from "react-icons/bi";
 import { FaSortDown } from "react-icons/fa";
 import slugify from "slugify";
+import { IDir } from "../../../types";
 import SelectBox, { OnlySelectBox, OnlySelectDirectoryBox } from "./selectbox";
 
 type Props = {
@@ -18,6 +19,8 @@ type Props = {
 type PropsDirectory = {
   name: string;
   editedData: string;
+  index: number;
+  path: string;
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string) => void;
   autoCompleteList: Array<AutoCompleteData>;
@@ -303,28 +306,79 @@ export const SingleSelectField = ({
   );
 };
 
+// function to return dir based on the currentPath
+
+function findAndReturnDirs(
+  objArray: IDir[],
+  path: string[],
+  depth: number,
+  index?: number
+): IDir[] {
+  if (depth === 0) {
+    return []; // Return null if the desired depth is reached, but the path is not found.
+  }
+
+  if (index === 1) {
+    return objArray;
+  }
+
+  for (const obj of objArray) {
+    if (obj.slug === path[depth - 2]) {
+      if (path.length === 2 && depth === 2) {
+        return obj.nestDir || []; // Return the node if the path is found at the desired depth.
+      } else if (obj.nestDir) {
+        const subdirectory: IDir[] = findAndReturnDirs(
+          obj.nestDir,
+          path.slice(1),
+          depth - 1
+        );
+        if (subdirectory !== null) {
+          console.log(obj.slug, path[depth-2],subdirectory)
+
+          return subdirectory || []; // Return the subdirectory if found at the desired depth.
+        }
+        return objArray;
+      }
+    }
+  }
+
+  return []; // Return empty if the path is not found.
+}
+
 // To enable users input a custom directory
 export const OnlySelectDirectory = ({
   name,
   editedData,
   updateData,
+  index,
+  path,
   autoCompleteList,
   userCanAddToList,
 }: PropsDirectory) => {
   const handleAddItem = (value: string) => {
     updateData(value);
   };
+  const directoriesInPath = findAndReturnDirs(
+    autoCompleteList,
+    path.split("/"),
+    index + 1,
+    index + 1
+  );
+  console.log(
+    findAndReturnDirs(autoCompleteList, path.split("/"), index + 1),
+    path.split("/")
+  );
   const [value, setValue] = useState<string>(editedData);
   const handleAutoCompleteSelect = (data: AutoCompleteData) => {
     handleAddItem(data.value);
     setValue(data.value);
   };
 
-  // remove previuosly selected option from list
+  // remove previously selected option from list
   const newAutoCompleteList =
-    autoCompleteList.length > UI_CONFIG.MAX_AUTOCOMPLETE_LENGTH_TO_FILTER
-      ? autoCompleteList
-      : autoCompleteList.filter((item) => !editedData.includes(item.value));
+    directoriesInPath.length > UI_CONFIG.MAX_AUTOCOMPLETE_LENGTH_TO_FILTER
+      ? directoriesInPath
+      : directoriesInPath.filter((item) => !editedData.includes(item.value));
 
   return (
     <>

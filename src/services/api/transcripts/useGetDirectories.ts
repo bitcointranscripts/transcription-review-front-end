@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import type { SelectableMetaDataType } from "../../../../types";
+import type { DirectoriesDataType } from "../../../../types";
 import axios from "axios";
 
-const getMetaData = async (
-  path?: string
-): Promise<SelectableMetaDataType[]> => {
+const getMetaData = async (path?: string): Promise<DirectoriesDataType> => {
   return axios
     .get(`/api/github/dir${path ? `?path=${path}` : ""}`)
     .then((res) => res.data)
@@ -14,7 +12,7 @@ const getMetaData = async (
 export const useGetRepoDirectories = (path?: string) =>
   useQuery({
     queryFn: () => getMetaData(path),
-    queryKey: ["repoDirectories"],
+    queryKey: ["repoDirectories", path],
     refetchOnWindowFocus: false,
     staleTime: Infinity,
   });

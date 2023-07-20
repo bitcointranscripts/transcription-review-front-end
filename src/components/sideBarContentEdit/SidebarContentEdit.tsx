@@ -3,12 +3,19 @@ import { useGetRepoDirectories } from "@/services/api/transcripts/useGetDirector
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { AiFillFolder } from "react-icons/ai";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import { Review, Transcript, TranscriptContent } from "../../../types";
+import {
+  IDir,
+  Review,
+  SelectableMetaDataType,
+  Transcript,
+  TranscriptContent,
+} from "../../../types";
 import {
   sideBarContentUpdateParams,
   SideBarData,
@@ -22,6 +29,26 @@ import {
 import styles from "./sidebarContentEdit.module.css";
 import TextField from "./TextField";
 
+function findAndUpdateDir(objArray: IDir[], path: string, newDir: IDir[]) {
+  const level = path.split("/").length;
+  for (let obj of objArray) {
+    // Check if the current object has the path
+    if (obj.value === path.slice(0, -1)) {
+      // Update the name of the target object
+      obj.nestDir = newDir;
+      return true; // Return true to indicate that the object was found and updated
+    }
+    // If the current object has nestDir, recursively call the function
+    if (!obj.nestDir && level > 1) {
+      const objectFound = findAndUpdateDir(obj.nestDir || [], path, newDir);
+      if (objectFound) {
+        return true; // Return true to indicate that the object was found and updated
+      }
+    }
+  }
+
+  return false; // Return false if the object was not found
+}
 const SidebarContentEdit = ({
   data,
   claimedAt,
@@ -43,12 +70,44 @@ const SidebarContentEdit = ({
   getUpdatedTranscript: () => TranscriptContent;
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
-  const { data: selectableListData, isLoading, error } = useGetMetaData();
+  const [path, setPath] = useState<string>("");
+
+  const { data: selectableListData } = useGetMetaData();
   const {
     data: directoryPaths,
     isLoading: pathIsLoading,
     isError: pathError,
-  } = useGetRepoDirectories();
+  } = useGetRepoDirectories(path.slice(0, -1));
+
+  const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
+  useEffect(() => {
+    const convertDirStructure = (
+      currentDirs: SelectableMetaDataType[],
+      path: string,
+      prev?: IDir[]
+    ) => {
+      const level = path.split("/").length; // based on the "/"
+      const currentPath = path.split("/")[0];
+      let nestedDirFormat = prev || [];
+      switch (level) {
+        case 1:
+          nestedDirFormat = currentDirs;
+          break;
+        default:
+          findAndUpdateDir(prev || [], path, currentDirs);
+          break;
+      }
+      return nestedDirFormat;
+    };
+    if (directoryPaths) {
+      const tempDir = convertDirStructure(
+        directoryPaths.dir,
+        path,
+        directoryList
+      );
+      setDirectoryList(tempDir);
+    }
+  }, [directoryPaths, path]);
   const updateTitle = (newTitle: string) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.title = newTitle;
@@ -79,10 +138,10 @@ const SidebarContentEdit = ({
     updater({ data: date, type: "date", name: "date" });
   };
   const updateDirectory = (dir: string) => {
+    setPath(`${dir}/`);
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.loc = dir;
     saveTranscript(updatedTranscript);
-
     updater({
       data: dir,
       type: "loc",
@@ -161,13 +220,23 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Choose Directory
           </Text>
-          <OnlySelectDirectory
-            name="loc" // the key used for directory on transcripts
-            editedData={sideBarData.loc.loc}
-            updateData={updateDirectory}
-            autoCompleteList={directoryPaths ?? []}
-            userCanAddToList
-          />
+          {path.split("/").map((dir, index) => (
+            <Box key={dir}>
+              <Flex alignItems={"center"} gap={3}>
+                <AiFillFolder size={24} />
+                <OnlySelectDirectory
+                  name="loc" // the key used for directory on transcripts
+                  editedData={dir ?? ""}
+                  key={dir}
+                  path={path}
+                  index={index} // to be able to know the number
+                  updateData={updateDirectory}
+                  autoCompleteList={directoryList}
+                  userCanAddToList
+                />
+              </Flex>
+            </Box>
+          ))}
         </Box>
         <Box>
           <Text fontWeight={600} mb={2}>
