@@ -333,8 +333,6 @@ function findAndReturnDirs(
           depth - 1
         );
         if (subdirectory !== null) {
-          console.log(obj.slug, path[depth-2],subdirectory)
-
           return subdirectory || []; // Return the subdirectory if found at the desired depth.
         }
         return objArray;
@@ -364,10 +362,6 @@ export const OnlySelectDirectory = ({
     index + 1,
     index + 1
   );
-  console.log(
-    findAndReturnDirs(autoCompleteList, path.split("/"), index + 1),
-    path.split("/")
-  );
   const [value, setValue] = useState<string>(editedData);
   const handleAutoCompleteSelect = (data: AutoCompleteData) => {
     handleAddItem(data.value);
@@ -383,9 +377,9 @@ export const OnlySelectDirectory = ({
   return (
     <>
       <OnlySelectDirectoryBox
-        idx={-1}
+        idx={index}
         name={name}
-        value={value}
+        value={value.includes("/") ? "" : value}
         addItem={userCanAddToList ? handleAddItem : undefined}
         autoCompleteList={newAutoCompleteList}
         handleAutoCompleteSelect={handleAutoCompleteSelect}

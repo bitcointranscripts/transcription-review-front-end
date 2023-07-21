@@ -271,10 +271,6 @@ export const OnlySelectDirectoryBox = ({
 }: OnlySelectBoxProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { onClose, onOpen, isOpen } = useDisclosure();
-  const [confirmModal, setConfirmModal] = useState<ConfirmModalState>({
-    isOpen: false,
-    data: "",
-  });
   const [inputState, setInputState] = useState("");
   const onAutoCompleteSelect = (data: AutoCompleteData) => {
     onClose();
@@ -287,7 +283,6 @@ export const OnlySelectDirectoryBox = ({
   const handleClose = () => {
     onClose();
   };
-
   return (
     <FormControl pb={2}>
       <Box position="relative" w="full">

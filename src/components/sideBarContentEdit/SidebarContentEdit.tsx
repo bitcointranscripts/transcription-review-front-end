@@ -71,15 +71,17 @@ const SidebarContentEdit = ({
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
   const [path, setPath] = useState<string>("");
-
+  const [initialCount, setInitialCount] = useState<number>(1);
   const { data: selectableListData } = useGetMetaData();
-  const {
-    data: directoryPaths,
-    isLoading: pathIsLoading,
-    isError: pathError,
-  } = useGetRepoDirectories(path.slice(0, -1));
-
+  const { data: directoryPaths } = useGetRepoDirectories(path.slice(0, -1));
   const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
+  useEffect(() => {
+    // we want the rootpath to load first before
+    if (directoryPaths && initialCount < 2) {
+      setPath(`${data.content.loc}/`);
+      setInitialCount(2);
+    }
+  }, [data.content.loc, directoryPaths, initialCount]);
   useEffect(() => {
     const convertDirStructure = (
       currentDirs: SelectableMetaDataType[],
@@ -87,7 +89,6 @@ const SidebarContentEdit = ({
       prev?: IDir[]
     ) => {
       const level = path.split("/").length; // based on the "/"
-      const currentPath = path.split("/")[0];
       let nestedDirFormat = prev || [];
       switch (level) {
         case 1:
@@ -226,7 +227,7 @@ const SidebarContentEdit = ({
                 <AiFillFolder size={24} />
                 <OnlySelectDirectory
                   name="loc" // the key used for directory on transcripts
-                  editedData={dir ?? ""}
+                  editedData={dir || ""}
                   key={dir}
                   path={path}
                   index={index} // to be able to know the number
