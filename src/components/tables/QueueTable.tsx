@@ -159,10 +159,7 @@ const QueueTable = () => {
               setClaimState((prev) => ({ ...prev, rowId: -1 }));
               toast({
                 status: "error",
-                title: error.message.includes("finish editing")
-                  ? "Can't have more than one active transcript"
-                  : "Failed to claim transcript",
-                description: error?.message,
+                title: error?.message,
               });
             },
           }
