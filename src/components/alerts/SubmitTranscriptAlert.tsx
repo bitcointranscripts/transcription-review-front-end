@@ -108,7 +108,7 @@ const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
           </UnorderedList>
           <Flex my={4} direction="column" gap={3}>
             <Button size="sm" mx="auto" ref={ref} onClick={onCancel}>
-              Let me check a few things.
+              Let me check a few things
             </Button>
             <Link href="/tutorial">
               <Button size="sm" mx="auto" display="block">
