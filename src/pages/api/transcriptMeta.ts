@@ -19,7 +19,10 @@ export default async function handler(
       const slug = _possibleslug ?? value.replaceAll(" ", "").toLowerCase();
       _array.push({ slug, value });
     });
-    return _array;
+
+    return _array.sort((a, b) =>
+      a.value.toLowerCase().localeCompare(b.value.toLowerCase())
+    );
   };
 
   const makeRequest = async (url: string) => {
