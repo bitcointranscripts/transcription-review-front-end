@@ -314,7 +314,7 @@ export const StepOne = ({ preferVideoComponent }: PreferVideoCompponent) => {
         {preferVideoComponent}
         <Spacedlist>
           <ListItem>
-            Make sure you have a GitHub account (instructions
+            Make sure you have a GitHub account (instructions{" "}
             <LinkText
               text="here"
               href="https://docs.github.com/en/get-started/signing-up-for-github/signing-up-for-a-new-github-account"
@@ -326,7 +326,7 @@ export const StepOne = ({ preferVideoComponent }: PreferVideoCompponent) => {
           </ListItem>
           <ListItem>
             <Flex gap={4}>
-              <Spacedlist flex="0 1 60%" listStyleType="none">
+              <Spacedlist margin={0} flex="0 1 60%" listStyleType="none">
                 <ListItem>The following screen will pop up</ListItem>
                 <ListItem>
                   In English, the screen says that BTCTranscripts will write

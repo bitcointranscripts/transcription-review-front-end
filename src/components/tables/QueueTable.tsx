@@ -5,8 +5,8 @@ import {
   useClaimTranscript,
   useTranscripts,
 } from "@/services/api/transcripts";
-import { calculateReadingTime, wordsFormat } from "@/utils";
-import { Box, CheckboxGroup, Text, useToast } from "@chakra-ui/react";
+import { calculateReadingTime } from "@/utils";
+import { CheckboxGroup, Text, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -159,7 +159,9 @@ const QueueTable = () => {
               setClaimState((prev) => ({ ...prev, rowId: -1 }));
               toast({
                 status: "error",
-                title: "Failed to claim transcript",
+                title: error.message.includes("finish editing")
+                  ? "Can't have more than one active transcript"
+                  : "Failed to claim transcript",
                 description: error?.message,
               });
             },
