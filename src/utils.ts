@@ -49,7 +49,7 @@ export const getTimeLeftText = (date: Date | null) => {
   if (!hours) {
     return "expired";
   }
-  return `${hours} hours left`;
+  return `${hours} hours to review and submit`;
 };
 
 export const wordsFormat = new Intl.NumberFormat("en-US", {

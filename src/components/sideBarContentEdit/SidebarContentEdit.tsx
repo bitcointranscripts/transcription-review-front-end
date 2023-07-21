@@ -150,7 +150,7 @@ const SidebarContentEdit = ({
         </Box>
         <Box>
           <Text display="inline-block" fontWeight={600} mb={2}>
-            Date
+            Date of Recording
           </Text>
           <Text ml={3} display="inline-block" color="gray.400">
             YYYY-MM-DD format

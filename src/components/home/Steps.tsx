@@ -461,6 +461,7 @@ export const PreferVideoButton = ({
         // _groupHover={{ textDecoration: "underline" }}
         onClick={(e) => handlePreferVideo(e, step)}
         size="sm"
+        fontWeight={900}
       >
         prefer video?
       </Button>
