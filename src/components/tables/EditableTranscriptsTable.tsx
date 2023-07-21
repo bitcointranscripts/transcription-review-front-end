@@ -172,13 +172,11 @@ const EditableTranscriptsTable = () => {
           modifier: (data) => data.content.tags,
         },
         {
-          name: "time to edit (min)",
+          name: "time to edit",
           type: "text-short",
           modifier: (data) => (
-            <Text fontWeight="bold">
-              {`Approx. editing time = ${calculateReadingTime(
-                Number(data.contentTotalWords)
-              )}`}
+            <Text>
+              {`~${calculateReadingTime(Number(data.contentTotalWords))}`}
             </Text>
           ),
         },
