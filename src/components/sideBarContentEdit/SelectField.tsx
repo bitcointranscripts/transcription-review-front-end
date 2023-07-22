@@ -1,6 +1,6 @@
 import { UI_CONFIG } from "@/config/ui-config";
 import { Button, Flex, IconButton, Select, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiPencil, BiX } from "react-icons/bi";
 import { FaSortDown } from "react-icons/fa";
 import slugify from "slugify";
@@ -21,6 +21,7 @@ type PropsDirectory = {
   editedData: string;
   index: number;
   path: string;
+  isLoading: boolean;
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string) => void;
   autoCompleteList: Array<AutoCompleteData>;
@@ -315,7 +316,7 @@ function findAndReturnDirs(
   index?: number
 ): IDir[] {
   if (depth === 0) {
-    return []; // Return null if the desired depth is reached, but the path is not found.
+    return []; // Return empty if the desired depth is reached, but the path is not found.
   }
 
   if (index === 1) {
@@ -339,7 +340,6 @@ function findAndReturnDirs(
       }
     }
   }
-
   return []; // Return empty if the path is not found.
 }
 
@@ -350,18 +350,23 @@ export const OnlySelectDirectory = ({
   updateData,
   index,
   path,
+  isLoading,
   autoCompleteList,
   userCanAddToList,
 }: PropsDirectory) => {
   const handleAddItem = (value: string) => {
     updateData(value);
   };
-  const directoriesInPath = findAndReturnDirs(
-    autoCompleteList,
-    path.split("/"),
-    index + 1,
-    index + 1
-  );
+  const [directoriesInPath, setDirectoriesInPath] = useState<IDir[]>([]);
+  useEffect(() => {
+    const foundDirs = findAndReturnDirs(
+      autoCompleteList,
+      path.split("/"),
+      index + 1,
+      index + 1
+    );
+    setDirectoriesInPath(foundDirs);
+  }, [autoCompleteList, index, isLoading, path]);
   const [value, setValue] = useState<string>(editedData);
   const handleAutoCompleteSelect = (data: AutoCompleteData) => {
     handleAddItem(data.value);

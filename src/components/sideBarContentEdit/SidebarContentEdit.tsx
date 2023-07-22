@@ -72,8 +72,11 @@ const SidebarContentEdit = ({
 }) => {
   const [path, setPath] = useState<string>("");
   const [initialCount, setInitialCount] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState(true);
   const { data: selectableListData } = useGetMetaData();
-  const { data: directoryPaths } = useGetRepoDirectories(path.slice(0, -1));
+  const { data: directoryPaths, isSuccess } = useGetRepoDirectories(
+    path.slice(0, -1)
+  );
   const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
   useEffect(() => {
     // we want the rootpath to load first before
@@ -95,7 +98,8 @@ const SidebarContentEdit = ({
           nestedDirFormat = currentDirs;
           break;
         default:
-          findAndUpdateDir(prev || [], path, currentDirs);
+          findAndUpdateDir(nestedDirFormat || [], path, currentDirs);
+          // After mutation
           break;
       }
       return nestedDirFormat;
@@ -106,6 +110,7 @@ const SidebarContentEdit = ({
         path,
         directoryList
       );
+      setIsLoading((prev) => !prev);
       setDirectoryList(tempDir);
     }
   }, [directoryPaths, path]);
@@ -231,6 +236,7 @@ const SidebarContentEdit = ({
                   key={dir}
                   path={path}
                   index={index} // to be able to know the number
+                  isLoading={isLoading}
                   updateData={updateDirectory}
                   autoCompleteList={directoryList}
                   userCanAddToList
