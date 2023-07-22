@@ -8,7 +8,7 @@ async function getAllRepoFolder(
   path?: string
 ) {
   const auth = await octokit.request("GET /user");
-  // Fork the repository
+  // Get directories from the repo based on path
   const contentsRepo = await octokit.request(
     "GET /repos/{owner}/{repo}/contents/{path}/?ref=master",
     {

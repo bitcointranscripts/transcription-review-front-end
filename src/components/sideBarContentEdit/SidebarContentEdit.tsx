@@ -78,7 +78,7 @@ const SidebarContentEdit = ({
   useEffect(() => {
     // we want the rootpath to load first before
     if (directoryPaths && initialCount < 2) {
-      setPath(`${data.content.loc}/`);
+      setPath(`${data.content.loc ?? "misc"}/`);
       setInitialCount(2);
     }
   }, [data.content.loc, directoryPaths, initialCount]);

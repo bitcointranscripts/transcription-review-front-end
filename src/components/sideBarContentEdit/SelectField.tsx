@@ -368,7 +368,6 @@ export const OnlySelectDirectory = ({
     setValue(data.value);
   };
 
-  // remove previously selected option from list
   const newAutoCompleteList =
     directoriesInPath.length > UI_CONFIG.MAX_AUTOCOMPLETE_LENGTH_TO_FILTER
       ? directoriesInPath
