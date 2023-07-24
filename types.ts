@@ -71,3 +71,35 @@ export type SelectableMetaDataList = {
   speakers: SelectableMetaDataType[];
   tags: SelectableMetaDataType[];
 };
+
+export type UserRole = "reviewer" | "admin";
+
+export type UserData = {
+  permissions: UserRole;
+  id: number;
+  email: string;
+  githubUsername: string;
+  updatedAt: string;
+  createdAt: string;
+  authToken?: string | null;
+  jwt?: string | null;
+  archivedAt?: string | null;
+};
+
+export type UserSessionType = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  id?: number;
+  permissions?: string;
+  githubUsername?: string;
+  jwt?: string;
+};
+
+export type DecodedJWT = {
+  userId: number;
+  permissions: UserRole;
+  githubAuthToken: string;
+  iat: number;
+  exp: number;
+};

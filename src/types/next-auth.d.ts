@@ -13,6 +13,7 @@ declare module "next-auth" {
       id?: number;
       permissions?: string;
       githubUsername?: string;
+      jwt: string;
     };
     expires: ISODateString;
     accessToken?: string;
