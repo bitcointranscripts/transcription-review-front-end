@@ -1,8 +1,8 @@
-import axios from "@/services/api/axios";
+import jwtDecode from "jwt-decode";
 import {
-  CreateUserProp,
-  createNewUser,
   updateUserProfile,
+  signInUser,
+  signUpNewUser,
 } from "@/services/api/lib";
 import NextAuth, {
   GhExtendedProfile,
@@ -11,6 +11,7 @@ import NextAuth, {
 } from "next-auth";
 // import { JWT } from "next-auth/jwt";
 import GithubProvider from "next-auth/providers/github";
+import { DecodedJWT, UserSessionType } from "../../../../types";
 
 export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
@@ -44,60 +45,55 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ isNewUser, token, account, ...response }) {
       const profile = response.profile as GhExtendedProfile | undefined;
-      const createAndSetNewUser = async ({
-        username,
-        email,
-        permissions,
-      }: CreateUserProp) => {
-        const res = await createNewUser({ username, email, permissions });
-        if (res.data) {
-          token.user = {
-            ...res.data,
-            access_token: account?.access_token,
-          };
-        } else {
-          throw new Error("Unable to create user");
-        }
-      };
 
       if (isNewUser && profile?.login) {
         const { email, login } = profile;
-        await createAndSetNewUser({ username: login, email });
+        try {
+          const signedUpUser = await signUpNewUser({
+            username: login,
+            permissions: "reviewer",
+            email,
+          });
+          const { id, permissions, githubUsername, jwt } = signedUpUser;
+          const userInfo: UserSessionType = {
+            id,
+            email,
+            permissions,
+            githubUsername,
+            jwt,
+          };
+          token.user = {
+            ...userInfo,
+            access_token: account?.access_token,
+          };
+        } catch (err) {
+          token.id = undefined;
+        }
       }
-      // Temporary get userId
-      // TODO: when resource is available send properties to backend and get id
-      if (!isNewUser && !token?.id && profile?.login) {
-        await axios
-          .get("/users")
-          .then(async (res) => {
-            if (res.data) {
-              const _users = res.data;
-              const user = _users.find(
-                (user: any) => user.githubUsername === profile?.login
-              );
-              if (user) {
-                token.user = {
-                  ...user,
-                  access_token: account?.access_token,
-                };
-                // TODO: remove this when auth is implemented in the backend
-                // Temporary update existing users without email
-                if (!user?.email && profile?.email) {
-                  await updateUserProfile({
-                    id: user.id,
-                    email: profile?.email,
-                    username: profile?.login,
-                  });
-                }
-              } else {
-                await createAndSetNewUser({
-                  username: profile?.login,
-                  email: profile?.email,
-                });
-              }
-            }
-          })
-          .catch(() => (token.id = undefined));
+
+      // jwt callback runs very frequently, this checks if we haven't run backend auth on the user yet
+      if (!isNewUser && !token?.id && account?.access_token && profile) {
+        try {
+          const signedInUserToken = await signInUser({
+            github_access_token: account.access_token,
+          });
+          const decodedJwt: DecodedJWT = jwtDecode(signedInUserToken.jwt);
+          const { userId, permissions } = decodedJwt;
+          const userInfo: UserSessionType = {
+            id: userId,
+            email: profile.email,
+            permissions,
+            githubUsername: profile.login,
+            jwt: signedInUserToken.jwt,
+          };
+
+          token.user = {
+            ...userInfo,
+            access_token: account?.access_token,
+          };
+        } catch (err) {
+          token.id = undefined;
+        }
       }
       return token;
     },
