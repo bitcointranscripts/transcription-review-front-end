@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Text } from "@chakra-ui/react";
+import { Box, Divider, Flex, Text, Link } from "@chakra-ui/react";
 import React from "react";
 import GlobalContainer from "../GlobalContainer";
 
@@ -6,13 +6,33 @@ const Footer = () => {
   return (
     <Box bgColor="gray.800">
       <GlobalContainer py={8}>
-        <Flex mb={5}>
-          <Flex color="gray.100" gap={2} fontSize="12px">
-            <Text>Copyright © {new Date().getFullYear()}</Text>
-            <Divider orientation="vertical" />
-            <Text>All Rights Reserved.</Text>
-          </Flex>
-        </Flex>
+        <Text
+          fontSize={{ base: "16px", md: "20px" }}
+          color="gray.200"
+          textAlign="center"
+        >
+          Built with ❤️ by{" "}
+          <Link
+            href="https://chaincode.com"
+            isExternal
+            color="yellow.200"
+          >
+            Chaincode Labs
+          </Link>
+        </Text>
+        <Text
+          textAlign="center"
+        >
+          <Link
+            href="https://cryptpad.fr/form/#/2/form/view/3P2CsohsHOkcH7C+WdtX0-tvqjBHqXnAmz5D9yx0e04/"
+            isExternal
+            fontSize={{ base: "12px", md: "16px" }}
+            color="orange.200"
+            textAlign="center"
+          >
+            Submit Feedback
+          </Link>
+        </Text>
       </GlobalContainer>
     </Box>
   );
