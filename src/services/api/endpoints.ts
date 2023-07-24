@@ -29,6 +29,10 @@ const GET_TRANSCRIPTS_BY_ID = (id: number) => `transcripts/${id}`;
 
 const USERS = () => `users`;
 
+const USER_SIGN_UP = () => `users/signup`;
+
+const USER_SIGN_IN = () => `users/signin`;
+
 const USER_BY_ID = (id: number) => `users/${id}`;
 
 const USER_REVIEWS = (id: number) => `users/${id}/reviews`;
@@ -47,6 +51,8 @@ const endpoints = {
   GET_TRANSCRIPTS,
   GET_TRANSCRIPTS_BY_ID,
   USERS,
+  USER_SIGN_UP,
+  USER_SIGN_IN,
   USER_BY_ID,
   USER_REVIEWS,
   REVIEWS,
