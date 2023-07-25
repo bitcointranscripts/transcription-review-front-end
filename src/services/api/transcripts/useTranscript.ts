@@ -9,11 +9,13 @@ const getSingleTranscripts = async (
   return axios
     .get(endpoints.GET_TRANSCRIPTS_BY_ID(transcriptId || 0))
     .then((res) => res.data)
-    .catch((err) => err);
+    .catch((err) => {
+      throw err;
+    });
 };
 
 export const useTranscript = (transcriptId: number) =>
-  useQuery<Transcript, Error>({
+  useQuery({
     queryFn: () => getSingleTranscripts(transcriptId),
     queryKey: ["transcript", transcriptId],
     refetchOnWindowFocus: false,
