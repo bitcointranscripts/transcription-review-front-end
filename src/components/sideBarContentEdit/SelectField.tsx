@@ -1,29 +1,16 @@
 import { UI_CONFIG } from "@/config/ui-config";
 import { Button, Flex, IconButton, Select, Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BiPencil, BiX } from "react-icons/bi";
 import { FaSortDown } from "react-icons/fa";
 import slugify from "slugify";
-import { IDir } from "../../../types";
-import SelectBox, { OnlySelectBox, OnlySelectDirectoryBox } from "./selectbox";
+import SelectBox, { OnlySelectBox } from "./selectbox";
 
 type Props = {
   name: string;
   editedData: string[];
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string[]) => void;
-  autoCompleteList: Array<AutoCompleteData>;
-  userCanAddToList?: boolean;
-};
-
-type PropsDirectory = {
-  name: string;
-  editedData: string;
-  index: number;
-  path: string;
-  isLoading: boolean;
-  // eslint-disable-next-line no-unused-vars
-  updateData: (x: string) => void;
   autoCompleteList: Array<AutoCompleteData>;
   userCanAddToList?: boolean;
 };
@@ -304,90 +291,5 @@ export const SingleSelectField = ({
         </option>
       ))}
     </Select>
-  );
-};
-
-// function to return dir based on the currentPath
-
-function findAndReturnDirs(
-  objArray: IDir[],
-  path: string[],
-  depth: number,
-  index?: number
-): IDir[] {
-  if (depth === 0) {
-    return []; // Return empty if the desired depth is reached, but the path is not found.
-  }
-
-  if (index === 1) {
-    return objArray;
-  }
-
-  for (const obj of objArray) {
-    if (obj.slug === path[depth - 2]) {
-      if (path.length === 2 && depth === 2) {
-        return obj.nestDir || []; // Return the node if the path is found at the desired depth.
-      } else if (obj.nestDir) {
-        const subdirectory: IDir[] = findAndReturnDirs(
-          obj.nestDir,
-          path.slice(1),
-          depth - 1
-        );
-        if (subdirectory !== null) {
-          return subdirectory || []; // Return the subdirectory if found at the desired depth.
-        }
-        return objArray;
-      }
-    }
-  }
-  return []; // Return empty if the path is not found.
-}
-
-// To enable users input a custom directory
-export const OnlySelectDirectory = ({
-  name,
-  editedData,
-  updateData,
-  index,
-  path,
-  isLoading,
-  autoCompleteList,
-  userCanAddToList,
-}: PropsDirectory) => {
-  const handleAddItem = (value: string) => {
-    updateData(value);
-  };
-  const [directoriesInPath, setDirectoriesInPath] = useState<IDir[]>([]);
-  useEffect(() => {
-    const foundDirs = findAndReturnDirs(
-      autoCompleteList,
-      path.split("/"),
-      index + 1,
-      index + 1
-    );
-    setDirectoriesInPath(foundDirs);
-  }, [autoCompleteList, index, isLoading, path]);
-  const [value, setValue] = useState<string>(editedData);
-  const handleAutoCompleteSelect = (data: AutoCompleteData) => {
-    handleAddItem(data.value);
-    setValue(data.value);
-  };
-
-  const newAutoCompleteList =
-    directoriesInPath.length > UI_CONFIG.MAX_AUTOCOMPLETE_LENGTH_TO_FILTER
-      ? directoriesInPath
-      : directoriesInPath.filter((item) => !editedData.includes(item.value));
-
-  return (
-    <>
-      <OnlySelectDirectoryBox
-        idx={index}
-        name={name}
-        value={value.includes("/") ? "" : value}
-        addItem={userCanAddToList ? handleAddItem : undefined}
-        autoCompleteList={newAutoCompleteList}
-        handleAutoCompleteSelect={handleAutoCompleteSelect}
-      />
-    </>
   );
 };

@@ -21,13 +21,10 @@ import {
   SideBarData,
   SidebarSubType,
 } from "../transcript";
-import {
-  OnlySelectDirectory,
-  OnlySelectField,
-  SingleSelectField,
-} from "./SelectField";
+import { OnlySelectField, SingleSelectField } from "./SelectField";
 import styles from "./sidebarContentEdit.module.css";
 import TextField from "./TextField";
+import SelectDirectory from "./SelectDirectory";
 
 function findAndUpdateDir(objArray: IDir[], path: string, newDir: IDir[]) {
   const level = path.split("/").length;
@@ -74,14 +71,12 @@ const SidebarContentEdit = ({
   const [initialCount, setInitialCount] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const { data: selectableListData } = useGetMetaData();
-  const { data: directoryPaths, isSuccess } = useGetRepoDirectories(
-    path.slice(0, -1)
-  );
+  const { data: directoryPaths } = useGetRepoDirectories(path);
   const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
   useEffect(() => {
     // we want the rootpath to load first before
     if (directoryPaths && initialCount < 2) {
-      setPath(`${data.content.loc ?? "misc"}/`);
+      setPath(`${data.content.loc ?? "misc"}`);
       setInitialCount(2);
     }
   }, [data.content.loc, directoryPaths, initialCount]);
@@ -99,7 +94,6 @@ const SidebarContentEdit = ({
           break;
         default:
           findAndUpdateDir(nestedDirFormat || [], path, currentDirs);
-          // After mutation
           break;
       }
       return nestedDirFormat;
@@ -144,7 +138,7 @@ const SidebarContentEdit = ({
     updater({ data: date, type: "date", name: "date" });
   };
   const updateDirectory = (dir: string) => {
-    setPath(`${dir}/`);
+    setPath(`${dir}`);
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.loc = dir;
     saveTranscript(updatedTranscript);
@@ -226,24 +220,13 @@ const SidebarContentEdit = ({
           <Text fontWeight={600} mb={2}>
             Choose Directory
           </Text>
-          {path.split("/").map((dir, index) => (
-            <Box key={dir}>
-              <Flex alignItems={"center"} gap={3}>
-                <AiFillFolder size={24} />
-                <OnlySelectDirectory
-                  name="loc" // the key used for directory on transcripts
-                  editedData={dir || ""}
-                  key={dir}
-                  path={path}
-                  index={index} // to be able to know the number
-                  isLoading={isLoading}
-                  updateData={updateDirectory}
-                  autoCompleteList={directoryList}
-                  userCanAddToList
-                />
-              </Flex>
-            </Box>
-          ))}
+          <SelectDirectory
+            path={path}
+            setPath={setPath}
+            options={directoryList}
+            isLoading={isLoading}
+            updateData={updateDirectory}
+          />
         </Box>
         <Box>
           <Text fontWeight={600} mb={2}>
