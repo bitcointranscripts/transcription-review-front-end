@@ -1,9 +1,5 @@
 import jwtDecode from "jwt-decode";
-import {
-  updateUserProfile,
-  signInUser,
-  signUpNewUser,
-} from "@/services/api/lib";
+import { signInUser, signUpNewUser } from "@/services/api/lib";
 import NextAuth, {
   GhExtendedProfile,
   NextAuthOptions,

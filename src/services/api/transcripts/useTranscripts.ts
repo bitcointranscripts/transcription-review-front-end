@@ -7,7 +7,9 @@ const getAllTranscripts = async (): Promise<Transcript[]> => {
   return axios
     .get(endpoints.GET_TRANSCRIPTS())
     .then((res) => res.data)
-    .catch((err) => err);
+    .catch((err) => {
+      throw err;
+    });
 };
 
 export const useTranscripts = () =>
