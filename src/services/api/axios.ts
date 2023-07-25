@@ -10,10 +10,6 @@ axiosInstance.interceptors.request.use(async (config) => {
   const session = await getSession();
   if (session?.user?.jwt) {
     config.headers.Authorization = `Bearer ${session.user.jwt}`;
-    if (!config.data) {
-      config.data = {};
-    }
-    config.data = session.user.id;
   }
 
   return config;
