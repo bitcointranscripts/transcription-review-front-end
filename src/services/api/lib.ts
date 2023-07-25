@@ -6,6 +6,7 @@ export type CreateUserProp = {
   username: string;
   permissions: UserRole;
   email: string;
+  github_access_token: string;
 };
 
 type AuthToken = {
@@ -28,13 +29,22 @@ export const signUpNewUser = async ({
   username,
   permissions,
   email,
+  github_access_token,
 }: CreateUserProp): Promise<AuthToken & UserData> => {
   return axios
-    .post(endpoints.USER_SIGN_UP(), {
-      username,
-      permissions,
-      email,
-    })
+    .post(
+      endpoints.USER_SIGN_UP(),
+      {
+        username,
+        permissions,
+        email,
+      },
+      {
+        headers: {
+          "x-github-token": github_access_token,
+        },
+      }
+    )
     .then((res) => res.data)
     .catch((err) => {
       throw err;

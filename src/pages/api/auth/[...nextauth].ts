@@ -42,13 +42,14 @@ export const authOptions: NextAuthOptions = {
     async jwt({ isNewUser, token, account, ...response }) {
       const profile = response.profile as GhExtendedProfile | undefined;
 
-      if (isNewUser && profile?.login) {
+      if (isNewUser && profile?.login && account?.access_token) {
         const { email, login } = profile;
         try {
           const signedUpUser = await signUpNewUser({
             username: login,
             permissions: "reviewer",
             email,
+            github_access_token: account.access_token,
           });
           const { id, permissions, githubUsername, jwt } = signedUpUser;
           const userInfo: UserSessionType = {
