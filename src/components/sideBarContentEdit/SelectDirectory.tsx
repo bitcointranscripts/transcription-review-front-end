@@ -14,6 +14,7 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Spinner,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -25,11 +26,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  BsFillArrowLeftCircleFill,
-  BsArrow90DegDown,
-  BsArrowDownShort,
-} from "react-icons/bs";
+import { BsFillArrowLeftCircleFill } from "react-icons/bs";
 import { IoIosCloseCircle } from "react-icons/io";
 import { IDir } from "../../../types";
 import { AutoCompleteData } from "./SelectField";
@@ -38,6 +35,7 @@ interface PropsSelectDirectory {
   path: string;
   options: Array<AutoCompleteData>;
   isLoading?: boolean; // for change
+  isDirLoading?: boolean;
   setPath: Dispatch<SetStateAction<string>>;
   customPath?: boolean;
   // eslint-disable-next-line no-unused-vars
@@ -82,17 +80,36 @@ function findAndReturnDirs(
 const SelectDirectoryOption = ({
   options,
   customPath,
-  updateData,
+  isDirLoading,
+  setPath,
 }: PropsSelectDirectory) => {
   return (
-    <Box mt={2} minH={32} pl={8} maxH={32} overflowY={"scroll"}>
-      {!customPath &&
+    <Flex
+      flexDirection={"column"}
+      mt={2}
+      width="100%"
+      minH={32}
+      maxH={32}
+      overflowY={"scroll"}
+    >
+      {isDirLoading && (
+        <Flex
+          width="100%"
+          mt={10}
+          justifyContent={"center"}
+          alignItems="center"
+        >
+          <Spinner />
+        </Flex>
+      )}
+      {!isDirLoading &&
+        !customPath &&
         options.map((dir) => (
           <Text
             className="select-option"
             role="button"
             key={dir.slug}
-            onClick={() => updateData(dir.value)}
+            onClick={() => setPath(dir.value)}
             color="gray.800"
             _hover={{ bg: "blue.600", color: "gray.100" }}
             fontSize="14px"
@@ -102,19 +119,20 @@ const SelectDirectoryOption = ({
             {dir.slug}
           </Text>
         ))}
-      {options.length < 1 && (
-        <Text mt={"24px"} fontWeight={500} textAlign="center" fontSize="14px">
+      {!isDirLoading && options.length < 1 && (
+        <Text fontWeight={500} mt={10} mx="auto" fontSize="14px">
           {" "}
           No directories found
         </Text>
       )}
-    </Box>
+    </Flex>
   );
 };
 const SelectDirectory = ({
   path,
   options,
   isLoading,
+  isDirLoading,
   setPath,
   updateData,
 }: PropsSelectDirectory) => {
@@ -196,19 +214,11 @@ const SelectDirectory = ({
                       {customPath}
                     </Text>
                   ) : (
-                    path.split("/").map((dir, index) => (
-                      <>
-                        <Flex pl={index * 4} key={dir}>
-                          <Text
-                            fontSize={"14px"}
-                            fontWeight={700}
-                            color={"gray"}
-                          >
-                            {dir}
-                          </Text>
-                        </Flex>
-                      </>
-                    ))
+                    <Flex pl={4}>
+                      <Text fontSize={"14px"} fontWeight={700} color={"gray"}>
+                        {pathFolder[pathFolder.length - 1]}
+                      </Text>
+                    </Flex>
                   )}
                 </Flex>
               </Flex>
@@ -222,6 +232,7 @@ const SelectDirectory = ({
               updateData={updateData}
               path={customPath || path}
               setPath={setPath}
+              isDirLoading={isDirLoading}
               customPath={customPath ? true : false}
               options={directoriesInPath || []}
             />
