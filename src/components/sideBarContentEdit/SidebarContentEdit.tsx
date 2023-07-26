@@ -71,7 +71,8 @@ const SidebarContentEdit = ({
   const [initialCount, setInitialCount] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const { data: selectableListData } = useGetMetaData();
-  const { data: directoryPaths, isLoading:directoryIsLoading } = useGetRepoDirectories(path);
+  const { data: directoryPaths, isLoading: directoryIsLoading } =
+    useGetRepoDirectories(path);
   const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
   useEffect(() => {
     // we want the rootpath to load first before

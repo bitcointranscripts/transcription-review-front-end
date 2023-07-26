@@ -1,3 +1,4 @@
+import { deriveFileSlug } from "@/utils";
 import {
   Box,
   Button,
@@ -26,7 +27,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { BsFillArrowLeftCircleFill } from "react-icons/bs";
+import { BiArrowBack } from "react-icons/bi";
 import { IoIosCloseCircle } from "react-icons/io";
 import { IDir } from "../../../types";
 import { AutoCompleteData } from "./SelectField";
@@ -90,6 +91,7 @@ const SelectDirectoryOption = ({
       width="100%"
       minH={32}
       maxH={32}
+      px={8}
       overflowY={"scroll"}
     >
       {isDirLoading && (
@@ -157,7 +159,7 @@ const SelectDirectory = ({
   }, [isLoading, path, options]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCustomPath(e.target.value);
+    setCustomPath(deriveFileSlug(e.target.value, /[^a-z0-9/-\s]/));
   };
   const handleChangeDirPath = (val: string) => {
     !customPath && updateData(val.replace(/[/]$/, "")); // replace the / at the end of the string with nothing
@@ -191,30 +193,36 @@ const SelectDirectory = ({
       >
         <PopoverTrigger>
           <Input
-            _placeholder={{ fontSize: "12px" }}
+            _placeholder={{
+              fontSize: "14px",
+              color: isOpen ? "grey" : "black",
+            }}
             height={8}
             onChange={handleChange}
             placeholder={path}
           />
         </PopoverTrigger>
         <PopoverContent mt={2} w="full" maxH={60} overflowY={"scroll"}>
-          <PopoverBody as={Flex} flexDirection="column">
+          <PopoverBody as={Flex} py={4} flexDirection="column">
             <Flex justifyContent={"space-between"} alignItems="start">
               <Flex columnGap={"8px"} alignItems="start">
-                {!customPath && path.length > 1 && (
-                  <BsFillArrowLeftCircleFill
-                    cursor={"pointer"}
-                    size={24}
-                    onClick={backFolder}
-                  />
-                )}
+                <BiArrowBack
+                  cursor={"pointer"}
+                  size={24}
+                  color="#5A5A5A"
+                  onClick={backFolder}
+                  visibility={`${
+                    !customPath && path.length > 1 ? "none" : "hidden"
+                  }`}
+                />
+
                 <Flex flexDirection={"column"}>
                   {customPath ? (
                     <Text fontSize={"14px"} fontWeight={700} color={"gray"}>
                       {customPath}
                     </Text>
                   ) : (
-                    <Flex pl={4}>
+                    <Flex pl={2}>
                       <Text fontSize={"14px"} fontWeight={700} color={"gray"}>
                         {pathFolder[pathFolder.length - 1]}
                       </Text>
@@ -225,6 +233,7 @@ const SelectDirectory = ({
               <IoIosCloseCircle
                 cursor={"pointer"}
                 size={24}
+                color="#5A5A5A"
                 onClick={onClose}
               />
             </Flex>
@@ -244,7 +253,11 @@ const SelectDirectory = ({
                 colorScheme={"orange"}
                 onClick={() => handleChangeDirPath(customPath || path)}
               >
-                {customPath ? "Add" : "Select"} {customPath || path}
+                {customPath ? "Use:" : "Select"} &nbsp;
+                <Text as="span" fontWeight={400}>
+                  {" "}
+                  &quot;{customPath || path}&quot;{" "}
+                </Text>
               </Button>
             )}
           </PopoverBody>
