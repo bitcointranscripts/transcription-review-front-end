@@ -7,18 +7,11 @@ const Footer = () => {
     <Box bgColor="gray.800">
       <GlobalContainer py={8}>
         <Text
-          fontSize={{ base: "16px", md: "20px" }}
+          fontSize={{ base: "14px", md: "16px" }}
           color="gray.200"
           textAlign="center"
         >
-          Built with ❤️ by{" "}
-          <Link
-            href="https://chaincode.com"
-            isExternal
-            color="yellow.200"
-          >
-            Chaincode Labs
-          </Link>
+          Built with ❤️ by bitcoiners
         </Text>
         <Text
           textAlign="center"
