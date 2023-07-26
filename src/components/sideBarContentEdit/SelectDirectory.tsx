@@ -2,8 +2,14 @@ import {
   Box,
   Button,
   Flex,
-  IconButton,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -19,7 +25,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { BsFillArrowLeftCircleFill } from "react-icons/bs";
+import {
+  BsFillArrowLeftCircleFill,
+  BsArrow90DegDown,
+  BsArrowDownShort,
+} from "react-icons/bs";
 import { IoIosCloseCircle } from "react-icons/io";
 import { IDir } from "../../../types";
 import { AutoCompleteData } from "./SelectField";
@@ -75,7 +85,7 @@ const SelectDirectoryOption = ({
   updateData,
 }: PropsSelectDirectory) => {
   return (
-    <Box mt={2} minH={32} maxH={32} overflowY={"scroll"}>
+    <Box mt={2} minH={32} pl={8} maxH={32} overflowY={"scroll"}>
       {!customPath &&
         options.map((dir) => (
           <Text
@@ -109,6 +119,12 @@ const SelectDirectory = ({
   updateData,
 }: PropsSelectDirectory) => {
   const { onClose, isOpen, onOpen } = useDisclosure();
+  const {
+    onClose: confirmOnClose,
+    isOpen: confirmIsOpen,
+    onOpen: confirmOnOpen,
+  } = useDisclosure();
+  const pathFolder = path.split("/");
   const inputRef = useRef<HTMLInputElement>(null);
   const [customPath, setCustomPath] = useState<string>("");
   const [directoriesInPath, setDirectoriesInPath] = useState<IDir[]>([]);
@@ -126,11 +142,15 @@ const SelectDirectory = ({
     setCustomPath(e.target.value);
   };
   const handleChangeDirPath = (val: string) => {
-    updateData(val.replace(/[/]$/, "")); // replace the / at the end of the string with nothing
+    !customPath && updateData(val.replace(/[/]$/, "")); // replace the / at the end of the string with nothing
     onClose();
+    customPath && confirmOnOpen();
+  };
+  const handleConfirmationPath = (val: string) => {
+    updateData(val.replace(/[/]$/, "")); // replace the / at the end of the string with nothing
+    confirmOnClose();
   };
   const backFolder = () => {
-    const pathFolder = path.split("/");
     setPath(
       path
         .split("/")
@@ -161,25 +181,42 @@ const SelectDirectory = ({
         </PopoverTrigger>
         <PopoverContent mt={2} w="full" maxH={60} overflowY={"scroll"}>
           <PopoverBody as={Flex} flexDirection="column">
-            <Flex justifyContent={"space-between"} alignItems="center">
-              <Flex columnGap={"8px"} alignItems="center">
-                <IconButton
-                  aria-label="button"
-                  size={"xs"}
-                  colorScheme="orange"
-                  onClick={backFolder}
-                >
-                  <BsFillArrowLeftCircleFill cursor={"pointer"} size={15} />
-                </IconButton>
-                <Text fontSize={"14px"}>{customPath || path}</Text>
+            <Flex justifyContent={"space-between"} alignItems="start">
+              <Flex columnGap={"8px"} alignItems="start">
+                {!customPath && path.length > 1 && (
+                  <BsFillArrowLeftCircleFill
+                    cursor={"pointer"}
+                    size={24}
+                    onClick={backFolder}
+                  />
+                )}
+                <Flex flexDirection={"column"}>
+                  {customPath ? (
+                    <Text fontSize={"14px"} fontWeight={700} color={"gray"}>
+                      {customPath}
+                    </Text>
+                  ) : (
+                    path.split("/").map((dir, index) => (
+                      <>
+                        <Flex pl={index * 4} key={dir}>
+                          <Text
+                            fontSize={"14px"}
+                            fontWeight={700}
+                            color={"gray"}
+                          >
+                            {dir}
+                          </Text>
+                        </Flex>
+                      </>
+                    ))
+                  )}
+                </Flex>
               </Flex>
-              <IconButton aria-label="button" size={"xs"} colorScheme="orange">
-                <IoIosCloseCircle
-                  cursor={"pointer"}
-                  size={15}
-                  onClick={onClose}
-                />
-              </IconButton>
+              <IoIosCloseCircle
+                cursor={"pointer"}
+                size={24}
+                onClick={onClose}
+              />
             </Flex>
             <SelectDirectoryOption
               updateData={updateData}
@@ -196,12 +233,43 @@ const SelectDirectory = ({
                 colorScheme={"orange"}
                 onClick={() => handleChangeDirPath(customPath || path)}
               >
-                Select {customPath || path}
+                {customPath ? "Add" : "Select"} {customPath || path}
               </Button>
             )}
           </PopoverBody>
         </PopoverContent>
       </Popover>
+      <Modal isOpen={confirmIsOpen} onClose={confirmOnClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Directory Confirmation</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text display="inline">Are you sure</Text>
+            <span> </span>
+            <Text display="inline" fontWeight={600}>
+              &quot;{customPath}&quot;
+            </Text>
+            <span> </span>
+            <Text display="inline">
+              isn&apos;t in the directories list already? &nbsp; Did you
+              double-check the spelling of the directory?
+            </Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button size="sm" variant="outline" mr={3} onClick={confirmOnClose}>
+              Let me check..
+            </Button>
+            <Button
+              size="sm"
+              colorScheme="green"
+              onClick={() => handleConfirmationPath(customPath)}
+            >
+              It&apos;s correct!
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };
