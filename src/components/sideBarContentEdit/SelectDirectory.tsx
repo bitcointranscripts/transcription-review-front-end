@@ -169,6 +169,9 @@ const SelectDirectory = ({
   const handleConfirmationPath = (val: string) => {
     updateData(val.replace(/[/]$/, "")); // replace the / at the end of the string with nothing
     confirmOnClose();
+    setCustomPath("");
+    if (inputRef.current === null) return;
+    inputRef.current.value = "";
   };
   const backFolder = () => {
     setPath(
@@ -178,6 +181,7 @@ const SelectDirectory = ({
         .join("/")
     );
   };
+
   return (
     <Box paddingY={"10px"}>
       <Popover
@@ -193,6 +197,7 @@ const SelectDirectory = ({
       >
         <PopoverTrigger>
           <Input
+            ref={inputRef}
             _placeholder={{
               fontSize: "14px",
               color: isOpen ? "grey" : "black",
