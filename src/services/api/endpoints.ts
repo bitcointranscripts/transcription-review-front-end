@@ -4,14 +4,18 @@ export type ReviewQueryOptions = {
   status?: "active" | "pending" | "inactive";
 };
 
-function buildReviewQueryParams(reviewQueryOptions: ReviewQueryOptions) {
+export type TransactionQueryOptions = {
+  userId?: number;
+  status?: "success" | "pending" | "failed";
+  type?: "credit" | "debit";
+};
+
+function buildQueryParams(options: any) {
   let base = "";
   let hasFilledFirstIndex = false;
-  Object.keys(reviewQueryOptions).map((key) => {
-    if (reviewQueryOptions[key as keyof ReviewQueryOptions]) {
-      const queryString = `${key}=${
-        reviewQueryOptions[key as keyof ReviewQueryOptions]
-      }`;
+  Object.keys(options).map((key) => {
+    if (options[key]) {
+      const queryString = `${key}=${options[key]}`;
       base += (hasFilledFirstIndex ? "&" : "?") + queryString;
       hasFilledFirstIndex = true;
     }
@@ -38,12 +42,26 @@ const USER_BY_ID = (id: number) => `users/${id}`;
 const USER_REVIEWS = (id: number) => `users/${id}/reviews`;
 
 const REVIEWS = ({ userId, username, status }: ReviewQueryOptions) => {
-  return "reviews" + buildReviewQueryParams({ userId, username, status });
+  return "reviews" + buildQueryParams({ userId, username, status });
 };
 
 const REVIEW_BY_ID = (id: number) => `reviews/${id}`;
 
 const SUBMIT_REVIEW = (id: number) => `reviews/${id}/submit`;
+
+const PAY_INVOICE = () => `lightning/invoice/pay`;
+
+const GET_TRANSACTIONS = ({
+  userId,
+  status,
+  type,
+}: TransactionQueryOptions) => {
+  return "transactions" + buildQueryParams({ userId, status, type });
+};
+
+const GET_WALLET = (id?: number) => `users/${id}/wallet`;
+
+const USER_SIGN_OUT = () => `logout`;
 
 const endpoints = {
   ARCHIVE_TRANSCRIPTS_BY_ID,
@@ -58,6 +76,10 @@ const endpoints = {
   REVIEWS,
   REVIEW_BY_ID,
   SUBMIT_REVIEW,
+  PAY_INVOICE,
+  GET_TRANSACTIONS,
+  GET_WALLET,
+  USER_SIGN_OUT,
 };
 
 export default endpoints;
