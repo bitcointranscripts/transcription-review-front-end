@@ -6,7 +6,6 @@ import { useReview } from "@/services/api/reviews";
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { UserReview } from "../../../types";
 
 const TranscriptPage = () => {
   const { status, data: sessionData } = useSession();
