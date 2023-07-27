@@ -1,5 +1,5 @@
 import jwtDecode from "jwt-decode";
-import { signInUser, signUpNewUser } from "@/services/api/lib";
+import { signInUser, updateUserProfile } from "@/services/api/lib";
 import NextAuth, {
   GhExtendedProfile,
   NextAuthOptions,
@@ -39,43 +39,17 @@ export const authOptions: NextAuthOptions = {
       session.accessToken = token.user.access_token;
       return session;
     },
-    async jwt({ isNewUser, token, account, ...response }) {
+    async jwt({ token, account, ...response }) {
       const profile = response.profile as GhExtendedProfile | undefined;
 
-      if (isNewUser && profile?.login && account?.access_token) {
-        const { email, login } = profile;
-        try {
-          const signedUpUser = await signUpNewUser({
-            username: login,
-            permissions: "reviewer",
-            email,
-            github_access_token: account.access_token,
-          });
-          const { id, permissions, githubUsername, jwt } = signedUpUser;
-          const userInfo: UserSessionType = {
-            id,
-            email,
-            permissions,
-            githubUsername,
-            jwt,
-          };
-          token.user = {
-            ...userInfo,
-            access_token: account?.access_token,
-          };
-        } catch (err) {
-          token.id = undefined;
-        }
-      }
-
       // jwt callback runs very frequently, this checks if we haven't run backend auth on the user yet
-      if (!isNewUser && !token?.id && account?.access_token && profile) {
+      if (!token?.id && account?.access_token && profile) {
         try {
           const signedInUserToken = await signInUser({
             github_access_token: account.access_token,
           });
           const decodedJwt: DecodedJWT = jwtDecode(signedInUserToken.jwt);
-          const { userId, permissions } = decodedJwt;
+          const { userId, permissions, isEmailPresent } = decodedJwt;
           const userInfo: UserSessionType = {
             id: userId,
             email: profile.email,
@@ -83,6 +57,20 @@ export const authOptions: NextAuthOptions = {
             githubUsername: profile.login,
             jwt: signedInUserToken.jwt,
           };
+
+          if (!isEmailPresent) {
+            // not awaited so update is non blocking (also there is a timeout for the parent async jwt function)
+            updateUserProfile(
+              {
+                id: userId,
+                email: profile.email,
+                username: profile.login,
+              },
+              {
+                jwt: signedInUserToken.jwt,
+              }
+            );
+          }
 
           token.user = {
             ...userInfo,

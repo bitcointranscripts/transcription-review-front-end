@@ -2,54 +2,17 @@ import { UserData, UserRole } from "../../../types";
 import axios from "./axios";
 import endpoints from "./endpoints";
 
-export type CreateUserProp = {
-  username: string;
-  permissions: UserRole;
+export type UpdateUserProp = {
+  id: number;
+  username?: string;
+  permissions?: UserRole;
   email: string;
-  github_access_token: string;
 };
 
 type AuthToken = {
   jwt: string;
 };
 
-export const createNewUser = async ({
-  username,
-  permissions,
-  email,
-}: CreateUserProp): Promise<{ data: UserData }> => {
-  return axios.post(endpoints.USERS(), {
-    username,
-    permissions,
-    email,
-  });
-};
-
-export const signUpNewUser = async ({
-  username,
-  permissions,
-  email,
-  github_access_token,
-}: CreateUserProp): Promise<AuthToken & UserData> => {
-  return axios
-    .post(
-      endpoints.USER_SIGN_UP(),
-      {
-        username,
-        permissions,
-        email,
-      },
-      {
-        headers: {
-          "x-github-token": github_access_token,
-        },
-      }
-    )
-    .then((res) => res.data)
-    .catch((err) => {
-      throw err;
-    });
-};
 export const signInUser = async ({
   github_access_token,
 }: {
@@ -72,13 +35,26 @@ export const signInUser = async ({
 };
 
 // TODO: account for other properties e.g. permissions, jwt, etc.
-export const updateUserProfile = async ({
-  id,
-  email,
-  username,
-}: CreateUserProp & { id: number }): Promise<{ data: UserData }> => {
+export const updateUserProfile = async (
+  { id, email, username }: UpdateUserProp,
+  options?: { jwt: string }
+): Promise<{ data: UserData }> => {
   if (!id) {
     throw new Error("User id is required");
+  }
+  if (options?.jwt) {
+    return axios.put(
+      endpoints.USER_BY_ID(id),
+      {
+        email,
+        username,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${options.jwt}`,
+        },
+      }
+    );
   }
   return axios.put(endpoints.USER_BY_ID(id), {
     email,

@@ -100,6 +100,7 @@ export type DecodedJWT = {
   userId: number;
   permissions: UserRole;
   githubAuthToken: string;
+  isEmailPresent: boolean;
   iat: number;
   exp: number;
 };
