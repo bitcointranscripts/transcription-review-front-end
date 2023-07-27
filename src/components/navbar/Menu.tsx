@@ -136,6 +136,13 @@ const Menu = () => {
                         handleClose={closeMenu}
                         icon={HiOutlineBookOpen}
                       />
+                      <MenuNav
+                        currentRoute={currentRoute}
+                        routeName={"wallet"}
+                        routeLink={"wallet"}
+                        handleClose={closeMenu}
+                        icon={HiOutlineBookOpen}
+                      />
                     </Flex>
                   </Box>
                   <Divider />

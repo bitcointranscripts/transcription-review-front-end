@@ -104,3 +104,21 @@ export type DecodedJWT = {
   iat: number;
   exp: number;
 };
+
+export type Wallet = {
+  id: number;
+  balance: number;
+  userId: number;
+  transactions: Transaction[];
+};
+
+export type Transaction = {
+  id: string;
+  walletId: string;
+  reviewId: number;
+  amount: string;
+  transactionType: "credit" | "debit";
+  transactionStatus: "success" | "pending" | "failed";
+  createdAt: string;
+  updatedAt: string;
+};
