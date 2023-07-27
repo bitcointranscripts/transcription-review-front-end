@@ -17,7 +17,7 @@ import "react-markdown-editor-lite/lib/index.css";
 import { MutableRefObject, useEffect, useState } from "react";
 import MarkdownIt from "markdown-it";
 
-// Interfaces for react-markdown-editior
+// Interfaces for react-markdown-editor
 export interface IHandleEditorChange {
   text: string;
   html: string;
