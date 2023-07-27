@@ -159,7 +159,7 @@ const SelectDirectory = ({
   }, [isLoading, path, options]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCustomPath(deriveFileSlug(e.target.value, /[^a-z0-9/-\s]/gi));
+    setCustomPath(deriveFileSlug(e.target.value, /[^a-z0-9/-\s]+/gi));
   };
   const handleChangeDirPath = (val: string) => {
     !customPath && updateData(val.replace(/[/]$/, "")); // replace the / at the end of the string with nothing
