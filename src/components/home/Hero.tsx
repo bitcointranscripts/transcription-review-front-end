@@ -21,7 +21,7 @@ const Hero = ({
               color="gray.800"
               textShadow="dark-lg"
             >
-              Create accurate transcriptions of technical Bitcoin talks
+              Earn sats to review technical Bitcoin talk transcripts
             </Heading>
             <Box
               as="ul"
@@ -38,7 +38,7 @@ const Hero = ({
                 <Text>Step 2: Review & edit transcript</Text>
               </li>
               <li>
-                <Text>Step 3: Submit (and change the world)</Text>
+                <Text>Step 3: Submit (and earn 🤑)</Text>
               </li>
             </Box>
             <Button

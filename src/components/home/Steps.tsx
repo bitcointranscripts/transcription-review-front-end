@@ -460,7 +460,7 @@ export const PreferVideoButton = ({
         colorScheme="blue"
         // _groupHover={{ textDecoration: "underline" }}
         onClick={(e) => handlePreferVideo(e, step)}
-        size="sm"
+        size="lg"
         fontWeight={900}
       >
         prefer video?
