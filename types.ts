@@ -106,7 +106,7 @@ export type DecodedJWT = {
 };
 
 export type Wallet = {
-  id: number;
+  id: string;
   balance: number;
   userId: number;
   transactions: Transaction[];
