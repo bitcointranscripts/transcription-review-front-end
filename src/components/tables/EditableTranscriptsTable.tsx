@@ -186,7 +186,7 @@ const EditableTranscriptsTable = () => {
           modifier: (data) => data.id,
           action: (data: Transcript) => handleClaim(data.id),
         },
-      ] as TableStructure[],
+      ] as TableStructure<Transcript>[],
     [handleClaim]
   );
 
