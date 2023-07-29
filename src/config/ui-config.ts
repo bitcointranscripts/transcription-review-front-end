@@ -4,6 +4,7 @@ export const ROUTES_CONFIG = {
   HOME: "",
   TUTORIAL: "tutorial",
   TRANSCRIPTS: "transcripts",
+  WALLET: "wallet",
 };
 
 export const UI_CONFIG = {
