@@ -143,7 +143,7 @@ const EmptyView = () => {
   return (
     <Flex w="full" justifyContent="center" alignItems="center" gap={2}>
       <Text>No Current Jobs 😭</Text>
-      <Link href="/">
+      <Link href="/transcripts">
         <Button size="xs" colorScheme="orange">
           Choose transcript to edit
         </Button>

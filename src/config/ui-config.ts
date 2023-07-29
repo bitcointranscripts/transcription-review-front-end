@@ -3,6 +3,7 @@
 export const ROUTES_CONFIG = {
   HOME: "",
   TUTORIAL: "tutorial",
+  TRANSCRIPTS: "transcripts",
 };
 
 export const UI_CONFIG = {
