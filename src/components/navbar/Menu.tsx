@@ -13,21 +13,26 @@ import {
   Heading,
   Icon,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { CgTranscript } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
-import { FiHome, FiUser } from "react-icons/fi";
+import { RiWalletLine } from "react-icons/ri";
+import { FiUser } from "react-icons/fi";
 import { HiOutlineBookOpen } from "react-icons/hi";
 import MenuNav from "./MenuNav";
+import { useLogout } from "@/services/api/useLogout";
 
 const Menu = () => {
   const { data: userSession } = useSession();
+  const { mutateAsync: requestLogout } = useLogout();
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
-
+  const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => {
     setMenuOpen(false);
@@ -37,6 +42,19 @@ const Menu = () => {
     setMenuOpen(true);
   };
 
+  const handleSecureLogout = async () => {
+    try {
+      await requestLogout();
+      await signOut({ redirect: false });
+      await router.push("/");
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: `${err}`,
+        status: "error",
+      });
+    }
+  };
   return (
     <>
       {!userSession ? (
@@ -113,13 +131,6 @@ const Menu = () => {
                       Pages
                     </Heading>
                     <Flex mt={4} direction="column" gap={2}>
-                      <MenuNav
-                        currentRoute={currentRoute}
-                        routeName="home"
-                        routeLink={ROUTES_CONFIG.HOME}
-                        handleClose={closeMenu}
-                        icon={FiHome}
-                      />
                       {userSession?.user?.githubUsername && (
                         <MenuNav
                           routeName="account"
@@ -129,6 +140,13 @@ const Menu = () => {
                           icon={FiUser}
                         />
                       )}
+                      <MenuNav
+                        currentRoute={currentRoute}
+                        routeName={ROUTES_CONFIG.TRANSCRIPTS}
+                        routeLink={ROUTES_CONFIG.TRANSCRIPTS}
+                        handleClose={closeMenu}
+                        icon={CgTranscript}
+                      />
                       <MenuNav
                         currentRoute={currentRoute}
                         routeName={ROUTES_CONFIG.TUTORIAL}
@@ -141,7 +159,7 @@ const Menu = () => {
                         routeName={"wallet"}
                         routeLink={"wallet"}
                         handleClose={closeMenu}
-                        icon={HiOutlineBookOpen}
+                        icon={RiWalletLine}
                       />
                     </Flex>
                   </Box>
@@ -151,7 +169,7 @@ const Menu = () => {
                       colorScheme="red"
                       variant="outline"
                       size="sm"
-                      onClick={() => signOut()}
+                      onClick={handleSecureLogout}
                     >
                       Sign out
                     </Button>
