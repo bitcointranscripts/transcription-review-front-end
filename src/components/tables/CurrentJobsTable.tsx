@@ -116,7 +116,7 @@ const CurrentJobsTable = () => {
           modifier: (data) => data.id,
           component: (data) => <ActionComponent data={data} />,
         },
-      ] satisfies TableStructure[],
+      ] satisfies TableStructure<ReviewTranscript>[],
     [ActionComponent]
   );
 
