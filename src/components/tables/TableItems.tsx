@@ -37,12 +37,18 @@ const defaultUndefined = <TData, TCb extends (data: TData) => any>(
   }
 };
 
-export const DateText = ({ tableItem, row }: TableDataElement) => {
+export const DateText = <T extends object>({
+  tableItem,
+  row,
+}: TableDataElement<T>) => {
   const dateString = dateFormat(tableItem.modifier(row)) ?? "N/A";
   return <Td>{dateString}</Td>;
 };
 
-export const LongText = ({ tableItem, row }: TableDataElement) => {
+export const LongText = <T extends object>({
+  tableItem,
+  row,
+}: TableDataElement<T>) => {
   const text = defaultUndefined(tableItem.modifier, row);
   return (
     <Td>
@@ -51,12 +57,18 @@ export const LongText = ({ tableItem, row }: TableDataElement) => {
   );
 };
 
-export const ShortText = ({ tableItem, row }: TableDataElement) => {
+export const ShortText = <T extends object>({
+  tableItem,
+  row,
+}: TableDataElement<T>) => {
   const text = defaultUndefined(tableItem.modifier, row);
   return <Td>{typeof text === "string" ? <Text>{text}</Text> : text}</Td>;
 };
 
-export const Tags = ({ tableItem, row }: TableDataElement) => {
+export const Tags = <T extends object>({
+  tableItem,
+  row,
+}: TableDataElement<T>) => {
   const stringArray = tableItem.modifier(row) as string;
   let _parsed = stringArray as string | string[];
   if (stringArray[0] === "[") {
@@ -94,12 +106,12 @@ export const Tags = ({ tableItem, row }: TableDataElement) => {
   );
 };
 
-export const TableAction = ({
+export const TableAction = <T extends object>({
   tableItem,
   row,
   actionState,
   showControls,
-}: TableDataElement & { showControls: boolean }) => {
+}: TableDataElement<T> & { showControls: boolean }) => {
   const { data: userSession } = useSession();
 
   const handleClick = () => {
@@ -107,7 +119,7 @@ export const TableAction = ({
     tableItem.action(row);
   };
 
-  const isLoading = row.id === actionState?.rowId;
+  const isLoading = "id" in row && row.id === actionState?.rowId;
   const isAdmin = userSession?.user?.permissions === "admin";
   const showCheckBox = isAdmin && showControls;
 
@@ -130,16 +142,16 @@ export const TableAction = ({
           </Button>
         )}
         {/* checkbox */}
-        {showCheckBox && <Checkbox value={String(row.id)} />}
+        {showCheckBox && <Checkbox value={String("id" in row && row.id)} />}
       </Flex>
     </Td>
   );
 };
 
-export const TableHeader = ({
+export const TableHeader = <T extends object>({
   tableStructure,
 }: {
-  tableStructure: TableStructure[];
+  tableStructure: TableStructure<T>[];
 }) => {
   return (
     <Tr>
@@ -195,12 +207,12 @@ export const DataEmpty = ({
   );
 };
 
-export const RowData = ({
+export const RowData = <T extends object>({
   row,
   tableItem,
   actionState,
   showControls,
-}: TableDataElement & { showControls: boolean }) => {
+}: TableDataElement<T> & { showControls: boolean }) => {
   switch (tableItem.type) {
     case "date":
       return <DateText key={tableItem.name} tableItem={tableItem} row={row} />;
