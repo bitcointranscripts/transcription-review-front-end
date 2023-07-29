@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { Box, Flex, Heading, Table, Tbody, Thead, Tr } from "@chakra-ui/react";
-import React from "react";
 import {
   QueryObserverResult,
   RefetchOptions,
   RefetchQueryFilters,
 } from "@tanstack/react-query";
-import type { ReviewTranscript } from "../../../types";
+import React from "react";
 import {
   ArchiveButton,
   DataEmpty,
@@ -17,8 +16,8 @@ import {
 } from "./TableItems";
 import type { TableStructure } from "./types";
 
-type Props = {
-  data: ReviewTranscript[] | undefined;
+type Props<T> = {
+  data: T[] | undefined;
   emptyView?: React.ReactNode;
   isLoading: boolean;
   isError: boolean;
@@ -28,7 +27,7 @@ type Props = {
   actionState?: {
     rowId: number;
   };
-  tableStructure: TableStructure[];
+  tableStructure: TableStructure<T>[];
   tableHeader?: string;
   tableHeaderComponent?: React.ReactNode;
   showAdminControls?: boolean;
@@ -37,7 +36,7 @@ type Props = {
   hasAdminSelected?: boolean;
 };
 
-const BaseTable: React.FC<Props> = ({
+const BaseTable = <T extends object>({
   data,
   emptyView,
   isLoading,
@@ -50,7 +49,7 @@ const BaseTable: React.FC<Props> = ({
   handleArchive,
   isArchiving,
   hasAdminSelected,
-}) => {
+}: Props<T>) => {
   return (
     <Box fontSize="sm" py={4} isolation="isolate">
       {tableHeaderComponent
@@ -87,7 +86,9 @@ const BaseTable: React.FC<Props> = ({
             data.map((dataRow, idx) => (
               <TableRow
                 showControls={showAdminControls}
-                key={`data-id-${dataRow.id}-data-row-${idx}`}
+                key={`data-id-${
+                  "id" in dataRow ? dataRow.id : ""
+                }-data-row-${idx}`}
                 row={dataRow}
                 ts={tableStructure}
                 actionState={actionState}
@@ -102,15 +103,15 @@ const BaseTable: React.FC<Props> = ({
   );
 };
 
-const TableRow = ({
+const TableRow = <T extends object>({
   row,
   ts,
   actionState,
   showControls,
 }: {
-  row: ReviewTranscript;
-  ts: TableStructure[];
-  actionState: Props["actionState"];
+  row: T;
+  ts: TableStructure<T>[];
+  actionState: Props<T>["actionState"];
   showControls: boolean;
 }) => {
   return (
