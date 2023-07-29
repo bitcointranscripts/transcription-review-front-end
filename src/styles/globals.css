@@ -1,0 +1,71 @@
+:root {
+  --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+    'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+    'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#__next {
+  height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* styling for text-editor library */
+
+#simplemde-container-controller > div{
+  height: 70vh;
+}
+
+
+.full {
+  min-width:100% !important
+}
+/* to stop the glitch while changing preview */
+.visible + section {
+  display: none;
+}
+.hide-editor  {
+  display: none;
+  width: 0px;
+}
+
+.iframe-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  padding-bottom: 56.25%;
+}
+
+.iframe-wrapper iframe {
+  position: absolute;
+  width: 100% !important;
+  height: 100%;
+  border-radius: 0.5em;
+  box-shadow: 10px 10px 40px 5px rgba(0, 0, 0, 0.2);
+}
+
+.responsive-image {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.invisible {
+  visibility: hidden;
+  opacity: 0;
+}
+
