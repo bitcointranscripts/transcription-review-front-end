@@ -41,7 +41,7 @@ const tableStructure = [
     modifier: (data) => data,
     component: (data) => <GroupedLinks data={data} />,
   },
-] satisfies TableStructure[];
+] satisfies TableStructure<ReviewTranscript>[];
 
 const PastJobsTable = () => {
   const { data: userSession } = useSession();
