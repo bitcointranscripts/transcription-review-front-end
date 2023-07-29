@@ -90,6 +90,17 @@ export type SelectableMetaDataList = {
   speakers: SelectableMetaDataType[];
   tags: SelectableMetaDataType[];
 };
+export type DirectoriesDataType = {
+  dir: SelectableMetaDataType[];
+  code?: string;
+};
+
+// directory pattern for  state
+export type IDir = {
+  slug: string;
+  value: string;
+  nestDir?: IDir[];
+};
 
 export type UserRole = "reviewer" | "admin";
 
@@ -119,7 +130,6 @@ export type DecodedJWT = {
   userId: number;
   permissions: UserRole;
   githubAuthToken: string;
-  isEmailPresent: boolean;
   iat: number;
   exp: number;
 };
