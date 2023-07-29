@@ -1,6 +1,6 @@
 import axios from "../axios";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import endpoints from "../endpoints";
 import { Transaction } from "../../../../types";
@@ -14,10 +14,13 @@ export const getTransaction = async (
     .catch((err) => err);
 };
 
-export const payInvoice = async (
-  userId?: number,
-  invoice?: string
-): Promise<any> => {
+export const payInvoice = async ({
+  invoice,
+  userId,
+}: {
+  userId?: number;
+  invoice?: string;
+}): Promise<any> => {
   return axios
     .post(endpoints.PAY_INVOICE(), { userId, invoice })
     .then((res) => res.data)
@@ -30,4 +33,9 @@ export const useGetTransactions = (id: number) =>
     queryKey: ["transaction", id],
     refetchOnWindowFocus: false,
     enabled: !!id,
+  });
+
+export const usePayInvoice = () =>
+  useMutation({
+    mutationFn: payInvoice,
   });
