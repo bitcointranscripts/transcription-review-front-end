@@ -1,20 +1,49 @@
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
+import { useGetRepoDirectories } from "@/services/api/transcripts/useGetRepoDirectories";
 import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import { Review, Transcript, TranscriptContent } from "../../../types";
+import {
+  IDir,
+  Review,
+  SelectableMetaDataType,
+  Transcript,
+  TranscriptContent,
+} from "../../../types";
 import {
   sideBarContentUpdateParams,
   SideBarData,
   SidebarSubType,
 } from "../transcript";
+import SelectDirectory from "./SelectDirectory";
 import { OnlySelectField, SingleSelectField } from "./SelectField";
 import styles from "./sidebarContentEdit.module.css";
 import TextField from "./TextField";
+
+function findAndUpdateDir(objArray: IDir[], path: string, newDir: IDir[]) {
+  const level = path.split("/").length;
+  for (let obj of objArray) {
+    // Check if the current object has the path
+    if (obj.value === path.slice(0, -1)) {
+      // Update the name of the target object
+      obj.nestDir = newDir;
+      return true; // Return true to indicate that the object was found and updated
+    }
+    // If the current object has nestDir, recursively call the function
+    if (!obj.nestDir && level > 1) {
+      const objectFound = findAndUpdateDir(obj.nestDir || [], path, newDir);
+      if (objectFound) {
+        return true; // Return true to indicate that the object was found and updated
+      }
+    }
+  }
+
+  return false; // Return false if the object was not found
+}
 
 const SidebarContentEdit = ({
   data,
@@ -37,7 +66,13 @@ const SidebarContentEdit = ({
   getUpdatedTranscript: () => TranscriptContent;
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
+  const [path, setPath] = useState<string>("");
+  const [initialCount, setInitialCount] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState(true);
   const { data: selectableListData } = useGetMetaData();
+  const { data: directoryPaths, isLoading: directoryIsLoading } =
+    useGetRepoDirectories(path);
+  const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
   const updateTitle = (newTitle: string) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.title = newTitle;
@@ -49,6 +84,41 @@ const SidebarContentEdit = ({
       name: "title",
     });
   };
+  useEffect(() => {
+    // we want the rootpath to load first before
+    if (directoryPaths && initialCount < 2) {
+      setPath(`${data.content.loc ?? "misc"}`);
+      setInitialCount(2);
+    }
+  }, [data.content.loc, directoryPaths, initialCount]);
+  useEffect(() => {
+    const convertDirStructure = (
+      currentDirs: SelectableMetaDataType[],
+      path: string,
+      prev?: IDir[]
+    ) => {
+      const level = path.split("/").length; // based on the "/"
+      let nestedDirFormat = prev || [];
+      switch (level) {
+        case 1:
+          nestedDirFormat = currentDirs;
+          break;
+        default:
+          findAndUpdateDir(nestedDirFormat || [], path, currentDirs);
+          break;
+      }
+      return nestedDirFormat;
+    };
+    if (directoryPaths) {
+      const tempDir = convertDirStructure(
+        directoryPaths.dir,
+        path,
+        directoryList
+      );
+      setIsLoading((prev) => !prev);
+      setDirectoryList(tempDir);
+    }
+  }, [directoryPaths, path]);
   const updateSpeaker = (speakers: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.speakers = speakers;
@@ -66,6 +136,17 @@ const SidebarContentEdit = ({
     saveTranscript(updatedTranscript);
 
     updater({ data: date, type: "date", name: "date" });
+  };
+  const updateDirectory = (dir: string) => {
+    setPath(`${dir}`);
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript.loc = dir;
+    saveTranscript(updatedTranscript);
+    updater({
+      data: dir,
+      type: "loc",
+      name: "loc",
+    });
   };
   const updateCategories = (categories: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
@@ -137,6 +218,19 @@ const SidebarContentEdit = ({
         </Box>
         <Box>
           <Text fontWeight={600} mb={2}>
+            Choose Directory
+          </Text>
+          <SelectDirectory
+            path={path}
+            setPath={setPath}
+            options={directoryList}
+            isLoading={isLoading}
+            isDirLoading={directoryIsLoading}
+            updateData={updateDirectory}
+          />
+        </Box>
+        <Box>
+          <Text fontWeight={600} mb={2}>
             Speakers
           </Text>
           <OnlySelectField
@@ -161,13 +255,6 @@ const SidebarContentEdit = ({
             dateFormat="yyyy-MM-dd"
             className={styles.customDatePicker}
           />
-
-          {/* <Input
-            fontSize="12px"
-            type="date"
-            value={editedDate}
-            onChange={(e) => setEditedDate(e.target.value)}
-          /> */}
         </Box>
         <Box>
           <Text fontWeight={600} mb={2}>
