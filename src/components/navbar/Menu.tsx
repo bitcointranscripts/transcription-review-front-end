@@ -1,4 +1,5 @@
 import { ROUTES_CONFIG } from "@/config/ui-config";
+import { useLogout } from "@/services/api/useLogout";
 import {
   Box,
   Button,
@@ -19,13 +20,12 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { BiWallet } from "react-icons/bi";
 import { CgTranscript } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
-import { RiWalletLine } from "react-icons/ri";
 import { FiUser } from "react-icons/fi";
 import { HiOutlineBookOpen } from "react-icons/hi";
 import MenuNav from "./MenuNav";
-import { useLogout } from "@/services/api/useLogout";
 
 const Menu = () => {
   const { data: userSession } = useSession();
@@ -156,10 +156,10 @@ const Menu = () => {
                       />
                       <MenuNav
                         currentRoute={currentRoute}
-                        routeName={"wallet"}
-                        routeLink={"wallet"}
+                        routeName={ROUTES_CONFIG.WALLET}
+                        routeLink={ROUTES_CONFIG.WALLET}
                         handleClose={closeMenu}
-                        icon={RiWalletLine}
+                        icon={BiWallet}
                       />
                     </Flex>
                   </Box>
