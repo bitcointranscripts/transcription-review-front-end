@@ -206,8 +206,8 @@ const SelectDirectory = ({
             placeholder={path}
           />
         </PopoverTrigger>
-        <PopoverContent mt={2} w="full" maxH={60} overflowY={"scroll"}>
-          <PopoverBody as={Flex} py={4} flexDirection="column">
+        <PopoverContent mt={2} w="full"  overflowY={"scroll"}>
+          <PopoverBody as={Flex} p={2} flexDirection="column">
             <Flex justifyContent={"space-between"} alignItems="start">
               <Flex columnGap={"8px"} alignItems="start">
                 <BiArrowBack
