@@ -3,7 +3,6 @@ import {
   Button,
   Flex,
   Heading,
-  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -11,13 +10,12 @@ import {
   Spinner,
   Text,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { BiChevronDown, BiClipboard } from "react-icons/bi";
+import { BiChevronDown } from "react-icons/bi";
 import { IoIosFunnel } from "react-icons/io";
 
 import WalletAlert from "@/components/alerts/WalletAlert";
@@ -115,20 +113,8 @@ const Wallet = () => {
     isError,
     refetch,
   } = useGetWallet(sessionData?.user?.id);
-  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const copyWalletId = () => {
-    if (!walletData?.id) return;
-
-    navigator.clipboard.writeText(walletData.id);
-    toast({
-      title: "Copied",
-      description: "Wallet ID is in your clipboard!",
-      status: "success",
-      duration: 3000,
-    });
-  };
   const resetFilters = () => {
     setTypeFilter(undefined);
     setStatusFilter(undefined);
@@ -147,53 +133,26 @@ const Wallet = () => {
   return (
     <>
       <Flex flexDir="column">
-        <Box mb="10">
-          <Heading size={"md"} mb={6}>
-            My Wallet
-          </Heading>
-          <Flex gap={3} flexDir="column">
-            <Flex gap={2}>
-              <Text fontWeight={"bold"}>ID:</Text>
-              <Flex alignItems={"center"} gap={1}>
-                {isLoading ? (
-                  <Spinner color="orange.500" size={"xs"} />
-                ) : (
-                  <Text fontWeight={"medium"}>
-                    {walletData?.id ?? "Not available"}
-                  </Text>
-                )}
-                {!!walletData?.id && (
-                  <IconButton
-                    aria-label="copy wallet ID"
-                    minW="auto"
-                    h="auto"
-                    p="2px"
-                    colorScheme="orange"
-                    variant="ghost"
-                    icon={<BiClipboard />}
-                    onClick={copyWalletId}
-                  />
-                )}
-              </Flex>
-            </Flex>
-            <Flex alignItems={"center"} gap={2}>
-              <Text fontWeight={"bold"}>Balance: </Text>
-              {isLoading ? (
-                <Spinner color="orange.500" size={"xs"} />
-              ) : (
-                <Text fontWeight={"medium"}>{walletData?.balance ?? 0}</Text>
-              )}
-              <Button
-                variant={"outline"}
-                colorScheme={"orange"}
-                size={"xs"}
-                onClick={onOpen}
-              >
-                Withdraw
-              </Button>
-            </Flex>
-          </Flex>
-        </Box>
+        <Heading size={"md"} mb={10}>
+          My Wallet
+        </Heading>
+        <Flex mb={6} alignItems={"center"} gap={2}>
+          <Text fontWeight={"bold"}>Balance: </Text>
+          {isLoading ? (
+            <Spinner color="orange.500" size={"xs"} />
+          ) : (
+            <Text fontWeight={"medium"}>{walletData?.balance ?? 0}</Text>
+          )}
+          <Button
+            isDisabled={walletData?.balance === 0 || isLoading}
+            variant={"outline"}
+            colorScheme={"orange"}
+            size={"xs"}
+            onClick={onOpen}
+          >
+            Withdraw
+          </Button>
+        </Flex>
         <Flex gap={6} alignItems={"center"}>
           <Flex gap={1} alignItems="center" color={"orange.500"}>
             <Text textTransform="capitalize" fontWeight="bold" fontSize="14px">

@@ -25,16 +25,17 @@ type Props = {
 const WalletAlert = ({ isOpen, onCancel, refetch }: Props) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
-  const handleClose = () => {
-    onCancel();
-  };
-
   const { data: sessionData } = useSession();
   const sessionDataId = sessionData?.user?.id;
   const toast = useToast();
   const [invoiceInput, setInvoiceInput] = useState("");
 
   const payInvoice = usePayInvoice();
+
+  const handleClose = () => {
+    setInvoiceInput("");
+    onCancel();
+  };
 
   const pasteInvoice = () => {
     navigator.clipboard.readText().then((text) => {
@@ -67,7 +68,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch }: Props) => {
             return;
           }
 
-          setInvoiceInput("");
+          handleClose();
           refetch();
           toast({
             title: "Paid",

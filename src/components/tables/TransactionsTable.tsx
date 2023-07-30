@@ -58,28 +58,33 @@ const TransactionsTable = ({
   transactions,
 }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const filteredData = useMemo(
+  const transformedData = useMemo(
     () =>
-      transactions?.filter((item) => {
-        const typeMatch =
-          filters.type === undefined || item.transactionType === filters.type;
-        const statusMatch =
-          filters.status === undefined ||
-          item.transactionStatus === filters.status;
-        const dateMatch =
-          filters.date === undefined ||
-          isSameDay(new Date(item.createdAt), filters.date);
+      transactions
+        ?.filter((item) => {
+          const typeMatch =
+            filters.type === undefined || item.transactionType === filters.type;
+          const statusMatch =
+            filters.status === undefined ||
+            item.transactionStatus === filters.status;
+          const dateMatch =
+            filters.date === undefined ||
+            isSameDay(new Date(item.createdAt), filters.date);
 
-        return typeMatch && statusMatch && dateMatch;
-      }),
+          return typeMatch && statusMatch && dateMatch;
+        })
+        ?.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ),
     [filters.date, filters.status, filters.type, transactions]
   );
   const pages = useMemo(
-    () => Math.ceil((filteredData?.length ?? 0) / pageSize),
-    [filteredData?.length]
+    () => Math.ceil((transformedData?.length ?? 0) / pageSize),
+    [transformedData?.length]
   );
   const { paginatedResult } = usePaginatedResult(
-    filteredData,
+    transformedData,
     currentPage,
     pageSize
   );
