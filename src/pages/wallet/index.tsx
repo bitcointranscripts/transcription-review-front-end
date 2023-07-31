@@ -12,7 +12,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { BiChevronDown } from "react-icons/bi";
@@ -126,6 +126,12 @@ const Wallet = () => {
     statusFilter !== undefined ||
     typeFilter !== undefined;
 
+  const balanceText = useMemo(() => {
+    const balance = walletData?.balance ?? 0;
+
+    return `${balance.toLocaleString()} SAT`;
+  }, [walletData?.balance]);
+
   if (status === "unauthenticated" || !sessionData?.user?.id) {
     return <RedirectToLogin />;
   }
@@ -141,7 +147,7 @@ const Wallet = () => {
           {isLoading ? (
             <Spinner color="orange.500" size={"xs"} />
           ) : (
-            <Text fontWeight={"medium"}>{walletData?.balance ?? 0}</Text>
+            <Text fontWeight={"medium"}>{balanceText}</Text>
           )}
           <Button
             isDisabled={walletData?.balance === 0 || isLoading}
