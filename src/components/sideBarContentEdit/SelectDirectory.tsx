@@ -172,6 +172,7 @@ const SelectDirectory = ({
     if (inputRef.current === null) return;
     inputRef.current.value = "";
   };
+
   const backFolder = () => {
     setPath(
       path
