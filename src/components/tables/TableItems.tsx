@@ -238,7 +238,15 @@ export const RowData = <T extends object>({
       );
 
     default:
-      return <Td key={`table-data`}>N/A</Td>;
+      return (
+        <>
+          {tableItem.component ? (
+            tableItem.component(row)
+          ) : (
+            <Td key={`table-data`}>N/A</Td>
+          )}
+        </>
+      );
   }
 };
 

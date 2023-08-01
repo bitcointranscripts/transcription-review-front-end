@@ -1,4 +1,5 @@
 import { useUserReviews } from "@/services/api/reviews";
+import { convertStringToArray } from "@/utils";
 import { Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
@@ -6,30 +7,31 @@ import type { ReviewTranscript } from "../../../types";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
 import { GroupedLinks, ReviewStatus } from "./TableItems";
+import TitleWithTags from "./TitleWithTags";
 import type { TableStructure } from "./types";
 
 const tableStructure = [
   {
-    name: "title",
-    type: "text-long",
-    modifier: (data) => data.content.title,
+    name: "Talk Title",
+    type: "default",
+    component: (data) => {
+      const allTags = convertStringToArray(data.content.tags);
+      return (
+        <TitleWithTags
+          title={data.content.title}
+          allTags={allTags}
+          id={data.id}
+          length={allTags.length}
+        />
+      );
+    },
+    modifier: () => null,
   },
   {
     name: "speakers",
     type: "tags",
     modifier: (data) => data.content.speakers,
   },
-  {
-    name: "date",
-    type: "date",
-    modifier: (data) => data.content.date,
-  },
-  {
-    name: "category",
-    type: "tags",
-    modifier: (data) => data.content.categories,
-  },
-  { name: "tags", type: "tags", modifier: (data) => data.content.tags },
   {
     name: "status",
     type: "action",
