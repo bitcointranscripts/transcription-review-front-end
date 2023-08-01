@@ -240,7 +240,6 @@ export function isReviewPending(review: UserReviewData) {
 
 // Convert a string to an array
 export const convertStringToArray = (text: string[] | string) => {
-  console.log(text);
   let stringArray = text as string;
   if (stringArray[0] === "[") {
     // eslint-disable-next-line prettier/prettier
