@@ -213,6 +213,7 @@ const QueueTable = () => {
               <TitleWithTags
                 title={data.content.title}
                 allTags={allTags}
+                categories={data.content.categories}
                 id={data.id}
                 length={allTags.length}
               />
