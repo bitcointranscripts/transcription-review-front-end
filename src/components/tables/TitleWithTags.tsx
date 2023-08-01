@@ -1,4 +1,8 @@
-import { tagColors, transcriptsCategories } from "@/utils";
+import {
+  convertStringToArray,
+  tagColors,
+  transcriptsCategories,
+} from "@/utils";
 import { Box, Flex, Td, Text } from "@chakra-ui/react";
 import React from "react";
 
@@ -16,9 +20,10 @@ const TitleWithTags = ({
   id,
   length,
 }: TitleWithTagsProps) => {
-  const stringCategories = Array.isArray(categories)
+  let stringCategories = Array.isArray(categories)
     ? categories[0]
-    : categories;
+    : convertStringToArray(categories)[0];
+  stringCategories = stringCategories || "";
   const foundCategories = transcriptsCategories.find(
     (trs) => trs.slug.toLowerCase() === stringCategories.toLocaleLowerCase()
   );
@@ -27,10 +32,11 @@ const TitleWithTags = ({
       <Flex gap={2} alignItems="center">
         <Text>{title}</Text>
         <Flex wrap="wrap" gap={2} alignItems="center">
-          {categories && (
+          {foundCategories && (
             <Box
               borderRadius={"4px"}
               padding={"6px"}
+              whiteSpace="nowrap"
               bgColor={tagColors[categories.length % 4]}
             >
               <Text textTransform="capitalize" color="#FCFCFC">
@@ -38,18 +44,21 @@ const TitleWithTags = ({
               </Text>
             </Box>
           )}
-          {allTags.slice(0, 2).map((tags, index) => (
-            <Box
-              borderRadius={"4px"}
-              padding={"6px"}
-              bgColor={tagColors[(id + index) % 4]}
-              key={tags}
-            >
-              <Text textTransform="capitalize" color="#FCFCFC" key={tags}>
-                {tags}
-              </Text>
-            </Box>
-          ))}
+          {allTags
+            .slice(0, 2)
+            .filter((tags) => tags.toLocaleLowerCase() !== "none")
+            .map((tags, index) => (
+              <Box
+                borderRadius={"4px"}
+                padding={"6px"}
+                bgColor={tagColors[(id + index) % 4]}
+                key={tags}
+              >
+                <Text textTransform="capitalize" color="#FCFCFC" key={tags}>
+                  {tags}
+                </Text>
+              </Box>
+            ))}
           {length > 2 && <Text>+{length - 2}</Text>}
         </Flex>
       </Flex>
