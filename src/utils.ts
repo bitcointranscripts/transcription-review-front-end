@@ -243,7 +243,7 @@ export const convertStringToArray = (text: string[] | string) => {
   let stringArray = text as string;
   if (stringArray[0] === "[") {
     // eslint-disable-next-line prettier/prettier
-   let  _parsed = stringArray 
+    let _parsed = stringArray
       .substring(1, text.length - 1)
       .replaceAll("'", "")
       .split(", ")
@@ -255,6 +255,21 @@ export const convertStringToArray = (text: string[] | string) => {
 
 //  data for tag colors
 export const tagColors = ["#9C007A", "#16863C", "#9C3800", "#00519C"];
+
+export const transcriptsCategories = [
+  {
+    name: "🎙️ Conference",
+    slug: "conference",
+  },
+  { name: "💻 Core-Dev-Tech", slug: "core-dev-tech" },
+  { name: "💻 Hackathon", slug: "hackathon" },
+  { name: " Meeting", slug: "meeting" },
+  { name: "✅ Meetup", slug: "meetup" },
+  { name: "🎤 Podcast", slug: "podcast" },
+  { name: "🏘️ Residency", slug: "residency" },
+  { name: "📹 Video", slug: "video" },
+  { name: "💼 Workshop", slug: "workshop" },
+];
 
 export const displaySatCoinImage = (wordCount: number) => {
   if (wordCount < 2500) return "/sats-coins/low.png";
