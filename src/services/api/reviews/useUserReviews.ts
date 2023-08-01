@@ -11,7 +11,9 @@ const userReviews = async ({
   return axios
     .get(endpoints.REVIEWS({ userId, username, status }))
     .then((res) => res.data)
-    .catch((err) => err);
+    .catch((err) => {
+      throw err;
+    });
 };
 
 export const useUserReviews = ({
