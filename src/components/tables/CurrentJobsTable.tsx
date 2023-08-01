@@ -1,11 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
 import { useUserReviews } from "@/services/api/reviews";
-import { calculateReadingTime } from "@/utils";
+import {
+  calculateReadingTime,
+  convertStringToArray,
+  displaySatCoinImage,
+} from "@/utils";
 import { Button, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
 import { ReviewTranscript } from "../../../types";
 import BaseTable from "./BaseTable";
+import TitleWithTags from "./TitleWithTags";
 import type { TableStructure } from "./types";
 
 const CurrentJobsTable = () => {
@@ -81,9 +87,20 @@ const CurrentJobsTable = () => {
     () =>
       [
         {
-          name: "title",
-          type: "text-long",
-          modifier: (data) => data.content.title,
+          name: "Talk Title",
+          type: "default",
+          component: (data) => {
+            const allTags = convertStringToArray(data.content.tags);
+            return (
+              <TitleWithTags
+                title={data.content.title}
+                allTags={allTags}
+                id={data.id}
+                length={allTags.length}
+              />
+            );
+          },
+          modifier: () => null,
         },
         {
           name: "speakers",
@@ -91,23 +108,22 @@ const CurrentJobsTable = () => {
           modifier: (data) => data.content.speakers,
         },
         {
-          name: "date",
-          type: "date",
-          modifier: (data) => data.content.date,
-        },
-        {
-          name: "category",
-          type: "tags",
-          modifier: (data) => data.content.categories,
-        },
-        { name: "tags", type: "tags", modifier: (data) => data.content.tags },
-        {
-          name: "time to edit",
+          name: "Duration",
           type: "text-short",
           modifier: (data) => (
             <Text>
-              {`~${calculateReadingTime(Number(data.contentTotalWords))}`}
+              {`${calculateReadingTime(Number(data.contentTotalWords))}`}
             </Text>
+          ),
+        },
+        {
+          name: "Sats",
+          type: "text-short",
+          modifier: (data) => (
+            <img
+              alt={`${data.contentTotalWords} sat coins`}
+              src={displaySatCoinImage(data.contentTotalWords)}
+            />
           ),
         },
         {

@@ -22,7 +22,7 @@ const updateTranscript = async (body: {
     .catch((err) => {
       const errMessage =
         err?.response?.data?.message || "Please try again later";
-      throw new Error(errMessage);
+      return errMessage;
     });
 };
 

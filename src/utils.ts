@@ -212,7 +212,7 @@ export function calculateReadingTime(wordCount: number, wpm = 150) {
   if (hours > 0) {
     return `${hours} hr`;
   } else {
-    return `${remainingMinutes} mins`;
+    return `${remainingMinutes} minutes`;
   }
 }
 
@@ -237,3 +237,30 @@ export function isReviewPending(review: UserReviewData) {
     review.archivedAt === null
   );
 }
+
+// Convert a string to an array
+export const convertStringToArray = (text: string[] | string) => {
+  console.log(text);
+  let stringArray = text as string;
+  if (stringArray[0] === "[") {
+    // eslint-disable-next-line prettier/prettier
+   let  _parsed = stringArray 
+      .substring(1, text.length - 1)
+      .replaceAll("'", "")
+      .split(", ")
+      .filter((data) => data.length > 1);
+    return _parsed;
+  }
+  return Array.isArray(stringArray) ? (stringArray as string[]) : [stringArray];
+};
+
+//  data for tag colors
+export const tagColors = ["#9C007A", "#16863C", "#9C3800", "#00519C"];
+
+export const displaySatCoinImage = (wordCount: number) => {
+  if (wordCount < 2500) return "/sats-coins/low.png";
+  if (wordCount < 5000) return "/sats-coins/medium.png";
+  if (wordCount < 7500) return "/sats-coins/high.png";
+  if (wordCount > 7500) return "/sats-coins/very-high.png";
+  else return "";
+};

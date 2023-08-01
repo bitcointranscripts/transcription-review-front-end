@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable no-unused-vars */
 import { useUserReviews } from "@/services/api/reviews";
 import {
@@ -5,8 +6,13 @@ import {
   useClaimTranscript,
   useTranscripts,
 } from "@/services/api/transcripts";
-import { calculateReadingTime } from "@/utils";
-import { CheckboxGroup, Text, useToast } from "@chakra-ui/react";
+import {
+  calculateReadingTime,
+  convertStringToArray,
+  displaySatCoinImage,
+  tagColors,
+} from "@/utils";
+import { Button, CheckboxGroup, Text, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -21,6 +27,7 @@ import React, {
 import { Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
+import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
 
 type AdminArchiveSelectProps = {
@@ -198,9 +205,19 @@ const QueueTable = () => {
     () =>
       [
         {
-          name: "title",
-          type: "text-long",
-          modifier: (data) => data.content.title,
+          name: "Talk Title",
+          type: "default",
+          component: (data) => {
+            const allTags = convertStringToArray(data.content.tags);
+            return (
+              <TitleWithTags
+                title={data.content.title}
+                allTags={allTags}
+                id={data.id}
+                length={allTags.length}
+              />
+            );
+          },
         },
         {
           name: "speakers",
@@ -208,36 +225,42 @@ const QueueTable = () => {
           modifier: (data) => data.content.speakers,
         },
         {
-          name: "date",
-          type: "date",
-          modifier: (data) => data.content.date,
-        },
-        {
-          name: "category",
-          type: "tags",
-          modifier: (data) => data.content.categories,
-        },
-        {
-          name: "tags",
-          type: "tags",
-          modifier: (data) => data.content.tags,
-        },
-        {
-          name: "time to edit",
+          name: "Duration",
           type: "text-short",
           modifier: (data) => (
             <Text>
-              {`~${calculateReadingTime(Number(data.contentTotalWords))}`}
+              {`${calculateReadingTime(Number(data.contentTotalWords))}`}
             </Text>
+          ),
+        },
+        {
+          name: "Sats",
+          type: "text-short",
+          modifier: (data) => (
+            <img
+              alt={`${data.contentTotalWords} sat coins`}
+              src={displaySatCoinImage(data.contentTotalWords)}
+            />
           ),
         },
         // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
         {
-          name: "Up for grabs",
-          actionName: "claim",
+          name: "Claim",
+          actionName: "Claim",
           type: "action",
           modifier: (data) => data.id,
-          action: (data: Transcript) => handleClaim(data.id),
+          component: (data) => (
+            <Button
+              bgColor={"#EB9B00"}
+              color="white"
+              _hover={{ bgColor: "#EB9B00AE" }}
+              _active={{ bgColor: "#EB9B0050" }}
+              size="sm"
+              onClick={() => handleClaim(data.id)}
+            >
+              Claim
+            </Button>
+          ),
         },
       ] as TableStructure<Transcript>[],
     [handleClaim]
