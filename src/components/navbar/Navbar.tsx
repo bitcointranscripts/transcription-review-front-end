@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Text, Image } from "@chakra-ui/react";
 import Link from "next/link";
 import GlobalContainer from "../GlobalContainer";
 import Menu from "./Menu";
@@ -21,9 +21,12 @@ const Navbar = () => {
       <GlobalContainer h="full">
         <Flex justifyContent="space-between" alignItems="center" h="full">
           <Link href="/">
-            <Text color="gray.900" fontWeight={"semibold"}>
-              BTC Transcript Review
-            </Text>
+            <Flex alignItems="center">
+              <Image src="./btctranscripts.png" alt="Logo" boxSize={6} mr={2}/>
+              <Text color="gray.900" fontWeight={"semibold"}>
+                BTC Transcript Review
+              </Text>
+            </Flex>
           </Link>
           <Menu />
         </Flex>
