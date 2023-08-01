@@ -6,6 +6,7 @@ export type tableStructureItemType =
   | "text-long"
   | "text-short"
   | "tags"
+  | "default"
   | "action";
 
 export type TableStructure<T> = {
