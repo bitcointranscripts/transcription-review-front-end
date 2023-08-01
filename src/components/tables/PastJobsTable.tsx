@@ -50,15 +50,17 @@ const PastJobsTable = () => {
     status: "inactive",
   });
   const tableData = useMemo(() => {
-    return data?.map((item) => {
-      const { transcript, ...rest } = item;
-      return {
-        ...transcript,
-        review: {
-          ...rest,
-        },
-      };
-    }) as ReviewTranscript[];
+    return (
+      (data?.map((item) => {
+        const { transcript, ...rest } = item;
+        return {
+          ...transcript,
+          review: {
+            ...rest,
+          },
+        };
+      }) as ReviewTranscript[]) ?? []
+    );
   }, [data]);
 
   return (
