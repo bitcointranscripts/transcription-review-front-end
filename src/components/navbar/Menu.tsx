@@ -44,7 +44,7 @@ const Menu = () => {
 
   const handleSecureLogout = async () => {
     try {
-      await requestLogout();
+      // await requestLogout();
       await signOut({ redirect: false });
       await router.push("/");
     } catch (err) {
