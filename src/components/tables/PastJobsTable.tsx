@@ -1,7 +1,7 @@
 import { useUserReviews } from "@/services/api/reviews";
 import { Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReviewTranscript } from "../../../types";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
@@ -52,6 +52,8 @@ const PastJobsTable = () => {
     status: "inactive",
     page: currentPage,
   });
+  const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
+
   const tableData = useMemo(() => {
     return (
       (data?.data?.map((item) => {
@@ -66,6 +68,11 @@ const PastJobsTable = () => {
     );
   }, [data]);
 
+  useEffect(() => {
+    if (data) {
+      setTotalPages(data?.totalPages || 0);
+    }
+  }, [data]);
   return (
     <>
       <BaseTable
@@ -82,7 +89,7 @@ const PastJobsTable = () => {
         }
       />
       <Pagination
-        pages={data?.totalPages || 0}
+        pages={totalPages}
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
       />
