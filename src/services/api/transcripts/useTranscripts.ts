@@ -1,24 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Transcript } from "../../../../types";
+import type { TranscriptData } from "../../../../types";
 import axios from "../axios";
 import endpoints from "../endpoints";
 
-const getAllTranscripts = async (): Promise<Transcript[]> => {
+const getAllTranscripts = async (page: number): Promise<TranscriptData> => {
   return axios
-    .get(endpoints.GET_TRANSCRIPTS())
+    .get(`${endpoints.GET_TRANSCRIPTS()}?page=${page}`)
     .then((res) => res.data)
     .catch((err) => {
       throw err;
     });
 };
 
-export const useTranscripts = () =>
+export const useTranscripts = (page: number) =>
   useQuery({
-    queryFn: getAllTranscripts,
-    queryKey: ["transcripts"],
+    queryFn: () => getAllTranscripts(page),
+    queryKey: ["transcripts", page],
     select: (data) => {
-      return data.filter((transcript) =>
-        Boolean(!transcript.archivedAt && !transcript.archivedBy)
-      );
+      return {
+        totalPages: data?.totalPages,
+        data: data.data.filter((transcript) =>
+          Boolean(!transcript.archivedAt && !transcript.archivedBy)
+        ),
+      };
     },
   });

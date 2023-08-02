@@ -11,10 +11,19 @@ export type Transcript = {
   claimedBy: Nullable<number>;
   contentTotalWords: number;
 };
-
+export type TranscriptData = {
+  totalItems: number;
+  itemsPerPage: number;
+  totalPages: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  data: Transcript[];
+};
 export type ReviewTranscript = Transcript & {
   review?: Review;
 };
+
 
 export type Review = {
   id: number;
@@ -29,8 +38,18 @@ export type Review = {
   pr_url: Nullable<string>;
 };
 
-export type UserReview = Review & {
+export type UserReviewData = Review & {
   transcript: Transcript;
+};
+
+export type UserReview = {
+  totalItems: number;
+  itemsPerPage: number;
+  totalPages: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  data: UserReviewData[];
 };
 
 export type TranscriptContent = {
