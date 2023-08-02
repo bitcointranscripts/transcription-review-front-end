@@ -10,8 +10,15 @@ const Footer = () => {
           fontSize={{ base: "14px", md: "16px" }}
           color="gray.200"
           textAlign="center"
-        >
-          Built with ❤️ by bitcoiners
+          >
+          Built with ❤️ by{" "}
+          <Link
+            href="https://bitcoindevs.xyz"
+            isExternal
+            color="orange.200"
+          >
+            The Bitcoin Dev Project
+          </Link>
         </Text>
         <Text
           textAlign="center"
