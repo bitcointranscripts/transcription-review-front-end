@@ -2,6 +2,7 @@ export type ReviewQueryOptions = {
   userId?: number;
   username?: string;
   status?: "active" | "pending" | "inactive";
+  page?: number;
 };
 
 export type TransactionQueryOptions = {
@@ -41,8 +42,8 @@ const USER_BY_ID = (id: number) => `users/${id}`;
 
 const USER_REVIEWS = (id: number) => `users/${id}/reviews`;
 
-const REVIEWS = ({ userId, username, status }: ReviewQueryOptions) => {
-  return "reviews" + buildQueryParams({ userId, username, status });
+const REVIEWS = ({ userId, username, status, page }: ReviewQueryOptions) => {
+  return "reviews" + buildQueryParams({ userId, username, status, page });
 };
 
 const REVIEW_BY_ID = (id: number) => `reviews/${id}`;
