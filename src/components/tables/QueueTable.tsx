@@ -97,6 +97,7 @@ const QueueTable = () => {
     userId: session?.user?.id,
     status: "active",
   });
+  const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
   const toast = useToast();
 
   const retriedClaim = useRef(0);
@@ -172,7 +173,12 @@ const QueueTable = () => {
     },
     [status, session?.user?.id, claimTranscript, router, toast]
   );
-
+  // updated totalPages if data changes
+  useEffect(() => {
+    if (data) {
+      setTotalPages(data?.totalPages || 0);
+    }
+  }, [data]);
   // Reclaim transcript when there's a reclaim query
   useEffect(() => {
     const { reclaim, transcriptId } = router.query;
@@ -260,7 +266,7 @@ const QueueTable = () => {
           <Pagination
             setCurrentPage={setCurrentPage}
             currentPage={currentPage}
-            pages={data?.totalPages || 0}
+            pages={totalPages}
           />
         </>
       )}
