@@ -263,7 +263,7 @@ export const transcriptsCategories = [
   },
   { name: "💻 Core-Dev-Tech", slug: "core-dev-tech" },
   { name: "💻 Hackathon", slug: "hackathon" },
-  { name: " Meeting", slug: "meeting" },
+  { name: "🤝 Meeting", slug: "meeting" },
   { name: "✅ Meetup", slug: "meetup" },
   { name: "🎤 Podcast", slug: "podcast" },
   { name: "🏘️ Residency", slug: "residency" },
