@@ -41,11 +41,11 @@ const EditableTranscriptsTable = () => {
   const { data: session, status } = useSession();
   const { data, isLoading, isError, refetch } = useTranscripts();
   const claimTranscript = useClaimTranscript();
-  const { data: allReviews = [] } = useUserReviews({
+  const { data: allReviews = { data: [] } } = useUserReviews({
     userId: session?.user?.id,
   });
-  const activeReviews = allReviews.filter(isReviewActive);
-  const pendingReviews = allReviews.filter(isReviewPending);
+  const activeReviews = allReviews?.data.filter(isReviewActive);
+  const pendingReviews = allReviews?.data.filter(isReviewPending);
   const hasExceededActiveReviewLimit =
     activeReviews.length >= config.max_active_reviews;
   const hasExceededPendingReviewLimit =
@@ -57,7 +57,7 @@ const EditableTranscriptsTable = () => {
     if (hasExceededActiveReviewLimit || hasExceededPendingReviewLimit)
       return [];
 
-    return data;
+    return data?.data || [];
   }, [data, hasExceededActiveReviewLimit, hasExceededPendingReviewLimit]);
 
   const retriedClaim = useRef(0);
