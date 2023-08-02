@@ -205,7 +205,7 @@ const QueueTable = () => {
     () =>
       [
         {
-          name: "Talk Title",
+          name: "Title",
           type: "default",
           component: (data) => {
             const allTags = convertStringToArray(data.content.tags);

@@ -35,11 +35,15 @@ const TitleWithTags = ({
           {foundCategories && (
             <Box
               borderRadius={"4px"}
-              padding={"6px"}
+              padding={"4px"}
               whiteSpace="nowrap"
               bgColor={tagColors[categories.length % 4]}
             >
-              <Text textTransform="capitalize" color="#FCFCFC">
+              <Text
+                fontSize={"12px"}
+                textTransform="capitalize"
+                color="#FCFCFC"
+              >
                 {foundCategories?.name}
               </Text>
             </Box>
@@ -50,11 +54,16 @@ const TitleWithTags = ({
             .map((tags, index) => (
               <Box
                 borderRadius={"4px"}
-                padding={"6px"}
+                padding={"4px"}
                 bgColor={tagColors[(id + index) % 4]}
                 key={tags}
               >
-                <Text textTransform="capitalize" color="#FCFCFC" key={tags}>
+                <Text
+                  fontSize={"12px"}
+                  textTransform="capitalize"
+                  color="#FCFCFC"
+                  key={tags}
+                >
                   {tags}
                 </Text>
               </Box>
