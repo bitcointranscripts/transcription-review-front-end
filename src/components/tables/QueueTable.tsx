@@ -20,6 +20,7 @@ import React, {
 } from "react";
 import { Transcript } from "../../../types";
 import BaseTable from "./BaseTable";
+import Pagination from "./Pagination";
 import { TableStructure } from "./types";
 
 type AdminArchiveSelectProps = {
@@ -88,9 +89,10 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
 
 const QueueTable = () => {
   const { data: session, status } = useSession();
+  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
-  const { data, isLoading, isError, refetch } = useTranscripts();
+  const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
   const { data: userReviews } = useUserReviews({
     userId: session?.user?.id,
     status: "active",
@@ -106,7 +108,7 @@ const QueueTable = () => {
   // Determines if current user can claim a review by checking for their active reviews
   const canClaimTranscript = useMemo(() => {
     // logical operator is false by default
-    return !userReviews?.length && Boolean(session?.user?.id);
+    return !userReviews?.data?.length && Boolean(session?.user?.id);
   }, [userReviews, session]);
 
   const retryLoginAndClaim = async (transcriptId: number) => {
@@ -240,20 +242,27 @@ const QueueTable = () => {
   return (
     <AdminArchiveSelect>
       {({ handleArchive, hasAdminSelected, isArchiving }) => (
-        <BaseTable
-          actionState={claimState}
-          data={data}
-          emptyView="There are no transcripts awaiting review"
-          handleArchive={handleArchive}
-          hasAdminSelected={hasAdminSelected}
-          isError={isError}
-          isArchiving={isArchiving}
-          isLoading={isLoading}
-          refetch={refetch}
-          showAdminControls
-          tableHeader="Transcripts waiting for review"
-          tableStructure={tableStructure}
-        />
+        <>
+          <BaseTable
+            actionState={claimState}
+            data={data?.data}
+            emptyView="There are no transcripts awaiting review"
+            handleArchive={handleArchive}
+            hasAdminSelected={hasAdminSelected}
+            isError={isError}
+            isArchiving={isArchiving}
+            isLoading={isLoading}
+            refetch={refetch}
+            showAdminControls
+            tableHeader="Transcripts waiting for review"
+            tableStructure={tableStructure}
+          />
+          <Pagination
+            setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+            pages={data?.totalPages || 0}
+          />
+        </>
       )}
     </AdminArchiveSelect>
   );

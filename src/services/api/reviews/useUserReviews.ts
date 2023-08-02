@@ -7,9 +7,10 @@ const userReviews = async ({
   userId,
   username,
   status,
-}: ReviewQueryOptions): Promise<UserReview[]> => {
+  page,
+}: ReviewQueryOptions): Promise<UserReview> => {
   return axios
-    .get(endpoints.REVIEWS({ userId, username, status }))
+    .get(endpoints.REVIEWS({ userId, username, status, page }))
     .then((res) => res.data)
     .catch((err) => {
       throw err;
@@ -20,10 +21,11 @@ export const useUserReviews = ({
   userId,
   username,
   status,
+  page,
 }: ReviewQueryOptions) => {
   const queryInfo = useQuery({
-    queryFn: () => userReviews({ userId, username, status }),
-    queryKey: ["user-reviews", { userId, username, status }],
+    queryFn: () => userReviews({ userId, username, status, page }),
+    queryKey: ["user-reviews", { userId, username, status, page }],
     enabled: Boolean(!!userId || username),
   });
 

@@ -27,8 +27,8 @@ const CurrentJobsTable = () => {
   const router = useRouter();
 
   const tableData = useMemo(() => {
-    let _activeData = activeReviews ?? [];
-    let _pendingData = pendingReviews ?? [];
+    let _activeData = activeReviews?.data ?? [];
+    let _pendingData = pendingReviews?.data ?? [];
     let cummulativeCurrentJobs = _activeData.concat(_pendingData);
     if (!cummulativeCurrentJobs.length) return [];
 
@@ -46,7 +46,7 @@ const CurrentJobsTable = () => {
 
   const ActionComponent = useCallback(
     ({ data }: { data: ReviewTranscript }) => {
-      const pendingIndex = pendingReviews?.findIndex(
+      const pendingIndex = pendingReviews?.data?.findIndex(
         (review) => review.id === data.review?.id
       );
       const isPending = pendingIndex !== -1;
