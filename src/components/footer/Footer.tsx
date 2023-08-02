@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Text, Link } from "@chakra-ui/react";
+import { Box, Text, Link } from "@chakra-ui/react";
 import React from "react";
 import GlobalContainer from "../GlobalContainer";
 
@@ -10,19 +10,13 @@ const Footer = () => {
           fontSize={{ base: "14px", md: "16px" }}
           color="gray.200"
           textAlign="center"
-          >
+        >
           Built with ❤️ by{" "}
-          <Link
-            href="https://bitcoindevs.xyz"
-            isExternal
-            color="orange.200"
-          >
+          <Link href="https://bitcoindevs.xyz" isExternal color="orange.200">
             The Bitcoin Dev Project
           </Link>
         </Text>
-        <Text
-          textAlign="center"
-        >
+        <Text textAlign="center">
           <Link
             href="https://cryptpad.fr/form/#/2/form/view/3P2CsohsHOkcH7C+WdtX0-tvqjBHqXnAmz5D9yx0e04/"
             isExternal

@@ -21,7 +21,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
-import type { TranscriptContent, UserReview } from "../../../types";
+import type { TranscriptContent, UserReview, UserReviewData } from "../../../types";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -57,7 +57,7 @@ export type sideBarContentUpdateParams<T, K> = {
   name: K;
 };
 
-const Transcript = ({ reviewData }: { reviewData: UserReview }) => {
+const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const transcriptId = reviewData.transcript.id;
   const transcriptData = reviewData.transcript;
   const router = useRouter();
