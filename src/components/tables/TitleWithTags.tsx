@@ -50,7 +50,7 @@ const TitleWithTags = ({
           )}
           {allTags
             .slice(0, 2)
-            .filter((tags) => tags.toLocaleLowerCase() !== "none")
+            .filter((tags) => tags.toLowerCase() !== "none")
             .map((tags, index) => (
               <Box
                 borderRadius={"4px"}
