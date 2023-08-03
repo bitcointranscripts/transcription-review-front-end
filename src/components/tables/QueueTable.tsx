@@ -226,7 +226,7 @@ const QueueTable = () => {
           modifier: (data) => data.content.speakers,
         },
         {
-          name: "Duration",
+          name: "Time to edit",
           type: "text-short",
           modifier: (data) => (
             <Text>
