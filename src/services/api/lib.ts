@@ -15,13 +15,17 @@ type AuthToken = {
 
 export const signInUser = async ({
   github_access_token,
+  email,
 }: {
   github_access_token: string;
+  email: string;
 }): Promise<AuthToken> => {
   return axios
     .post(
       endpoints.USER_SIGN_IN(),
-      {},
+      {
+        email,
+      },
       {
         headers: {
           "x-github-token": github_access_token,
