@@ -242,13 +242,12 @@ export function isReviewPending(review: UserReviewData) {
 export const convertStringToArray = (text: string[] | string) => {
   let stringArray = text as string;
   if (stringArray[0] === "[") {
-    // eslint-disable-next-line prettier/prettier
-    let _parsed = stringArray
+    const parsed = stringArray
       .substring(1, text.length - 1)
       .replaceAll("'", "")
       .split(", ")
       .filter((data) => data.length > 1);
-    return _parsed;
+    return parsed;
   }
   return Array.isArray(stringArray) ? (stringArray as string[]) : [stringArray];
 };
