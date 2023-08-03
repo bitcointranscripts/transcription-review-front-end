@@ -1,9 +1,10 @@
 import { usePaginatedResult } from "@/hooks/usePaginatedResult";
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import { isSameDay } from "date-fns";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Transaction } from "../../../types";
 import BaseTable from "./BaseTable";
+import Pagination from "./Pagination";
 import type { TableStructure } from "./types";
 
 const tableStructure = [
@@ -57,7 +58,6 @@ const TransactionsTable = ({
   filters,
   transactions,
 }: Props) => {
-  const [currentPage, setCurrentPage] = useState(1);
   const transformedData = useMemo(
     () =>
       transactions
@@ -83,9 +83,8 @@ const TransactionsTable = ({
     () => Math.ceil((transformedData?.length ?? 0) / pageSize),
     [transformedData?.length]
   );
-  const { paginatedResult } = usePaginatedResult(
+  const { currentPage, paginatedResult, setCurrentPage } = usePaginatedResult(
     transformedData,
-    currentPage,
     pageSize
   );
 
@@ -98,19 +97,11 @@ const TransactionsTable = ({
         isError={isError}
         tableStructure={tableStructure}
       />
-      <Flex justifyContent={"center"}>
-        {pages > 1 &&
-          Array.from({ length: pages }, (_, index) => index + 1).map((item) => (
-            <Button
-              colorScheme={currentPage === item ? "orange" : "gray"}
-              onClick={() => setCurrentPage(item)}
-              key={item}
-              variant="ghost"
-            >
-              <Text>{item}</Text>
-            </Button>
-          ))}
-      </Flex>
+      <Pagination
+        currentPage={currentPage}
+        pages={pages}
+        setCurrentPage={setCurrentPage}
+      />
     </>
   );
 };
