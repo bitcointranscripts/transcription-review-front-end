@@ -109,7 +109,7 @@ const CurrentJobsTable = () => {
           modifier: (data) => data.content.speakers,
         },
         {
-          name: "Duration",
+          name: "Time To Edit",
           type: "text-short",
           modifier: (data) => (
             <Text>
