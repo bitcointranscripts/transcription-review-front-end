@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
         try {
           const signedInUserToken = await signInUser({
             github_access_token: account.access_token,
+            email: profile?.email,
           });
           const decodedJwt: DecodedJWT = jwtDecode(signedInUserToken.jwt);
           const { userId, permissions, isEmailPresent } = decodedJwt;
