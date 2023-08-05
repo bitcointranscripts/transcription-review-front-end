@@ -212,7 +212,7 @@ export function calculateReadingTime(wordCount: number, wpm = 150) {
   if (hours > 0) {
     return `${hours} hr`;
   } else {
-    return `${remainingMinutes} minutes`;
+    return `${remainingMinutes} mins`;
   }
 }
 
