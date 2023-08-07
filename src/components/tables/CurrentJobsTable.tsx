@@ -5,6 +5,7 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
+import NextLink from "next/link";
 import { Button, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -160,11 +161,11 @@ const EmptyView = () => {
   return (
     <Flex w="full" justifyContent="center" alignItems="center" gap={2}>
       <Text>No Current Jobs 😭</Text>
-      <Link href="/transcripts">
+      <NextLink href="/transcripts">
         <Button size="xs" colorScheme="orange">
           Choose transcript to edit
         </Button>
-      </Link>
+      </NextLink>
     </Flex>
   );
 };
