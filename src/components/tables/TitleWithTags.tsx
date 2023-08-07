@@ -37,6 +37,7 @@ const TitleWithTags = ({
               borderRadius={"4px"}
               padding={"4px"}
               whiteSpace="nowrap"
+              paddingInline={"10px"}
               bgColor={tagColors[categories.length % 4]}
             >
               <Text
@@ -55,6 +56,7 @@ const TitleWithTags = ({
               <Box
                 borderRadius={"4px"}
                 padding={"4px"}
+                paddingInline={"10px"}
                 bgColor={tagColors[(id + index) % 4]}
                 key={tags}
               >
