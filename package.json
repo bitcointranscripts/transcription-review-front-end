@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "next lint --fix"
+    "lint:fix": "next lint --fix",
+    "compile:scripts": "tsc --project tsconfig.scripts.json"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
