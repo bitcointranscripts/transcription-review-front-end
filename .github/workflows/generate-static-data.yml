@@ -25,9 +25,9 @@ jobs:
     - name: Run script
       run: node scriptsOut/index.js
     
-    # - name: Commit and push changes
-    #   run: |
-    #     git config --global user.email "${{secrets.EMAIL}}"
-    #     git config --global user.name "${{secrets.NAME}}"
-    #     git commit -am "Update submodules" || echo "No changes to commit"
-    #     git push
+    - name: Commit and push changes
+      run: |
+        git config --global user.email "${{secrets.EMAIL}}"
+        git config --global user.name "${{secrets.NAME}}"
+        git commit -am "generated dir metadata" || echo "Couldn't generate metadata"
+        git push
