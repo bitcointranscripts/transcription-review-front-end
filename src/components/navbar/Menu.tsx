@@ -1,5 +1,4 @@
 import { ROUTES_CONFIG } from "@/config/ui-config";
-import { useLogout } from "@/services/api/useLogout";
 import {
   Box,
   Button,
@@ -29,7 +28,6 @@ import MenuNav from "./MenuNav";
 
 const Menu = () => {
   const { data: userSession } = useSession();
-  const { mutateAsync: requestLogout } = useLogout();
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
   const toast = useToast();
@@ -44,7 +42,6 @@ const Menu = () => {
 
   const handleSecureLogout = async () => {
     try {
-      // await requestLogout();
       await signOut({ redirect: false });
       await router.push("/");
     } catch (err) {

@@ -19,9 +19,7 @@ export const useTranscripts = (page?: number) =>
     select: (data) => {
       return {
         totalPages: data?.totalPages,
-        data: data.data.filter((transcript) =>
-          Boolean(!transcript.archivedAt && !transcript.archivedBy)
-        ),
+        data: data.data,
       };
     },
   });

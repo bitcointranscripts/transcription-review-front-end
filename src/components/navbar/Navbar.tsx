@@ -22,7 +22,7 @@ const Navbar = () => {
         <Flex justifyContent="space-between" alignItems="center" h="full">
           <Link href="/">
             <Flex alignItems="center">
-              <Image src="./btctranscripts.png" alt="Logo" boxSize={6} mr={2}/>
+              <Image src="/btctranscripts.png" alt="Logo" boxSize={6} mr={2} />
               <Text color="gray.900" fontWeight={"semibold"}>
                 BTC Transcript Review
               </Text>

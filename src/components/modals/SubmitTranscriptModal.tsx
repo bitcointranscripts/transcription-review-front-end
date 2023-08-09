@@ -60,7 +60,6 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
                     <Icon as={BiCheck} color="green.400" boxSize={6} />
                   )}
                   {stepError && <Icon as={BiX} color="red.400" boxSize={6} />}
-                  {/* <Text>{stepIdx <= idx ? "Loading" : isError ? "Error" : "Completed"}</Text> */}
                   <Text
                     fontSize="16px"
                     color={

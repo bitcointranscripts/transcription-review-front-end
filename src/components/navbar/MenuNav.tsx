@@ -38,8 +38,6 @@ const MenuNav = ({
         <Text
           textAlign="right"
           flex="1 1 auto"
-          // ml="auto"
-          // _groupHover={isCurrentRoute ? {} : { textDecoration: "underline" }}
           _groupActive={isCurrentRoute ? {} : { color: "gray.900" }}
           color={isCurrentRoute ? "orange.200" : "gray.600"}
           fontWeight={isCurrentRoute ? 600 : 500}

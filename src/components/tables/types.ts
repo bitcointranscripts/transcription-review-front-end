@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { ReactElement } from "react";
 
 export type tableStructureItemType =

@@ -11,7 +11,6 @@ const Hero = ({
 }) => {
   return (
     <Box bgColor="gray.100">
-      {/* <Box pos="fixed" isolation="isolate" top="0" left="0" zIndex={0} w="100%" h="100%" bgColor="blackAlpha.800"></Box> */}
       <GlobalContainer py={4}>
         <Flex direction={{ base: "column", sm: "row" }} gap={4}>
           <Flex flex="1 1 50%" gap={4} direction="column" justifyContent="left">

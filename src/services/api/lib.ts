@@ -38,7 +38,6 @@ export const signInUser = async ({
     });
 };
 
-// TODO: account for other properties e.g. permissions, jwt, etc.
 export const updateUserProfile = async (
   { id, email, username }: UpdateUserProp,
   options?: { jwt: string }

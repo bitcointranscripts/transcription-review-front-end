@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { dateFormat, deriveFileSlug, derivePublishUrl } from "@/utils";
 import {
   Box,
@@ -26,6 +25,7 @@ import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableDataElement, TableStructure } from "./types";
 
+// eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
   cb: TCb,
   data: TData
@@ -72,7 +72,6 @@ export const Tags = <T extends object>({
   const stringArray = tableItem.modifier(row) as string;
   let _parsed = stringArray as string | string[];
   if (stringArray[0] === "[") {
-    // eslint-disable-next-line prettier/prettier
     _parsed = stringArray
       .substring(1, stringArray.length - 1)
       .replaceAll("'", "")
