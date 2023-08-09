@@ -1,4 +1,3 @@
-// import dynamic from "next/dynamic";
 import {
   Box,
   Button,
@@ -43,7 +42,7 @@ const EditTranscript = ({
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
   const [isModalOpen, setIsModalopen] = useState(false);
 
-  const mdParser = new MarkdownIt(/* Markdown-it options */);
+  const mdParser = new MarkdownIt();
 
   // Finish!
   function handleEditorChange({ text }: IHandleEditorChange) {

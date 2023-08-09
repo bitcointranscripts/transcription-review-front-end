@@ -26,12 +26,10 @@ const YoutubePortal = ({
             top="0"
             left="0"
             zIndex={1}
-            // display="grid"
             placeItems="center"
             w="100%"
             h="100%"
             display={modalInfo.visible ? "grid" : "none"}
-            // bgColor="blackAlpha.800"
           >
             <Box
               pos="absolute"

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import SubmitTranscriptAlert from "@/components/alerts/SubmitTranscriptAlert";
 import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
@@ -21,7 +20,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
-import type { TranscriptContent, UserReview, UserReviewData } from "../../../types";
+import type { TranscriptContent, UserReviewData } from "../../../types";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -93,7 +92,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
 
   const sideBarContentUpdater = <
     T extends keyof SideBarData,
-    K extends SidebarSubType<T>
+    K extends SidebarSubType<T>,
   >({
     name,
     data,
@@ -117,7 +116,6 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
     editorRef.current?.setText(transcriptData.originalContent?.body);
-    // TODO: make an API call to update
     setSideBarData({
       list: {
         speakers: reconcileArray(transcriptData.originalContent?.speakers),

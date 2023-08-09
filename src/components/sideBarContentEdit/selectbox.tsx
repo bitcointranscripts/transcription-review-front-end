@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-import { UI_CONFIG } from "@/config/ui-config";
 import {
   Box,
   Button,
@@ -17,19 +15,15 @@ import {
   ModalHeader,
   ModalOverlay,
   Popover,
-  PopoverArrow,
   PopoverBody,
-  PopoverCloseButton,
   PopoverContent,
-  PopoverHeader,
   PopoverTrigger,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { relative } from "path";
 import { useEffect, useRef, useState } from "react";
-import { BiArrowToBottom, BiCheck, BiX } from "react-icons/bi";
-import { FaArrowDown, FaSortDown } from "react-icons/fa";
+import { BiCheck, BiX } from "react-icons/bi";
+import { FaSortDown } from "react-icons/fa";
 import AutoComplete from "./autocomplete";
 import type { AutoCompleteData, SelectEditState } from "./SelectField";
 

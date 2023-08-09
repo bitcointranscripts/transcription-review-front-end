@@ -1,6 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-/* eslint-disable no-unused-vars */
-import { useUserReviews } from "@/services/api/reviews";
 import {
   useArchiveTranscript,
   useClaimTranscript,
@@ -10,9 +7,8 @@ import {
   calculateReadingTime,
   convertStringToArray,
   displaySatCoinImage,
-  tagColors,
 } from "@/utils";
-import { Button, CheckboxGroup, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, CheckboxGroup, Text, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -29,6 +25,7 @@ import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
+import Image from "next/image";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -100,10 +97,6 @@ const QueueTable = () => {
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
-  const { data: userReviews } = useUserReviews({
-    userId: session?.user?.id,
-    status: "active",
-  });
   const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
   const toast = useToast();
 
@@ -112,12 +105,6 @@ const QueueTable = () => {
   const [claimState, setClaimState] = useState({
     rowId: -1,
   });
-
-  // Determines if current user can claim a review by checking for their active reviews
-  const canClaimTranscript = useMemo(() => {
-    // logical operator is false by default
-    return !userReviews?.data?.length && Boolean(session?.user?.id);
-  }, [userReviews, session]);
 
   const retryLoginAndClaim = async (transcriptId: number) => {
     await signOut({ redirect: false });
@@ -238,13 +225,23 @@ const QueueTable = () => {
           name: "Sats",
           type: "text-short",
           modifier: (data) => (
-            <img
-              alt={`${data.contentTotalWords} sat coins`}
-              src={displaySatCoinImage(data.contentTotalWords)}
-            />
+            <Box
+              position="relative"
+              className="responsive-image"
+              width={"100%"}
+              minWidth={"26px"}
+              minHeight={"42px"}
+              height="100%"
+            >
+              <Image
+                alt={`${data.contentTotalWords} sat coins`}
+                src={displaySatCoinImage(data.contentTotalWords)}
+                objectFit="contain"
+                fill
+              />
+            </Box>
           ),
         },
-        // { name: "bounty rate", type: "text-short", modifier: (data) => "N/A" },
         {
           name: "Claim",
           actionName: "Claim",
@@ -266,8 +263,6 @@ const QueueTable = () => {
       ] as TableStructure<Transcript>[],
     [handleClaim]
   );
-
-  // TODO: extract and refactor claim logic into a claim ActionComponent
 
   return (
     <AdminArchiveSelect>

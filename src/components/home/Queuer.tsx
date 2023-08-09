@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import QueueTable from "@/components/tables/QueueTable";
 import GlobalContainer from "../GlobalContainer";
 
