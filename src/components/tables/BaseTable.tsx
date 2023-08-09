@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Box, Flex, Heading, Table, Tbody, Thead, Tr } from "@chakra-ui/react";
 import {
   QueryObserverResult,

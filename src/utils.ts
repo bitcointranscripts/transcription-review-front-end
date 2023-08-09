@@ -161,7 +161,6 @@ export function reconcileArray(possibleArray: unknown): string[] {
         .substring(1, possibleArray.length - 1)
         .replace(/['"]+/g, "")
         .split(", ");
-      // .map((item) => item.trim());
       return newArray;
     } else if (possibleArray.includes(",")) {
       const newArray = possibleArray

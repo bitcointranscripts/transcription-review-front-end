@@ -28,7 +28,6 @@ const TextField = ({ editedData, updateData }: any) => {
           <Flex gap={2}>
             <Textarea
               p={1}
-              // rows={1}
               fontSize="inherit"
               resize="none"
               value={state}
@@ -65,7 +64,6 @@ const TextField = ({ editedData, updateData }: any) => {
       ) : (
         <Flex justifyContent="space-between" gap={1} alignItems="center">
           <Text>{editedData}</Text>
-          {/* <Button onClick={() => setIsEdit(true)}><BiPencil /></Button> */}
           <IconButton
             fontSize="16px"
             p="6px"

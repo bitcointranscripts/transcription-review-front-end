@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @next/next/no-img-element */
 import {
   AccordionButton,
   AccordionIcon,
@@ -18,7 +16,9 @@ import Link from "next/link";
 import React from "react";
 import { AbstractedChakraComponentProps } from "../../../types";
 import MediaScreen from "./MediaScreen";
+import Image from "next/image";
 
+// eslint-disable-next-line no-unused-vars
 const StaticAccordionLists = [
   {
     title: "Why Edit Transcripts?",
@@ -40,7 +40,9 @@ const StaticAccordionLists = [
 
 export type PreverVideoProps = {
   handlePreferVideo: (
+    // eslint-disable-next-line no-unused-vars
     e: React.MouseEvent<HTMLButtonElement>,
+    // eslint-disable-next-line no-unused-vars
     step: 1 | 2 | 3
   ) => void;
   step: 1 | 2 | 3;
@@ -123,10 +125,12 @@ export const StepThree = ({ preferVideoComponent }: PreferVideoCompponent) => {
               <Box w="full" maxW="300px" h="full" mx="auto">
                 <MediaScreen
                   mediaElement={
-                    <img
+                    <Image
                       src="/home/github_pr_screen.png"
+                      width={200}
                       alt="annotation_github_pr_screen"
                       className="responsive-image"
+                      height={200}
                     />
                   }
                 />
@@ -207,10 +211,12 @@ export const StepTwo = ({ preferVideoComponent }: PreferVideoCompponent) => {
               <Box w="full" h="full" mx="auto">
                 <MediaScreen
                   mediaElement={
-                    <img
+                    <Image
                       src="/home/transcript_all_screen.png"
                       alt="annotation_transcript_all_screen"
                       className="responsive-image"
+                      height={200}
+                      width={200}
                     />
                   }
                 />
@@ -280,10 +286,12 @@ export const StepTwo = ({ preferVideoComponent }: PreferVideoCompponent) => {
               <Box w="full" h="full" mx="auto">
                 <MediaScreen
                   mediaElement={
-                    <img
+                    <Image
                       src="/home/split_screen.png"
                       alt="annotation_split_screen"
                       className="responsive-image"
+                      height={200}
+                      width={200}
                     />
                   }
                 />
@@ -344,10 +352,12 @@ export const StepOne = ({ preferVideoComponent }: PreferVideoCompponent) => {
               <Box w="full" h="full" maxW="160px" mx="auto">
                 <MediaScreen
                   mediaElement={
-                    <img
+                    <Image
                       src="/home/authorize.png"
                       alt="annotation_github_authorize"
                       className="responsive-image"
+                      height={200}
+                      width={200}
                     />
                   }
                 />
@@ -359,10 +369,12 @@ export const StepOne = ({ preferVideoComponent }: PreferVideoCompponent) => {
               <Box w="full">
                 <MediaScreen
                   mediaElement={
-                    <img
+                    <Image
                       src="/home/queuer_table.png"
                       alt="annotation_queuer_table"
                       className="responsive-image"
+                      height={200}
+                      width={200}
                     />
                   }
                 />
@@ -458,7 +470,6 @@ export const PreferVideoButton = ({
       <Button
         variant="link"
         colorScheme="blue"
-        // _groupHover={{ textDecoration: "underline" }}
         onClick={(e) => handlePreferVideo(e, step)}
         size="lg"
         fontWeight={900}

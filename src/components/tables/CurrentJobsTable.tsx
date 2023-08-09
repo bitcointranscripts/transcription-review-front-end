@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { useUserReviews } from "@/services/api/reviews";
 import {
   calculateReadingTime,
@@ -6,7 +5,7 @@ import {
   displaySatCoinImage,
 } from "@/utils";
 import NextLink from "next/link";
-import { Button, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
@@ -14,6 +13,7 @@ import { ReviewTranscript } from "../../../types";
 import BaseTable from "./BaseTable";
 import TitleWithTags from "./TitleWithTags";
 import type { TableStructure } from "./types";
+import Image from "next/image";
 
 const CurrentJobsTable = () => {
   const { data: userSession } = useSession();
@@ -122,10 +122,21 @@ const CurrentJobsTable = () => {
           name: "Sats",
           type: "text-short",
           modifier: (data) => (
-            <img
-              alt={`${data.contentTotalWords} sat coins`}
-              src={displaySatCoinImage(data.contentTotalWords)}
-            />
+            <Box
+              position="relative"
+              className="responsive-image"
+              width={"100%"}
+              minWidth={"26px"}
+              minHeight={"42px"}
+              height="100%"
+            >
+              <Image
+                alt={`${data.contentTotalWords} sat coins`}
+                src={displaySatCoinImage(data.contentTotalWords)}
+                objectFit="contain"
+                fill
+              />
+            </Box>
           ),
         },
         {

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
@@ -38,7 +37,7 @@ const SidebarContentEdit = ({
   getUpdatedTranscript: () => TranscriptContent;
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
-  const { data: selectableListData, isLoading, error } = useGetMetaData();
+  const { data: selectableListData } = useGetMetaData();
   const updateTitle = (newTitle: string) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.title = newTitle;
@@ -156,7 +155,6 @@ const SidebarContentEdit = ({
             YYYY-MM-DD format
           </Text>
 
-          {/* <CustomDatePicker date={editedDate} onChange={setEditedDate} /> */}
           <DatePicker
             selected={sideBarData.date.date}
             onChange={updateDate}

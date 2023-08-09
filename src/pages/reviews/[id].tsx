@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import RedirectToLogin from "@/components/RedirectToLogin";
 import Transcript from "@/components/transcript";
 import AuthStatus from "@/components/transcript/AuthStatus";

@@ -1,8 +1,6 @@
-/* eslint-disable no-unused-vars */
-// import useSelectNavigate from "@/hooks/useSelectNavigate";
 import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";
-import React, { RefObject, useEffect, useRef } from "react";
+import React, { RefObject, useRef } from "react";
 import type { AutoCompleteData, SelectEditState } from "./SelectField";
 
 type AutoCompleteProps = {
@@ -33,21 +31,11 @@ const AutoComplete = ({
         bgColor: "white",
       };
 
-  if (
-    !autoCompleteList?.length ||
-    // !editState.value ||
-    editState.autoCompleteValue
-  )
-    return null;
+  if (!autoCompleteList?.length || editState.autoCompleteValue) return null;
 
   let sortedSpeakers = matchSorter(autoCompleteList, editState.value, {
     keys: ["key", "value"],
   });
-  // if (editState.value.trim()) {
-  //   sortedSpeakers = matchSorter(autoCompleteList, editState.value, {
-  //     keys: ["slug", "value"],
-  //   })?.slice(0, 50);
-  // }
 
   const handleClick = (data: AutoCompleteData) => {
     onAutoCompleteSelect(data);
