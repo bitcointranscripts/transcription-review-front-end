@@ -8,7 +8,7 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
-import { Box, Button, CheckboxGroup, Text, useToast } from "@chakra-ui/react";
+import { Button, CheckboxGroup, Flex, Text, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -223,14 +223,16 @@ const QueueTable = () => {
         },
         {
           name: "Sats",
-          type: "text-short",
+          type: "action",
           modifier: (data) => (
-            <Box
+            <Flex
               position="relative"
               className="responsive-image"
               width={"100%"}
-              minWidth={"26px"}
+              minWidth={"10px"}
               minHeight={"42px"}
+              justifyContent={"start"}
+              alignItems={"start"}
               height="100%"
             >
               <Image
@@ -239,7 +241,27 @@ const QueueTable = () => {
                 objectFit="contain"
                 fill
               />
-            </Box>
+            </Flex>
+          ),
+          component: (data) => (
+            <Flex
+              position="relative"
+              className="responsive-image"
+              width={"100%"}
+              minWidth={"10px"}
+              minHeight={"42px"}
+              justifyContent={"start"}
+              alignItems={"start"}
+              ml={["0px", "0px", "0px", "-15px"]}
+              height="100%"
+            >
+              <Image
+                alt={`${data.contentTotalWords} sat coins`}
+                src={displaySatCoinImage(data.contentTotalWords)}
+                objectFit="contain"
+                fill
+              />
+            </Flex>
           ),
         },
         {
