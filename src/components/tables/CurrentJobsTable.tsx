@@ -1,4 +1,4 @@
-import { useUserReviews } from "@/services/api/reviews";
+import { useUserMultipleReviews } from "@/services/api/reviews";
 import {
   calculateReadingTime,
   convertStringToArray,
@@ -18,29 +18,23 @@ import Image from "next/image";
 const CurrentJobsTable = () => {
   const { data: userSession } = useSession();
   const {
-    data: activeReviews,
+    data: multipleStatusData,
     isLoading,
     isError,
     refetch,
-  } = useUserReviews({
+  } = useUserMultipleReviews({
     userId: userSession?.user?.id,
-    status: "active",
-  });
-  const { data: pendingReviews } = useUserReviews({
-    userId: userSession?.user?.id,
-    status: "pending",
+    multipleStatus: ["active"],
   });
 
   const router = useRouter();
 
   const tableData = useMemo(() => {
-    let _activeData = activeReviews?.data ?? [];
-    let _pendingData = pendingReviews?.data ?? [];
-    let cummulativeCurrentJobs = _activeData.concat(_pendingData);
-    if (!cummulativeCurrentJobs.length) return [];
+    let allData = multipleStatusData?.data ?? [];
+    if (!allData.length) return [];
 
     // return data restructured as ReviewTranscript[]
-    return cummulativeCurrentJobs.map((item) => {
+    return allData.map((item) => {
       const { transcript, ...rest } = item;
       return {
         ...transcript,
@@ -49,11 +43,11 @@ const CurrentJobsTable = () => {
         },
       };
     }) as ReviewTranscript[];
-  }, [activeReviews, pendingReviews]);
+  }, [multipleStatusData]);
 
   const ActionComponent = useCallback(
     ({ data }: { data: ReviewTranscript }) => {
-      const pendingIndex = pendingReviews?.data?.findIndex(
+      const pendingIndex = multipleStatusData?.data?.findIndex(
         (review) => review.id === data.review?.id
       );
       const isPending = pendingIndex !== -1;
@@ -81,7 +75,7 @@ const CurrentJobsTable = () => {
         </>
       );
     },
-    [pendingReviews, router]
+    [multipleStatusData, router]
   );
 
   const tableStructure = useMemo(

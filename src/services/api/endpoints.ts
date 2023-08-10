@@ -3,8 +3,11 @@ export type ReviewQueryOptions = {
   username?: string;
   status?: "active" | "pending" | "inactive";
   page?: number;
+  /* To be used for only multiple request with useQueries */
+  multipleStatus?: ReviewQueryStatus[];
 };
 
+export type ReviewQueryStatus = "active" | "pending" | "inactive";
 export type TransactionQueryOptions = {
   userId?: number;
   status?: "success" | "pending" | "failed";

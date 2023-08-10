@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import type { UserReview } from "../../../../types";
 import axios from "../axios";
 import endpoints, { ReviewQueryOptions } from "../endpoints";
@@ -33,4 +33,28 @@ export const useUserReviews = ({
     ...queryInfo,
     isLoading: queryInfo.isLoading && queryInfo.fetchStatus === "fetching",
   } as typeof queryInfo;
+};
+
+// Multiple calls with promises
+export const useUserMultipleReviews = ({
+  userId,
+  username,
+  multipleStatus,
+  page,
+}: ReviewQueryOptions) => {
+  const multipleStatusArray = multipleStatus || [];
+  const queryInfo = useQueries({
+    queries: multipleStatusArray.map((status) => {
+      return {
+        queryFn: () => userReviews({ userId, username, status, page }),
+        queryKey: ["user-reviews", { userId, username, status, page }],
+        enabled: Boolean(!!userId || username),
+      };
+    }),
+  });
+  return {
+    ...queryInfo[0],
+    isLoading:
+      queryInfo[0].isLoading && queryInfo[0].fetchStatus === "fetching",
+  };
 };
