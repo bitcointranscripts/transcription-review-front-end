@@ -11,15 +11,15 @@ const Pagination = ({ pages, currentPage, setCurrentPage }: IPagination) => {
   const router = useRouter();
   const handleNextPage = (page: number) => {
     router.replace({
-      query: { ...router.query, pageNum: page },
+      query: { ...router.query, page },
     });
     setCurrentPage(page);
   };
   useLayoutEffect(() => {
-    if (router.query?.pageNum) {
-      setCurrentPage(Number(router.query?.pageNum as string));
+    if (router.query?.page) {
+      setCurrentPage(Number(router.query?.page as string));
     }
-  }, [router.query.pageNum, setCurrentPage]);
+  }, [router.query.page, setCurrentPage]);
   return (
     <Flex justifyContent={"center"}>
       {pages > 1 &&
