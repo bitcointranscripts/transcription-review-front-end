@@ -32,7 +32,7 @@ const placeContent = (
       length
     );
   }
-}
+};
 
 export const createDirectoryMetadata = async () => {
   const dirMetadata = {};
@@ -50,7 +50,6 @@ export const createDirectoryMetadata = async () => {
     await fs.mkdir(dirPath, { recursive: true });
     await fs.writeFile(dirPath + fileName, JSON.stringify(dirMetadata));
     // fs.writeFileSync("public/static/directoryMetadata.json", JSON.stringify(dirMetadata));
-
   } catch (err) {
     console.log({ err });
   }

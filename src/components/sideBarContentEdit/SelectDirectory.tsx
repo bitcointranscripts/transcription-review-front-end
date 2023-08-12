@@ -23,7 +23,7 @@ import React, {
   ChangeEvent,
   Dispatch,
   SetStateAction,
-  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -54,11 +54,9 @@ function findAndReturnDirs(
   if (depth === 0) {
     return []; // Return empty if the desired depth is reached, but the path is not found.
   }
-
-  if (index === 1) {
+  if (!path[0]) {
     return objArray;
   }
-
   for (const obj of objArray) {
     if (obj.slug === path[depth - 2]) {
       if (path.length === 2 && depth === 2) {
@@ -114,7 +112,7 @@ const SelectDirectoryOption = ({
             color="gray.800"
             _hover={{ bg: "blue.600", color: "gray.100" }}
             fontSize="14px"
-            px={9}
+            px={[2, 4, 6, 9]}
             py={1}
           >
             {dir.slug}
@@ -147,12 +145,12 @@ const SelectDirectory = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [customPath, setCustomPath] = useState<string>("");
   const [directoriesInPath, setDirectoriesInPath] = useState<IDir[]>([]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const foundDirs = findAndReturnDirs(
       options,
       path.split("/"),
       path.split("/").length + 1,
-      path.split("/").length
+      path.split("/").length + 1
     );
     setDirectoriesInPath(foundDirs);
   }, [isLoading, path, options]);
@@ -165,6 +163,7 @@ const SelectDirectory = ({
     onClose();
     customPath && confirmOnOpen();
   };
+
   const handleConfirmationPath = (val: string) => {
     updateData(val.replace(/[/]$/, "")); // replace the / at the end of the string with nothing
     confirmOnClose();
