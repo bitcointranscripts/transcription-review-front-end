@@ -24,7 +24,6 @@ export type ReviewTranscript = Transcript & {
   review?: Review;
 };
 
-
 export type Review = {
   id: number;
   userId: number;

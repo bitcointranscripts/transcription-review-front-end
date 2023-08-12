@@ -285,8 +285,8 @@ export const SingleSelectField = ({
       size="sm"
       defaultValue={editedData[0]}
     >
-      {newAutoCompleteList.map((item) => (
-        <option key={item.slug} value={item.value}>
+      {newAutoCompleteList.map((item, index) => (
+        <option key={`${item.slug}${index}`} value={item.value}>
           {item.value}
         </option>
       ))}
