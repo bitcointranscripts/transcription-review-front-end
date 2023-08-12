@@ -1,5 +1,4 @@
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
-import { useGetRepoDirectories } from "@/services/api/transcripts/useGetRepoDirectories";
 import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
