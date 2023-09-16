@@ -52,9 +52,14 @@ export const useUserMultipleReviews = ({
       };
     }),
   });
+  const resultQuery = queryInfo.find(
+    (query) => query.data && query.data.totalItems !== 0
+  );
+  const result = resultQuery && resultQuery.data ? resultQuery : null;
   return {
-    ...queryInfo[0],
-    isLoading:
-      queryInfo[0].isLoading && queryInfo[0].fetchStatus === "fetching",
+    data: result,
+    isLoading: queryInfo.some(
+      (query) => query.isLoading && query.fetchStatus === "fetching"
+    ),
   };
 };

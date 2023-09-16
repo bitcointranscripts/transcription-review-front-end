@@ -16,21 +16,19 @@ import type { TableStructure } from "./types";
 import Image from "next/image";
 
 const CurrentJobsTable = () => {
-  const { data: userSession } = useSession();
-  const {
-    data: multipleStatusData,
-    isLoading,
-    isError,
-    refetch,
-  } = useUserMultipleReviews({
-    userId: userSession?.user?.id,
-    multipleStatus: ["active"],
-  });
-
   const router = useRouter();
+  const { data: userSession } = useSession();
+
+  const { data, isLoading } = useUserMultipleReviews({
+    userId: userSession?.user?.id,
+    multipleStatus: ["pending", "active"],
+  });
+  const multipleStatusData = data?.data;
+  const refetch = data?.refetch;
+  const isError = data?.isError || false;
 
   const tableData = useMemo(() => {
-    let allData = multipleStatusData?.data ?? [];
+    let allData = (multipleStatusData && multipleStatusData.data) ?? [];
     if (!allData.length) return [];
 
     // return data restructured as ReviewTranscript[]
@@ -47,10 +45,9 @@ const CurrentJobsTable = () => {
 
   const ActionComponent = useCallback(
     ({ data }: { data: ReviewTranscript }) => {
-      const pendingIndex = multipleStatusData?.data?.findIndex(
-        (review) => review.id === data.review?.id
+      const pendingReview = multipleStatusData?.data?.find(
+        (review) => review.pr_url !== null
       );
-      const isPending = pendingIndex !== -1;
 
       const handleResume = () => {
         if (!data.review?.id) {
@@ -61,7 +58,7 @@ const CurrentJobsTable = () => {
       };
       return (
         <>
-          {isPending ? (
+          {Boolean(pendingReview) ? (
             <Link href={`${data.review?.pr_url}`} target="_blank">
               <Button colorScheme={"gray"} size="sm">
                 Under Review

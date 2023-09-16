@@ -4,9 +4,15 @@ import NextAuth, {
   GhExtendedProfile,
   NextAuthOptions,
   Session,
+  getServerSession,
 } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { DecodedJWT, UserSessionType } from "../../../../types";
+import {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from "next";
 
 export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
@@ -86,3 +92,12 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 export default NextAuth(authOptions);
+
+export function auth(
+  ...args:
+    | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
+    | [NextApiRequest, NextApiResponse]
+    | []
+) {
+  return getServerSession(...args, authOptions);
+}
