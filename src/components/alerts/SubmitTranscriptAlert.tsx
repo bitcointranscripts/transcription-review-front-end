@@ -125,7 +125,7 @@ const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
 PromptStepOne.displayName = "PromptStepOne";
 
 const PromptStepTwo = forwardRef<HTMLButtonElement, PromptTwoProps>(
-  ({ onCancel, prRepo, onSubmit }) => {
+  ({ onCancel, prRepo, onSubmit }, ref) => {
     return (
       <>
         <AlertDialogBody>
@@ -138,6 +138,7 @@ const PromptStepTwo = forwardRef<HTMLButtonElement, PromptTwoProps>(
         </AlertDialogBody>
         <AlertDialogFooter gap={3}>
           <Button
+            ref={ref}
             display="block"
             size="sm"
             mx="auto"
