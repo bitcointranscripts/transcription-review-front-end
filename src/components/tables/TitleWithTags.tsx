@@ -29,21 +29,24 @@ const TitleWithTags = ({
   );
   return (
     <Td width="40%">
-      <Flex gap={2} alignItems="center">
+      <Flex gap={2} flexDir="column">
         <Text>{title}</Text>
         <Flex wrap="wrap" gap={2} alignItems="center">
           {foundCategories && (
             <Box
-              borderRadius={"4px"}
+              borderRadius={"8px"}
               padding={"4px"}
               whiteSpace="nowrap"
               paddingInline={"10px"}
-              bgColor={tagColors[categories.length % 4]}
+              border={`2px solid ${tagColors[categories.length % 4]}`}
+              bgColor={"transparent"}
             >
               <Text
-                fontSize={"12px"}
-                textTransform="capitalize"
-                color="#FCFCFC"
+                fontSize={"11.323px"}
+                lineHeight={"normal"}
+                fontWeight={600}
+                textTransform={"capitalize"}
+                color={tagColors[categories.length % 4]}
               >
                 {foundCategories?.name}
               </Text>
@@ -54,16 +57,18 @@ const TitleWithTags = ({
             .filter((tags) => tags.toLowerCase() !== "none")
             .map((tags, index) => (
               <Box
-                borderRadius={"4px"}
+                borderRadius={"8px"}
                 padding={"4px"}
                 paddingInline={"10px"}
-                bgColor={tagColors[(id + index) % 4]}
+                border={`2px solid ${tagColors[(id + index) % 4]}`}
+                bgColor={"transparent"}
                 key={tags}
               >
                 <Text
-                  fontSize={"12px"}
+                  fontSize={"11.323px"}
+                  lineHeight={"normal"}
                   textTransform="capitalize"
-                  color="#FCFCFC"
+                  color={tagColors[(id + index) % 4]}
                   key={tags}
                 >
                   {tags}
