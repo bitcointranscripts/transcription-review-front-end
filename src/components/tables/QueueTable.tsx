@@ -218,7 +218,7 @@ const QueueTable = () => {
           type: "text-short",
           modifier: (data) => (
             <Text>
-              {`${calculateReadingTime(Number(data.contentTotalWords))}`}
+              {`~${calculateReadingTime(Number(data.contentTotalWords))}`}
             </Text>
           ),
         },
