@@ -270,9 +270,9 @@ export const transcriptsCategories = [
 ];
 
 export const displaySatCoinImage = (wordCount: number) => {
-  if (wordCount < 2500) return "/sats-coins/low.png";
-  if (wordCount < 5000) return "/sats-coins/medium.png";
-  if (wordCount < 7500) return "/sats-coins/high.png";
-  if (wordCount > 7500) return "/sats-coins/very-high.png";
+  if (wordCount < 2500) return "/sats-coins/low.svg";
+  if (wordCount < 5000) return "/sats-coins/medium.svg";
+  if (wordCount < 7500) return "/sats-coins/high.svg";
+  if (wordCount > 7500) return "/sats-coins/very-high.svg";
   else return "";
 };
