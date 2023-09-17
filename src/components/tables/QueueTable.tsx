@@ -217,7 +217,7 @@ const QueueTable = () => {
           type: "text-short",
           modifier: (data) => (
             <Text>
-              {`~${calculateReadingTime(Number(data.contentTotalWords))}`}
+              {`${calculateReadingTime(Number(data.contentTotalWords))}`}
             </Text>
           ),
         },
@@ -252,14 +252,14 @@ const QueueTable = () => {
               minHeight={"42px"}
               justifyContent={"start"}
               alignItems={"start"}
-              ml={["0px", "0px", "0px", "-15px"]}
               height="100%"
             >
               <Image
                 alt={`${data.contentTotalWords} sat coins`}
                 src={displaySatCoinImage(data.contentTotalWords)}
                 objectFit="contain"
-                fill
+                width={24}
+                height={24}
               />
             </Flex>
           ),
