@@ -6,6 +6,9 @@ import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function App({
   Component,
@@ -29,7 +32,9 @@ export default function App({
       <ApiProvider>
         <SessionProvider session={session}>
           <Layout>
-            <Component {...pageProps} />
+            <main className={inter.className}>
+              <Component {...pageProps} />
+            </main>
           </Layout>
         </SessionProvider>
       </ApiProvider>
