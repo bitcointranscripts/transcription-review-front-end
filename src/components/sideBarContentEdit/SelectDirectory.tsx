@@ -108,14 +108,14 @@ const SelectDirectoryOption = ({
             className="select-option"
             role="button"
             key={dir.slug}
-            onClick={() => setPath(dir.value)}
+            onClick={() => setPath(dir.slug)}
             color="gray.800"
             _hover={{ bg: "blue.600", color: "gray.100" }}
             fontSize="14px"
             px={[2, 4, 6, 9]}
             py={1}
           >
-            {dir.slug}
+            {dir.value}
           </Text>
         ))}
       {!isDirLoading && options.length < 1 && (
@@ -163,10 +163,24 @@ const SelectDirectory = ({
     onClose();
     customPath && confirmOnOpen();
   };
+  const customPathStructure = (val: string) => {
+    let arrayVal = val ? val.split("/") : "".split("");
+    let pathStructure: IDir = { value: "", slug: "" };
+    for (let index = 0; index < arrayVal.length; index++) {
+      if (index === 0) {
+        pathStructure.value = arrayVal[index];
+        pathStructure.slug = arrayVal[index];
+        pathStructure.nestDir = [customPathStructure(arrayVal[index + 1])];
+      }
+    }
+
+    return pathStructure;
+  };
 
   const handleConfirmationPath = (val: string) => {
     updateData(val.replace(/[/]$/, "")); // replace the / at the end of the string with nothing
     confirmOnClose();
+    options.push(customPathStructure(val));
     setCustomPath("");
     if (inputRef.current === null) return;
     inputRef.current.value = "";
@@ -252,15 +266,27 @@ const SelectDirectory = ({
             {/* Select Path */}
             {(customPath || path) && (
               <Button
-                whiteSpace={"normal"}
                 fontSize={"12px"}
                 colorScheme={"orange"}
+                pl="24px"
+                overflow={"hidden"}
                 onClick={() => handleChangeDirPath(customPath || path)}
               >
-                {customPath ? "Use:" : "Select"} &nbsp;
-                <Text as="span" fontWeight={400}>
+                {" "}
+                <Text as="span" fontWeight={600}>
+                  {customPath ? "Use:" : "Select"} &nbsp;
+                </Text>
+                <Text
+                  maxWidth={"90%"}
+                  overflow={"hidden"}
+                  textOverflow={"ellipsis"}
+                  whiteSpace={"nowrap"}
+                  as="span"
+                  fontWeight={400}
+                >
                   {" "}
-                  &quot;{customPath || path}&quot;{" "}
+                  &quot;{(customPath || path).replace(/[A-Z0-9-]+\//gi, "../")}
+                  &quot;{" "}
                 </Text>
               </Button>
             )}
