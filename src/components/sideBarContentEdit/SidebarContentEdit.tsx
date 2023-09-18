@@ -28,7 +28,7 @@ function extractDirFormat(input: Record<string, any> = {}): IDir[] {
       value: key,
       nestDir: Object.keys(child).map((ck: string) => ({
         value: ck,
-        slug: ck,
+        slug: `${key}/${ck}`,
         nestDir: extractDirFormat(child[ck]),
       })),
     };
