@@ -17,6 +17,7 @@ import SelectDirectory from "./SelectDirectory";
 import { OnlySelectField, SingleSelectField } from "./SelectField";
 import styles from "./sidebarContentEdit.module.css";
 import TextField from "./TextField";
+import config from "@/config/config.json";
 
 function extractDirFormat(input: Record<string, any> = {}): IDir[] {
   if (Object.keys(input).length === 0) return [];
@@ -86,7 +87,7 @@ const SidebarContentEdit = ({
   useEffect(() => {
     // we want the rootpath to load first before
     if (initialCount < 2) {
-      setPath(`${data.content.loc ?? "misc"}`);
+      setPath(`${data.content.loc ?? config.defaultDirectoryPath}`);
       setInitialCount(2);
     }
   }, [data.content.loc, initialCount]);
