@@ -224,12 +224,12 @@ const QueueTable = () => {
         },
         {
           name: "Sats",
-          type: "action",
+          type: "text-short",
           modifier: (data) => (
             <Flex
               position="relative"
               className="responsive-image"
-              width={"100%"}
+              width={"70%"}
               minWidth={"10px"}
               minHeight={"42px"}
               justifyContent={"start"}
