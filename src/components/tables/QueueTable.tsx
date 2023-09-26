@@ -203,14 +203,15 @@ const QueueTable = () => {
                 categories={data.content.categories}
                 id={data.id}
                 length={allTags.length}
+                shouldSlice={false}
               />
             );
           },
         },
         {
           name: "speakers",
-          type: "tags",
-          modifier: (data) => data.content.speakers,
+          type: "text-long",
+          modifier: (data) => data.content.speakers.join(", "),
         },
         {
           name: "Time to edit",
