@@ -4,7 +4,6 @@ import {
   transcriptsCategories,
 } from "@/utils";
 import { Box, Flex, Td, Text } from "@chakra-ui/react";
-import React from "react";
 
 type TitleWithTagsProps = {
   title: string;
@@ -12,6 +11,7 @@ type TitleWithTagsProps = {
   categories: string | string[];
   allTags: string[];
   length: number;
+  shouldSlice?: boolean;
 };
 const TitleWithTags = ({
   title,
@@ -19,6 +19,7 @@ const TitleWithTags = ({
   categories,
   id,
   length,
+  shouldSlice = true,
 }: TitleWithTagsProps) => {
   let stringCategories = Array.isArray(categories)
     ? categories[0]
@@ -27,6 +28,8 @@ const TitleWithTags = ({
   const foundCategories = transcriptsCategories.find(
     (trs) => trs.slug.toLowerCase() === stringCategories.toLocaleLowerCase()
   );
+  const tags = shouldSlice ? allTags.slice(0, 1) : allTags;
+
   return (
     <Td width="40%">
       <Flex gap={2} flexDir="column">
@@ -52,30 +55,29 @@ const TitleWithTags = ({
               </Text>
             </Box>
           )}
-          {allTags
-            .slice(0, 2)
-            .filter((tags) => tags.toLowerCase() !== "none")
-            .map((tags, index) => (
+          {tags
+            .filter((tag) => tag.toLowerCase() !== "none")
+            .map((tag, index) => (
               <Box
                 borderRadius={"8px"}
                 padding={"4px"}
                 paddingInline={"10px"}
                 border={`2px solid ${tagColors[(id + index) % 4]}`}
                 bgColor={"transparent"}
-                key={tags}
+                key={tag}
               >
                 <Text
                   fontSize={"11.323px"}
                   lineHeight={"normal"}
                   textTransform="capitalize"
                   color={tagColors[(id + index) % 4]}
-                  key={tags}
+                  key={tag}
                 >
-                  {tags}
+                  {tag}
                 </Text>
               </Box>
             ))}
-          {length > 2 && <Text>+{length - 2}</Text>}
+          {length > 2 && shouldSlice && <Text>+{length - 2}</Text>}
         </Flex>
       </Flex>
     </Td>
