@@ -38,7 +38,7 @@ interface PropsSelectDirectory {
   isLoading?: boolean; // for change
   isDirLoading?: boolean;
   setPath: Dispatch<SetStateAction<string>>;
-  customPath?: boolean;
+  customPath?: string;
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string) => void;
 }
@@ -102,22 +102,25 @@ const SelectDirectoryOption = ({
         </Flex>
       )}
       {!isDirLoading &&
-        !customPath &&
-        options.map((dir) => (
-          <Text
-            className="select-option"
-            role="button"
-            key={dir.slug}
-            onClick={() => setPath(dir.slug)}
-            color="gray.800"
-            _hover={{ bg: "blue.600", color: "gray.100" }}
-            fontSize="14px"
-            px={[2, 4, 6, 9]}
-            py={1}
-          >
-            {dir.value}
-          </Text>
-        ))}
+        options
+          .filter((dir) =>
+            dir.slug.includes(customPath ? customPath.toLowerCase() : "")
+          )
+          .map((dir) => (
+            <Text
+              className="select-option"
+              role="button"
+              key={dir.slug}
+              onClick={() => setPath(dir.slug)}
+              color="gray.800"
+              _hover={{ bg: "blue.600", color: "gray.100" }}
+              fontSize="14px"
+              px={[2, 4, 6, 9]}
+              py={1}
+            >
+              {dir.value}
+            </Text>
+          ))}
       {!isDirLoading && options.length < 1 && (
         <Text fontWeight={500} mt={10} mx="auto" fontSize="14px">
           {" "}
@@ -260,7 +263,7 @@ const SelectDirectory = ({
               path={customPath || path}
               setPath={setPath}
               isDirLoading={isDirLoading}
-              customPath={customPath ? true : false}
+              customPath={customPath}
               options={directoriesInPath || []}
             />
             {/* Select Path */}
