@@ -75,7 +75,7 @@ const SidebarContentEdit = ({
 
   const updateSpeaker = (speakers: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
-    updatedTranscript.speakers = speakers; 
+    updatedTranscript.speakers = speakers;
     saveTranscript(updatedTranscript);
     updater({
       data: speakers,
