@@ -145,6 +145,9 @@ export const StepThree = ({ preferVideoComponent }: PreferVideoCompponent) => {
           <ListItem>
             {`If it’s not accepted, you’ll be able to continue making changes through conversations on GitHub`}
           </ListItem>
+          <ListItem>
+            {`Once your transcript is accepted and published, you'll receive sats as thanks in your account wallet. You'll be able to withdraw them to your wallet of choice over lightning.`}
+          </ListItem>
         </Spacedlist>
       </AccordionPanel>
     </AccordionItem>
