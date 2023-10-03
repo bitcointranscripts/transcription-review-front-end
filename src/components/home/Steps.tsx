@@ -46,6 +46,7 @@ export type PreverVideoProps = {
     step: 1 | 2 | 3
   ) => void;
   step: 1 | 2 | 3;
+  width?: React.ComponentProps<typeof Box>["w"];
 };
 
 type PreferVideoCompponent = {
@@ -318,8 +319,8 @@ export const StepOne = ({ preferVideoComponent }: PreferVideoCompponent) => {
         </AccordionButton>
       </h2>
       <AccordionPanel>
-        <TLDRText text="Connect your GitHub to BTCTranscripts" />
         {preferVideoComponent}
+        <TLDRText text="Connect your GitHub to BTCTranscripts" />
         <Spacedlist>
           <ListItem>
             Make sure you have a GitHub account (instructions{" "}
@@ -464,9 +465,10 @@ export const LinkText = ({ text, href }: { text: string; href: string }) => {
 export const PreferVideoButton = ({
   handlePreferVideo,
   step,
+  width = "fit-content",
 }: PreverVideoProps) => {
   return (
-    <Box ml="auto" w="fit-content">
+    <Box ml="auto" w={width}>
       <Button
         variant="link"
         colorScheme="blue"
