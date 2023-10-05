@@ -11,7 +11,8 @@ async function createForkAndPR(
   fileName: string,
   transcribedText: string,
   metaData: Metadata,
-  prRepo: TranscriptSubmitOptions
+  prRepo: TranscriptSubmitOptions,
+  prUrl: string
 ) {
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
@@ -44,14 +45,24 @@ async function createForkAndPR(
   const timeInSeconds = Math.floor(Date.now() / 1000);
   const newBranchName = `${timeInSeconds}-${directoryName}`;
   const baseRefSha = baseBranch.data.object.sha;
+  const pullDetails = await octokit.request(
+    "GET /repos/:owner/:repo/pulls/:pull_number",
+    {
+      owner: forkOwner,
+      repo: forkRepo,
+      pull_number: 10,
+    }
+  );
+  const branchName = pullDetails?.data?.head.ref;
 
-  await octokit.request("POST /repos/{owner}/{repo}/git/refs", {
-    owner: forkOwner,
-    repo: forkRepo,
-    ref: `refs/heads/${newBranchName}`,
-    sha: baseRefSha,
-  });
-
+  if (!prUrl) {
+    await octokit.request("POST /repos/{owner}/{repo}/git/refs", {
+      owner: forkOwner,
+      repo: forkRepo,
+      ref: `refs/heads/${prUrl ? branchName : newBranchName}`,
+      sha: baseRefSha,
+    });
+  }
   // Create the file to be inserted
   const metadata = metaData.toString();
   const transcriptData = `${metadata}\n${transcribedText}\n`;
@@ -76,7 +87,7 @@ async function createForkAndPR(
         owner: forkOwner,
         repo: forkRepo,
         path: `${currentDirPath}/_index.md`,
-        branch: newBranchName,
+        branch: prUrl ? branchName : newBranchName,
       })
       // eslint-disable-next-line no-unused-vars
       .then((_data) => true)
@@ -97,7 +108,7 @@ async function createForkAndPR(
         path: `${currentDirPath}/_index.md`,
         message: `Initialised _index.md file in ${topPathLevel} directory`,
         content: indexContent,
-        branch: newBranchName,
+        branch: prUrl ? branchName : newBranchName,
       });
     }
     await checkDirAndInitializeIndexFile(path, currentLevelIdx + 1);
@@ -108,28 +119,34 @@ async function createForkAndPR(
   // Create new file on the branch
   // const _trimmedFileName = fileName.trim();
   const fileSlug = deriveFileSlug(fileName);
-  await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
-    owner: forkOwner,
-    repo: forkRepo,
-    path: `${directoryPath}/${fileSlug}.md`,
-    message: `Added "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
-    content: fileContent,
-    branch: newBranchName,
-  });
+  const updateContent = await octokit.request(
+    "PUT /repos/:owner/:repo/contents/:path",
+    {
+      owner: forkOwner,
+      repo: forkRepo,
+      path: `${directoryPath}/${fileSlug}.md`,
+      message: `Added "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
+      content: fileContent,
+      branch: prUrl ? branchName : newBranchName,
+    }
+  );
 
   // Create a pull request
   const prTitle = `Add ${fileSlug} to ${directoryPath}`;
   const prDescription = `This PR adds [${fileName}](${metaData.source}) transcript to the ${directoryPath} directory.`;
-  const prResult = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
-    owner: prRepo === "user" ? forkOwner : upstreamOwner, // update to upstreamOwner once tested
-    repo: prRepo === "user" ? forkRepo : upstreamRepo,
-    title: prTitle,
-    body: prDescription,
-    head: `${forkOwner}:${newBranchName}`,
-    base: baseBranchName,
-  });
+  if (!prUrl) {
+    const prResult = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
+      owner: prRepo === "user" ? forkOwner : upstreamOwner, // update to upstreamOwner once tested
+      repo: prRepo === "user" ? forkRepo : upstreamRepo,
+      title: prTitle,
+      body: prDescription,
+      head: `${forkOwner}:${newBranchName}`,
+      base: baseBranchName,
+    });
 
-  return prResult;
+    return prResult;
+  }
+  return updateContent;
 }
 
 export default async function handler(
@@ -157,6 +174,7 @@ export default async function handler(
     transcribedText,
     transcript_by,
     prRepo,
+    prUrl,
   } = req.body;
 
   try {
@@ -178,7 +196,8 @@ export default async function handler(
       fileName,
       transcribedText,
       newMetadata,
-      prRepo
+      prRepo,
+      prUrl
     );
 
     // Return the result
