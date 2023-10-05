@@ -187,9 +187,13 @@ export function newIndexFile(directoryName: string) {
   return file;
 }
 
-export function deriveFileSlug(title: string) {
+export function deriveFileSlug(title: string, regex?: RegExp) {
   const _trimmedFileName = title.trim();
-  const fileSlug = slugify(_trimmedFileName, { strict: true, lower: true });
+  const fileSlug = slugify(_trimmedFileName, {
+    strict: false,
+    lower: true,
+    remove: regex,
+  });
   return fileSlug;
 }
 
@@ -270,9 +274,9 @@ export const transcriptsCategories = [
 ];
 
 export const displaySatCoinImage = (wordCount: number) => {
-  if (wordCount < 2500) return "/sats-coins/low.png";
-  if (wordCount < 5000) return "/sats-coins/medium.png";
-  if (wordCount < 7500) return "/sats-coins/high.png";
-  if (wordCount > 7500) return "/sats-coins/very-high.png";
+  if (wordCount < 2500) return "/sats-coins/low.svg";
+  if (wordCount < 5000) return "/sats-coins/medium.svg";
+  if (wordCount < 7500) return "/sats-coins/high.svg";
+  if (wordCount > 7500) return "/sats-coins/very-high.svg";
   else return "";
 };

@@ -2,19 +2,39 @@ import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
 import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
-import { Review, Transcript, TranscriptContent } from "../../../types";
+import jsonData from "../../../public/static/directoryMetadata.json";
+import { IDir, Review, Transcript, TranscriptContent } from "../../../types";
 import {
   sideBarContentUpdateParams,
   SideBarData,
   SidebarSubType,
 } from "../transcript";
+import SelectDirectory from "./SelectDirectory";
 import { OnlySelectField, SingleSelectField } from "./SelectField";
 import styles from "./sidebarContentEdit.module.css";
 import TextField from "./TextField";
+import config from "@/config/config.json";
+
+function extractDirFormat(input: Record<string, any> = {}): IDir[] {
+  if (Object.keys(input).length === 0) return [];
+
+  return Object.keys(input).map((key: string) => {
+    const child = input[key];
+    return {
+      slug: key,
+      value: key,
+      nestDir: Object.keys(child).map((ck: string) => ({
+        value: ck,
+        slug: `${key}/${ck}`,
+        nestDir: extractDirFormat(child[ck]),
+      })),
+    };
+  });
+}
 
 const SidebarContentEdit = ({
   data,
@@ -37,7 +57,10 @@ const SidebarContentEdit = ({
   getUpdatedTranscript: () => TranscriptContent;
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
+  const [path, setPath] = useState<string>("");
+  const [initialCount, setInitialCount] = useState(1);
   const { data: selectableListData } = useGetMetaData();
+  const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
   const updateTitle = (newTitle: string) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.title = newTitle;
@@ -49,23 +72,50 @@ const SidebarContentEdit = ({
       name: "title",
     });
   };
+
   const updateSpeaker = (speakers: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.speakers = speakers;
     saveTranscript(updatedTranscript);
-
     updater({
       data: speakers,
       type: "list",
       name: "speakers",
     });
   };
+
+  useEffect(() => {
+    // we want the rootpath to load first before
+    if (initialCount < 2) {
+      setPath(`${data.content.loc ?? config.defaultDirectoryPath}`);
+      setInitialCount(2);
+    }
+  }, [data.content.loc, initialCount]);
+
+  useEffect(() => {
+    if (jsonData) {
+      const directories = extractDirFormat(jsonData);
+      setDirectoryList(directories);
+    }
+  }, []);
+
   const updateDate = (date: Date) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.date = date;
     saveTranscript(updatedTranscript);
 
     updater({ data: date, type: "date", name: "date" });
+  };
+  const updateDirectory = (dir: string) => {
+    setPath(`${dir}`);
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript.loc = dir;
+    saveTranscript(updatedTranscript);
+    updater({
+      data: dir,
+      type: "loc",
+      name: "loc",
+    });
   };
   const updateCategories = (categories: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
@@ -137,6 +187,17 @@ const SidebarContentEdit = ({
         </Box>
         <Box>
           <Text fontWeight={600} mb={2}>
+            Choose Directory
+          </Text>
+          <SelectDirectory
+            path={path}
+            setPath={setPath}
+            options={directoryList}
+            updateData={updateDirectory}
+          />
+        </Box>
+        <Box>
+          <Text fontWeight={600} mb={2}>
             Speakers
           </Text>
           <OnlySelectField
@@ -161,13 +222,6 @@ const SidebarContentEdit = ({
             dateFormat="yyyy-MM-dd"
             className={styles.customDatePicker}
           />
-
-          {/* <Input
-            fontSize="12px"
-            type="date"
-            value={editedDate}
-            onChange={(e) => setEditedDate(e.target.value)}
-          /> */}
         </Box>
         <Box>
           <Text fontWeight={600} mb={2}>

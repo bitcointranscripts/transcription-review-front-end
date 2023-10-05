@@ -1,6 +1,6 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { Dispatch, SetStateAction, useLayoutEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 
 type IPagination = {
   pages: number;
@@ -15,7 +15,7 @@ const Pagination = ({ pages, currentPage, setCurrentPage }: IPagination) => {
     });
     setCurrentPage(page);
   };
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (router.query?.page) {
       setCurrentPage(Number(router.query?.page as string));
     }

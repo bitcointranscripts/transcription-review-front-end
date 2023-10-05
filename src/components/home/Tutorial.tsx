@@ -90,10 +90,13 @@ const HomePageTutorial = () => {
               <StepZero />
               <StepOne
                 preferVideoComponent={
-                  <PreferVideoButton
-                    handlePreferVideo={handlePreferVideo}
-                    step={1}
-                  />
+                  <Box mb="3">
+                    <PreferVideoButton
+                      handlePreferVideo={handlePreferVideo}
+                      step={1}
+                      width="initial"
+                    />
+                  </Box>
                 }
               />
               <StepTwo

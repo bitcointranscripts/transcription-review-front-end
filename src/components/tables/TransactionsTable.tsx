@@ -14,7 +14,7 @@ const tableStructure = [
     modifier: (data) => data.id,
   },
   {
-    name: "amount",
+    name: "amount (SAT)",
     type: "text-short",
     modifier: (data) => data.amount,
   },

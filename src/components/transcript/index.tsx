@@ -38,6 +38,9 @@ export type SideBarData = {
     categories: string[];
     tags: string[];
   };
+  loc: {
+    loc: string;
+  };
   text: {
     title: string;
   };
@@ -65,7 +68,6 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const { mutateAsync: asyncSubmitReview } = useSubmitReview();
   const { data: userSession } = useSession();
   const isAdmin = userSession?.user?.permissions === "admin";
-
   const [prRepo, setPrRepo] = useState<TranscriptSubmitOptions>(
     process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
       ? "btc transcript"
@@ -82,6 +84,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     },
     text: {
       title: transcriptData.content?.title ?? "",
+    },
+    loc: {
+      loc: transcriptData?.content?.loc ?? "",
     },
     date: {
       date: transcriptData.content?.date
@@ -125,6 +130,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       text: {
         title: transcriptData.originalContent.title,
       },
+      loc: {
+        loc: transcriptData?.content?.loc ?? "",
+      },
       date: {
         date: transcriptData.originalContent?.date
           ? new Date(transcriptData.originalContent.date)
@@ -138,6 +146,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     const {
       list: { speakers, categories, tags },
       text: { title },
+      loc: { loc },
       date: { date },
     } = sideBarData;
     const content = transcriptData.content;
@@ -148,6 +157,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       categories,
       tags,
       date,
+      loc,
       body: editedData,
     };
 
@@ -192,6 +202,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     const {
       list: { speakers, categories, tags },
       text: { title },
+      loc: { loc },
       date: { date },
     } = sideBarData;
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
@@ -202,8 +213,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
-        directoryPath:
-          transcriptData?.content?.loc ?? config.defaultDirectoryPath,
+        directoryPath: loc?.trim() ? loc.trim() : config.defaultDirectoryPath,
         fileName: formatDataForMetadata(title),
         url: transcriptData?.content.media,
         date: date && dateFormatGeneral(date, true),

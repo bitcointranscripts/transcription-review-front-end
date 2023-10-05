@@ -1,4 +1,5 @@
 import { Box, Icon } from "@chakra-ui/react";
+import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { BiX } from "react-icons/bi";
 import HomeMediaPortal from "./HomeMediaPortal";
@@ -7,7 +8,7 @@ const MediaScreen = ({
   mediaElement,
   wrapperId = "home-media-viewer",
 }: {
-  mediaElement: React.ReactNode;
+  mediaElement: React.JSX.Element;
   wrapperId?: string;
 }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -89,9 +90,14 @@ const MediaScreen = ({
               onClick={disableFullScreen}
               w="100%"
               h="100%"
-            ></Box>
+            />
             <Box pos="absolute" maxW="100%" maxH="100%" p={4} display="flex">
-              {mediaElement}
+              {React.cloneElement<React.ComponentProps<typeof Image>>(
+                mediaElement,
+                {
+                  width: 1000,
+                }
+              )}
             </Box>
             <CloseButton handleClose={disableFullScreen} />
           </Box>

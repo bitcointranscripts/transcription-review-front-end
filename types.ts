@@ -24,7 +24,6 @@ export type ReviewTranscript = Transcript & {
   review?: Review;
 };
 
-
 export type Review = {
   id: number;
   userId: number;
@@ -89,6 +88,17 @@ export type SelectableMetaDataList = {
   categories: SelectableMetaDataType[];
   speakers: SelectableMetaDataType[];
   tags: SelectableMetaDataType[];
+};
+export type DirectoriesDataType = {
+  dir: SelectableMetaDataType[];
+  code?: string;
+};
+
+// directory pattern for  state
+export type IDir = {
+  slug: string;
+  value: string;
+  nestDir?: IDir[];
 };
 
 export type UserRole = "reviewer" | "admin";

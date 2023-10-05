@@ -46,6 +46,7 @@ export type PreverVideoProps = {
     step: 1 | 2 | 3
   ) => void;
   step: 1 | 2 | 3;
+  width?: React.ComponentProps<typeof Box>["w"];
 };
 
 type PreferVideoCompponent = {
@@ -143,6 +144,9 @@ export const StepThree = ({ preferVideoComponent }: PreferVideoCompponent) => {
           </ListItem>
           <ListItem>
             {`If it’s not accepted, you’ll be able to continue making changes through conversations on GitHub`}
+          </ListItem>
+          <ListItem>
+            {`Once your transcript is accepted and published, you'll receive sats as thanks in your account wallet. You'll be able to withdraw them to your wallet of choice over lightning.`}
           </ListItem>
         </Spacedlist>
       </AccordionPanel>
@@ -318,8 +322,8 @@ export const StepOne = ({ preferVideoComponent }: PreferVideoCompponent) => {
         </AccordionButton>
       </h2>
       <AccordionPanel>
-        <TLDRText text="Connect your GitHub to BTCTranscripts" />
         {preferVideoComponent}
+        <TLDRText text="Connect your GitHub to BTCTranscripts" />
         <Spacedlist>
           <ListItem>
             Make sure you have a GitHub account (instructions{" "}
@@ -464,9 +468,10 @@ export const LinkText = ({ text, href }: { text: string; href: string }) => {
 export const PreferVideoButton = ({
   handlePreferVideo,
   step,
+  width = "fit-content",
 }: PreverVideoProps) => {
   return (
-    <Box ml="auto" w="fit-content">
+    <Box ml="auto" w={width}>
       <Button
         variant="link"
         colorScheme="blue"

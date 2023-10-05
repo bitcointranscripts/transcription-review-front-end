@@ -4,7 +4,6 @@ import {
   transcriptsCategories,
 } from "@/utils";
 import { Box, Flex, Td, Text } from "@chakra-ui/react";
-import React from "react";
 
 type TitleWithTagsProps = {
   title: string;
@@ -12,6 +11,7 @@ type TitleWithTagsProps = {
   categories: string | string[];
   allTags: string[];
   length: number;
+  shouldSlice?: boolean;
 };
 const TitleWithTags = ({
   title,
@@ -19,6 +19,7 @@ const TitleWithTags = ({
   categories,
   id,
   length,
+  shouldSlice = true,
 }: TitleWithTagsProps) => {
   let stringCategories = Array.isArray(categories)
     ? categories[0]
@@ -27,50 +28,56 @@ const TitleWithTags = ({
   const foundCategories = transcriptsCategories.find(
     (trs) => trs.slug.toLowerCase() === stringCategories.toLocaleLowerCase()
   );
+  const tags = shouldSlice ? allTags.slice(0, 1) : allTags;
+
   return (
     <Td width="40%">
-      <Flex gap={2} alignItems="center">
+      <Flex gap={2} flexDir="column">
         <Text>{title}</Text>
         <Flex wrap="wrap" gap={2} alignItems="center">
           {foundCategories && (
             <Box
-              borderRadius={"4px"}
+              borderRadius={"8px"}
               padding={"4px"}
               whiteSpace="nowrap"
               paddingInline={"10px"}
-              bgColor={tagColors[categories.length % 4]}
+              border={`2px solid ${tagColors[categories.length % 4]}`}
+              bgColor={"transparent"}
             >
               <Text
-                fontSize={"12px"}
-                textTransform="capitalize"
-                color="#FCFCFC"
+                fontSize={"11.323px"}
+                lineHeight={"normal"}
+                fontWeight={600}
+                textTransform={"capitalize"}
+                color={tagColors[categories.length % 4]}
               >
                 {foundCategories?.name}
               </Text>
             </Box>
           )}
-          {allTags
-            .slice(0, 2)
-            .filter((tags) => tags.toLowerCase() !== "none")
-            .map((tags, index) => (
+          {tags
+            .filter((tag) => tag.toLowerCase() !== "none")
+            .map((tag, index) => (
               <Box
-                borderRadius={"4px"}
+                borderRadius={"8px"}
                 padding={"4px"}
                 paddingInline={"10px"}
-                bgColor={tagColors[(id + index) % 4]}
-                key={tags}
+                border={`2px solid ${tagColors[(id + index) % 4]}`}
+                bgColor={"transparent"}
+                key={tag}
               >
                 <Text
-                  fontSize={"12px"}
+                  fontSize={"11.323px"}
+                  lineHeight={"normal"}
                   textTransform="capitalize"
-                  color="#FCFCFC"
-                  key={tags}
+                  color={tagColors[(id + index) % 4]}
+                  key={tag}
                 >
-                  {tags}
+                  {tag}
                 </Text>
               </Box>
             ))}
-          {length > 2 && <Text>+{length - 2}</Text>}
+          {length > 2 && shouldSlice && <Text>+{length - 2}</Text>}
         </Flex>
       </Flex>
     </Td>

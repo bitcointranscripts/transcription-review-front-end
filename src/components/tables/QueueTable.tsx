@@ -203,14 +203,15 @@ const QueueTable = () => {
                 categories={data.content.categories}
                 id={data.id}
                 length={allTags.length}
+                shouldSlice={false}
               />
             );
           },
         },
         {
           name: "speakers",
-          type: "tags",
-          modifier: (data) => data.content.speakers,
+          type: "text-long",
+          modifier: (data) => data.content.speakers.join(", "),
         },
         {
           name: "Time to edit",
@@ -223,12 +224,12 @@ const QueueTable = () => {
         },
         {
           name: "Sats",
-          type: "action",
+          type: "text-short",
           modifier: (data) => (
             <Flex
               position="relative"
               className="responsive-image"
-              width={"100%"}
+              width={"70%"}
               minWidth={"10px"}
               minHeight={"42px"}
               justifyContent={"start"}
@@ -252,14 +253,14 @@ const QueueTable = () => {
               minHeight={"42px"}
               justifyContent={"start"}
               alignItems={"start"}
-              ml={["0px", "0px", "0px", "-15px"]}
               height="100%"
             >
               <Image
                 alt={`${data.contentTotalWords} sat coins`}
                 src={displaySatCoinImage(data.contentTotalWords)}
                 objectFit="contain"
-                fill
+                width={24}
+                height={24}
               />
             </Flex>
           ),
