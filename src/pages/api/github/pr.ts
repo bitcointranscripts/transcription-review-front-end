@@ -12,7 +12,7 @@ async function createForkAndPR(
   transcribedText: string,
   metaData: Metadata,
   prRepo: TranscriptSubmitOptions,
-  prUrl: string
+  prUrl?: string
 ) {
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
@@ -28,26 +28,29 @@ async function createForkAndPR(
   const forkRepo = upstreamRepo;
 
   const prUrlLength = prUrl ? prUrl.split("/").length : 1;
+  const pull_number = prUrl ? +prUrl.split("/")[prUrlLength - 1] : 0;
   //  get's the pull request files and also their SHA if they exist
   const pullFiles = await octokit
     .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
       owner: forkOwner,
       repo: forkRepo,
-      pull_number: prUrl ? +prUrl.split("/")[prUrlLength - 1] : 0,
+      pull_number,
     })
     .then((pr) => ({ data: pr?.data[0] }))
-    .catch((err) => err);
+    .catch((err) => {
+      throw err;
+    });
   const pullRequestSHA = pullFiles?.data?.sha;
   // get details about the PR also gets the branch name (so we are able to commit)
   const pullDetails: any = await octokit
     .request("GET /repos/:owner/:repo/pulls/:pull_number", {
       owner: forkOwner,
       repo: forkRepo,
-      pull_number: prUrl ? +prUrl.split("/")[prUrlLength - 1] : 0,
+      pull_number,
     })
     .then((_data) => _data)
     .catch((err) => {
-      return err;
+      throw err;
     });
   const pullRequestBranch = pullDetails?.data?.head?.ref;
   // Get the ref for the base branch
