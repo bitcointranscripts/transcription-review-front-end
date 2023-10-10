@@ -216,6 +216,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         directoryPath: loc?.trim() ? loc.trim() : config.defaultDirectoryPath,
         fileName: formatDataForMetadata(title),
         url: transcriptData?.content.media,
+        prUrl: reviewData?.pr_url,
         date: date && dateFormatGeneral(date, true),
         tags: formatDataForMetadata(tags),
         speakers: formatDataForMetadata(speakers),
