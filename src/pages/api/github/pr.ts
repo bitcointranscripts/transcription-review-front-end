@@ -83,7 +83,8 @@ async function createForkAndPR(
   fileName: string,
   transcribedText: string,
   metaData: Metadata,
-  prRepo: TranscriptSubmitOptions
+  prRepo: TranscriptSubmitOptions,
+  prUrl?: string
 ) {
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
@@ -174,14 +175,20 @@ async function createForkAndPR(
   // Create new file on the branch
   // const _trimmedFileName = fileName.trim();
   const fileSlug = deriveFileSlug(fileName);
-  await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
-    owner: forkOwner,
-    repo: forkRepo,
-    path: `${directoryPath}/${fileSlug}.md`,
-    message: `Added "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
-    content: fileContent,
-    branch: newBranchName,
-  });
+  const updateContent = await octokit.request(
+    "PUT /repos/:owner/:repo/contents/:path",
+    {
+      owner: forkOwner,
+      repo: forkRepo,
+      path: `${directoryPath}/${fileSlug}.md`,
+      message: `${prUrl ? "Updated" : "Added"} "${
+        metaData.fileTitle
+      }" transcript submitted by ${forkOwner}`,
+      content: fileContent,
+      branch: prUrl ? branchName : newBranchName,
+      sha: prUrl ? pullRequestSHA : undefined,
+    }
+  );
 
   // Create a pull request
   const prTitle = `Add ${fileSlug} to ${directoryPath}`;
