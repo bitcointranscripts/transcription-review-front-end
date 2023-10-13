@@ -216,15 +216,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         directoryPath: loc?.trim() ? loc.trim() : config.defaultDirectoryPath,
         fileName: formatDataForMetadata(title),
         url: transcriptData?.content.media,
-<<<<<<< HEAD
-<<<<<<< HEAD
         prUrl: reviewData?.pr_url,
-=======
-        prUrl: reviewData?.pr_url || undefined,
->>>>>>> 531fd54 (fix: same branch on re-submmited transcripts)
-=======
-        prUrl: reviewData?.pr_url,
->>>>>>> 61fab90 (fix: changes from comments)
         date: date && dateFormatGeneral(date, true),
         tags: formatDataForMetadata(tags),
         speakers: formatDataForMetadata(speakers),
