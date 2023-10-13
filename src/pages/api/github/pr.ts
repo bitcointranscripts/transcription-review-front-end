@@ -5,6 +5,39 @@ import { Octokit } from "@octokit/core";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "../auth/[...nextauth]";
 
+export const returnPRDetails = async (
+  octokit: InstanceType<typeof Octokit>,
+  forkOwner: string,
+  forkRepo: string,
+  pull_number?: number | undefined
+) => {
+  if (pull_number) {
+    const pullFiles = await octokit
+      .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
+        owner: forkOwner,
+        repo: forkRepo,
+        pull_number,
+      })
+      .then((pr) => ({ data: pr?.data[0] }))
+      .catch((err) => {
+        throw err;
+      });
+
+    const pullDetails: any = await octokit
+      .request("GET /repos/:owner/:repo/pulls/:pull_number", {
+        owner: forkOwner,
+        repo: forkRepo,
+        pull_number,
+      })
+      .then((_data) => _data)
+      .catch((err) => {
+        throw err;
+      });
+    return { pullDetails, pullFiles };
+  }
+  return {};
+};
+
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,
   directoryPath: string,
@@ -14,6 +47,8 @@ async function createForkAndPR(
   prRepo: TranscriptSubmitOptions,
   prUrl?: string
 ) {
+  // function for PR Updating
+
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
   const directoryName = directoryPath.split("/").slice(-1)[0];
@@ -27,32 +62,21 @@ async function createForkAndPR(
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
 
-  const prUrlLength = prUrl ? prUrl.split("/").length : 1;
-  const pull_number = prUrl ? +prUrl.split("/")[prUrlLength - 1] : 0;
+  const prUrlLength = prUrl ? prUrl.split("/").length : 0;
+  const pull_number = prUrl && +prUrl.split("/")[prUrlLength - 1];
+  const allPRDetails = await returnPRDetails(
+    octokit,
+    forkOwner,
+    forkRepo,
+    pull_number as number
+  );
+
   //  get's the pull request files and also their SHA if they exist
-  const pullFiles = await octokit
-    .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
-      owner: forkOwner,
-      repo: forkRepo,
-      pull_number,
-    })
-    .then((pr) => ({ data: pr?.data[0] }))
-    .catch((err) => {
-      throw err;
-    });
-  const pullRequestSHA = pullFiles?.data?.sha;
+
+  const pullRequestSHA = allPRDetails?.pullFiles?.data?.sha;
   // get details about the PR also gets the branch name (so we are able to commit)
-  const pullDetails: any = await octokit
-    .request("GET /repos/:owner/:repo/pulls/:pull_number", {
-      owner: forkOwner,
-      repo: forkRepo,
-      pull_number,
-    })
-    .then((_data) => _data)
-    .catch((err) => {
-      throw err;
-    });
-  const pullRequestBranch = pullDetails?.data?.head?.ref;
+
+  const pullRequestBranch = allPRDetails?.pullDetails?.data?.head?.ref;
   // Get the ref for the base branch
   // a gh/network delay might cause base branch not to be available so run in a retry function
   // retry put on hold
@@ -70,7 +94,7 @@ async function createForkAndPR(
   const timeInSeconds = Math.floor(Date.now() / 1000);
   const newBranchName = `${timeInSeconds}-${directoryName}`;
   const baseRefSha = baseBranch.data.object.sha;
-  const branchName = pullDetails?.data?.head.ref;
+  const branchName = allPRDetails?.pullDetails?.data?.head.ref;
 
   if (!prUrl) {
     await octokit.request("POST /repos/{owner}/{repo}/git/refs", {
@@ -167,7 +191,10 @@ async function createForkAndPR(
     return prResult;
   }
   return {
-    data: { ...updateContent?.data, html_url: pullDetails?.data?.html_url },
+    data: {
+      ...updateContent?.data,
+      html_url: allPRDetails?.pullDetails?.data?.html_url,
+    },
   };
 }
 
