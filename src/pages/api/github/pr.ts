@@ -10,6 +10,39 @@ import { Octokit } from "@octokit/core";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "../auth/[...nextauth]";
 
+export const returnPRDetails = async (
+  octokit: InstanceType<typeof Octokit>,
+  forkOwner: string,
+  forkRepo: string,
+  pull_number?: number | undefined
+) => {
+  if (pull_number) {
+    const pullFiles = await octokit
+      .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
+        owner: forkOwner,
+        repo: forkRepo,
+        pull_number,
+      })
+      .then((pr) => ({ data: pr?.data[0] }))
+      .catch((err) => {
+        throw err;
+      });
+
+    const pullDetails: any = await octokit
+      .request("GET /repos/:owner/:repo/pulls/:pull_number", {
+        owner: forkOwner,
+        repo: forkRepo,
+        pull_number,
+      })
+      .then((_data) => _data)
+      .catch((err) => {
+        throw err;
+      });
+    return { pullDetails, pullFiles };
+  }
+  return {};
+};
+
 // functions for an already open PR
 async function pullAndUpdatedPR(
   octokit: InstanceType<typeof Octokit>,
@@ -19,6 +52,8 @@ async function pullAndUpdatedPR(
   metaData: Metadata,
   pull_number: number
 ) {
+  // function for PR Updating
+
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
   // To get the owner details
