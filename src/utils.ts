@@ -280,3 +280,13 @@ export const displaySatCoinImage = (wordCount: number) => {
   if (wordCount > 7500) return "/sats-coins/very-high.svg";
   else return "";
 };
+
+export const extractPullNumber = (githubUrl: string) => {
+  const pattern = /\/pull\/(\d+)/;
+  const match = githubUrl.match(pattern);
+  if (match) {
+    return match[1];
+  } else {
+    return null;
+  }
+};

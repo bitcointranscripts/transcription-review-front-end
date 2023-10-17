@@ -1,117 +1,105 @@
 import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
 import config from "@/config/config.json";
-import { deriveFileSlug, Metadata, newIndexFile } from "@/utils";
+import {
+  deriveFileSlug,
+  extractPullNumber,
+  Metadata,
+  newIndexFile,
+} from "@/utils";
 import { Octokit } from "@octokit/core";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "../auth/[...nextauth]";
 
-export const returnPRDetails = async (
+// functions for an already open PR
+async function pullAndUpdatedPR(
   octokit: InstanceType<typeof Octokit>,
-  forkOwner: string,
-  forkRepo: string,
-  pull_number?: number | undefined
-) => {
-  if (pull_number) {
-    const pullFiles = await octokit
-      .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
-        owner: forkOwner,
-        repo: forkRepo,
-        pull_number,
-      })
-      .then((pr) => ({ data: pr?.data[0] }))
-      .catch((err) => {
-        throw err;
-      });
+  directoryPath: string,
+  fileName: string,
+  transcribedText: string,
+  metaData: Metadata,
+  pull_number: number
+) {
+  const upstreamOwner = "bitcointranscripts";
+  const upstreamRepo = "bitcointranscripts";
+  // To get the owner details
+  const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
+    owner: upstreamOwner,
+    repo: upstreamRepo,
+  });
+  const forkOwner = forkResult.data.owner.login;
+  const forkRepo = upstreamRepo;
+  const pullFiles = await octokit
+    .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
+      owner: forkOwner,
+      repo: forkRepo,
+      pull_number,
+    })
+    .then((pr) => ({ data: pr?.data[0] }))
+    .catch((err) => {
+      throw err;
+    });
 
-    const pullDetails: any = await octokit
-      .request("GET /repos/:owner/:repo/pulls/:pull_number", {
-        owner: forkOwner,
-        repo: forkRepo,
-        pull_number,
-      })
-      .then((_data) => _data)
-      .catch((err) => {
-        throw err;
-      });
-    return { pullDetails, pullFiles };
-  }
-  return {};
-};
+  const pullDetails: any = await octokit
+    .request("GET /repos/:owner/:repo/pulls/:pull_number", {
+      owner: forkOwner,
+      repo: forkRepo,
+      pull_number,
+    })
+    .then((_data) => _data)
+    .catch((err) => {
+      throw err;
+    });
+  const pullRequestSHA = pullFiles?.data?.sha;
+  const pullRequestBranch = pullDetails?.data?.head?.ref;
+  // Create the file to be inserted
+  const metadata = metaData.toString();
+  const transcriptData = `${metadata}\n${transcribedText}\n`;
+  const fileContent = Buffer.from(transcriptData).toString("base64");
 
+  const fileSlug = deriveFileSlug(fileName);
+  const updateContent = await octokit.request(
+    "PUT /repos/:owner/:repo/contents/:path",
+    {
+      owner: forkOwner,
+      repo: forkRepo,
+      path: `${directoryPath}/${fileSlug}.md`,
+      message: ` "Updated"  "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
+      content: fileContent,
+      branch: pullRequestBranch,
+      sha: pullRequestSHA,
+    }
+  );
+  return {
+    data: {
+      ...updateContent?.data,
+      html_url: pullDetails?.data?.html_url,
+    },
+  };
+}
+// function for creating a PR and Forking
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,
   directoryPath: string,
   fileName: string,
   transcribedText: string,
   metaData: Metadata,
-  prRepo: TranscriptSubmitOptions,
-  prUrl?: string
+  prRepo: TranscriptSubmitOptions
 ) {
-  // function for PR Updating
-
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
   const directoryName = directoryPath.split("/").slice(-1)[0];
-
   // Fork the repository
   const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
     owner: upstreamOwner,
     repo: upstreamRepo,
   });
-
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
-
-  const prUrlLength = prUrl ? prUrl.split("/").length : 0;
-  const pull_number = prUrl && +prUrl.split("/")[prUrlLength - 1];
-  const allPRDetails = await returnPRDetails(
-    octokit,
-    forkOwner,
-    forkRepo,
-    pull_number as number
-  );
-
-  //  get's the pull request files and also their SHA if they exist
-
-  const pullRequestSHA = allPRDetails?.pullFiles?.data?.sha;
-  // get details about the PR also gets the branch name (so we are able to commit)
-
-  const pullRequestBranch = allPRDetails?.pullDetails?.data?.head?.ref;
-  // Get the ref for the base branch
-  // a gh/network delay might cause base branch not to be available so run in a retry function
-  // retry put on hold
   const baseBranchName = forkResult.data.default_branch;
-  const baseBranch = await octokit.request(
-    "GET /repos/{owner}/{repo}/git/ref/{ref}",
-    {
-      owner: forkOwner,
-      repo: forkRepo,
-      ref: `heads/${prUrl ? pullRequestBranch : baseBranchName}`,
-    }
-  );
-
-  // Create new branch
-  const timeInSeconds = Math.floor(Date.now() / 1000);
-  const newBranchName = `${timeInSeconds}-${directoryName}`;
-  const baseRefSha = baseBranch.data.object.sha;
-  const branchName = allPRDetails?.pullDetails?.data?.head.ref;
-
-  if (!prUrl) {
-    await octokit.request("POST /repos/{owner}/{repo}/git/refs", {
-      owner: forkOwner,
-      repo: forkRepo,
-      ref: `refs/heads/${newBranchName}`,
-      sha: baseRefSha,
-    });
-  }
-  // Create the file to be inserted
-  const metadata = metaData.toString();
-  const transcriptData = `${metadata}\n${transcribedText}\n`;
-  const fileContent = Buffer.from(transcriptData).toString("base64");
-
   // recursion, run through path delimited by `/` and create _index.md file if it doesn't exist
   async function checkDirAndInitializeIndexFile(
     path: string,
+    branch: string,
     currentLevelIdx = 0
   ) {
     let pathLevels = path.split("/");
@@ -128,7 +116,7 @@ async function createForkAndPR(
         owner: forkOwner,
         repo: forkRepo,
         path: `${currentDirPath}/_index.md`,
-        branch: prUrl ? branchName : newBranchName,
+        branch,
       })
       // eslint-disable-next-line no-unused-vars
       .then((_data) => true)
@@ -149,53 +137,64 @@ async function createForkAndPR(
         path: `${currentDirPath}/_index.md`,
         message: `Initialised _index.md file in ${topPathLevel} directory`,
         content: indexContent,
-        branch: prUrl ? branchName : newBranchName,
+        branch,
       });
     }
-    await checkDirAndInitializeIndexFile(path, currentLevelIdx + 1);
+    await checkDirAndInitializeIndexFile(path, branch, currentLevelIdx + 1);
   }
 
-  await checkDirAndInitializeIndexFile(directoryPath);
+  const baseBranch = await octokit.request(
+    "GET /repos/{owner}/{repo}/git/ref/{ref}",
+    {
+      owner: forkOwner,
+      repo: forkRepo,
+      ref: `heads/${baseBranchName}`,
+    }
+  );
+
+  // Create new branch
+  const timeInSeconds = Math.floor(Date.now() / 1000);
+  const newBranchName = `${timeInSeconds}-${directoryName}`;
+  const baseRefSha = baseBranch.data.object.sha;
+  // check condition for aa pull_number
+  await octokit.request("POST /repos/{owner}/{repo}/git/refs", {
+    owner: forkOwner,
+    repo: forkRepo,
+    ref: `refs/heads/${newBranchName}`,
+    sha: baseRefSha,
+  });
+
+  // Create the file to be inserted
+  const metadata = metaData.toString();
+  const transcriptData = `${metadata}\n${transcribedText}\n`;
+  const fileContent = Buffer.from(transcriptData).toString("base64");
+
+  await checkDirAndInitializeIndexFile(directoryPath, newBranchName);
 
   // Create new file on the branch
   // const _trimmedFileName = fileName.trim();
   const fileSlug = deriveFileSlug(fileName);
-  const updateContent = await octokit.request(
-    "PUT /repos/:owner/:repo/contents/:path",
-    {
-      owner: forkOwner,
-      repo: forkRepo,
-      path: `${directoryPath}/${fileSlug}.md`,
-      message: `${prUrl ? "Updated" : "Added"} "${
-        metaData.fileTitle
-      }" transcript submitted by ${forkOwner}`,
-      content: fileContent,
-      branch: prUrl ? branchName : newBranchName,
-      sha: prUrl ? pullRequestSHA : undefined,
-    }
-  );
+  await octokit.request("PUT /repos/:owner/:repo/contents/:path", {
+    owner: forkOwner,
+    repo: forkRepo,
+    path: `${directoryPath}/${fileSlug}.md`,
+    message: `Added "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
+    content: fileContent,
+    branch: newBranchName,
+  });
 
   // Create a pull request
   const prTitle = `Add ${fileSlug} to ${directoryPath}`;
   const prDescription = `This PR adds [${fileName}](${metaData.source}) transcript to the ${directoryPath} directory.`;
-  if (!prUrl) {
-    const prResult = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
-      owner: prRepo === "user" ? forkOwner : upstreamOwner, // update to upstreamOwner once tested
-      repo: prRepo === "user" ? forkRepo : upstreamRepo,
-      title: prTitle,
-      body: prDescription,
-      head: `${forkOwner}:${newBranchName}`,
-      base: baseBranchName,
-    });
-
-    return prResult;
-  }
-  return {
-    data: {
-      ...updateContent?.data,
-      html_url: allPRDetails?.pullDetails?.data?.html_url,
-    },
-  };
+  const prResult = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
+    owner: prRepo === "user" ? forkOwner : upstreamOwner, // update to upstreamOwner once tested
+    repo: prRepo === "user" ? forkRepo : upstreamRepo,
+    title: prTitle,
+    body: prDescription,
+    head: `${forkOwner}:${newBranchName}`,
+    base: baseBranchName,
+  });
+  return prResult;
 }
 
 export default async function handler(
@@ -225,7 +224,7 @@ export default async function handler(
     prRepo,
     prUrl,
   } = req.body;
-
+  const pull_number = extractPullNumber(prUrl || "");
   try {
     // Create metadata
     const newMetadata = new Metadata({
@@ -237,20 +236,30 @@ export default async function handler(
       speakers,
       categories,
     });
+    if (!pull_number) {
+      // Call the createForkAndPR function
+      const prResult = await createForkAndPR(
+        octokit,
+        directoryPath,
+        fileName,
+        transcribedText,
+        newMetadata,
+        prRepo
+      );
+      // Return the result
+      res.status(200).json(prResult.data);
+    } else {
+      const updatedPR = await pullAndUpdatedPR(
+        octokit,
+        directoryPath,
+        fileName,
+        transcribedText,
+        newMetadata,
+        +pull_number
+      );
 
-    // Call the createForkAndPR function
-    const prResult = await createForkAndPR(
-      octokit,
-      directoryPath,
-      fileName,
-      transcribedText,
-      newMetadata,
-      prRepo,
-      prUrl
-    );
-
-    // Return the result
-    res.status(200).json(prResult.data);
+      res.status(200).json(updatedPR.data);
+    }
   } catch (error: any) {
     console.error(error);
     res.status(500).json({
