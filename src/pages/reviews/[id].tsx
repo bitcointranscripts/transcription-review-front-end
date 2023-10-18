@@ -37,7 +37,9 @@ const TranscriptPage = () => {
     );
   }
 
-  if (review?.mergedAt) {
+  console.log({review})
+
+  if (review?.mergedAt || review?.archivedAt) {
     return (
       <AuthStatus title="Error" message="This review is no longer active" />
     );
