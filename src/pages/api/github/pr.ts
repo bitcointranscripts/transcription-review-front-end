@@ -49,6 +49,9 @@ async function pullAndUpdatedPR(
     .catch((err) => {
       throw err;
     });
+  if (!pullDetails?.data?.merged) {
+    throw "Your transcript has been merged!";
+  }
   const pullRequestSHA = pullFiles?.data?.sha;
   const pullRequestBranch = pullDetails?.data?.head?.ref;
   // Create the file to be inserted
@@ -63,7 +66,7 @@ async function pullAndUpdatedPR(
       owner: forkOwner,
       repo: forkRepo,
       path: `${directoryPath}/${fileSlug}.md`,
-      message: ` "Updated"  "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
+      message: ` Updated  "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
       content: fileContent,
       branch: pullRequestBranch,
       sha: pullRequestSHA,
@@ -329,7 +332,6 @@ export default async function handler(
       res.status(200).json(updatedPR.data);
     }
   } catch (error: any) {
-    console.error(error);
     res.status(500).json({
       message:
         error?.message ?? "Error occurred while creating the fork and PR",
