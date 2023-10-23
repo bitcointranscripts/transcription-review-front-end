@@ -59,11 +59,18 @@ const CurrentJobsTable = () => {
       return (
         <>
           {Boolean(pendingReview) ? (
-            <Link href={`${data.review?.pr_url}`} target="_blank">
-              <Button colorScheme={"gray"} size="sm">
-                Under Review
-              </Button>
-            </Link>
+            <Flex gap={4}>
+              <Link href={`${data.review?.pr_url}`} target="_blank">
+                <Button colorScheme={"gray"} size="sm">
+                  Under Review
+                </Button>
+              </Link>
+              {!data.review?.mergedAt && (
+                <Button onClick={handleResume} colorScheme={"orange"} size="sm">
+                  Resubmit
+                </Button>
+              )}
+            </Flex>
           ) : (
             <Button colorScheme={"orange"} size="sm" onClick={handleResume}>
               Continue editing transcript
