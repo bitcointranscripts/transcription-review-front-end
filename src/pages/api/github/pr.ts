@@ -50,7 +50,7 @@ async function pullAndUpdatedPR(
       throw err;
     });
   if (pullDetails?.data?.merged) {
-    throw "Your transcript has been merged!";
+    throw new Error("Your transcript has been merged!");
   }
   const pullRequestSHA = pullFiles?.data?.sha;
   const pullRequestBranch = pullDetails?.data?.head?.ref;
