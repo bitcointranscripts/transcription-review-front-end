@@ -130,7 +130,8 @@ const SidebarContentEdit = ({
   };
   const updateTags = (tags: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
-    updatedTranscript.tags = tags;
+    const lowerCaseTags = tags.map((tag) => tag.toLowerCase());
+    updatedTranscript.tags = lowerCaseTags;
     saveTranscript(updatedTranscript);
 
     updater({
@@ -194,6 +195,7 @@ const SidebarContentEdit = ({
             setPath={setPath}
             options={directoryList}
             updateData={updateDirectory}
+            getUpdatedTranscript={getUpdatedTranscript}
           />
         </Box>
         <Box>

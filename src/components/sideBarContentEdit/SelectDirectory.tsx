@@ -29,7 +29,7 @@ import React, {
 } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { IoIosCloseCircle } from "react-icons/io";
-import { IDir } from "../../../types";
+import { IDir, TranscriptContent } from "../../../types";
 import { AutoCompleteData } from "./SelectField";
 
 interface PropsSelectDirectory {
@@ -39,6 +39,7 @@ interface PropsSelectDirectory {
   isDirLoading?: boolean;
   setPath: Dispatch<SetStateAction<string>>;
   customPath?: string;
+  getUpdatedTranscript: () => TranscriptContent;
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string) => void;
 }
@@ -81,7 +82,7 @@ const SelectDirectoryOption = ({
   customPath,
   isDirLoading,
   setPath,
-}: PropsSelectDirectory) => {
+}: Omit<PropsSelectDirectory, "getUpdatedTranscript">) => {
   return (
     <Flex
       flexDirection={"column"}
@@ -136,9 +137,11 @@ const SelectDirectory = ({
   isLoading,
   isDirLoading,
   setPath,
+  getUpdatedTranscript,
   updateData,
 }: PropsSelectDirectory) => {
   const { onClose, isOpen, onOpen } = useDisclosure();
+  const updatedTranscript = getUpdatedTranscript();
   const {
     onClose: confirmOnClose,
     isOpen: confirmIsOpen,
@@ -220,7 +223,7 @@ const SelectDirectory = ({
             }}
             height={8}
             onChange={handleChange}
-            placeholder={path}
+            placeholder={!isOpen ? updatedTranscript?.loc : path}
           />
         </PopoverTrigger>
         <PopoverContent mt={2} w="full" overflowY={"scroll"}>

@@ -83,7 +83,7 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
             {isError && !isLoading && (
               <Box>
                 <Text color="gray.400" fontWeight={500}>
-                  Unsucessful
+                  {err?.response?.data?.message || "Unsuccessful"}
                 </Text>
                 {err?.message && (
                   <>
