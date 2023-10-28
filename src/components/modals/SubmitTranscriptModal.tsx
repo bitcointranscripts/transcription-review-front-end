@@ -14,6 +14,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
+import { AxiosError } from "axios";
 import NextLink from "next/link";
 import { BiCheck, BiX } from "react-icons/bi";
 
@@ -24,7 +25,7 @@ export type SubmitState = {
   isError: boolean;
   isModalOpen: boolean;
   prResult: null | any;
-  err: null | Error;
+  err: null | AxiosError<{ message: string }>;
 };
 
 type Props = {
@@ -35,6 +36,7 @@ type Props = {
 const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
   const { stepIdx, steps, isLoading, isError, isModalOpen, prResult, err } =
     submitState;
+  const errorMessage = err?.response?.data?.message || err?.message;
   return (
     <Modal isOpen={isModalOpen} onClose={onClose}>
       <ModalOverlay />
@@ -83,7 +85,7 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
             {isError && !isLoading && (
               <Box>
                 <Text color="gray.400" fontWeight={500}>
-                  {err?.response?.data?.message || "Unsuccessful"}
+                  Unsuccessful
                 </Text>
                 {err?.message && (
                   <>
@@ -91,7 +93,7 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
                     <Text color="red.400" fontWeight={500}>
                       Error:
                     </Text>
-                    <Text color="red.400">{err?.message}</Text>
+                    <Text color="red.400">{errorMessage}</Text>
                   </>
                 )}
               </Box>
