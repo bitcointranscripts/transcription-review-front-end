@@ -15,7 +15,7 @@ import {
 } from "@/utils";
 import { Button, Flex, useDisclosure, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
@@ -241,7 +241,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         }
       );
     } catch (error) {
-      const err = error as Error;
+      const err = error as AxiosError<{ message: string }>;
       setSubmitState((prev) => ({
         ...prev,
         isLoading: false,

@@ -49,7 +49,7 @@ async function pullAndUpdatedPR(
     .catch((err) => {
       throw err;
     });
-  if (pullDetails?.data?.merged) {
+  if (!pullDetails?.data?.merged) {
     throw new Error("Your transcript has been merged!");
   }
   const pullRequestSHA = pullFiles?.data?.sha;
@@ -304,7 +304,6 @@ export default async function handler(
         newMetadata,
         +pull_number
       );
-
       res.status(200).json(updatedPR.data);
     }
     if (!pull_number) {
