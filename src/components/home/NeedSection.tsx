@@ -26,8 +26,19 @@ const NeedSection = () => {
         </Flex>
       </Flex>
       {/*  */}
-      <Box className="bg-container" mt={32}>
-        <Flex width={"100%"} justifyContent={"space-between"} gap="50px"> 
+      <Box
+        backgroundImage={"/home/editing-section-bg.png"}
+        width={"100%"}
+        backgroundSize={"cover"}
+        backgroundRepeat={"no-repeat"}
+        mt={32}
+      >
+        <Flex
+          className="bg-container"
+          width={"100%"}
+          justifyContent={"space-between"}
+          gap="50px"
+        >
           <Flex width={"100%"} gap={20} flexDir={"column"} maxW={"49%"}>
             <Text
               fontSize={"3.25rem"}
