@@ -1,6 +1,5 @@
 import Footer from "@/components/footer/Footer";
 import GlobalContainer from "@/components/GlobalContainer";
-import Navbar from "@/components/navbar/Navbar";
 import useNoContainerLimit from "@/hooks/useNoContainerLimit";
 import Head from "next/head";
 import React from "react";
@@ -16,11 +15,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="./btc-transcript-circle-128.png" />
       </Head>
-      <Navbar />
+
       <GlobalContainer
         flexGrow={1}
-        py={4}
-        mt={12}
+        // py={4}
+        // mt={12}
         {...(noRestriction ? { maxW: "none", p: 0 } : {})}
       >
         {children}

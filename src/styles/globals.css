@@ -69,3 +69,20 @@ a {
   opacity: 0;
 }
 
+.hero-section {
+  background: white;
+  background:linear-gradient(90deg, #F7F7F7 35.83%, rgba(242, 242, 242, 0.00) 100%),url("/home/hero-background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.need-section {
+background: linear-gradient(to bottom right, #FAD8AF 0%, rgba(229, 214, 195, 0.00) 50%) bottom right / 50% 50% no-repeat, linear-gradient(to bottom left, #FAD8AF 0%, rgba(229, 214, 195, 0.00) 50%) bottom left / 50% 50% no-repeat, linear-gradient(to top left, #FAD8AF 0%, rgba(229, 214, 195, 0.00) 50%) top left / 50% 50% no-repeat, linear-gradient(to top right, #FAD8AF 0%, rgba(229, 214, 195, 0.00) 50%) top right / 50% 50% no-repeat;
+background-clip: text;
+}
+
+.bg-container {
+  max-width: 90%;
+  margin: 0 auto;
+  width: 100%;
+}

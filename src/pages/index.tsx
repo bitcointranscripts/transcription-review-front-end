@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth/next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { authOptions } from "./api/auth/[...nextauth]";
+import LandingPage from "@/components/home/LandingPage";
 
 type HomePageProps = {
   serverSession: Session | null;
@@ -22,7 +23,7 @@ const Home: NextPage<HomePageProps> = ({ serverSession }) => {
     return <></>;
   }
 
-  return <HomePageTutorial />;
+  return <LandingPage />;
 };
 
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
