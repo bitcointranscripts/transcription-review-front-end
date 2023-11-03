@@ -1,18 +1,97 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+  /* Poly sans fonts */
+  @font-face {
+    font-family: 'Polysans';
+    src: url('/fonts/PolySans-Slim.otf') format('opentype');
+    font-weight: 100 200 300;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Polysans';
+    src: url('/fonts/PolySans-Neutral.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Polysans';
+    src: url('/fonts/PolySans-Median.otf') format('opentype');
+    font-weight: 500 600;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Polysans';
+    src: url('/fonts/PolySans-Bulky.otf') format('opentype');
+    font-weight: 700 800;
+    font-style: normal;
+  }
+
+    /*  Aeonik Fono */
+    @font-face {
+      font-family: ' Aeonik Fono';
+      src: url('/fonts/AeonikFono-Air.otf') format('opentype');
+      font-weight: 100 200 300;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Light.otf') format('opentype');
+      font-weight: 200 300;
+      font-style: normal;
+    }
+  
+  
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Regular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+  
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Medium.otf') format('opentype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Bold.otf') format('opentype');
+      font-weight: 600 700;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Black.otf') format('opentype');
+      font-weight:800 900;
+      font-style: normal;
+    }
+   /* Mono sans fonts */
+   @font-face {
+    font-family: 'Mona-sans';
+    src: url('/fonts/Mona-Sans-SemiBold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+  } 
 :root {
   --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
     'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
     'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
 
 html,
 body {
   height: 100%;
+  overflow-x: hidden;
 }
 
 #__next {
@@ -97,4 +176,10 @@ background-clip: text;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+}
+
+@media screen and (max-width: 992px) {
+  .hero-section {
+    background: white;
+  }
 }

@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
 import { Inter } from "next/font/google";
+import Fonts from "@/chakra/Fonts";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function App({
 
   return (
     <ChakraProvider theme={theme}>
+      <Fonts />
       <ColorModeScript initialColorMode="light" />
       <ApiProvider>
         <SessionProvider session={session}>

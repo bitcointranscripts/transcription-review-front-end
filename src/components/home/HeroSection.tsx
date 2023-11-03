@@ -1,21 +1,45 @@
-import { Button, Flex, ListItem, OrderedList, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  ListItem,
+  OrderedList,
+  Text,
+  Image,
+} from "@chakra-ui/react";
 import React from "react";
 import BTCLogo from "./BTCLogo";
-import Image from "next/image";
+// import Image from "next/image";
 
 const HeroSection = () => {
   return (
     <Flex
       className="hero-section"
       flexDir={"column"}
-      pl={"100px"}
+      pl={["24px", "24px", "32px", "32px", "100px"]}
       pt={"45px"}
       width={"100%"}
     >
       <BTCLogo />
-      <Flex mt="80px" justifyContent={"space-between"} pb="20">
-        <Flex maxW={"50%"} gap="48px" flexDir={"column"} w={"full"}>
-          <Text fontSize={"4.25rem"} fontWeight={600} lineHeight={"105%"}>
+      <Flex
+        mt="80px"
+        flexDir={["column", "column", "column", "row"]}
+        justifyContent={"space-between"}
+        gap={[20, 20, 20, 4]}
+        pb="20"
+      >
+        <Flex
+          maxW={["100%", "100%", "100%", "50%"]}
+          gap="48px"
+          flexDir={"column"}
+          w={"full"}
+        >
+          <Text
+            fontFamily={"Polysans"}
+            fontSize={["2.2rem", "2.2rem", "", "4.25rem", "", "6.25rem"]}
+            fontWeight={600}
+            lineHeight={["130%", "105%"]}
+          >
             <Text color={"#F7931A"} as={"span"}>
               Review
             </Text>{" "}
@@ -25,27 +49,34 @@ const HeroSection = () => {
               Earn Sats
             </Text>
           </Text>
-          <Flex gap="10" flexDir={"column"}>
-            <Text fontSize={"1.25rem"}>Get started in 3 simple steps:</Text>
+          <Flex
+            gap={5}
+            fontSize={["1.25rem", "", "", "", "", "2.25rem"]}
+            flexDir={"column"}
+            fontFamily={"Aeonik Fono"}
+          >
+            <Text>Get started in 3 simple steps:</Text>
             <OrderedList>
               <ListItem>Register and claim a talk</ListItem>
               <ListItem>Review and edit the transcript</ListItem>
               <ListItem>Submit and earn sats</ListItem>
             </OrderedList>
           </Flex>
-          <Flex gap={"8"}>
+          <Flex gap={"8"} fontFamily={"Mona-sans"}>
             <Button
-              size="md"
+              size={["md", "md", "md", "md", "md", "lg"]}
               maxW={"max-content"}
               bg="#262626"
               color={"#F7F7F7"}
               variant="outline"
+              _hover={{}}
+              _active={{}}
             >
               Get Started
             </Button>
 
             <Button
-              size="md"
+              size={["md", "md", "md", "md", "md", "lg"]}
               maxW={"max-content"}
               colorScheme="dark"
               variant="outline"
@@ -54,13 +85,29 @@ const HeroSection = () => {
             </Button>
           </Flex>
         </Flex>
-        <Flex maxW={"49%"} w={"100%"} justifyContent={"end"} cursor={"pointer"}>
-          <Image
-            src={"/home/hero-thumbnail.png"}
-            width={552}
-            height={252}
-            alt="BTC Youtube"
-          />
+        <Flex
+          maxW={["100%", "100%", "100%", "49%"]}
+          w={"100%"}
+          justifyContent={"end"}
+          cursor={"pointer"}
+        >
+          <Flex
+            maxW={"100%"}
+            justifyContent={"end"}
+            alignItems={"start"}
+            w={"100%"}
+            position={"relative"}
+          >
+            <Image
+              src={"/home/hero-thumbnail.png"}
+              style={{
+                objectFit: "contain",
+                borderRadius: "30px 0px 0px 30px",
+                right: "0px",
+              }}
+              alt="BTC Youtube"
+            />
+          </Flex>
         </Flex>
       </Flex>
     </Flex>

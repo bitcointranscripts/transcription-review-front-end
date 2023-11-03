@@ -55,9 +55,9 @@ const NeedSection = () => {
             >
               <Image
                 src="/home/editing-section.png"
-                objectFit="cover"
                 fill
                 alt="editing"
+                style={{ objectFit: "cover" }}
               />
             </Box>
           </Flex>

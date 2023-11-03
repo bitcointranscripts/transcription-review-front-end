@@ -49,8 +49,8 @@ const Step1 = () => {
               <Image
                 src="/home/authorize-landing.png"
                 alt="authorize github page"
-                objectFit="cover"
                 fill
+                style={{ objectFit: "cover" }}
               />
             </Box>
           </Box>
