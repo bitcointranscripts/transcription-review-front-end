@@ -10,6 +10,8 @@ const Step2 = () => {
       stepNumber={2}
       heading=" Start reviewing and editing the transcript"
       sub="TLDR; Use markdown. Make sure stuff is accurate. Use “replace” in case of multispeaker transcripts. Use split screen to listen and edit transcript at the same time."
+      maxW={"1000px"}
+      headingMaxW={"700px"}
     >
       <Flex flexDir={"column"} gap={10}>
         <Flex
@@ -45,7 +47,13 @@ const Step2 = () => {
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >
-          <Flex flexDir={"column"} gap={4} maxW={"386px"}>
+          <Flex
+            fontSize={"1.7rem"}
+            lineHeight={"135%"}
+            flexDir={"column"}
+            gap={4}
+            maxW={"386px"}
+          >
             <Text>
               Here is what you’ll see as you{" "}
               <Text as={"span"}>edit the transcript</Text>
@@ -83,7 +91,13 @@ const Step2 = () => {
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >
-          <Flex flexDir={"column"} gap={4} maxW={"386px"}>
+          <Flex
+            flexDir={"column"}
+            fontSize={"1.7rem"}
+            lineHeight={"135%"}
+            gap={4}
+            maxW={"386px"}
+          >
             <Text>Here is what will live in the GitHub repository.</Text>
             <Text>
               This is automatically created when you submit your transcript.
@@ -117,7 +131,13 @@ const Step2 = () => {
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >
-          <Flex flexDir={"column"} gap={4} maxW={"386px"}>
+          <Flex
+            fontSize={"1.7rem"}
+            lineHeight={"135%"}
+            flexDir={"column"}
+            gap={4}
+            maxW={"386px"}
+          >
             <Text>Here is what will live on the live site.</Text>
             <Text>
               This is also automatically created once the review is finalized.

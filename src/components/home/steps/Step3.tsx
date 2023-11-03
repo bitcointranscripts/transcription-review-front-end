@@ -7,9 +7,9 @@ import Image from "next/image";
 const Step3 = () => {
   return (
     <StepLayout
-      stepNumber={1}
-      heading="Claim a recording to review"
-      sub="TLDR; Connect your GitHub to BTCtranscripts"
+      stepNumber={3}
+      heading="Step 03: Submit the edited transcript"
+      sub="TLDR; Once you submit, you’re done! The submitted transcripts are reviewed by a human and then published via GitHub"
     >
       <Flex flexDir={"column"} gap={10}>
         <Flex
@@ -54,20 +54,24 @@ const Step3 = () => {
 
         <Flex
           py={"70px"}
-          pl="70px"
+          px="70px"
           justifyContent={"space-between"}
           gap={10}
+          fontSize={"1.8rem"}
           borderWidth={2}
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >
-          <Text>
-            <Text as={"span"}>*Nerd stuff:</Text> Pull Requests (also called PRs
-            or merge requests) inform others that you’re making a change from an
-            original piece of code. The transcript text is technically code
-            because it’s what the live site uses. The original code was the
-            transcript before you made the edits. So, you “pulled” that code and
-            are requesting your new, edited code to be used instead.
+          <Text fontSize={"1.7rem"} lineHeight={"135%"}>
+            <Text as={"span"} fontWeight={700}>
+              *Nerd stuff:
+            </Text>{" "}
+            Pull Requests (also called PRs or merge requests) inform others that
+            you’re making a change from an original piece of code. The
+            transcript text is technically code because it’s what the live site
+            uses. The original code was the transcript before you made the
+            edits. So, you “pulled” that code and are requesting your new,
+            edited code to be used instead.
           </Text>
         </Flex>
 
@@ -80,10 +84,17 @@ const Step3 = () => {
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >
-          <Flex flexDir={"column"} gap={8}>
+          <Flex
+            flexDir={"column"}
+            fontSize={"1.7rem"}
+            lineHeight={"135%"}
+            gap={8}
+          >
             <Text>
-              After Submission: Your edited code or transcript will be reviewed
-              by a human.
+              <Text as="span" fontWeight={700}>
+                After Submission:{" "}
+              </Text>
+              Your edited code or transcript will be reviewed by a human.
             </Text>
             <Text>
               Once approved, it will be published. If it&apos;s not accepted,

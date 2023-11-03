@@ -29,12 +29,18 @@ const SubStepSingle: FC<ISubStepSingle> = ({
               bg={`${isActive ? "#333" : "#A6A6A6"}`}
             />
           )}
-          <Text>
+          <Text
+            color={isActive ? "#333" : "#A6A6A6"}
+            fontSize={"1.5rem"}
+            fontWeight={700}
+          >
             {heading || ""} <Text as="span">{boldString || ""}</Text>
           </Text>
         </Flex>
       )}
-      <Text>{sub}</Text>
+      <Text color={isActive ? "#333" : "#A6A6A6"} fontSize={"1.5rem"}>
+        {sub}
+      </Text>
     </Flex>
   );
 };

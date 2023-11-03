@@ -7,12 +7,16 @@ interface IStepLayout {
   heading: string;
   sub: string;
   stepNumber: number;
+  maxW?: string;
+  headingMaxW?: string;
 }
 const StepLayout: FC<IStepLayout> = ({
   children,
   heading,
   sub,
   stepNumber,
+  maxW,
+  headingMaxW,
 }) => {
   return (
     <Flex flexDir={"column"}>
@@ -25,11 +29,18 @@ const StepLayout: FC<IStepLayout> = ({
           maxH={"80px"}
           alt={"transcripts"}
         />
-        <Flex flexDir={"column"}>
-          <Text>
-            Step {stepNumber}: <Text as={"span"}>{heading}</Text>
+        <Flex flexDir={"column"} gap={10} maxW={maxW ? maxW : "660px"}>
+          <Text
+            fontSize={"3.25rem"}
+            maxW={headingMaxW ? headingMaxW : maxW}
+            lineHeight={"105%"}
+          >
+            Step {stepNumber}:{" "}
+            <Text fontWeight={600} as={"span"}>
+              {heading}
+            </Text>
           </Text>
-          <Text>{sub}</Text>
+          <Text fontSize={"2rem"}>{sub}</Text>
         </Flex>
       </Flex>
 

@@ -65,7 +65,13 @@ const Step1 = () => {
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >
-          <Flex flexDir={"column"} gap={4} maxW={"386px"}>
+          <Flex
+            fontSize={"1.7rem"}
+            lineHeight={"135%"}
+            flexDir={"column"}
+            gap={4}
+            maxW={"386px"}
+          >
             <Text>
               Once signed in, find a transcript that catches your fancy, and
               click “Claim.”
