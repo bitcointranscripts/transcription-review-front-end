@@ -7,10 +7,19 @@ import Step3 from "./steps/Step3";
 const EverythingYouNeed = () => {
   return (
     <Box py={"120px"} className="bg-container">
-      <Text textAlign={"center"} fontSize={"4.25rem"} fontWeight={600}>
+      <Text
+        textAlign={"center"}
+        fontFamily={"Polysans"}
+        fontSize={{ base: "3.5rem", "2xl": "5.25rem" }}
+        fontWeight={600}
+      >
         Here’s everything you need to start
       </Text>
-      <Flex flexDir={"column"} pt={"200px"} gap={40}>
+      <Flex
+        flexDir={"column"}
+        pt={{ base: "100px", "2xl": "200px" }}
+        gap={{ base: 20, xl: 40 }}
+      >
         <Step1 />
         <Step2 />
         <Step3 />

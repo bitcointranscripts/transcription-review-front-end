@@ -6,13 +6,19 @@ import OptimalSetup from "./review/OptimalSetup";
 const ReviewingProcess = () => {
   return (
     <Box as="section" py={"100px"} width={"100%"} background={"#FAEFE3"}>
-      <Flex flexDir={"column"} gap={20}  width={"100%"} className="bg-container">
+      <Flex
+        flexDir={"column"}
+        gap={20}
+        fontFamily={"Polysans"}
+        width={"100%"}
+        className="bg-container"
+      >
         <Text
           textAlign={"center"}
           color="#262626"
           maxW={"1006px"}
           mx={"auto"}
-          fontSize={"4.625rem"}
+          fontSize={{ base: "4rem", xl: "4rem", "2xl": "4.625rem" }}
           fontWeight={"semibold"}
           lineHeight={"120%"}
         >
@@ -21,7 +27,11 @@ const ReviewingProcess = () => {
             easier reviewing process{" "}
           </Text>
         </Text>
-        <Flex justifyContent={"space-between"} gap="70px" >
+        <Flex
+          justifyContent={"space-between"}
+          flexDir={{ base: "column", xl: "row" }}
+          gap="70px"
+        >
           <GreatTranscript />
           <OptimalSetup />
         </Flex>

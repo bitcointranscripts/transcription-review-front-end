@@ -30,15 +30,20 @@ const SubStepSingle: FC<ISubStepSingle> = ({
             />
           )}
           <Text
+            fontFamily={"Polysans"}
             color={isActive ? "#333" : "#A6A6A6"}
-            fontSize={"1.5rem"}
+            fontSize={{ base: "1.25rem", xl: "1.5rem", "2xl": "1.5rem" }}
             fontWeight={700}
           >
             {heading || ""} <Text as="span">{boldString || ""}</Text>
           </Text>
         </Flex>
       )}
-      <Text color={isActive ? "#333" : "#A6A6A6"} fontSize={"1.5rem"}>
+      <Text
+        fontFamily={"Aeonik Fono"}
+        color={isActive ? "#333" : "#A6A6A6"}
+        fontSize={{ base: "1.25rem", xl: "1.5rem", "2xl": "1.5rem" }}
+      >
         {sub}
       </Text>
     </Flex>

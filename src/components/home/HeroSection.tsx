@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Flex,
   ListItem,
@@ -16,7 +15,8 @@ const HeroSection = () => {
     <Flex
       className="hero-section"
       flexDir={"column"}
-      pl={["24px", "24px", "32px", "32px", "100px"]}
+      pl={{ base: "24px", md: "32px", xl: "100px" }}
+      pr={{ base: "24px", md: "32px", xl: "0px" }}
       pt={"45px"}
       width={"100%"}
     >
@@ -36,7 +36,7 @@ const HeroSection = () => {
         >
           <Text
             fontFamily={"Polysans"}
-            fontSize={["2.2rem", "2.2rem", "", "4.25rem", "", "6.25rem"]}
+            fontSize={{ base: "2.2rem", lg: "4.25rem", "2xl": "6.25rem" }}
             fontWeight={600}
             lineHeight={["130%", "105%"]}
           >

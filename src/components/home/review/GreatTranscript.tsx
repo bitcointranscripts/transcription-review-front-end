@@ -4,7 +4,6 @@ import React from "react";
 const GreatTranscript = () => {
   return (
     <Flex
-      grow={1}
       maxWidth={"765px"}
       width={"100%"}
       borderWidth={3}
@@ -16,14 +15,14 @@ const GreatTranscript = () => {
       borderColor={"#262626"}
     >
       <Text
-        fontSize={"2.25rem"}
+        fontSize={{ base: "2rem", xl: "2.25rem", "2xl": "3.25rem" }}
         lineHeight={"115%"}
         fontWeight={"bold"}
         color="#333"
       >
         What makes a great transcript?
       </Text>
-      <Flex flexDir={"column"} gap={10}>
+      <Flex flexDir={"column"} gap={10} fontFamily={"Aeonik Fono"}>
         <Text
           fontSize={"1.75rem"}
           lineHeight={"135%"}
@@ -54,7 +53,7 @@ const GreatTranscript = () => {
           <ListItem>And the use of markdown!</ListItem>
         </UnorderedList>
       </Flex>
-      <Flex flexDir={"column"} gap={10}>
+      <Flex flexDir={"column"} gap={10} fontFamily={"Aeonik Fono"}>
         <Text
           fontSize={"1.75rem"}
           lineHeight={"135%"}

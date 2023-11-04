@@ -23,7 +23,7 @@ const OptimalSetup = () => {
         >
           Tips for an optimal setup
         </Text>
-        <Flex flexDir={"column"}>
+        <Flex flexDir={"column"} fontFamily={"Aeonik Fono"}>
           <UnorderedList
             lineHeight={"150%"}
             fontSize={"1.225rem"}

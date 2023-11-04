@@ -15,10 +15,14 @@ const EditingTranscriptSingle: FC<IEditingTranscript> = ({
   return (
     <Flex flexDir={"column"} maxW={"506px"} gap={4} px="44px">
       <Image src={src} width={80} height={79} alt={heading} />
-      <Text fontSize={"2.5rem"} lineHeight={"105%"} fontWeight={"semibold"}>
+      <Text
+        fontSize={{ base: "1.7rem", "2xl": "2.5rem" }}
+        lineHeight={"105%"}
+        fontWeight={"semibold"}
+      >
         {heading}
       </Text>
-      <Text fontSize={"1.75rem"} lineHeight={"125%"}>
+      <Text fontSize={{ base: "1.5rem", "2xl": "1.75rem" }} lineHeight={"125%"}>
         {sub}
       </Text>
     </Flex>

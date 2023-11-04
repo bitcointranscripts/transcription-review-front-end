@@ -22,7 +22,11 @@ const Step1 = () => {
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >
-          <Flex gap={10}>
+          <Flex
+            gap={10}
+            flexDir={{ base: "column", lg: "row" }}
+            flexWrap={{ base: "wrap", xl: "nowrap" }}
+          >
             <SubStepSingle
               isActive
               heading="Connect"
@@ -66,9 +70,10 @@ const Step1 = () => {
           borderRadius={"30px 0px 30px 30px"}
         >
           <Flex
-            fontSize={"1.7rem"}
             lineHeight={"135%"}
             flexDir={"column"}
+            fontSize={{ base: "1.25rem", xl: "1.75rem" }}
+            fontFamily={" PolySans"}
             gap={4}
             maxW={"386px"}
           >
