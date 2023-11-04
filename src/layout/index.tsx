@@ -4,9 +4,12 @@ import useNoContainerLimit from "@/hooks/useNoContainerLimit";
 import Head from "next/head";
 import React from "react";
 import styles from "./layout.module.css";
+import { useRouter } from "next/router";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { noRestriction } = useNoContainerLimit();
+  const router = useRouter();
+  const isHomePage = router.asPath === "/";
   return (
     <div className={styles.app_container}>
       <Head>
@@ -24,7 +27,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       >
         {children}
       </GlobalContainer>
-      <Footer />
+      {!isHomePage && <Footer />}
     </div>
   );
 };

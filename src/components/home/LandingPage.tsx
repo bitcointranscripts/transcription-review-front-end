@@ -4,6 +4,8 @@ import HeroSection from "./HeroSection";
 import NeedSection from "./NeedSection";
 import ReviewingProcess from "./ReviewingProcess";
 import EverythingYouNeed from "./EverythingYouNeed";
+import ReadyToReview from "./ReadyToReview";
+import LandingFooter from "./LandingFooter";
 
 const LandingPage = () => {
   return (
@@ -12,6 +14,8 @@ const LandingPage = () => {
       <NeedSection />
       <EverythingYouNeed />
       <ReviewingProcess />
+      <ReadyToReview />
+      <LandingFooter />
     </Box>
   );
 };
