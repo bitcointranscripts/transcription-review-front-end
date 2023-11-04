@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import StepLayout from "../StepLayout";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import SubStepSingle from "./SubStepSingle";
 import Image from "next/image";
 
 const Step1 = () => {
+  const images = ["/home/authorize-landing.png", "/home/raw-markdown.png"];
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 10000); // Change slide every 3 seconds (3000 milliseconds)
+
+    return () => {
+      clearInterval(interval);
+    };
+  });
   return (
     <StepLayout
       stepNumber={1}
@@ -20,7 +34,7 @@ const Step1 = () => {
           gap={20}
           width="100%"
           borderColor={"#D9D9D9"}
-          borderRadius={"30px 0px 30px 30px"}
+          borderRadius={"30px 30px 0px 0px"}
         >
           <Flex
             gap={10}
@@ -28,12 +42,13 @@ const Step1 = () => {
             flexWrap={{ base: "wrap", xl: "nowrap" }}
           >
             <SubStepSingle
-              isActive
+              isActive={currentIndex === 0}
               heading="Connect"
               sub="Connect your GitHub account to BTCTranscripts by clicking “Sign In”"
               maxW="332px"
             />
             <SubStepSingle
+              isActive={currentIndex === 1}
               heading="Authorize"
               sub="Authorize Bitcoin Transcripts Dev to access to your aassoiants account"
               maxW="332px"
@@ -44,19 +59,35 @@ const Step1 = () => {
             />
           </Flex>
           <Box
-            p={1}
+            p={2}
             borderWidth={2}
+            className="slideshow"
             borderColor={"#D9D9D9"}
-            borderRadius={"30px 0px 30px 30px"}
+            maxW={["85%"]}
+            borderRadius={"30px 30px 30px 30px"}
           >
-            <Box position={"relative"} marginBottom={"-7px"} minH={"500px"}>
-              <Image
-                src="/home/authorize-landing.png"
-                alt="authorize github page"
-                fill
-                style={{ objectFit: "cover" }}
-              />
-            </Box>
+            {images.map((image, index) => (
+              <Box
+                className={`slides ${
+                  index === currentIndex ? "active" : "hidden"
+                } `}
+                minH={"400px"}
+                width={"100%"}
+                position={"relative"}
+                marginBottom={"-7px"}
+                key={image}
+              >
+                <Image
+                  src={image}
+                  alt="authorize github page"
+                  fill
+                  style={{
+                    borderRadius: "30px 30px 0px 0px",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+            ))}
           </Box>
         </Flex>
 

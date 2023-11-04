@@ -34,7 +34,7 @@ const ReadyToReview = () => {
           borderColor={"#CCC"}
         >
           <Text
-            maxW={'360px'}
+            maxW={"360px"}
             fontWeight={600}
             fontSize={{ base: "3.25rem", xl: "3rem", "2xl": "4.25rem" }}
             lineHeight={"115%"}

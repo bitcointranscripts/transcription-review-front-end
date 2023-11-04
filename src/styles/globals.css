@@ -177,7 +177,28 @@ background-clip: text;
   justify-content: center;
   border-radius: 50%;
 }
+/* slideshow */
+.slideshow {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 auto;
+}
 
+.slide {
+  width: 100%;
+  height: 300px; /* Adjust the height as needed */
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.active {
+  opacity: 1;
+}
+.hidden {
+  display: none;
+}
 @media screen and (max-width: 992px) {
   .hero-section {
     background: white;

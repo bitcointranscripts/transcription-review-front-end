@@ -1,20 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import StepLayout from "../StepLayout";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import SubStepSingle from "./SubStepSingle";
 import Image from "next/image";
 
 const Step3 = () => {
+  const images = ["/home/authorize-landing.png", "/home/raw-markdown.png"];
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 10000); // Change slide every 3 seconds (3000 milliseconds)
+
+    return () => {
+      clearInterval(interval);
+    };
+  });
   return (
     <StepLayout
       stepNumber={3}
       heading="Submit the edited transcript"
       sub="TLDR; Once you submit, you’re done! The submitted transcripts are reviewed by a human and then published via GitHub"
     >
-      <Flex
-        flexDir={"column"}
-        gap={10}
-      >
+      <Flex flexDir={"column"} gap={10}>
         <Flex
           pt={"70px"}
           px="70px"
@@ -27,31 +38,46 @@ const Step3 = () => {
         >
           <Flex gap={10}>
             <SubStepSingle
-              isActive
+              isActive={currentIndex === 0}
               heading="Submission"
               sub="Once you submit your transcript, it will create a PR (pull request)* of your edited transcript from the original transcript"
               maxW="528px"
             />
             <SubStepSingle
+              isActive={currentIndex === 1}
               heading="Check the PR"
               sub="If you want to see your transcript, visit your profile and click the link. On the transcript’s GitHub PR, you can click the “Files changed” nav button to view."
               maxW="660px"
             />
           </Flex>
           <Box
-            p={1}
+            p={2}
             borderWidth={2}
             borderColor={"#D9D9D9"}
-            borderRadius={"30px 0px 30px 30px"}
+            borderRadius={"30px 30px 0px 0px"}
           >
-            <Box position={"relative"} marginBottom={"-7px"} minH={"500px"}>
-              <Image
-                src="/home/authorize-landing.png"
-                alt="authorize github page"
-                fill
-                style={{ objectFit: "cover" }}
-              />
-            </Box>
+            {images.map((image, index) => (
+              <Box
+                className={`slides ${
+                  index === currentIndex ? "active" : "hidden"
+                } `}
+                minH={"400px"}
+                width={"100%"}
+                position={"relative"}
+                marginBottom={"-7px"}
+                key={image}
+              >
+                <Image
+                  src={image}
+                  alt="authorize github page"
+                  fill
+                  style={{
+                    borderRadius: "30px 30px 0px 0px",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+            ))}
           </Box>
         </Flex>
 
@@ -66,7 +92,7 @@ const Step3 = () => {
           fontSize={{ base: "1.3rem", xl: "1.8rem" }}
           fontFamily={"Aeonik Fono"}
         >
-          <Text  lineHeight={"135%"}>
+          <Text lineHeight={"135%"}>
             <Text as={"span"} fontWeight={700}>
               *Nerd stuff:
             </Text>{" "}

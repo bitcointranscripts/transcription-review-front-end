@@ -10,7 +10,7 @@ const LandingFooter = () => {
     >
       <Flex
         justifyContent={"space-between"}
-        alignItems={"end"}
+        alignItems={"center"}
         width={"full"}
         lineHeight={"115%"}
       >
