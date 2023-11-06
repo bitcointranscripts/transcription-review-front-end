@@ -13,16 +13,36 @@ const EditingTranscriptSingle: FC<IEditingTranscript> = ({
   sub,
 }) => {
   return (
-    <Flex flexDir={"column"} maxW={"506px"} gap={4} px="44px">
-      <Image src={src} width={80} height={79} alt={heading} />
+    <Flex
+      flexDir={"column"}
+      maxW={"506px"}
+      gap={4}
+      px={{ base: "", lg: "44px" }}
+      fontFamily={"Polysans"}
+    >
+      <Image src={src} width={60} height={59} alt={heading} />
       <Text
-        fontSize={{ base: "1.7rem", "2xl": "2.5rem" }}
+        fontSize={{
+          base: "1.5rem",
+          lg: "1.8rem",
+          xl: "1.875rem",
+          "2xl": "2.5rem",
+        }}
         lineHeight={"105%"}
         fontWeight={"semibold"}
       >
         {heading}
       </Text>
-      <Text fontSize={{ base: "1.5rem", "2xl": "1.75rem" }} lineHeight={"125%"}>
+      <Text
+        fontSize={{
+          base: "1rem",
+          lg: "1.4rem",
+          xl: "1.5rem",
+          "2xl": "1.75rem",
+        }}
+        lineHeight={"125%"}
+        fontFamily={"Aeonik Fono"}
+      >
         {sub}
       </Text>
     </Flex>

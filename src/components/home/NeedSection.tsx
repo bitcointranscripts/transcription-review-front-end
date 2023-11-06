@@ -7,19 +7,21 @@ import EditingTranscriptSingle from "./EditingTranscriptSingle";
 
 const NeedSection = () => {
   return (
-    <Box as="section" py={"40"} background={"#FAEFE3"}>
+    <Box as="section" py={{ base: "20", lg: "40" }} background={"#FAEFE3"}>
       <Flex flexDir={"column"} className="bg-container">
         <Flex
-          gap="4"
+          gap={{ base: 10, lg: 4 }}
           flexDir={["column", "column", "column", "column", "row"]}
           justifyContent={"space-between"}
         >
           <Text
-            fontSize={{ base: "2.5rem", "2xl": "4.5rem" }}
+            fontSize={{ base: "2.125rem", xl: "3.3rem", "2xl": "4.5rem" }}
             fontFamily={["Polysans"]}
             lineHeight="115%"
+            textAlign={{ base: "center", xl: "left" }}
             fontWeight={600}
             maxW={"305px"}
+            margin={{ base: "0 auto", lg: "" }}
             minW={["250px"]}
           >
             You only need 3 things:
@@ -46,7 +48,7 @@ const NeedSection = () => {
         width={"100%"}
         backgroundSize={"cover"}
         backgroundRepeat={"no-repeat"}
-        mt={32}
+        mt={{ base: 20, lg: 32 }}
       >
         <Flex
           className="bg-container"
@@ -57,35 +59,56 @@ const NeedSection = () => {
         >
           <Flex
             width={"100%"}
-            gap={20}
+            gap={{ base: 10, lg: 20 }}
+            fontFamily={"Polysans"}
             flexDir={"column"}
             justifyContent={"space-between"}
             maxW={{ base: "100%", lg: "49%" }}
           >
             <Text
-              fontSize={{ base: "2.25rem", xl: "3rem", "2xl": "4.5rem" }}
+              fontSize={{ base: "2.25rem", xl: "3.125rem", "2xl": "4.5rem" }}
               lineHeight={"105%"}
               fontWeight={"semibold"}
+              display={{ base: "none", lg: "inline" }}
             >
               But why consider editing transcripts? Well, you’ll...
             </Text>
+            <Text
+              fontSize={"1.875rem"}
+              lineHeight={"105%"}
+              fontWeight={"semibold"}
+              textAlign={"center"}
+              display={{ base: "inline", lg: "none" }}
+            >
+              But why consider editing transcripts?
+            </Text>
             <Box
               position={"relative"}
-              minH={{ base: "400px", lg: "500px", "2xl": "700px" }}
+              minH={{ base: "240px", sm: "340px", lg: "500px", "2xl": "700px" }}
               borderRadius={"20px"}
+              overflow={"hidden"}
               w={"100%"}
             >
               <Image
                 src="/home/editing-section.png"
                 fill
                 alt="editing"
-                style={{ objectFit: "cover" }}
+                style={{ objectFit: "cover", aspectRatio: "13:10" }}
               />
             </Box>
+            <Text
+              fontSize={"1.875rem"}
+              lineHeight={"105%"}
+              textAlign={"center"}
+              fontWeight={"semibold"}
+              display={{ base: "inline", lg: "none" }}
+            >
+              Well you’ll...
+            </Text>
           </Flex>
 
           {/*  */}
-          <Flex flexDir={"column"} gap={"12"}>
+          <Flex flexDir={"column"} gap={{ base: 8, lg: "8", "2xl": "12" }}>
             {whyConsiderEdit.map((reasons) => (
               <EditingTranscriptSingle key={reasons.heading} {...reasons} />
             ))}

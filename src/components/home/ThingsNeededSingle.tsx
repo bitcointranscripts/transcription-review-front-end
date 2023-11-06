@@ -10,44 +10,54 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({ Icon, heading, sub }) => {
   return (
     <Flex
       position={"relative"}
-      minW={["100%", "320px", "320px", "320px", "320px", "370px"]}
-      maxW={["100%", "320px", "320px", "320px", "320px", "370px"]}
-      minH={["280px", "280px", "320px"]}
-      maxH={["280px", "280px", "320px"]}
+      minW={["100%", "256px", "320px", "320px", "320px", "370px"]}
+      maxW={["100%", "256px", "320px", "320px", "320px", "370px"]}
+      minH={["217px", "217px", "320px"]}
+      maxH={["217px", "217px", "320px"]}
+      margin={"0 auto"}
       bg={"#F7F7F7"}
       rounded={"30px"}
-      pt="70px"
-      px="45px"
+      pt={{ base: "70px", lg: "70px" }}
+      px={{ base: "24px", lg: "45px" }}
     >
       <Box
-        width={["70px"]}
+        width={{ base: "50px", lg: "70px" }}
         rounded={"full"}
         display={"flex"}
         alignItems={"center"}
         justifyContent={"center"}
         bg={"orange"}
-        height={["70px"]}
+        height={{ base: "50px", lg: "70px" }}
         position={"absolute"}
-        padding={"20px"}
-        left={"-16px"}
+        padding={{ base: "15px", lg: "20px" }}
+        left={{ base: "45%", lg: "-16px" }}
         top={"-16px"}
       >
         <Icon />
       </Box>
       <Flex flexDir={"column"} fontFamily={"Aeonik Fono"} gap="4">
         <Text
-          fontSize={["1.5rem", "1.5rem", "1.5rem", "1.5rem", "1.5rem", "2rem"]}
+          fontSize={[
+            "1.25rem",
+            "1.25rem",
+            "1.5rem",
+            "1.5rem",
+            "1.5rem",
+            "2rem",
+          ]}
+          textAlign={{ base: "center", lg: "left" }}
           fontWeight={700}
-          minHeight={"5rem"}
+          minHeight={{ base: "", lg: "5rem" }}
           lineHeight={"125%"}
         >
           {heading}
         </Text>
         <Text
-          fontWeight={500}
+          fontWeight={{ base: 400, lg: 500 }}
+          textAlign={{ base: "center", lg: "left" }}
           fontSize={[
-            "1.25rem",
-            "1.25rem",
+            "0.875rem",
+            "0.875rem",
             "1.25rem",
             "1.25rem",
             "1.25rem",
