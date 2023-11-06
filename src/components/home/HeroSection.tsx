@@ -4,7 +4,6 @@ import {
   ListItem,
   OrderedList,
   Text,
-  Image,
   Box,
 } from "@chakra-ui/react";
 import React from "react";
@@ -21,34 +20,49 @@ const HeroSection = () => {
       className="hero-section"
       flexDir={"column"}
       width={"100%"}
+      id="hero-section"
       position={"relative"}
     >
       <Flex
-        pl={{ base: "24px", md: "32px", xl: "100px" }}
-        pr={{ base: "24px", md: "32px", lg: "0px" }}
-        position={"relative"}
-        pt={{ base: "0px", lg: "45px" }}
-        mt={{ base: "0px", lg: "45px" }}
-        py={{ base: "16px", lg: "0px" }}
-        boxShadow={{ base: "0px 5px 10px 0px rgba(0, 0, 0, 0.07)", lg: "none" }}
-        justifyContent={"space-between"}
+        position={{ base: "fixed", lg: "relative" }}
+        bg={{ base: "white", lg: "transparent" }}
+        w={"full"}
+        zIndex={90}
       >
-        <BTCLogo />
-        <Box
-          position={"absolute"}
-          display={{ base: "none", xl: "block" }}
-          top={"0px"}
-          right={"50px"}
+        <Flex
+          pl={{ base: "24px", md: "32px", xl: "100px" }}
+          pr={{ base: "24px", md: "32px", lg: "0px" }}
+          position={"relative"}
+          pt={{ base: "0px", lg: "45px" }}
+          mt={{ base: "0px", lg: "45px" }}
+          py={{ base: "16px", lg: "0px" }}
+          width={"100%"}
+          boxShadow={{
+            base: "0px 5px 10px 0px rgba(0, 0, 0, 0.07)",
+            lg: "none",
+          }}
+          justifyContent={"space-between"}
         >
-          <LearnHowText />
-        </Box>
-        <Box display={{ base: "block", lg: "none" }}>
-          <ArrowUp />
-        </Box>
+          <BTCLogo />
+          <Box
+            position={"absolute"}
+            display={{ base: "none", xl: "block" }}
+            top={"0px"}
+            right={"50px"}
+          >
+            <LearnHowText />
+          </Box>
+          <Box
+            as="a"
+            href="#hero-section"
+            display={{ base: "block", lg: "none" }}
+          >
+            <ArrowUp />
+          </Box>
+        </Flex>
       </Flex>
-
       <Flex
-        mt={{ base: "32px", xl: "40px" }}
+        mt={{ base: "80px", xl: "40px" }}
         pl={{ base: "24px", md: "32px", xl: "100px" }}
         pr={{ base: "24px", md: "32px", lg: "0px" }}
         pt={{ base: "0px", lg: "45px" }}
@@ -85,7 +99,7 @@ const HeroSection = () => {
             </Text>
           </Text>
           <Flex
-            gap={5}
+            gap={{ base: 2, lg: 5 }}
             fontSize={{ base: "1rem", xl: "2rem", "2xl": "3.25rem" }}
             flexDir={"column"}
             fontFamily={"Aeonik Fono"}

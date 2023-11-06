@@ -126,7 +126,7 @@ const Step1 = () => {
               <Image
                 src="/home/claim-transcript.png"
                 alt="authorize github page"
-                objectFit="contain"
+                style={{ objectFit: "contain" }}
                 fill
               />
             </Box>

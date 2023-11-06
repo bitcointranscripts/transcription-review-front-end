@@ -77,7 +77,7 @@ const Step2 = () => {
               <Image
                 src="/home/editing-interface.png"
                 alt="authorize github page"
-                objectFit="cover"
+                style={{ objectFit: "contain" }}
                 fill
               />
             </Box>
@@ -118,7 +118,7 @@ const Step2 = () => {
               <Image
                 src="/home/raw-markdown.png"
                 alt="authorize github page"
-                objectFit="cover"
+                style={{ objectFit: "contain" }}
                 fill
               />
             </Box>
@@ -159,7 +159,7 @@ const Step2 = () => {
               <Image
                 src="/home/live-site.png"
                 alt="authorize github page"
-                objectFit="contain"
+                style={{ objectFit: "contain" }}
                 fill
               />
             </Box>

@@ -1,5 +1,4 @@
 /* eslint-disable react/no-unescaped-entities */
-import HomePageTutorial from "@/components/home/Tutorial";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import type { Session } from "next-auth";
 import { getServerSession } from "next-auth/next";
