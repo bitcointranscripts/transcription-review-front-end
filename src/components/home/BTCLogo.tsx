@@ -8,13 +8,15 @@ const BTCLogo = () => {
       <Link href="/">
         <Flex gap={"7px"} alignItems="center">
           <Image
-            width={"50px"}
+            width={{ base: "25px", lg: "40px" }}
+            height={{ base: "25px", lg: "40px" }}
             src="/btctranscripts.png"
             alt="Logo"
             boxSize={6}
-            mr={2}
+            aspectRatio={"1:1"}
+            mr={{ base: 2, md: 2 }}
           />
-          <Text color="gray.900" fontWeight={"semibold"}>
+          <Text fontSize={["0.9rem"]} color="gray.900" fontWeight={"semibold"}>
             BTC Transcript Review
           </Text>
         </Flex>

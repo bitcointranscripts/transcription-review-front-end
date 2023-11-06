@@ -44,7 +44,7 @@ const Step3 = () => {
               maxW="528px"
             />
             <SubStepSingle
-              isActive={currentIndex === 1}
+              isActive={currentIndex === 15}
               heading="Check the PR"
               sub="If you want to see your transcript, visit your profile and click the link. On the transcript’s GitHub PR, you can click the “Files changed” nav button to view."
               maxW="660px"

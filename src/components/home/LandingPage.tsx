@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import React from "react";
 import HeroSection from "./HeroSection";
 import NeedSection from "./NeedSection";
