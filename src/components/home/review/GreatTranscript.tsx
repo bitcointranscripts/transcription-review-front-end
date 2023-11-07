@@ -4,27 +4,31 @@ import React from "react";
 const GreatTranscript = () => {
   return (
     <Flex
-      maxWidth={"765px"}
+      maxWidth={{ lg: "500px", xl: "765px" }}
       width={"100%"}
       borderWidth={3}
-      borderRadius={"30px"}
+      borderRadius={{ base: "12px", lg: "30px" }}
       flexDir={"column"}
-      gap={12}
-      py="70px"
-      px="60px"
+      gap={{ base: 5, lg: 12 }}
+      py={{ base: "24px", xl: "70px" }}
+      px={{ base: "24px", xl: "60px" }}
       borderColor={"#262626"}
     >
       <Text
-        fontSize={{ base: "2rem", xl: "2.25rem", "2xl": "3.25rem" }}
+        fontSize={{ base: "1.2rem", lg: "2.25rem", "2xl": "3.25rem" }}
         lineHeight={"115%"}
         fontWeight={"bold"}
         color="#333"
       >
         What makes a great transcript?
       </Text>
-      <Flex flexDir={"column"} gap={10} fontFamily={"Aeonik Fono"}>
+      <Flex
+        flexDir={"column"}
+        gap={{ base: 5, lg: 10 }}
+        fontFamily={"Aeonik Fono"}
+      >
         <Text
-          fontSize={"1.75rem"}
+          fontSize={{ base: "0.875rem", lg: "1.75rem" }}
           lineHeight={"135%"}
           letterSpacing={"0.84px"}
           fontWeight={"bold"}
@@ -34,7 +38,7 @@ const GreatTranscript = () => {
         </Text>
         <UnorderedList
           lineHeight={"150%"}
-          fontSize={"1.225rem"}
+          fontSize={{ base: "0.875rem", lg: "1.75rem" }}
           letterSpacing={"0.78px"}
         >
           <ListItem>Title</ListItem>
@@ -53,9 +57,13 @@ const GreatTranscript = () => {
           <ListItem>And the use of markdown!</ListItem>
         </UnorderedList>
       </Flex>
-      <Flex flexDir={"column"} gap={10} fontFamily={"Aeonik Fono"}>
+      <Flex
+        flexDir={"column"}
+        gap={{ base: 5, lg: 10 }}
+        fontFamily={"Aeonik Fono"}
+      >
         <Text
-          fontSize={"1.75rem"}
+          fontSize={{ base: "1.2rem", lg: "2.25rem", "2xl": "3.25rem" }}
           lineHeight={"135%"}
           letterSpacing={"0.84px"}
           fontWeight={"bold"}
@@ -66,7 +74,7 @@ const GreatTranscript = () => {
         </Text>
         <UnorderedList
           lineHeight={"150%"}
-          fontSize={"1.225rem"}
+          fontSize={{ base: "0.875rem", lg: "1.75rem" }}
           letterSpacing={"0.78px"}
         >
           <ListItem>Silent Payments and Alternatives</ListItem>

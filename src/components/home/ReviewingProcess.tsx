@@ -5,7 +5,12 @@ import OptimalSetup from "./review/OptimalSetup";
 
 const ReviewingProcess = () => {
   return (
-    <Box as="section" py={"100px"} width={"100%"} background={"#FAEFE3"}>
+    <Box
+      as="section"
+      py={{ base: "60px", lg: "100px" }}
+      width={"100%"}
+      background={"#FAEFE3"}
+    >
       <Flex
         flexDir={"column"}
         gap={20}
@@ -18,19 +23,23 @@ const ReviewingProcess = () => {
           color="#262626"
           maxW={"1006px"}
           mx={"auto"}
-          fontSize={{ base: "4rem", xl: "4rem", "2xl": "4.625rem" }}
+          fontSize={{ base: "1.875rem", xl: "4rem", "2xl": "4.625rem" }}
           fontWeight={"semibold"}
           lineHeight={"120%"}
         >
           And here are some tips for an{" "}
-          <Text as={"span"} color={"orange"}>
+          <Text
+            as={"span"}
+            color={{ base: "#262626", lg: "orange" }}
+            textAlign={"center"}
+          >
             easier reviewing process{" "}
           </Text>
         </Text>
         <Flex
           justifyContent={"space-between"}
-          flexDir={{ base: "column", xl: "row" }}
-          gap="70px"
+          flexDir={{ base: "column", lg: "row" }}
+          gap={{ base: "36px", lg: "70px" }}
         >
           <GreatTranscript />
           <OptimalSetup />
