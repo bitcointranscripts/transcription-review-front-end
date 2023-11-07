@@ -82,15 +82,16 @@ const Step3 = () => {
         </Flex>
 
         <Flex
-          py={"70px"}
-          px="70px"
+          py={{ base: "20px", lg: "70px" }}
+          px={{ base: "14px", lg: "70px" }}
           justifyContent={"space-between"}
+          flexDir={{ base: "column", lg: "row" }}
           gap={10}
           borderWidth={2}
           borderColor={"#D9D9D9"}
-          borderRadius={"30px 0px 30px 30px"}
-          fontSize={{ base: "1.3rem", xl: "1.8rem" }}
+          borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
           fontFamily={"Aeonik Fono"}
+          fontSize={{ base: "0.75rem", lg: "1.3rem", xl: "1.8rem" }}
         >
           <Text lineHeight={"135%"}>
             <Text as={"span"} fontWeight={700}>
@@ -106,19 +107,20 @@ const Step3 = () => {
         </Flex>
 
         <Flex
-          py={"70px"}
-          pl="70px"
+          py={{ base: "20px", lg: "70px" }}
+          px={{ base: "14px", lg: "70px" }}
           justifyContent={"space-between"}
-          gap={10}
+          flexDir={{ base: "column", lg: "row" }}
+          gap={{ base: 4, lg: 10 }}
           borderWidth={2}
           borderColor={"#D9D9D9"}
-          borderRadius={"30px 0px 30px 30px"}
+          borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
         >
           <Flex
             flexDir={"column"}
             lineHeight={"135%"}
             gap={8}
-            fontSize={{ base: "1.3rem", xl: "1.8rem" }}
+            fontSize={{ base: "0.75rem", lg: "1.3rem", xl: "1.8rem" }}
             fontFamily={"Polysans"}
           >
             <Text>

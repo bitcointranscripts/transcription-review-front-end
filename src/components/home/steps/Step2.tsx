@@ -11,20 +11,29 @@ const Step2 = () => {
       heading="Start reviewing and editing the transcript"
       sub="TLDR; Use markdown. Make sure stuff is accurate. Use “replace” in case of multispeaker transcripts. Use split screen to listen and edit transcript at the same time."
       maxW={"1000px"}
+      src="/home/edit-transcript.png"
       headingMaxW={"700px"}
     >
       <Flex flexDir={"column"} gap={10}>
         <Flex
-          py={"70px"}
-          px="70px"
+          py={{ base: "0px", lg: "70px" }}
+          px={{ base: "0px", lg: "70px" }}
           flexDir={"column"}
-          borderWidth={2}
+          borderWidth={{ base: 0, lg: 2 }}
           gap={20}
           width="100%"
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >
-          <Flex gap={16}>
+          <Flex
+            flexDir={{ base: "column", lg: "row" }}
+            gap={{ base: "24px", lg: 16 }}
+            py={{ base: "22px", lg: "0px" }}
+            borderRadius={{ base: "12px", lg: "0px" }}
+            px={{ base: "22px", lg: "0px" }}
+            borderColor={"#D9D9D9"}
+            borderWidth={{ base: 1.5, lg: "0px" }}
+          >
             <SubStepSingle
               isActive
               heading="Using Markdown"
@@ -32,28 +41,34 @@ const Step2 = () => {
               maxW="540px"
             />
             <SubStepSingle
+              isActive
               sub="You probably won’t need to use anything apart from Header 1, Header 2, bolding, italics, and hyperlinks. Here's a super quick primer."
               maxW="536px"
+              href="https://www.markdownguide.org/basic-syntax/"
+              otherText="Here's a super "
+              link="quick primer."
             />
           </Flex>
         </Flex>
 
         <Flex
-          pt={"90px"}
-          pl="70px"
+          pt={{ base: "24px", lg: "90px" }}
+          pl={{ base: "14px", lg: "70px" }}
           justifyContent={"space-between"}
+          flexDir={{ base: "column", lg: "row" }}
           gap={10}
           borderWidth={2}
           borderColor={"#D9D9D9"}
-          borderRadius={"30px 0px 30px 30px"}
+          borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
         >
           <Flex
             lineHeight={"135%"}
             flexDir={"column"}
             gap={4}
+            pr={{ base: "14px", lg: "0px" }}
             maxW={"386px"}
             color={"#262626"}
-            fontSize={{ base: "1.25rem", xl: "1.75rem" }}
+            fontSize={{ base: "1rem", xl: "1.75rem" }}
             fontFamily={"Polysans"}
           >
             <Text>
@@ -68,12 +83,12 @@ const Step2 = () => {
           <Box
             py={1}
             pl={1}
-            borderWidth={2}
+            borderWidth={{ base: 0, lg: 2 }}
             width={"100%"}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
           >
-            <Box position={"relative"} minH={"450px"}>
+            <Box position={"relative"} minH={{ base: "180px", lg: "450px" }}>
               <Image
                 src="/home/editing-interface.png"
                 alt="authorize github page"
@@ -85,20 +100,23 @@ const Step2 = () => {
         </Flex>
 
         <Flex
-          pt={"90px"}
-          pl="70px"
+          pt={{ base: "20px", lg: "90px" }}
+          pl={{ base: "20px", lg: "70px" }}
           justifyContent={"space-between"}
+          flexDir={{ base: "column", lg: "row" }}
           gap={10}
           borderWidth={2}
           borderColor={"#D9D9D9"}
-          borderRadius={"30px 0px 30px 30px"}
+          borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
         >
           <Flex
-            flexDir={"column"}
             lineHeight={"135%"}
+            flexDir={"column"}
             gap={4}
+            pr={{ base: "14px", lg: "0px" }}
             maxW={"386px"}
-            fontSize={{ base: "1.25rem", xl: "1.75rem" }}
+            color={"#262626"}
+            fontSize={{ base: "1rem", xl: "1.75rem" }}
             fontFamily={"Polysans"}
           >
             <Text>Here is what will live in the GitHub repository.</Text>
@@ -107,14 +125,14 @@ const Step2 = () => {
             </Text>
           </Flex>
           <Box
-            py={1}
+            py={{ base: 0, lg: 1 }}
             pl={1}
-            borderWidth={2}
+            borderWidth={{ base: 0, lg: 2 }}
             width={"100%"}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
           >
-            <Box position={"relative"} minH={"450px"}>
+            <Box position={"relative"} minH={{ base: "180px", lg: "450px" }}>
               <Image
                 src="/home/raw-markdown.png"
                 alt="authorize github page"
@@ -126,20 +144,23 @@ const Step2 = () => {
         </Flex>
 
         <Flex
-          pt={"90px"}
-          pl="70px"
+          pt={{ base: "20px", lg: "90px" }}
+          pl={{ base: "20px", lg: "70px" }}
           justifyContent={"space-between"}
+          flexDir={{ base: "column", lg: "row" }}
           gap={10}
           borderWidth={2}
           borderColor={"#D9D9D9"}
-          borderRadius={"30px 0px 30px 30px"}
+          borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
         >
           <Flex
             lineHeight={"135%"}
             flexDir={"column"}
             gap={4}
+            pr={{ base: "14px", lg: "0px" }}
             maxW={"386px"}
-            fontSize={{ base: "1.25rem", xl: "1.75rem" }}
+            color={"#262626"}
+            fontSize={{ base: "1rem", xl: "1.75rem" }}
             fontFamily={"Polysans"}
           >
             <Text>Here is what will live on the live site.</Text>
@@ -150,12 +171,12 @@ const Step2 = () => {
           <Box
             py={1}
             pl={1}
-            borderWidth={2}
+            borderWidth={{ base: 0, lg: 2 }}
             width={"100%"}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
           >
-            <Box position={"relative"} minH={"450px"}>
+            <Box position={"relative"} minH={{ base: "180px", lg: "450px" }}>
               <Image
                 src="/home/live-site.png"
                 alt="authorize github page"

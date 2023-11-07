@@ -92,19 +92,23 @@ const Step1 = () => {
         </Flex>
 
         <Flex
-          pt={"90px"}
-          pl="70px"
+          pt={{ base: "20px", lg: "90px" }}
+          pl={{ base: "20px", lg: "70px" }}
           justifyContent={"space-between"}
           gap={10}
+          flexDir={{ base: "column", lg: "row" }}
           borderWidth={2}
           borderColor={"#D9D9D9"}
-          borderRadius={"30px 0px 30px 30px"}
+          borderRadius={{
+            base: "12px 0px 12px 12px",
+            lg: "30px 0px 30px 0px",
+          }}
         >
           <Flex
             lineHeight={"135%"}
             flexDir={"column"}
-            fontSize={{ base: "1.25rem", xl: "1.75rem" }}
-            fontFamily={" PolySans"}
+            fontSize={{ base: "0.875rem", xl: "1.75rem" }}
+            fontFamily={"Aeonik Fono"}
             gap={4}
             maxW={"386px"}
           >
@@ -115,18 +119,30 @@ const Step1 = () => {
             <Text>Now, it’s time to edit!</Text>
           </Flex>
           <Box
-            py={1}
-            pl={1}
-            borderWidth={2}
+            py={{ base: 0, lg: 1 }}
+            pl={{ base: 0, lg: 1 }}
+            borderWidth={{ base: 0, lg: 2 }}
             width={"100%"}
             borderColor={"#D9D9D9"}
-            borderRadius={"30px 0px 30px 0px"}
+            borderRadius={{
+              base: "12px 0px 12px 12px",
+              lg: "30px 0px 30px 0px",
+            }}
           >
-            <Box position={"relative"} marginBottom={"-10px"} minH={"346px"}>
+            <Box
+              position={"relative"}
+              marginBottom={{ base: "0px", lg: "-10px" }}
+              minH={{ base: "120px", lg: "346px" }}
+              overflow={"hidden"}
+            >
               <Image
                 src="/home/claim-transcript.png"
                 alt="authorize github page"
-                style={{ objectFit: "contain" }}
+                style={{
+                  objectFit: "contain",
+                  aspectRatio: "16:9",
+                  bottom: "0px",
+                }}
                 fill
               />
             </Box>
