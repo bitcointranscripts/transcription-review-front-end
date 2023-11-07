@@ -10,21 +10,17 @@ export type ReviewQueryOptions = {
 export type ReviewQueryStatus = "active" | "pending" | "inactive";
 export type TransactionQueryOptions = {
   userId?: number;
+  userInfo?: string;
   status?: "success" | "pending" | "failed";
   type?: "credit" | "debit";
 };
 
 function buildQueryParams(options: any) {
-  let base = "";
-  let hasFilledFirstIndex = false;
+  const q = new URLSearchParams();
   Object.keys(options).map((key) => {
-    if (options[key]) {
-      const queryString = `${key}=${options[key]}`;
-      base += (hasFilledFirstIndex ? "&" : "?") + queryString;
-      hasFilledFirstIndex = true;
-    }
+    q.set(key, options[key]);
   });
-  return base;
+  return `?${q.toString()}`;
 }
 
 const ARCHIVE_TRANSCRIPTS_BY_ID = (id: number) => `transcripts/${id}/archive`;
@@ -63,6 +59,14 @@ const GET_TRANSACTIONS = ({
   return "transactions" + buildQueryParams({ userId, status, type });
 };
 
+const GET_TRANSACTIONS_ADMIN = ({
+  userInfo,
+  status,
+  type,
+}: TransactionQueryOptions) => {
+  return "transactions/all" + buildQueryParams({ userInfo, status, type });
+};
+
 const GET_WALLET = (id?: number) => `users/${id}/wallet`;
 
 const USER_SIGN_OUT = () => `logout`;
@@ -82,6 +86,7 @@ const endpoints = {
   SUBMIT_REVIEW,
   PAY_INVOICE,
   GET_TRANSACTIONS,
+  GET_TRANSACTIONS_ADMIN,
   GET_WALLET,
   USER_SIGN_OUT,
 };

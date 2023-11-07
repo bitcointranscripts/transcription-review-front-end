@@ -23,11 +23,15 @@ import { BiWallet } from "react-icons/bi";
 import { CgTranscript } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
 import { FiUser } from "react-icons/fi";
-import { HiOutlineBookOpen } from "react-icons/hi";
+import { HiOutlineBookOpen, HiOutlineSwitchHorizontal } from "react-icons/hi";
 import MenuNav from "./MenuNav";
+import AdminMenu from "./AdminMenu";
 
 const Menu = () => {
   const { data: userSession } = useSession();
+
+  const isAdmin = userSession?.user?.permissions === "admin";
+
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
   const toast = useToast();
@@ -159,6 +163,17 @@ const Menu = () => {
                         icon={BiWallet}
                       />
                     </Flex>
+                    {isAdmin ? (
+                      <AdminMenu>
+                        <MenuNav
+                          currentRoute={currentRoute}
+                          routeName={ROUTES_CONFIG.TRANSACTIONS}
+                          routeLink={ROUTES_CONFIG.TRANSACTIONS}
+                          handleClose={closeMenu}
+                          icon={HiOutlineSwitchHorizontal}
+                        />
+                      </AdminMenu>
+                    ) : null}
                   </Box>
                   <Divider />
                   <Box py={8} w="fit-content">
