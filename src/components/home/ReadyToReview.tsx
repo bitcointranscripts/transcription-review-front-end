@@ -5,8 +5,8 @@ const ReadyToReview = () => {
   return (
     <Flex
       background={"white"}
-      py={40}
-      px={32}
+      py={{ base: 0, lg: 40 }}
+      px={{ base: 0, lg: 32 }}
       justifyContent={"center'"}
       align={"center"}
     >
@@ -14,29 +14,33 @@ const ReadyToReview = () => {
         backgroundImage={"/home/cross-board.png"}
         backgroundSize={"cover"}
         backgroundRepeat={"no-repeat"}
-        className="bg-container"
+        maxWidth={{ base: "100%", lg: "90%" }}
+        margin={{ base: 0, lg: "0 auto" }}
+        width={"100%"}
         justifyContent={"center"}
         alignItems={"center"}
-        minH={["518px"]}
+        minH={"518px"}
       >
         <Flex
-          background={"#F7F7F7"}
+          background={{ base: "white", lg: "#F7F7F7" }}
           width={"100%"}
           maxW={"85%"}
-          borderRadius={"50px"}
-          borderWidth={2}
+          flexDir={{ base: "column", lg: "row" }}
+          borderRadius={{ base: "12px", lg: "50px" }}
+          borderWidth={{ base: 1, lg: 2 }}
           fontFamily={"PolySans"}
-          //   maxWidth={"531px"}
-          px={"80px"}
-          py={"80px"}
+          px={{ base: "28px", lg: "80px" }}
+          py={{ base: "28px", lg: "80px" }}
           justifyContent={"space-between"}
+          gap={{ base: "28px", lg: "0px" }}
           alignItems={"center"}
           borderColor={"#CCC"}
         >
           <Text
             maxW={"360px"}
             fontWeight={600}
-            fontSize={{ base: "3.25rem", xl: "3rem", "2xl": "4.25rem" }}
+            textAlign={{ base: "center", lg: "left" }}
+            fontSize={{ base: "2rem", xl: "3rem", "2xl": "4.25rem" }}
             lineHeight={"115%"}
           >
             Ready to review transcripts and earn sats?
@@ -45,6 +49,7 @@ const ReadyToReview = () => {
             size={{ base: "md", "2xl": "lg" }}
             maxW={"max-content"}
             bg="#262626"
+            borderRadius={["8px", "8px", null]}
             fontFamily={"Mona-Sans"}
             color={"#F7F7F7"}
             variant="outline"

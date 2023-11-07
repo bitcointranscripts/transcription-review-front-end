@@ -10,23 +10,28 @@ const LandingFooter = () => {
     >
       <Flex
         justifyContent={"space-between"}
-        alignItems={"center"}
+        alignItems={{ base: "start", lg: "center" }}
         width={"full"}
+        gap={{ base: 3, lg: "0px" }}
         lineHeight={"115%"}
       >
         <Flex
           flexDirection={"column"}
           fontWeight={500}
-          gap={12}
+          gap={{ base: 6, lg: 12 }}
           fontFamily={"Aeonik Fono"}
         >
-          <Text fontSize={"2rem"} lineHeight={"115%"} maxW={"469px"}>
+          <Text
+            fontSize={{ base: "0.875rem", lg: "2rem" }}
+            lineHeight={"115%"}
+            maxW={"469px"}
+          >
             We’d love to hear your feedback on this project
           </Text>
           <Link
             href="https://cryptpad.fr/form/#/2/form/view/3P2CsohsHOkcH7C+WdtX0-tvqjBHqXnAmz5D9yx0e04/"
             isExternal
-            fontSize={"1.8rem"}
+            fontSize={{ base: "0.875rem", lg: "2rem" }}
             textDecoration={"underline"}
           >
             Submit Feedback
@@ -39,12 +44,15 @@ const LandingFooter = () => {
           alignItems={"end"}
           fontFamily={"Aeonik Fono"}
         >
-          <Text fontSize={"1.85rem"}>built with 🤍 by</Text>
+          <Text fontSize={{ base: "0.96rem", lg: "1.85rem" }}>
+            built with 🤍 by
+          </Text>
           <Link
             href="https://bitcoindevs.xyz"
             isExternal
-            fontSize={"2.75rem"}
+            fontSize={{ base: "1.25rem", lg: "2.75rem" }}
             textDecoration={"underline"}
+            lineHeight={{ base: "150%", lg: "115%" }}
           >
             The Bitcoin Dev Project
           </Link>
