@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from "@/utils";
+
 export type ReviewQueryOptions = {
   userId?: number;
   username?: string;
@@ -17,9 +19,11 @@ export type TransactionQueryOptions = {
 
 function buildQueryParams(options: any) {
   const q = new URLSearchParams();
-  Object.keys(options).map((key) => {
-    q.set(key, options[key]);
-  });
+  for (const key of Object.keys(options)) {
+    if (!isNullOrUndefined(options[key])) {
+      q.set(key, options[key]);
+    }
+  }
   return `?${q.toString()}`;
 }
 
