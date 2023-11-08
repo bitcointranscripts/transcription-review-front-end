@@ -3,9 +3,10 @@ import axios from "../axios";
 import { useQuery } from "@tanstack/react-query";
 
 import endpoints, { TransactionQueryOptions } from "../endpoints";
-import { Transaction } from "../../../../types";
+import { Transaction, TransactionQueryStatus, TransactionQueryType } from "../../../../types";
+import { TransactionStatus, TransactionType } from "@/config/default";
 
-type TranactionsResponse = {
+type TransactionsResponse = {
   data: Transaction[];
   hasNextPage: boolean;
   hasPreviousPage: boolean;
@@ -15,13 +16,28 @@ type TranactionsResponse = {
   totalTransactions: number;
 };
 
+type TransactionQueryFromURL = {
+  userInfo: string | null;
+  status: string | null;
+  type: string | null;
+};
+
 export const getTransaction = async ({
   userInfo,
   status,
   type,
-}: TransactionQueryOptions): Promise<TranactionsResponse> => {
+}: TransactionQueryFromURL): Promise<TransactionsResponse> => {
+  const transactionQueryOptions = {
+    userInfo: userInfo ?? undefined,
+    type: Object.values(TransactionType).includes(type as TransactionQueryType)
+      ? type as TransactionQueryType
+      : undefined,
+    status: Object.values(TransactionStatus).includes(status as TransactionQueryStatus)
+      ? status as TransactionQueryStatus
+      : undefined,
+  };
   return axios
-    .get(endpoints.GET_TRANSACTIONS_ADMIN({ userInfo, status, type }))
+    .get(endpoints.GET_TRANSACTIONS_ADMIN(transactionQueryOptions))
     .then((res) => res.data)
     .catch((err) => err);
 };
@@ -30,7 +46,7 @@ export const useGetTransactions = ({
   userInfo,
   status,
   type,
-}: TransactionQueryOptions) =>
+}: TransactionQueryFromURL) =>
   useQuery({
     queryFn: () => getTransaction({ userInfo, status, type }),
     queryKey: ["transaction", userInfo, status, type],
