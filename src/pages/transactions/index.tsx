@@ -19,6 +19,7 @@ import { useGetTransactions } from "@/services/api/admin";
 import { useRouter } from "next/router";
 import { TransactionStatus, TransactionType } from "@/config/default";
 import AdminTransactionsTable from "@/components/tables/AdminTransactionsTable";
+import Pagination from "@/components/tables/Pagination";
 
 // eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (name: string, item: T) => void;
@@ -68,30 +69,6 @@ const SelectFilter = <T extends string>({
   );
 };
 
-// const DateFilter = ({
-//   hasValue,
-//   onSelect,
-//   text,
-// }: {
-//   hasValue: boolean;
-//   onSelect: OnSelect<Date>;
-//   text: string;
-// }) => {
-//   return (
-//     <Flex color={hasValue ? "orange.500" : undefined}>
-//       <DatePicker
-//         customInput={
-//           <Box cursor="pointer">
-//             <FilterItem text={text} />
-//           </Box>
-//         }
-//         onChange={onSelect}
-//         dateFormat="yyyy-MM-dd"
-//       />
-//     </Flex>
-//   );
-// };
-
 const Transactions = () => {
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
 
@@ -102,6 +79,7 @@ const Transactions = () => {
   const userFilter = urlParams.get("user");
   const typeFilter = urlParams.get("type");
   const statusFilter = urlParams.get("status");
+  const pageQuery = urlParams.get("page");
 
   const { data: sessionData } = useSession();
 
@@ -116,6 +94,7 @@ const Transactions = () => {
     userInfo: userFilter,
     type: typeFilter,
     status: statusFilter,
+    page: pageQuery,
   });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -220,6 +199,13 @@ const Transactions = () => {
           isLoading={isLoading}
           hasFilters={showReset}
         />
+        {totalPages && page ? (
+          <Pagination
+            pages={totalPages}
+            setCurrentPage={() => {}}
+            currentPage={page}
+          />
+        ) : null}
       </Flex>
       {/* <WalletAlert isOpen={isOpen} onCancel={onClose} refetch={refetch} /> */}
     </>

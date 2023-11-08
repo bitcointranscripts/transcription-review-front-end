@@ -17,6 +17,7 @@ export type TransactionQueryOptions = {
   userInfo?: string;
   status?: TransactionQueryStatus;
   type?: TransactionQueryType;
+  page?: number;
 };
 
 function buildQueryParams(options: any) {
@@ -69,8 +70,9 @@ const GET_TRANSACTIONS_ADMIN = ({
   userInfo,
   status,
   type,
+  page,
 }: TransactionQueryOptions) => {
-  return "transactions/all" + buildQueryParams({ userInfo, status, type });
+  return "transactions/all" + buildQueryParams({ userInfo, status, type, page });
 };
 
 const GET_WALLET = (id?: number) => `users/${id}/wallet`;
