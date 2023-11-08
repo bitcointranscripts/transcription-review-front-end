@@ -14,13 +14,11 @@ import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { BiChevronDown } from "react-icons/bi";
 import { IoIosFunnel } from "react-icons/io";
-import TransactionsTable from "@/components/tables/TransactionsTable";
-
-import { TransactionQueryStatus, TransactionQueryType } from "../../../types";
 import AuthStatus from "@/components/transcript/AuthStatus";
 import { useGetTransactions } from "@/services/api/admin";
 import { useRouter } from "next/router";
 import { TransactionStatus, TransactionType } from "@/config/default";
+import AdminTransactionsTable from "@/components/tables/AdminTransactionsTable";
 
 // eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (name: string, item: T) => void;
@@ -101,11 +99,9 @@ const Transactions = () => {
   const queryString = router.asPath.split("?").slice(1).join("");
   const urlParams = new URLSearchParams(queryString);
 
-  const userFilter = urlParams.get("user") ?? undefined;
-  const typeFilter =
-    (urlParams.get("type") as TransactionQueryType) ?? undefined;
-  const statusFilter =
-    (urlParams.get("status") as TransactionQueryStatus) ?? undefined;
+  const userFilter = urlParams.get("user");
+  const typeFilter = urlParams.get("type");
+  const statusFilter = urlParams.get("status");
 
   const { data: sessionData } = useSession();
 
@@ -220,11 +216,11 @@ const Transactions = () => {
             </Button>
           )}
         </Flex>
-        <TransactionsTable
+        <AdminTransactionsTable
           transactions={data ?? []}
           isError={isError}
           isLoading={isLoading}
-          filters={{ date: dateFilter, status: statusFilter, type: typeFilter }}
+          hasFilters={showReset}
         />
       </Flex>
       {/* <WalletAlert isOpen={isOpen} onCancel={onClose} refetch={refetch} /> */}
