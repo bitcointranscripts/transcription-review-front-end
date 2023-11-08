@@ -5,12 +5,12 @@ const LandingFooter = () => {
   return (
     <Flex
       bg={"#F7931A"}
-      px={{ base: "32px", xl: "100px" }}
+      px={{ base: "1px", xl: "100px" }}
       py={{ base: "32px", xl: "82px" }}
     >
       <Flex
         justifyContent={"space-between"}
-        alignItems={{ base: "start", lg: "center" }}
+        alignItems={{ base: "", lg: "center" }}
         width={"full"}
         className="bg-container"
         gap={{ base: 3, lg: "0px" }}
@@ -19,8 +19,10 @@ const LandingFooter = () => {
         <Flex
           flexDirection={"column"}
           fontWeight={500}
+          justifyContent={"space-between"}
           gap={{ base: 6, lg: 12 }}
           fontFamily={"Aeonik Fono"}
+          maxW={{ base: "50%", lg: "none" }}
         >
           <Text
             fontSize={{ base: "0.875rem", lg: "2rem" }}
@@ -53,6 +55,7 @@ const LandingFooter = () => {
             isExternal
             fontSize={{ base: "1.25rem", lg: "2.75rem" }}
             textDecoration={"underline"}
+            textAlign={"right"}
             lineHeight={{ base: "150%", lg: "115%" }}
           >
             The Bitcoin Dev Project

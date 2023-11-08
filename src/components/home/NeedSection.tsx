@@ -90,7 +90,7 @@ const NeedSection = () => {
               w={"100%"}
             >
               <Image
-                src="/home/editing-section.png"
+                src="/home/consider-editing.png"
                 fill
                 alt="editing"
                 style={{ objectFit: "cover", aspectRatio: "13:10" }}
