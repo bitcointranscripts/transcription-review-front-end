@@ -15,7 +15,7 @@ const NeedSection = () => {
           justifyContent={"space-between"}
         >
           <Text
-            fontSize={{ base: "2.125rem", xl: "3.3rem", "2xl": "4.5rem" }}
+            fontSize={{ base: "2.125rem", xl: "3.3rem", "2xl": "3.5rem" }}
             fontFamily={["Polysans"]}
             lineHeight="115%"
             textAlign={{ base: "center", xl: "left" }}
@@ -32,7 +32,7 @@ const NeedSection = () => {
               "repeat(1, 1fr)",
               "repeat(1, 1fr)",
               "repeat(2, 1fr)",
-              "repeat(2, 1fr)",
+              "repeat(3, 1fr)",
               "repeat(3, 1fr)",
             ]}
           >

@@ -12,6 +12,7 @@ const LandingFooter = () => {
         justifyContent={"space-between"}
         alignItems={{ base: "start", lg: "center" }}
         width={"full"}
+        className="bg-container"
         gap={{ base: 3, lg: "0px" }}
         lineHeight={"115%"}
       >

@@ -3,11 +3,28 @@ import StepLayout from "../StepLayout";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import SubStepSingle from "./SubStepSingle";
 import Image from "next/image";
+import CarouselCards from "../CarouselCards";
+import { ICarouselCardSlide } from "../CarouselCardSlide";
 
 const Step1 = () => {
   const images = ["/home/authorize-landing.png", "/home/raw-markdown.png"];
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const step1Contents: ICarouselCardSlide[] = [
+    {
+      fullImage: "/home/signin-github.png",
+      heading: "Connect",
+      icon: "/home/connect.png",
+      desc: "Connect your GitHub account to BTCTranscripts by clicking “Get Started”",
+    },
+    {
+      fullImage: "/home/authorize-mobile.png",
+      heading: "Authorize",
+      icon: "/home/authorize-step.png",
+      desc: "Authorize Bitcoin Transcripts Dev to access to your Github account",
+      desc2:
+        "In simple English, it means that BTCTranscripts will write your transcript onto GitHub so that it can be reviewed.",
+    },
+  ];
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
@@ -26,15 +43,21 @@ const Step1 = () => {
       sub="TLDR; Connect your GitHub to BTCtranscripts"
     >
       <Flex flexDir={"column"} gap={10}>
+        {/* <Flex></Flex> */}
+        <Box display={{ base: "block", md: "none" }}>
+          <CarouselCards stepContents={step1Contents} />
+        </Box>
+
         <Flex
           pt={"70px"}
           px="70px"
+          display={{ base: "none", md: "flex" }}
           flexDir={"column"}
           borderWidth={2}
           gap={20}
           width="100%"
           borderColor={"#D9D9D9"}
-          borderRadius={"30px 30px 0px 0px"}
+          borderRadius={"30px 0px 30px 30px"}
         >
           <Flex
             gap={10}
@@ -101,7 +124,7 @@ const Step1 = () => {
           borderColor={"#D9D9D9"}
           borderRadius={{
             base: "12px 0px 12px 12px",
-            lg: "30px 0px 30px 0px",
+            lg: "30px 30px 30px 30px",
           }}
         >
           <Flex

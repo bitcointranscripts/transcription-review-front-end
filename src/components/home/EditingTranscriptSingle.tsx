@@ -19,6 +19,7 @@ const EditingTranscriptSingle: FC<IEditingTranscript> = ({
       gap={4}
       px={{ base: "", lg: "44px" }}
       fontFamily={"Polysans"}
+      alignItems={{ base: "center", md: "start" }}
     >
       <Image src={src} width={60} height={59} alt={heading} />
       <Text
@@ -40,6 +41,7 @@ const EditingTranscriptSingle: FC<IEditingTranscript> = ({
           xl: "1.5rem",
           "2xl": "1.75rem",
         }}
+        textAlign={{ base: "center", md: "left" }}
         lineHeight={"125%"}
         fontFamily={"Aeonik Fono"}
       >

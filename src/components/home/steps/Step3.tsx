@@ -3,10 +3,26 @@ import StepLayout from "../StepLayout";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import SubStepSingle from "./SubStepSingle";
 import Image from "next/image";
+import CarouselCards from "../CarouselCards";
+import { ICarouselCardSlide } from "../CarouselCardSlide";
 
 const Step3 = () => {
   const images = ["/home/authorize-landing.png", "/home/raw-markdown.png"];
   const [currentIndex, setCurrentIndex] = useState(0);
+  const step3Contents: ICarouselCardSlide[] = [
+    {
+      fullImage: "/home/submit-pr.png",
+      heading: "Submission",
+      icon: "/home/submission.png",
+      desc: "Once you submit your transcript, it will create a PR (pull request)* of your edited transcript from the original transcript",
+    },
+    {
+      fullImage: "",
+      heading: "Check the PR",
+      icon: "/home/check-pr.png",
+      desc: "If you want to see your transcript, visit your profile and click the link. On the transcript’s GitHub PR, you can click the “Files changed” nav button to view.",
+    },
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -26,6 +42,9 @@ const Step3 = () => {
       sub="TLDR; Once you submit, you’re done! The submitted transcripts are reviewed by a human and then published via GitHub"
     >
       <Flex flexDir={"column"} gap={10}>
+      <Box display={{ base: "block", md: "none" }}>
+          <CarouselCards stepContents={step3Contents} />
+        </Box>
         <Flex
           pt={"70px"}
           px="70px"
@@ -33,6 +52,7 @@ const Step3 = () => {
           borderWidth={2}
           gap={20}
           width="100%"
+          display={{ base: "none", md: "flex" }}
           borderColor={"#D9D9D9"}
           borderRadius={"30px 0px 30px 30px"}
         >

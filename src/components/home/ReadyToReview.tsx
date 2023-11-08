@@ -14,7 +14,7 @@ const ReadyToReview = () => {
         backgroundImage={"/home/cross-board.png"}
         backgroundSize={"cover"}
         backgroundRepeat={"no-repeat"}
-        maxWidth={{ base: "100%", lg: "90%" }}
+        maxWidth={{ base: "100%", lg: "90%", "2xl": "70%" }}
         margin={{ base: 0, lg: "0 auto" }}
         width={"100%"}
         justifyContent={"center"}
@@ -24,7 +24,7 @@ const ReadyToReview = () => {
         <Flex
           background={{ base: "white", lg: "#F7F7F7" }}
           width={"100%"}
-          maxW={"85%"}
+          className="bg-container"
           flexDir={{ base: "column", lg: "row" }}
           borderRadius={{ base: "12px", lg: "50px" }}
           borderWidth={{ base: 1, lg: 2 }}
@@ -37,7 +37,7 @@ const ReadyToReview = () => {
           borderColor={"#CCC"}
         >
           <Text
-            maxW={"360px"}
+            maxW={{ base: "360px", lg: "531px" }}
             fontWeight={600}
             textAlign={{ base: "center", lg: "left" }}
             fontSize={{ base: "2rem", xl: "3rem", "2xl": "4.25rem" }}

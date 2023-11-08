@@ -10,14 +10,15 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({ Icon, heading, sub }) => {
   return (
     <Flex
       position={"relative"}
-      minW={["100%", "256px", "320px", "320px", "320px", "370px"]}
-      maxW={["100%", "256px", "320px", "320px", "320px", "370px"]}
+      minW={["100%", "256px", "320px", "280px", "320px", "370px"]}
+      maxW={["100%", "256px", "320px", "280px", "320px", "370px"]}
       minH={["217px", "217px", "320px"]}
       maxH={["217px", "217px", "320px"]}
       margin={"0 auto"}
       bg={"#F7F7F7"}
       rounded={"30px"}
       pt={{ base: "70px", lg: "70px" }}
+      pb={{ base: "0px", xl: "58px" }}
       px={{ base: "24px", lg: "45px" }}
     >
       <Box
@@ -61,7 +62,7 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({ Icon, heading, sub }) => {
             "1.25rem",
             "1.25rem",
             "1.25rem",
-            "2rem",
+            "1.5rem",
           ]}
         >
           {sub}
