@@ -128,8 +128,6 @@ const Transactions = () => {
     page,
   } = transactionResponse ?? {};
 
-  console.log({ data });
-
   const resetFilters = () => {
     router.push(router.pathname, undefined, {
       shallow: true,
