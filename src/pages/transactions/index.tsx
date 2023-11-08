@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Flex,
   Heading,
@@ -7,28 +6,24 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Spinner,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
-import { useState, useMemo } from "react";
-import DatePicker from "react-datepicker";
+import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { BiChevronDown } from "react-icons/bi";
 import { IoIosFunnel } from "react-icons/io";
-
-import WalletAlert from "@/components/alerts/WalletAlert";
-import RedirectToLogin from "@/components/RedirectToLogin";
 import TransactionsTable from "@/components/tables/TransactionsTable";
-import { useGetWallet } from "@/services/api/wallet";
 
-import { Transaction } from "../../../types";
+import { TransactionQueryStatus, TransactionQueryType } from "../../../types";
 import AuthStatus from "@/components/transcript/AuthStatus";
 import { useGetTransactions } from "@/services/api/admin";
+import { useRouter } from "next/router";
+import { TransactionStatus, TransactionType } from "@/config/default";
 
 // eslint-disable-next-line no-unused-vars
-type OnSelect<T> = (item: T) => void;
+type OnSelect<T> = (name: string, item: T) => void;
 
 const FilterItem = ({ text }: { text: string }) => (
   <Flex userSelect={"none"} gap={1} alignItems={"center"}>
@@ -43,17 +38,17 @@ const SelectFilter = <T extends string>({
   hasValue,
   onSelect,
   options,
-  text,
+  name,
 }: {
   hasValue: boolean;
   onSelect: OnSelect<T>;
   options: T[];
-  text: string;
+  name: string;
 }) => {
   return (
     <Menu>
       <MenuButton color={hasValue ? "orange.500" : undefined}>
-        <FilterItem text={text} />
+        <FilterItem text={name} />
       </MenuButton>
       <MenuList>
         {options.map((item) => (
@@ -63,7 +58,7 @@ const SelectFilter = <T extends string>({
             fontWeight={"medium"}
             onClick={(e) => {
               e.stopPropagation();
-              onSelect(item);
+              onSelect(name, item);
             }}
             key={item}
           >
@@ -75,63 +70,88 @@ const SelectFilter = <T extends string>({
   );
 };
 
-const DateFilter = ({
-  hasValue,
-  onSelect,
-  text,
-}: {
-  hasValue: boolean;
-  onSelect: OnSelect<Date>;
-  text: string;
-}) => {
-  return (
-    <Flex color={hasValue ? "orange.500" : undefined}>
-      <DatePicker
-        customInput={
-          <Box cursor="pointer">
-            <FilterItem text={text} />
-          </Box>
-        }
-        onChange={onSelect}
-        dateFormat="yyyy-MM-dd"
-      />
-    </Flex>
-  );
-};
+// const DateFilter = ({
+//   hasValue,
+//   onSelect,
+//   text,
+// }: {
+//   hasValue: boolean;
+//   onSelect: OnSelect<Date>;
+//   text: string;
+// }) => {
+//   return (
+//     <Flex color={hasValue ? "orange.500" : undefined}>
+//       <DatePicker
+//         customInput={
+//           <Box cursor="pointer">
+//             <FilterItem text={text} />
+//           </Box>
+//         }
+//         onChange={onSelect}
+//         dateFormat="yyyy-MM-dd"
+//       />
+//     </Flex>
+//   );
+// };
 
 const Transactions = () => {
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
-  const [statusFilter, setStatusFilter] = useState<
-    Transaction["transactionStatus"] | undefined
-  >(undefined);
-  const [typeFilter, setTypeFilter] = useState<
-    Transaction["transactionType"] | undefined
-  >(undefined);
 
-  const { status, data: sessionData } = useSession();
+  const router = useRouter();
+  const queryString = router.asPath.split("?").slice(1).join("");
+  const urlParams = new URLSearchParams(queryString);
+
+  const userFilter = urlParams.get("user") ?? undefined;
+  const typeFilter =
+    (urlParams.get("type") as TransactionQueryType) ?? undefined;
+  const statusFilter =
+    (urlParams.get("status") as TransactionQueryStatus) ?? undefined;
+
+  const { data: sessionData } = useSession();
 
   const isAdmin = sessionData?.user?.permissions === "admin";
 
-  const { data: transactionResponse, isLoading, isError, refetch } = useGetTransactions({});
+  const {
+    data: transactionResponse,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetTransactions({
+    userInfo: userFilter,
+    type: typeFilter,
+    status: statusFilter,
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {data, hasNextPage, hasPreviousPage, itemsPerPage, totalPages, totalTransactions, page } = transactionResponse ?? {};
+  const {
+    data,
+    hasNextPage,
+    hasPreviousPage,
+    itemsPerPage,
+    totalPages,
+    totalTransactions,
+    page,
+  } = transactionResponse ?? {};
 
-  console.log({data})
+  console.log({ data });
 
   const resetFilters = () => {
-    setTypeFilter(undefined);
-    setStatusFilter(undefined);
-    setDateFilter(undefined);
+    router.push(router.pathname, undefined, {
+      shallow: true,
+    });
   };
 
-  const showReset =
-    dateFilter !== undefined ||
-    statusFilter !== undefined ||
-    typeFilter !== undefined;
+  const showReset = urlParams.size > 0;
 
   // if (status === "unauthenticated" || !sessionData?.user?.id) {
   //   return <RedirectToLogin />;
   // }
+
+  const handleFilterSelect = <T extends string>(name: string, item: T) => {
+    urlParams.set(name, item);
+    router.push(router.pathname + "?" + urlParams.toString(), undefined, {
+      shallow: true,
+    });
+  };
 
   if (!isAdmin) {
     return (
@@ -165,7 +185,7 @@ const Transactions = () => {
             Withdraw
           </Button>
         </Flex> */}
-        {/* <Flex gap={6} alignItems={"center"}>
+        <Flex gap={6} alignItems={"center"}>
           <Flex gap={1} alignItems="center" color={"orange.500"}>
             <Text textTransform="capitalize" fontWeight="bold" fontSize="14px">
               Filters
@@ -174,21 +194,21 @@ const Transactions = () => {
           </Flex>
           <SelectFilter
             hasValue={typeFilter != undefined}
-            onSelect={setTypeFilter}
-            options={["credit", "debit"]}
-            text="Type"
+            onSelect={handleFilterSelect}
+            options={Object.values(TransactionType)}
+            name="type"
           />
           <SelectFilter
             hasValue={statusFilter != undefined}
-            onSelect={setStatusFilter}
-            options={["success", "pending", "failed"]}
-            text="Status"
+            onSelect={handleFilterSelect}
+            options={Object.values(TransactionStatus)}
+            name="status"
           />
-          <DateFilter
+          {/* <DateFilter
             hasValue={dateFilter != undefined}
             onSelect={setDateFilter}
             text="Date"
-          />
+          /> */}
           {showReset && (
             <Button
               onClick={resetFilters}
@@ -199,7 +219,7 @@ const Transactions = () => {
               Reset
             </Button>
           )}
-        </Flex> */}
+        </Flex>
         <TransactionsTable
           transactions={data ?? []}
           isError={isError}

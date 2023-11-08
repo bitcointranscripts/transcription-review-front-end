@@ -1,3 +1,5 @@
+import { TransactionStatus, TransactionType } from "@/config/default";
+
 export type Transcript = {
   id: number;
   archivedAt: Nullable<Date>;
@@ -151,3 +153,7 @@ export type Transaction = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type TransactionQueryType = (typeof TransactionType)[keyof typeof TransactionType];
+
+export type TransactionQueryStatus = (typeof TransactionStatus)[keyof typeof TransactionStatus];

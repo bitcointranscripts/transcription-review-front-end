@@ -1,4 +1,5 @@
 import { isNullOrUndefined } from "@/utils";
+import { TransactionQueryStatus, TransactionQueryType } from "../../../types";
 
 export type ReviewQueryOptions = {
   userId?: number;
@@ -10,11 +11,12 @@ export type ReviewQueryOptions = {
 };
 
 export type ReviewQueryStatus = "active" | "pending" | "inactive";
+
 export type TransactionQueryOptions = {
   userId?: number;
   userInfo?: string;
-  status?: "success" | "pending" | "failed";
-  type?: "credit" | "debit";
+  status?: TransactionQueryStatus;
+  type?: TransactionQueryType;
 };
 
 function buildQueryParams(options: any) {
