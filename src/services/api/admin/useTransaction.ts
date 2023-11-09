@@ -22,6 +22,7 @@ type TransactionsResponse = {
 
 type TransactionQueryFromURL = {
   userInfo: string | null;
+  txId: string | null;
   status: string | null;
   type: string | null;
   page: string | null;
@@ -29,12 +30,14 @@ type TransactionQueryFromURL = {
 
 export const getTransaction = async ({
   userInfo,
+  txId,
   status,
   type,
   page,
 }: TransactionQueryFromURL): Promise<TransactionsResponse> => {
   const transactionQueryOptions = {
     userInfo: userInfo ?? undefined,
+    txId: txId ?? undefined,
     type: Object.values(TransactionType).includes(type as TransactionQueryType)
       ? (type as TransactionQueryType)
       : undefined,
@@ -53,13 +56,14 @@ export const getTransaction = async ({
 
 export const useGetTransactions = ({
   userInfo,
+  txId,
   status,
   type,
   page,
 }: TransactionQueryFromURL) =>
   useQuery({
-    queryFn: () => getTransaction({ userInfo, status, type, page }),
-    queryKey: ["transaction", userInfo, status, type, page],
+    queryFn: () => getTransaction({ userInfo, txId, status, type, page }),
+    queryKey: ["transaction", userInfo, txId, status, type, page],
     refetchOnWindowFocus: false,
     enabled: true,
   });

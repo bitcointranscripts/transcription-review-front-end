@@ -15,6 +15,7 @@ export type ReviewQueryStatus = "active" | "pending" | "inactive";
 export type TransactionQueryOptions = {
   userId?: number;
   userInfo?: string;
+  txId?: string;
   status?: TransactionQueryStatus;
   type?: TransactionQueryType;
   page?: number;
@@ -68,13 +69,14 @@ const GET_TRANSACTIONS = ({
 
 const GET_TRANSACTIONS_ADMIN = ({
   userInfo,
+  txId,
   status,
   type,
   page,
 }: TransactionQueryOptions) => {
   return (
     "transactions/all" +
-    buildQueryParams({ user: userInfo, status, type, page })
+    buildQueryParams({ user: userInfo, id: txId, status, type, page })
   );
 };
 

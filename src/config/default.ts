@@ -11,6 +11,7 @@ export const TransactionStatus = {
 
 export const FilterQueryNames = {
   page: "page",
+  txId: "txId",
   size: "size",
   user: "user",
   sort: "sort",

@@ -80,6 +80,7 @@ const Transactions = () => {
   const urlParams = new URLSearchParams(queryString);
 
   const userFilter = urlParams.get(FilterQueryNames.user);
+  const txIdFilter = urlParams.get(FilterQueryNames.txId);
   const typeFilter = urlParams.get(FilterQueryNames.type);
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
@@ -95,6 +96,7 @@ const Transactions = () => {
     refetch,
   } = useGetTransactions({
     userInfo: userFilter,
+    txId: txIdFilter,
     type: typeFilter,
     status: statusFilter,
     page: pageQuery,
@@ -128,11 +130,12 @@ const Transactions = () => {
   const debounceSearch = useDebouncedCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value.trim();
+      const name = e.target.name;
       if (val !== "") {
-        handleFilterSelect(FilterQueryNames.user, val);
+        handleFilterSelect(name, val);
       } else {
-        if (urlParams.get(FilterQueryNames.user)) {
-          removeFilter(FilterQueryNames.user);
+        if (urlParams.get(name)) {
+          removeFilter(name);
         }
       }
     },
@@ -160,10 +163,16 @@ const Transactions = () => {
           justifyContent="space-between"
           alignItems={"center"}
         >
-          <Flex basis="300px" grow={{ base: 1, md: 0 }}>
+          <Flex basis="500px" gap={2} grow={{ base: 1, md: 0 }}>
             <Input
+              name={FilterQueryNames.user}
               onChange={debounceSearch}
               placeholder="Search by username or email"
+            />
+            <Input
+              name={FilterQueryNames.txId}
+              onChange={debounceSearch}
+              placeholder="Search by transaction Id"
             />
           </Flex>
           <Flex gap={4} alignItems={"center"}>
