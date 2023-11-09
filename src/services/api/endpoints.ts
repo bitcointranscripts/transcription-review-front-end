@@ -72,7 +72,10 @@ const GET_TRANSACTIONS_ADMIN = ({
   type,
   page,
 }: TransactionQueryOptions) => {
-  return "transactions/all" + buildQueryParams({ userInfo, status, type, page });
+  return (
+    "transactions/all" +
+    buildQueryParams({ user: userInfo, status, type, page })
+  );
 };
 
 const GET_WALLET = (id?: number) => `users/${id}/wallet`;

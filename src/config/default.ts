@@ -8,3 +8,12 @@ export const TransactionStatus = {
   PENDING: "pending",
   FAILED: "failed",
 } as const;
+
+export const FilterQueryNames = {
+  page: "page",
+  size: "size",
+  user: "user",
+  sort: "sort",
+  type: "type",
+  status: "status",
+} as const;

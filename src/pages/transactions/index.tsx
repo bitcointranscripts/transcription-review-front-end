@@ -2,24 +2,29 @@ import {
   Button,
   Flex,
   Heading,
+  Input,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
-import "react-datepicker/dist/react-datepicker.css";
 import { BiChevronDown } from "react-icons/bi";
 import { IoIosFunnel } from "react-icons/io";
 import AuthStatus from "@/components/transcript/AuthStatus";
 import { useGetTransactions } from "@/services/api/admin";
 import { useRouter } from "next/router";
-import { TransactionStatus, TransactionType } from "@/config/default";
+import {
+  FilterQueryNames,
+  TransactionStatus,
+  TransactionType,
+} from "@/config/default";
 import AdminTransactionsTable from "@/components/tables/AdminTransactionsTable";
 import Pagination from "@/components/tables/Pagination";
+import { useDebouncedCallback } from "use-debounce";
+import { UI_CONFIG } from "@/config/ui-config";
+import { RefetchButton } from "@/components/tables/TableItems";
 
 // eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (name: string, item: T) => void;
@@ -70,16 +75,14 @@ const SelectFilter = <T extends string>({
 };
 
 const Transactions = () => {
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
-
   const router = useRouter();
   const queryString = router.asPath.split("?").slice(1).join("");
   const urlParams = new URLSearchParams(queryString);
 
-  const userFilter = urlParams.get("user");
-  const typeFilter = urlParams.get("type");
-  const statusFilter = urlParams.get("status");
-  const pageQuery = urlParams.get("page");
+  const userFilter = urlParams.get(FilterQueryNames.user);
+  const typeFilter = urlParams.get(FilterQueryNames.type);
+  const statusFilter = urlParams.get(FilterQueryNames.status);
+  const pageQuery = urlParams.get(FilterQueryNames.page);
 
   const { data: sessionData } = useSession();
 
@@ -96,16 +99,9 @@ const Transactions = () => {
     status: statusFilter,
     page: pageQuery,
   });
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    data,
-    hasNextPage,
-    hasPreviousPage,
-    itemsPerPage,
-    totalPages,
-    totalTransactions,
-    page,
-  } = transactionResponse ?? {};
+
+  const { data, totalPages, totalTransactions, page } =
+    transactionResponse ?? {};
 
   const resetFilters = () => {
     router.push(router.pathname, undefined, {
@@ -113,11 +109,14 @@ const Transactions = () => {
     });
   };
 
-  const showReset = urlParams.size > 0;
+  const removeFilter = (filterName: string) => {
+    urlParams.delete(filterName);
+    router.push(router.pathname + "?" + urlParams.toString(), undefined, {
+      shallow: true,
+    });
+  };
 
-  // if (status === "unauthenticated" || !sessionData?.user?.id) {
-  //   return <RedirectToLogin />;
-  // }
+  const showReset = urlParams.size > 0;
 
   const handleFilterSelect = <T extends string>(name: string, item: T) => {
     urlParams.set(name, item);
@@ -125,6 +124,20 @@ const Transactions = () => {
       shallow: true,
     });
   };
+
+  const debounceSearch = useDebouncedCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value.trim();
+      if (val !== "") {
+        handleFilterSelect(FilterQueryNames.user, val);
+      } else {
+        if (urlParams.get(FilterQueryNames.user)) {
+          removeFilter(FilterQueryNames.user);
+        }
+      }
+    },
+    UI_CONFIG.DEBOUNCE_DELAY
+  );
 
   if (!isAdmin) {
     return (
@@ -141,57 +154,56 @@ const Transactions = () => {
         <Heading size={"md"} mb={10}>
           Transactions
         </Heading>
-        {/* <Flex mb={6} alignItems={"center"} gap={2}>
-          <Text fontWeight={"bold"}>Balance: </Text>
-          {isLoading ? (
-            <Spinner color="orange.500" size={"xs"} />
-          ) : (
-            <Text fontWeight={"medium"}>{balanceText}</Text>
-          )}
-          <Button
-            isDisabled={walletData?.balance === 0 || isLoading}
-            variant={"outline"}
-            colorScheme={"orange"}
-            size={"xs"}
-            onClick={onOpen}
-          >
-            Withdraw
-          </Button>
-        </Flex> */}
-        <Flex gap={6} alignItems={"center"}>
-          <Flex gap={1} alignItems="center" color={"orange.500"}>
-            <Text textTransform="capitalize" fontWeight="bold" fontSize="14px">
-              Filters
-            </Text>
-            <IoIosFunnel />
+        <Flex
+          gap={6}
+          wrap="wrap"
+          justifyContent="space-between"
+          alignItems={"center"}
+        >
+          <Flex basis="300px" grow={{ base: 1, md: 0 }}>
+            <Input
+              onChange={debounceSearch}
+              placeholder="Search by username or email"
+            />
           </Flex>
-          <SelectFilter
-            hasValue={typeFilter != undefined}
-            onSelect={handleFilterSelect}
-            options={Object.values(TransactionType)}
-            name="type"
-          />
-          <SelectFilter
-            hasValue={statusFilter != undefined}
-            onSelect={handleFilterSelect}
-            options={Object.values(TransactionStatus)}
-            name="status"
-          />
-          {/* <DateFilter
-            hasValue={dateFilter != undefined}
-            onSelect={setDateFilter}
-            text="Date"
-          /> */}
-          {showReset && (
-            <Button
-              onClick={resetFilters}
-              size={"xs"}
-              colorScheme={"red"}
-              variant={"outline"}
-            >
-              Reset
-            </Button>
-          )}
+          <Flex gap={4} alignItems={"center"}>
+            <Flex gap={1} alignItems="center" color={"orange.500"}>
+              <Text
+                textTransform="capitalize"
+                fontWeight="bold"
+                fontSize="14px"
+              >
+                Filters
+              </Text>
+              <IoIosFunnel />
+            </Flex>
+            <SelectFilter
+              hasValue={typeFilter != undefined}
+              onSelect={handleFilterSelect}
+              options={Object.values(TransactionType)}
+              name="type"
+            />
+            <SelectFilter
+              hasValue={statusFilter != undefined}
+              onSelect={handleFilterSelect}
+              options={Object.values(TransactionStatus)}
+              name="status"
+            />
+            {refetch && <RefetchButton refetch={refetch} />}
+            {showReset && (
+              <Button
+                onClick={resetFilters}
+                size={"xs"}
+                colorScheme={"red"}
+                variant={"outline"}
+              >
+                Reset
+              </Button>
+            )}
+            <Text fontWeight="bold" fontSize="14px" color="gray.500">
+              Results: {totalTransactions ?? 0}
+            </Text>
+          </Flex>
         </Flex>
         <AdminTransactionsTable
           transactions={data ?? []}

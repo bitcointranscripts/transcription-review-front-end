@@ -2,7 +2,7 @@ import axios from "../axios";
 
 import { useQuery } from "@tanstack/react-query";
 
-import endpoints, { TransactionQueryOptions } from "../endpoints";
+import endpoints from "../endpoints";
 import {
   Transaction,
   TransactionQueryStatus,
