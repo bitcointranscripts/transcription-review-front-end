@@ -1,5 +1,5 @@
 import { Flex, Text } from "@chakra-ui/react";
-import { Transaction } from "../../../types";
+import { AdminTransaction } from "../../../types";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 
@@ -15,6 +15,11 @@ const tableStructure = [
     modifier: (data) => data.amount,
   },
   {
+    name: "username",
+    type: "text-short",
+    modifier: (data) => data.wallet?.user?.githubUsername,
+  },
+  {
     name: "type",
     type: "text-short",
     modifier: (data) => data.transactionType,
@@ -25,7 +30,7 @@ const tableStructure = [
     modifier: (data) => data.transactionStatus,
   },
   { name: "date", type: "date", modifier: (data) => data.createdAt },
-] satisfies TableStructure<Transaction>[];
+] satisfies TableStructure<AdminTransaction>[];
 
 const EmptyView = ({ hasFilters }: { hasFilters: boolean }) => {
   return (
@@ -43,7 +48,7 @@ type Props = {
   isLoading: boolean;
   isError: boolean;
   hasFilters: boolean;
-  transactions: Transaction[] | undefined;
+  transactions: AdminTransaction[] | undefined;
 };
 
 const AdminTransactionsTable = ({

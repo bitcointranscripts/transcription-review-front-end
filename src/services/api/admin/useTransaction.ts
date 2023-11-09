@@ -4,14 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 
 import endpoints from "../endpoints";
 import {
-  Transaction,
+  AdminTransaction,
   TransactionQueryStatus,
   TransactionQueryType,
 } from "../../../../types";
 import { TransactionStatus, TransactionType } from "@/config/default";
 
 type TransactionsResponse = {
-  data: Transaction[];
+  data: AdminTransaction[];
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   itemsPerPage: number;
