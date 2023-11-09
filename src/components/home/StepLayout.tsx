@@ -10,6 +10,7 @@ interface IStepLayout {
   maxW?: string;
   src?: string;
   headingMaxW?: string;
+  link: string;
 }
 const StepLayout: FC<IStepLayout> = ({
   children,
@@ -19,6 +20,7 @@ const StepLayout: FC<IStepLayout> = ({
   maxW,
   src,
   headingMaxW,
+  link
 }) => {
   const coloredText = heading.split(" ")[0];
   const othersText = heading.split(coloredText);
@@ -76,7 +78,7 @@ const StepLayout: FC<IStepLayout> = ({
           <Button
             as={"a"}
             target="_blank"
-            href="https://www.youtube.com/watch?v=YNIFm0QFAuA"
+            href={link}
             leftIcon={
               <Box className="dark-wrapper">
                 <PlayIcon />

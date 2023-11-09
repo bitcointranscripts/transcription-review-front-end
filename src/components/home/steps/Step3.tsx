@@ -40,6 +40,7 @@ const Step3 = () => {
       stepNumber={3}
       heading="Submit the edited transcript"
       sub="TLDR; Once you submit, you’re done! The submitted transcripts are reviewed by a human and then published via GitHub"
+      link={"https://www.youtube.com/watch?v=YNIFm0QFAuA&t=5m02s"}
     >
       <Flex flexDir={"column"} gap={10}>
         <Box display={{ base: "block", md: "none" }}>

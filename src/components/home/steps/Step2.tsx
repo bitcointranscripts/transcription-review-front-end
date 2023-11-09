@@ -13,6 +13,7 @@ const Step2 = () => {
       maxW={"1000px"}
       src="/home/edit-transcript.png"
       headingMaxW={"700px"}
+      link={"https://www.youtube.com/watch?v=YNIFm0QFAuA&t=2m32s"}
     >
       <Flex flexDir={"column"} gap={10}>
         <Flex

@@ -41,6 +41,7 @@ const Step1 = () => {
       stepNumber={1}
       heading="Claim a recording to review"
       sub="TLDR; Connect your GitHub to BTCtranscripts"
+      link={"https://www.youtube.com/watch?v=YNIFm0QFAuA&t=2m16s"}
     >
       <Flex flexDir={"column"} gap={10}>
         {/* <Flex></Flex> */}
