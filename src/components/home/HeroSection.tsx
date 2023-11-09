@@ -6,15 +6,19 @@ import {
   Text,
   Box,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import BTCLogo from "./BTCLogo";
 import LearnHowText from "../svgs/LearnHow";
 import YoutubeTutorial from "./Youtube";
 import LearnHowMobile from "../svgs/LearnHowMobile";
 import ArrowUp from "../svgs/ArrowUp";
+import { signIn } from "next-auth/react";
+import ArrowDown from "../svgs/ArrowDown";
 // import Image from "next/image";
 
 const HeroSection = () => {
+  const getStarted = () => signIn("github");
+  const [moreHover, setMoreHover] = useState(false);
   return (
     <Flex
       className="hero-section"
@@ -47,7 +51,7 @@ const HeroSection = () => {
           <Box
             position={"absolute"}
             display={{ base: "none", xl: "block" }}
-            top={"0px"}
+            top={"-30px"}
             right={"50px"}
           >
             <LearnHowText />
@@ -82,7 +86,7 @@ const HeroSection = () => {
             fontSize={{
               base: "2.12rem",
               md: "3.25rem",
-              lg: "3.5rem",
+              lg: "3.31rem",
               xl: "4.25rem",
               "2xl": "6.25rem",
             }}
@@ -100,7 +104,12 @@ const HeroSection = () => {
           </Text>
           <Flex
             gap={{ base: 2, lg: 5 }}
-            fontSize={{ base: "1rem", xl: "2rem", "2xl": "3.25rem" }}
+            fontSize={{
+              base: "1rem",
+              lg: "1.5rem",
+              xl: "2rem",
+              "2xl": "3.25rem",
+            }}
             flexDir={"column"}
             fontFamily={"Aeonik Fono"}
           >
@@ -133,24 +142,40 @@ const HeroSection = () => {
             flexDir={["column", "row"]}
             gap={{ base: 4, md: 8 }}
             fontFamily={"Mona-sans"}
+            alignItems={"stretch"}
           >
             <Button
               size={{ base: "md", xl: "lg" }}
               maxW={{ base: "100%", md: "max-content" }}
               bg="#262626"
+              borderRadius={{ base: "8px", xl: "12px" }}
+              py={{ base: "14px", xl: "28px" }}
+              px={{ base: "18px", xl: "36px" }}
               color={"#F7F7F7"}
               variant="outline"
-              _hover={{}}
+              onClick={getStarted}
+              _hover={{ backgroundColor: "orange" }}
               _active={{}}
             >
               Get Started
             </Button>
 
             <Button
+              as={"a"}
+              href="#need-section"
               size={{ base: "md", xl: "lg", "2xl": "lg" }}
               maxW={{ base: "100%", md: "max-content" }}
+              borderRadius={{ base: "8px", xl: "12px" }}
+              borderWidth={{ base: 1.2, lg: 2, xl: 3 }}
+              borderColor={"#262626"}
+              py={{ base: "", xl: "25px" }}
+              px={{ base: "", xl: "36px" }}
               colorScheme="dark"
               variant="outline"
+              className="animated-button"
+              onMouseEnter={() => setMoreHover(true)}
+              onMouseLeave={() => setMoreHover(false)}
+              rightIcon={moreHover ? <ArrowDown /> : <></>}
             >
               Tell me more
             </Button>

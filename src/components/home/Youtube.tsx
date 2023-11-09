@@ -38,6 +38,7 @@ const YoutubeTutorial = () => {
           <Image
             display={{ lg: "none" }}
             aspectRatio={"16:9"}
+            zIndex={40}
             src={"home/hero-mobile.png"}
             style={{
               objectFit: "contain",
@@ -48,6 +49,7 @@ const YoutubeTutorial = () => {
           <Image
             display={{ base: "none", lg: "block" }}
             aspectRatio={"16:9"}
+            className="thumbnail"
             src={"home/hero-thumbnail.png"}
             style={{
               objectFit: "contain",
@@ -60,7 +62,7 @@ const YoutubeTutorial = () => {
       )}
 
       <YoutubePortal modalInfo={modalInfo} handleClose={handleClose}>
-        <YoutubeComponent player={modalPlayer} setPlayer={setModalPlayer} />
+        <YoutubeComponent  player={modalPlayer} setPlayer={setModalPlayer} />
       </YoutubePortal>
     </>
   );

@@ -17,7 +17,12 @@ const OptimalSetup = () => {
     >
       <Flex flexDir={"column"} gap={{ base: 5, lg: 12 }}>
         <Text
-          fontSize={{ base: "1.2rem", lg: "2.25rem", "2xl": "3.25rem" }}
+          fontSize={{
+            base: "1.2rem",
+            lg: "2.25rem",
+            xl: "2.35rem",
+            "2xl": "3.25rem",
+          }}
           lineHeight={"115%"}
           fontWeight={"bold"}
           color="#333"
@@ -27,7 +32,7 @@ const OptimalSetup = () => {
         <Flex flexDir={"column"} fontFamily={"Aeonik Fono"}>
           <UnorderedList
             lineHeight={"150%"}
-            fontSize={{ base: "0.875rem", lg: "1.75rem" }}
+            fontSize={{ base: "0.875rem", lg: "1.21rem", "2xl": "1.75rem" }}
             letterSpacing={"0.78px"}
             display={"flex"}
             flexDir={"column"}

@@ -42,7 +42,7 @@ const Step3 = () => {
       sub="TLDR; Once you submit, you’re done! The submitted transcripts are reviewed by a human and then published via GitHub"
     >
       <Flex flexDir={"column"} gap={10}>
-      <Box display={{ base: "block", md: "none" }}>
+        <Box display={{ base: "block", md: "none" }}>
           <CarouselCards stepContents={step3Contents} />
         </Box>
         <Flex

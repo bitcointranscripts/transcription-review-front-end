@@ -67,7 +67,7 @@ const Step1 = () => {
             <SubStepSingle
               isActive={currentIndex === 0}
               heading="Connect"
-              sub="Connect your GitHub account to BTCTranscripts by clicking “Sign In”"
+              sub="Connect your GitHub account to BTCTranscripts by clicking “Get Started”"
               maxW="332px"
             />
             <SubStepSingle

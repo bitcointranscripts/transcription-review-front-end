@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
 import CarouseCardSlide, { ICarouselCardSlide } from "./CarouselCardSlide";
 
 interface ICarouselCards {

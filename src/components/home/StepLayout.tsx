@@ -74,6 +74,9 @@ const StepLayout: FC<IStepLayout> = ({
           fontFamily={" Aeonik Fono"}
         >
           <Button
+            as={"a"}
+            target="_blank"
+            href="https://www.youtube.com/watch?v=YNIFm0QFAuA"
             leftIcon={
               <Box className="dark-wrapper">
                 <PlayIcon />

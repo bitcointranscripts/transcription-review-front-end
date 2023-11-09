@@ -7,7 +7,12 @@ import EditingTranscriptSingle from "./EditingTranscriptSingle";
 
 const NeedSection = () => {
   return (
-    <Box as="section" py={{ base: "20", lg: "40" }} background={"#FAEFE3"}>
+    <Box
+      as="section"
+      id="need-section"
+      py={{ base: "20", lg: "40" }}
+      background={"#FAEFE3"}
+    >
       <Flex flexDir={"column"} className="bg-container">
         <Flex
           gap={{ base: 10, lg: 4 }}

@@ -21,9 +21,9 @@ const ReviewingProcess = () => {
         <Text
           textAlign={"center"}
           color="#262626"
-          maxW={"1006px"}
+          maxW={{ lg: "750px", "2xl": "1006px" }}
           mx={"auto"}
-          fontSize={{ base: "1.875rem", xl: "4rem", "2xl": "4.625rem" }}
+          fontSize={{ base: "1.875rem", xl: "3.375rem", "2xl": "4.625rem" }}
           fontWeight={"semibold"}
           lineHeight={"120%"}
         >

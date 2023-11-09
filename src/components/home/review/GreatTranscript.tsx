@@ -1,4 +1,4 @@
-import { Flex, ListItem, Text, UnorderedList } from "@chakra-ui/react";
+import { Flex, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react";
 import React from "react";
 
 const GreatTranscript = () => {
@@ -15,7 +15,12 @@ const GreatTranscript = () => {
       borderColor={"#262626"}
     >
       <Text
-        fontSize={{ base: "1.2rem", lg: "2.25rem", "2xl": "3.25rem" }}
+        fontSize={{
+          base: "1.2rem",
+          lg: "2.25rem",
+          xl: "2.35rem",
+          "2xl": "3.25rem",
+        }}
         lineHeight={"115%"}
         fontWeight={"bold"}
         color="#333"
@@ -28,7 +33,11 @@ const GreatTranscript = () => {
         fontFamily={"Aeonik Fono"}
       >
         <Text
-          fontSize={{ base: "0.875rem", lg: "1.75rem" }}
+          fontSize={{
+            base: "0.875rem",
+            xl: "1.31rem",
+            "2xl": "1.75rem",
+          }}
           lineHeight={"135%"}
           letterSpacing={"0.84px"}
           fontWeight={"bold"}
@@ -38,7 +47,7 @@ const GreatTranscript = () => {
         </Text>
         <UnorderedList
           lineHeight={"150%"}
-          fontSize={{ base: "0.875rem", lg: "1.75rem" }}
+          fontSize={{ base: "0.875rem", lg: "1.21rem", "2xl": "1.75rem" }}
           letterSpacing={"0.78px"}
         >
           <ListItem>Title</ListItem>
@@ -63,7 +72,11 @@ const GreatTranscript = () => {
         fontFamily={"Aeonik Fono"}
       >
         <Text
-          fontSize={{ base: "1.2rem", lg: "2.25rem", "2xl": "3.25rem" }}
+          fontSize={{
+            base: "0.875rem",
+            xl: "1.31rem",
+            "2xl": "1.75rem",
+          }}
           lineHeight={"135%"}
           letterSpacing={"0.84px"}
           fontWeight={"bold"}
@@ -74,12 +87,36 @@ const GreatTranscript = () => {
         </Text>
         <UnorderedList
           lineHeight={"150%"}
-          fontSize={{ base: "0.875rem", lg: "1.75rem" }}
+          fontSize={{ base: "0.875rem", lg: "1.21rem", "2xl": "1.75rem" }}
           letterSpacing={"0.78px"}
         >
-          <ListItem>Silent Payments and Alternatives</ListItem>
-          <ListItem>Bitcoin Sidechains - Unchained Epicenter</ListItem>
-          <ListItem>Deep Dive Bitcoin Core V0.15</ListItem>
+          <ListItem textDecoration={"underline"}>
+            <Link
+              as={"a"}
+              target="_blank"
+              href="https://btctranscripts.com/tabconf/2022/2022-10-15-silent-payments/"
+            >
+              Silent Payments and Alternatives
+            </Link>
+          </ListItem>
+          <ListItem textDecoration={"underline"}>
+            <Link
+              as={"a"}
+              target="_blank"
+              href="https://btctranscripts.com/misc/bitcoin-sidechains-unchained-epicenter-adam3us-gmaxwell/"
+            >
+              Bitcoin Sidechains - Unchained Epicenter
+            </Link>
+          </ListItem>
+          <ListItem textDecoration={"underline"}>
+            <Link
+              as={"a"}
+              target="_blank"
+              href="https://btctranscripts.com/greg-maxwell/2017-08-28-gmaxwell-deep-dive-bitcoin-core-v0.15/"
+            >
+              Deep Dive Bitcoin Core V0.15
+            </Link>
+          </ListItem>
         </UnorderedList>
       </Flex>
     </Flex>
