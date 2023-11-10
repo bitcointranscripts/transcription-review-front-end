@@ -105,6 +105,12 @@ const Transactions = () => {
   const { data, totalPages, totalTransactions, page } =
     transactionResponse ?? {};
 
+  const sortedData = data?.sort((a, b) => {
+    if (a.createdAt > b.createdAt) return -1;
+    if (a.createdAt < b.createdAt) return 1;
+    return 0;
+  });
+
   const resetFilters = () => {
     router.push(router.pathname, undefined, {
       shallow: true,
@@ -215,7 +221,7 @@ const Transactions = () => {
           </Flex>
         </Flex>
         <AdminTransactionsTable
-          transactions={data ?? []}
+          transactions={sortedData ?? []}
           isError={isError}
           isLoading={isLoading}
           hasFilters={showReset}
