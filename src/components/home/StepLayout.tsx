@@ -84,14 +84,15 @@ const StepLayout: FC<IStepLayout> = ({
                 <PlayIcon />
               </Box>
             }
-            size={{ base: "md", lg: "lg" }}
+            fontSize={{ base: "12px", lg: "18px","2xl":"24px" }}
+            // size={{ base: "md", lg: "lg" }}
             colorScheme="dark"
             border={"1px solid #D9D9D9"}
             py={{ base: "16px", lg: "28px" }}
             px={{ base: "16px", lg: "28px" }}
             background={"#E6E6E6"}
             variant={"outline"}
-            borderBottomRightRadius={"0px"}
+            borderBottomRightRadius={{ base: "0.375rem", lg: "0px" }}
           >
             Watch tutorial
           </Button>

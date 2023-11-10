@@ -154,9 +154,8 @@ const Step1 = () => {
             pl={{ base: 0, lg: 1 }}
             borderWidth={{ base: 0, lg: 2 }}
             borderRight={"0px"}
-            borderBottom={"0px"}
             width={"100%"}
-            overflow={"hidden"}
+            overflow={{ base: "unset", lg: "hidden" }}
             borderColor={"#D9D9D9"}
             borderRadius={{
               base: "12px 0px 12px 12px",

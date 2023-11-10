@@ -268,6 +268,13 @@ border-radius: 5px;
     background-position: top, bottom;
     background-repeat: no-repeat;
   }
+  .dark-wrapper {
+    min-width: 14px;
+    max-width: 14px;
+    min-height: 14px;
+    max-height: 14px;
+    padding: 3.5px;
+  }
 }
 /* large desktop */
 @media screen and (min-width: 1600px) {

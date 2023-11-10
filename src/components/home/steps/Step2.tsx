@@ -83,12 +83,12 @@ const Step2 = () => {
             </Text>
           </Flex>
           <Box
-            py={1}
+            pt={1}
             pl={1}
             borderWidth={{ base: 0, lg: 2 }}
             borderRight={"0px"}
             borderBottom={"0px"}
-            overflow={"hidden"}
+            overflow={{ base: "unset", lg: "hidden" }}
             borderColor={"#D9D9D9"}
             width={"100%"}
             borderRadius={"30px 0px 30px 0px"}
@@ -132,7 +132,7 @@ const Step2 = () => {
             </Text>
           </Flex>
           <Box
-            py={{ base: 0, lg: 1 }}
+            pt={{ base: 0, lg: 1 }}
             pl={1}
             borderWidth={{ base: 0, lg: 2 }}
             borderRight={"0px"}
@@ -140,7 +140,6 @@ const Step2 = () => {
             width={"100%"}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
-            marginBottom={{ base: "-4px", lg: "-4px" }}
           >
             <Box position={"relative"} paddingBottom={"56.2%"}>
               <Image

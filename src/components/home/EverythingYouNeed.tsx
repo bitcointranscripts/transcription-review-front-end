@@ -12,6 +12,7 @@ const EverythingYouNeed = () => {
         fontFamily={"Polysans"}
         fontSize={{ base: "1.875rem", lg: "3.5rem", "2xl": "5.25rem" }}
         fontWeight={600}
+        lineHeight={"115%"}
       >
         Here’s everything you need to start
       </Text>
