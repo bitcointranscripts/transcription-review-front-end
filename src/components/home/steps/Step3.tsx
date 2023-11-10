@@ -146,9 +146,9 @@ const Step3 = () => {
           <Flex
             flexDir={"column"}
             lineHeight={"135%"}
-            gap={8}
+            gap={{ base: 3, lg: 8 }}
             fontSize={{ base: "0.75rem", lg: "1.3rem", xl: "1.8rem" }}
-            fontFamily={"Polysans"}
+            fontFamily={"Aeonik Fono"}
           >
             <Text>
               <Text as="span" fontWeight={700}>

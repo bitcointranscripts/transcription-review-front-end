@@ -185,7 +185,7 @@ const Step2 = () => {
             borderWidth={{ base: 0, lg: 2 }}
             borderRight={"0px"}
             borderBottom={"0px"}
-            width={"100%"} 
+            width={"100%"}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
           >

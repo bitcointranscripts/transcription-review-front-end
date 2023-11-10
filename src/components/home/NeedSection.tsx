@@ -4,10 +4,8 @@ import ThingsNeededSingle from "./ThingsNeededSingle";
 import { thingsYouNeed, whyConsiderEdit } from "@/utils";
 import Image from "next/image";
 import EditingTranscriptSingle from "./EditingTranscriptSingle";
-import UseScrollPosition from "@/hooks/useScroll";
 
 const NeedSection = () => {
-  const scrollPosition = UseScrollPosition()
   return (
     <Box
       as="section"

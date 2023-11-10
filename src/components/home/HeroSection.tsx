@@ -6,7 +6,7 @@ import {
   Text,
   Box,
 } from "@chakra-ui/react";
-import React, {useState } from "react";
+import React, { useState } from "react";
 import BTCLogo from "./BTCLogo";
 import LearnHowText from "../svgs/LearnHow";
 import YoutubeTutorial from "./Youtube";

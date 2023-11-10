@@ -16,7 +16,7 @@ const CarouselCardSlide: FC<ICarouselCardSlide> = ({
   desc,
   desc2,
   fullImage,
-  pbImage
+  pbImage,
 }) => {
   return (
     <Flex
