@@ -20,7 +20,7 @@ const LandingFooter = () => {
           flexDirection={"column"}
           fontWeight={500}
           justifyContent={"space-between"}
-          gap={{ base: 6, lg: 12 }}
+          gap={{ base: 4, lg: 12 }}
           fontFamily={"Aeonik Fono"}
           maxW={{ base: "50%", lg: "469px" }}
         >
@@ -53,7 +53,7 @@ const LandingFooter = () => {
         <Flex
           flexDirection={"column"}
           fontWeight={500}
-          gap={8}
+          gap={{ base: 1, lg: 8 }}
           alignItems={"end"}
           fontFamily={"Aeonik Fono"}
         >
