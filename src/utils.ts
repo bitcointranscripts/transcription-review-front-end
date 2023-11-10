@@ -244,7 +244,7 @@ export function isReviewPending(review: UserReviewData) {
 // Convert a string to an array
 export const convertStringToArray = (text: string[] | string) => {
   let stringArray = text as string;
-  if (stringArray[0] === "[") {
+  if (stringArray && stringArray[0] === "[") {
     const parsed = stringArray
       .substring(1, text.length - 1)
       .replaceAll("'", "")
@@ -252,7 +252,9 @@ export const convertStringToArray = (text: string[] | string) => {
       .filter((data) => data.length > 1);
     return parsed;
   }
-  return Array.isArray(stringArray) ? (stringArray as string[]) : [stringArray];
+  return Array.isArray(stringArray)
+    ? (stringArray as string[])
+    : [stringArray || "None"];
 };
 
 //  data for tag colors

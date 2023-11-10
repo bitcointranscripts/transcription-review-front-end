@@ -70,8 +70,8 @@ export const Tags = <T extends object>({
   row,
 }: TableDataElement<T>) => {
   const stringArray = tableItem.modifier(row) as string;
-  let _parsed = stringArray as string | string[];
-  if (stringArray[0] === "[") {
+  let _parsed: string[] | string = stringArray || "N/A";
+  if (stringArray && stringArray[0] === "[") {
     _parsed = stringArray
       .substring(1, stringArray.length - 1)
       .replaceAll("'", "")
