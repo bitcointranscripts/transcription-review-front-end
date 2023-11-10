@@ -5,6 +5,7 @@ export const ROUTES_CONFIG = {
   TUTORIAL: "tutorial",
   TRANSCRIPTS: "transcripts",
   WALLET: "wallet",
+  TRANSACTIONS: "transactions",
 };
 
 export const UI_CONFIG = {
@@ -15,4 +16,5 @@ export const UI_CONFIG = {
     3: 302,
   },
   MAX_AUTOCOMPLETE_LENGTH_TO_FILTER: 1000,
+  DEBOUNCE_DELAY: 1000,
 };

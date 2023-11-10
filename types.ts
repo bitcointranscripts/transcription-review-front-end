@@ -1,3 +1,5 @@
+import { TransactionStatus, TransactionType } from "@/config/default";
+
 export type Transcript = {
   id: number;
   archivedAt: Nullable<Date>;
@@ -151,3 +153,20 @@ export type Transaction = {
   createdAt: string;
   updatedAt: string;
 };
+export type AdminTransaction = Transaction & {
+  wallet: {
+    id: string;
+    user: {
+      email: string;
+      githubUsername: string;
+      id: string;
+      permissions: UserRole;
+    };
+  };
+};
+
+export type TransactionQueryType =
+  (typeof TransactionType)[keyof typeof TransactionType];
+
+export type TransactionQueryStatus =
+  (typeof TransactionStatus)[keyof typeof TransactionStatus];
