@@ -20,7 +20,7 @@ const StepLayout: FC<IStepLayout> = ({
   maxW,
   src,
   headingMaxW,
-  link
+  link,
 }) => {
   const coloredText = heading.split(" ")[0];
   const othersText = heading.split(coloredText);
