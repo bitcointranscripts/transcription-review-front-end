@@ -11,15 +11,17 @@ const Step1 = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const step1Contents: ICarouselCardSlide[] = [
     {
-      fullImage: "/home/signin-github.png",
+      fullImage: "/home/connect-mobile.png",
       heading: "Connect",
       icon: "/home/connect.png",
+      pbImage: "54.7%",
       desc: "Connect your GitHub account to BTCTranscripts by clicking “Get Started”",
     },
     {
       fullImage: "/home/authorize-mobile.png",
       heading: "Authorize",
       icon: "/home/authorize-step.png",
+      pbImage: "58%",
       desc: "Authorize Bitcoin Transcripts Dev to access to your Github account",
       desc2:
         "In simple English, it means that BTCTranscripts will write your transcript onto GitHub so that it can be reviewed.",

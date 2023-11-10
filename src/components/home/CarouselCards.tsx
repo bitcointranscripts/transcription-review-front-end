@@ -16,7 +16,7 @@ const CarouselCards: FC<ICarouselCards> = ({ stepContents }) => {
         gap: "12px",
         perPage: 1,
       }}
-      style={{ overflow: "scroll", maxWidth: "300px" }}
+      style={{ maxWidth: "300px" }}
     >
       {stepContents.map((content) => (
         <SplideSlide key={content.heading} style={{ width: "100%" }}>

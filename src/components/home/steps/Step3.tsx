@@ -11,15 +11,17 @@ const Step3 = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const step3Contents: ICarouselCardSlide[] = [
     {
-      fullImage: "/home/submit-pr.png",
+      fullImage: "/home/submission-mobile.png",
       heading: "Submission",
       icon: "/home/submission.png",
+      pbImage: "58%",
       desc: "Once you submit your transcript, it will create a PR (pull request)* of your edited transcript from the original transcript",
     },
     {
-      fullImage: "/home/checkpr-landing.png",
+      fullImage: "/home/checkpr-mobile.png",
       heading: "Check the PR",
       icon: "/home/check-pr.png",
+      pbImage: "53.2%",
       desc: "If you want to see your transcript, visit your profile and click the link. On the transcript’s GitHub PR, you can click the “Files changed” nav button to view.",
     },
   ];

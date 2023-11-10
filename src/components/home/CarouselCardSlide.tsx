@@ -8,6 +8,7 @@ export interface ICarouselCardSlide {
   desc: string;
   desc2?: string;
   fullImage?: string;
+  pbImage?: string;
 }
 const CarouselCardSlide: FC<ICarouselCardSlide> = ({
   icon,
@@ -15,6 +16,7 @@ const CarouselCardSlide: FC<ICarouselCardSlide> = ({
   desc,
   desc2,
   fullImage,
+  pbImage
 }) => {
   return (
     <Flex
@@ -63,12 +65,17 @@ const CarouselCardSlide: FC<ICarouselCardSlide> = ({
       </Flex>
 
       {fullImage && (
-        <Flex justifyContent={"end"} position={"relative"} minHeight={"138px"}>
+        <Flex
+          justifyContent={"end"}
+          alignItems={"end"}
+          position={"relative"}
+          paddingBottom={pbImage}
+        >
           <Image
             src={fullImage}
             fill
             alt="test"
-            style={{ objectFit: "contain", right: "-30px" }}
+            style={{ objectFit: "contain" }}
           />
         </Flex>
       )}
