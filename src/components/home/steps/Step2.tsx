@@ -59,6 +59,7 @@ const Step2 = () => {
           flexDir={{ base: "column", lg: "row" }}
           gap={10}
           borderWidth={2}
+          overflow={"hidden"}
           borderColor={"#D9D9D9"}
           borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
         >
@@ -85,16 +86,15 @@ const Step2 = () => {
             py={1}
             pl={1}
             borderWidth={{ base: 0, lg: 2 }}
+            borderRight={"0px"}
+            borderBottom={"0px"}
             overflow={"hidden"}
-            width={"100%"}
             borderColor={"#D9D9D9"}
+            width={"100%"}
             borderRadius={"30px 0px 30px 0px"}
+            marginBottom={{ base: "-4px", lg: "-4px" }}
           >
-            <Box
-              position={"relative"}
-              minH={{ base: "180px", lg: "450px" }}
-              marginBottom={{ base: "0px", lg: "-10px" }}
-            >
+            <Box position={"relative"} paddingBottom={"56.2%"}>
               <Image
                 src="/home/editing-interface.png"
                 alt="authorize github page"
@@ -109,6 +109,7 @@ const Step2 = () => {
           pt={{ base: "20px", lg: "90px" }}
           pl={{ base: "20px", lg: "70px" }}
           justifyContent={"space-between"}
+          overflow={"hidden"}
           flexDir={{ base: "column", lg: "row" }}
           gap={10}
           borderWidth={2}
@@ -134,15 +135,14 @@ const Step2 = () => {
             py={{ base: 0, lg: 1 }}
             pl={1}
             borderWidth={{ base: 0, lg: 2 }}
+            borderRight={"0px"}
+            borderBottom={"0px"}
             width={"100%"}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
+            marginBottom={{ base: "-4px", lg: "-4px" }}
           >
-            <Box
-              position={"relative"}
-              minH={{ base: "180px", lg: "450px" }}
-              marginBottom={{ base: "0px", lg: "-10px" }}
-            >
+            <Box position={"relative"} paddingBottom={"56.2%"}>
               <Image
                 src="/home/raw-markdown.png"
                 alt="authorize github page"
@@ -158,6 +158,7 @@ const Step2 = () => {
           pl={{ base: "20px", lg: "70px" }}
           justifyContent={"space-between"}
           flexDir={{ base: "column", lg: "row" }}
+          overflow={"hidden"}
           gap={10}
           borderWidth={2}
           borderColor={"#D9D9D9"}
@@ -182,14 +183,16 @@ const Step2 = () => {
             py={1}
             pl={1}
             borderWidth={{ base: 0, lg: 2 }}
-            width={"100%"}
+            borderRight={"0px"}
+            borderBottom={"0px"}
+            width={"100%"} 
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
           >
             <Box
               position={"relative"}
-              minH={{ base: "180px", lg: "450px" }}
-              marginBottom={{ base: "0px", lg: "-10px" }}
+              paddingBottom={"56.2%"}
+              marginBottom={{ base: "-4px", lg: "-4px" }}
             >
               <Image
                 src="/home/live-site.png"

@@ -100,11 +100,10 @@ const Step1 = () => {
                 className={`slides ${
                   index === currentIndex ? "active" : "hidden"
                 } `}
-                minH={"500px"}
                 width={"100%"}
                 position={"relative"}
-                marginBottom={"-7px"}
                 bottom={"0px"}
+                paddingBottom={"56.25%"}
                 key={image}
               >
                 <Image
@@ -152,6 +151,8 @@ const Step1 = () => {
             pt={{ base: 0, lg: 1 }}
             pl={{ base: 0, lg: 1 }}
             borderWidth={{ base: 0, lg: 2 }}
+            borderRight={"0px"}
+            borderBottom={"0px"}
             width={"100%"}
             overflow={"hidden"}
             borderColor={"#D9D9D9"}
@@ -162,8 +163,7 @@ const Step1 = () => {
           >
             <Box
               position={"relative"}
-              marginBottom={{ base: "0px", lg: "-20px" }}
-              minH={{ base: "120px", lg: "346px" }}
+              paddingBottom={"39.99%"}
               overflow={"hidden"}
             >
               <Image

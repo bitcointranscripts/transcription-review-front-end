@@ -76,7 +76,8 @@ const Step3 = () => {
             />
           </Flex>
           <Box
-            p={2}
+            pt={2}
+            px={1}
             borderWidth={2}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 30px 0px 0px"}
@@ -86,10 +87,9 @@ const Step3 = () => {
                 className={`slides ${
                   index === currentIndex ? "active" : "hidden"
                 } `}
-                minH={"400px"}
                 width={"100%"}
                 position={"relative"}
-                marginBottom={"-7px"}
+                paddingBottom={"43.21%"}
                 key={image}
               >
                 <Image

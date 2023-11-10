@@ -6,7 +6,7 @@ import {
   Text,
   Box,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, {useState } from "react";
 import BTCLogo from "./BTCLogo";
 import LearnHowText from "../svgs/LearnHow";
 import YoutubeTutorial from "./Youtube";
@@ -14,7 +14,6 @@ import LearnHowMobile from "../svgs/LearnHowMobile";
 import ArrowUp from "../svgs/ArrowUp";
 import { signIn } from "next-auth/react";
 import ArrowDown from "../svgs/ArrowDown";
-// import Image from "next/image";
 
 const HeroSection = () => {
   const getStarted = () => signIn("github");
