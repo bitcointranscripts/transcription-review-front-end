@@ -290,3 +290,6 @@ export const extractPullNumber = (githubUrl: string) => {
     return null;
   }
 };
+export const isNullOrUndefined = (value: any) => {
+  return value === null || typeof value === "undefined";
+};
