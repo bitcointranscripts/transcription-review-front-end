@@ -21,6 +21,9 @@ const YoutubeTutorial = () => {
     setModalInfo((prev) => ({ ...prev, visible: false }));
   };
   const handleOpen = () => {
+    if (modalPlayer) {
+      modalPlayer.playVideo();
+    }
     setModalInfo((prev) => ({ ...prev, visible: true }));
   };
 
