@@ -1,7 +1,9 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
+import { signIn } from "next-auth/react";
 import React from "react";
 
 const ReadyToReview = () => {
+  const getStarted = () => signIn("github");
   return (
     <Flex
       background={"white"}
@@ -52,6 +54,7 @@ const ReadyToReview = () => {
             borderRadius={["8px", "8px", null]}
             fontFamily={"Mona-Sans"}
             color={"#F7F7F7"}
+            onClick={getStarted}
             variant="outline"
             _hover={{}}
             _active={{}}

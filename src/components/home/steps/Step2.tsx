@@ -85,11 +85,16 @@ const Step2 = () => {
             py={1}
             pl={1}
             borderWidth={{ base: 0, lg: 2 }}
+            overflow={"hidden"}
             width={"100%"}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
           >
-            <Box position={"relative"} minH={{ base: "180px", lg: "450px" }}>
+            <Box
+              position={"relative"}
+              minH={{ base: "180px", lg: "450px" }}
+              marginBottom={{ base: "0px", lg: "-10px" }}
+            >
               <Image
                 src="/home/editing-interface.png"
                 alt="authorize github page"
@@ -133,7 +138,11 @@ const Step2 = () => {
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
           >
-            <Box position={"relative"} minH={{ base: "180px", lg: "450px" }}>
+            <Box
+              position={"relative"}
+              minH={{ base: "180px", lg: "450px" }}
+              marginBottom={{ base: "0px", lg: "-10px" }}
+            >
               <Image
                 src="/home/raw-markdown.png"
                 alt="authorize github page"
@@ -177,7 +186,11 @@ const Step2 = () => {
             borderColor={"#D9D9D9"}
             borderRadius={"30px 0px 30px 0px"}
           >
-            <Box position={"relative"} minH={{ base: "180px", lg: "450px" }}>
+            <Box
+              position={"relative"}
+              minH={{ base: "180px", lg: "450px" }}
+              marginBottom={{ base: "0px", lg: "-10px" }}
+            >
               <Image
                 src="/home/live-site.png"
                 alt="authorize github page"

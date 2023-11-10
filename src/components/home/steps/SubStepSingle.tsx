@@ -1,4 +1,4 @@
-import { Box, Flex, Link, Text } from "@chakra-ui/react";
+import { Flex, Link, Text, Image } from "@chakra-ui/react";
 import React, { FC } from "react";
 
 interface ISubStepSingle {
@@ -10,6 +10,8 @@ interface ISubStepSingle {
   link?: string;
   otherText?: string;
   href?: string;
+  activeIcon?: string;
+  inActiveIcon?: string;
 }
 const SubStepSingle: FC<ISubStepSingle> = ({
   isActive,
@@ -20,6 +22,8 @@ const SubStepSingle: FC<ISubStepSingle> = ({
   link,
   href,
   maxW,
+  inActiveIcon,
+  activeIcon,
 }) => {
   return (
     <Flex
@@ -30,14 +34,12 @@ const SubStepSingle: FC<ISubStepSingle> = ({
     >
       {heading && (
         <Flex gap={{ base: 3, lg: 4 }} alignItems={"center"}>
-          {heading && (
-            <Box
-              minH={"30px"}
-              maxH={"30px"}
-              minW={"30px"}
-              maxW={"30px"}
-              borderRadius={"50%"}
-              bg={`${isActive ? "#333" : "#A6A6A6"}`}
+          {activeIcon && inActiveIcon && (
+            <Image
+              objectFit={"contain"}
+              width={"30px"}
+              src={isActive ? activeIcon : inActiveIcon}
+              alt={heading}
             />
           )}
           <Text

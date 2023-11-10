@@ -1,12 +1,20 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 
 interface IThingsNeeded {
   Icon: React.ComponentType;
   heading: string;
   sub: string;
+  link?: string;
+  linkText?: string;
 }
-const ThingsNeededSingle: FC<IThingsNeeded> = ({ Icon, heading, sub }) => {
+const ThingsNeededSingle: FC<IThingsNeeded> = ({
+  Icon,
+  heading,
+  sub,
+  link,
+  linkText,
+}) => {
   return (
     <Flex
       position={"relative"}
@@ -54,7 +62,7 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({ Icon, heading, sub }) => {
           {heading}
         </Text>
         <Text
-          fontWeight={{ base: 400, lg: 500 }}
+          fontWeight={400}
           textAlign={{ base: "center", lg: "left" }}
           fontSize={[
             "0.875rem",
@@ -65,7 +73,15 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({ Icon, heading, sub }) => {
             "1.5rem",
           ]}
         >
-          {sub}
+          {sub}{" "}
+          {linkText && (
+            <>
+              <br />{" "}
+              <Link isExternal textDecoration={"underline"} href={link}>
+                {linkText}{" "}
+              </Link>
+            </>
+          )}
         </Text>
       </Flex>
     </Flex>

@@ -21,7 +21,7 @@ const HeroSection = () => {
   const [moreHover, setMoreHover] = useState(false);
   return (
     <Flex
-      className="hero-section"
+      className="hero-section "
       flexDir={"column"}
       width={"100%"}
       id="hero-section"

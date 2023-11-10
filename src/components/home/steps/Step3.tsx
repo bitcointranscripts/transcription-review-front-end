@@ -7,7 +7,7 @@ import CarouselCards from "../CarouselCards";
 import { ICarouselCardSlide } from "../CarouselCardSlide";
 
 const Step3 = () => {
-  const images = ["/home/authorize-landing.png", "/home/raw-markdown.png"];
+  const images = ["/home/submission-landing.png", "/home/checkpr-landing.png"];
   const [currentIndex, setCurrentIndex] = useState(0);
   const step3Contents: ICarouselCardSlide[] = [
     {
@@ -17,7 +17,7 @@ const Step3 = () => {
       desc: "Once you submit your transcript, it will create a PR (pull request)* of your edited transcript from the original transcript",
     },
     {
-      fullImage: "",
+      fullImage: "/home/checkpr-landing.png",
       heading: "Check the PR",
       icon: "/home/check-pr.png",
       desc: "If you want to see your transcript, visit your profile and click the link. On the transcript’s GitHub PR, you can click the “Files changed” nav button to view.",
@@ -63,12 +63,16 @@ const Step3 = () => {
               heading="Submission"
               sub="Once you submit your transcript, it will create a PR (pull request)* of your edited transcript from the original transcript"
               maxW="528px"
+              activeIcon="/steps-icon/step-submission-active.png"
+              inActiveIcon="/steps-icon/step-submission-inactive.png"
             />
             <SubStepSingle
-              isActive={currentIndex === 15}
+              isActive={currentIndex === 1}
               heading="Check the PR"
               sub="If you want to see your transcript, visit your profile and click the link. On the transcript’s GitHub PR, you can click the “Files changed” nav button to view."
               maxW="660px"
+              activeIcon="/steps-icon/step-checkpr-active.png"
+              inActiveIcon="/steps-icon/step-checkpr-inactive.png"
             />
           </Flex>
           <Box

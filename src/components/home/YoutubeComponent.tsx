@@ -1,4 +1,3 @@
-import { useState } from "react";
 import YouTube, { YouTubeProps, YouTubePlayer } from "react-youtube";
 
 type YouTubePlayerProps = {
@@ -10,7 +9,7 @@ type YouTubePlayerProps = {
 const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
   const opts: YouTubeProps["opts"] = {
     playerVars: {
-      playsInline: 1,
+      playsinline: 1,
       rel: 0,
     },
   };
@@ -19,14 +18,12 @@ const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
     setTimeout(() => {
       setPlayer(e.target);
     }, 500);
-    console.log(e)
   };
 
   return (
     <YouTube
       videoId="YNIFm0QFAuA"
       onReady={handleOnReady}
-      
       opts={opts}
       className={`${player ? "" : "invisible"} iframe-wrapper`}
     />

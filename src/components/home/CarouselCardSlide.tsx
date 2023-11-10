@@ -31,7 +31,7 @@ const CarouselCardSlide: FC<ICarouselCardSlide> = ({
       borderColor={"#D9D9D9"}
       borderRadius={"12px"}
     >
-      <Flex flexDir={"column"} maxW={"192px"} gap={5}>
+      <Flex flexDir={"column"} maxW={"222px"} gap={2}>
         <Flex gap={3} fontFamily={"Polysans"}>
           <Image
             src={icon}
@@ -63,12 +63,7 @@ const CarouselCardSlide: FC<ICarouselCardSlide> = ({
       </Flex>
 
       {fullImage && (
-        <Flex
-          justifyContent={"end"}
-          position={"relative"}
-          minH={"252px"}
-          minHeight={"138px"}
-        >
+        <Flex justifyContent={"end"} position={"relative"} minHeight={"138px"}>
           <Image
             src={fullImage}
             fill

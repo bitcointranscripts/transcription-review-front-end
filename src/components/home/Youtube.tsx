@@ -62,7 +62,7 @@ const YoutubeTutorial = () => {
       )}
 
       <YoutubePortal modalInfo={modalInfo} handleClose={handleClose}>
-        <YoutubeComponent  player={modalPlayer} setPlayer={setModalPlayer} />
+        <YoutubeComponent player={modalPlayer} setPlayer={setModalPlayer} />
       </YoutubePortal>
     </>
   );

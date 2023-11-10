@@ -7,7 +7,7 @@ import CarouselCards from "../CarouselCards";
 import { ICarouselCardSlide } from "../CarouselCardSlide";
 
 const Step1 = () => {
-  const images = ["/home/authorize-landing.png", "/home/raw-markdown.png"];
+  const images = ["/home/connect-step.png", "/home/authorize-steps.png"];
   const [currentIndex, setCurrentIndex] = useState(0);
   const step1Contents: ICarouselCardSlide[] = [
     {
@@ -70,12 +70,16 @@ const Step1 = () => {
               heading="Connect"
               sub="Connect your GitHub account to BTCTranscripts by clicking “Get Started”"
               maxW="332px"
+              activeIcon="/steps-icon/step-connect-active.png"
+              inActiveIcon="/steps-icon/step-connect-inactive.png"
             />
             <SubStepSingle
               isActive={currentIndex === 1}
               heading="Authorize"
-              sub="Authorize Bitcoin Transcripts Dev to access to your aassoiants account"
+              sub="Authorize Bitcoin Transcripts Dev to access to your Github account"
               maxW="332px"
+              activeIcon="/steps-icon/step-authorize-active.png"
+              inActiveIcon="/steps-icon/step-authorize-inactive.png"
             />
             <SubStepSingle
               sub="In simple English, it means that BTCTranscripts will write your transcript onto GitHub so that it can be reviewed."
@@ -83,22 +87,24 @@ const Step1 = () => {
             />
           </Flex>
           <Box
-            p={2}
+            px={1}
+            pt={1}
             borderWidth={2}
             className="slideshow"
             borderColor={"#D9D9D9"}
             maxW={["85%"]}
-            borderRadius={"30px 30px 30px 30px"}
+            borderRadius={"30px 30px 0px 0px"}
           >
             {images.map((image, index) => (
               <Box
                 className={`slides ${
                   index === currentIndex ? "active" : "hidden"
                 } `}
-                minH={"400px"}
+                minH={"500px"}
                 width={"100%"}
                 position={"relative"}
                 marginBottom={"-7px"}
+                bottom={"0px"}
                 key={image}
               >
                 <Image
@@ -143,10 +149,11 @@ const Step1 = () => {
             <Text>Now, it’s time to edit!</Text>
           </Flex>
           <Box
-            py={{ base: 0, lg: 1 }}
+            pt={{ base: 0, lg: 1 }}
             pl={{ base: 0, lg: 1 }}
             borderWidth={{ base: 0, lg: 2 }}
             width={"100%"}
+            overflow={"hidden"}
             borderColor={"#D9D9D9"}
             borderRadius={{
               base: "12px 0px 12px 12px",
@@ -155,7 +162,7 @@ const Step1 = () => {
           >
             <Box
               position={"relative"}
-              marginBottom={{ base: "0px", lg: "-10px" }}
+              marginBottom={{ base: "0px", lg: "-20px" }}
               minH={{ base: "120px", lg: "346px" }}
               overflow={"hidden"}
             >
@@ -165,7 +172,6 @@ const Step1 = () => {
                 style={{
                   objectFit: "contain",
                   aspectRatio: "16:9",
-                  bottom: "0px",
                 }}
                 fill
               />

@@ -310,7 +310,9 @@ export const thingsYouNeed = [
   {
     Icon: GithubIcon,
     heading: "A GitHub account",
-    sub: "*Don’t have one? Here’s how to create an account",
+    sub: "*Don’t have one? Here’s how to ",
+    linkText:"create an account",
+    link:"https://docs.github.com/en/get-started/signing-up-for-github/signing-up-for-a-new-github-account"
   },
   {
     Icon: ClockIcon,
