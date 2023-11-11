@@ -49,9 +49,9 @@ const HeroSection = () => {
           <BTCLogo />
           <Box
             position={"absolute"}
-            display={{ base: "none", xl: "block" }}
-            top={"-30px"}
-            right={"50px"}
+            display={{ base: "none", lg: "block" }}
+            top={{ lg: "-15px", xl: "-30px" }}
+            right={{ lg: "0px", xl: "50px" }}
           >
             <LearnHowText />
           </Box>
@@ -65,7 +65,7 @@ const HeroSection = () => {
         </Flex>
       </Flex>
       <Flex
-        mt={{ base: "80px", xl: "40px" }}
+        mt={{ base: "80px", lg: "40px" }}
         pl={{ base: "24px", md: "32px", xl: "100px" }}
         pr={{ base: "24px", md: "32px", lg: "0px" }}
         pt={{ base: "0px", lg: "45px" }}
@@ -75,7 +75,7 @@ const HeroSection = () => {
         pb={{ base: 8, lg: "20" }}
       >
         <Flex
-          maxW={["100%", "100%", "100%", "50%"]}
+          maxW={["100%", "100%", "100%", "49%", "49%"]}
           gap={{ base: "28px", lg: "48px" }}
           flexDir={"column"}
           w={"full"}
@@ -85,9 +85,10 @@ const HeroSection = () => {
             fontSize={{
               base: "2.12rem",
               md: "3.25rem",
-              lg: "3.31rem",
-              xl: "4.25rem",
-              "2xl": "6.25rem",
+              lg: "3.1rem",
+              xl: "4rem",
+              "2xl": "4.5rem",
+              "3xl": "5rem",
             }}
             fontWeight={600}
             lineHeight={["130%", "105%"]}
@@ -107,7 +108,8 @@ const HeroSection = () => {
               base: "1rem",
               lg: "1.5rem",
               xl: "2rem",
-              "2xl": "3.25rem",
+              "2xl": "2.5rem",
+              "3xl": "3rem",
             }}
             flexDir={"column"}
             fontFamily={"Aeonik Fono"}
