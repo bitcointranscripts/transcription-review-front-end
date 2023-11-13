@@ -1,12 +1,14 @@
 import theme from "@/chakra/chakra-theme";
 import Layout from "@/layout";
 import { ApiProvider } from "@/services/api/provider";
+import "@splidejs/react-splide/css";
 import "@/styles/globals.css";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
 import { Inter } from "next/font/google";
+import Fonts from "@/chakra/Fonts";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +30,7 @@ export default function App({
 
   return (
     <ChakraProvider theme={theme}>
+      <Fonts />
       <ColorModeScript initialColorMode="light" />
       <ApiProvider>
         <SessionProvider session={session}>

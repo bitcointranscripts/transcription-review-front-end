@@ -3,6 +3,9 @@ import { NextApiRequest } from "next";
 import slugify from "slugify";
 import { MetadataProps, UserReviewData } from "../types";
 import config from "./config/config.json";
+import ClockIcon from "./components/svgs/ClockIcon";
+import LaptopIcon from "./components/svgs/LaptopIcon";
+import GithubIcon from "./components/svgs/GithubIcon";
 
 const claim_duration_in_ms = hoursToMilliseconds(
   config.claim_duration_in_hours
@@ -295,3 +298,43 @@ export const extractPullNumber = (githubUrl: string) => {
 export const isNullOrUndefined = (value: any) => {
   return value === null || typeof value === "undefined";
 };
+
+// Landing Page dummies
+
+export const thingsYouNeed = [
+  {
+    Icon: LaptopIcon,
+    heading: "A computer ",
+    sub: "*You won’t be able \n to do this on a mobile phone",
+  },
+  {
+    Icon: GithubIcon,
+    heading: "A GitHub account",
+    sub: "*Don’t have one? Here’s how to ",
+    linkText: "create an account",
+    link: "https://docs.github.com/en/get-started/signing-up-for-github/signing-up-for-a-new-github-account",
+  },
+  {
+    Icon: ClockIcon,
+    heading: "A few hours of your day ",
+    sub: "*Submit the transcript within 24 hours of claiming it",
+  },
+];
+
+export const whyConsiderEdit = [
+  {
+    src: "/home/pow.png",
+    heading: " Build POW",
+    sub: "Build proof of work by contributing to bitcoin (we’ll add your GitHub name as a contributor)",
+  },
+  {
+    src: "/home/bitcoin.png",
+    heading: "Deep dive into Bitcoin",
+    sub: "Improve your comprehension of bitcoin and lightning",
+  },
+  {
+    src: "/home/support.png",
+    heading: "Support the community",
+    sub: "Make it easier to discover, search for, and use information about technical bitcoin concepts",
+  },
+];

@@ -1,18 +1,98 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+  /* Poly sans fonts */
+  @font-face {
+    font-family: 'Polysans';
+    src: url('/fonts/PolySans-Slim.otf') format('opentype');
+    font-weight: 100 200 300;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Polysans';
+    src: url('/fonts/PolySans-Neutral.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Polysans';
+    src: url('/fonts/PolySans-Median.otf') format('opentype');
+    font-weight: 500 600;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Polysans';
+    src: url('/fonts/PolySans-Bulky.otf') format('opentype');
+    font-weight: 700 800;
+    font-style: normal;
+  }
+
+    /*  Aeonik Fono */
+    @font-face {
+      font-family: ' Aeonik Fono';
+      src: url('/fonts/AeonikFono-Air.otf') format('opentype');
+      font-weight: 100 200 300;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Light.otf') format('opentype');
+      font-weight: 200 300;
+      font-style: normal;
+    }
+  
+  
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Regular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+  
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Medium.otf') format('opentype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Bold.otf') format('opentype');
+      font-weight: 600 700;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Aeonik Fono';
+      src: url('/fonts/AeonikFono-Black.otf') format('opentype');
+      font-weight:800 900;
+      font-style: normal;
+    }
+   /* Mono sans fonts */
+   @font-face {
+    font-family: 'Mona-sans';
+    src: url('/fonts/Mona-Sans-SemiBold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+  } 
 :root {
   --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
     'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
     'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
 
 html,
 body {
   height: 100%;
+  overflow-x: hidden;   /* temporarily */
+  scroll-behavior: smooth;
 }
 
 #__next {
@@ -54,6 +134,7 @@ a {
   position: absolute;
   width: 100% !important;
   height: 100%;
+
   border-radius: 0.5em;
   box-shadow: 10px 10px 40px 5px rgba(0, 0, 0, 0.2);
 }
@@ -67,5 +148,161 @@ a {
 .invisible {
   visibility: hidden;
   opacity: 0;
+}
+
+.hero-section {
+  background: white;
+  background:linear-gradient(90deg, #F7F7F7 35.83%, rgba(242, 242, 242, 0.00) 100%),url("/home/hero-background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.need-section {
+background: linear-gradient(to bottom right, #FAD8AF 0%, rgba(229, 214, 195, 0.00) 50%) bottom right / 50% 50% no-repeat, linear-gradient(to bottom left, #FAD8AF 0%, rgba(229, 214, 195, 0.00) 50%) bottom left / 50% 50% no-repeat, linear-gradient(to top left, #FAD8AF 0%, rgba(229, 214, 195, 0.00) 50%) top left / 50% 50% no-repeat, linear-gradient(to top right, #FAD8AF 0%, rgba(229, 214, 195, 0.00) 50%) top right / 50% 50% no-repeat;
+background-clip: text;
+}
+
+.bg-container {
+  max-width: 90%;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.dark-wrapper {
+  min-width: 24px;
+  max-width: 24px;
+  min-height: 24px;
+  max-height: 24px;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+/* slideshow */
+.slideshow {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.slide {
+  width: 100%;
+  height: 300px; /* Adjust the height as needed */
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.active {
+  opacity: 1;
+}
+.hidden {
+  display: none;
+}
+
+.animated-button {
+  position: relative;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.animated-button:hover {
+  transition: all 0.3s ease;
+  transform-origin: left center;
+  transform:scaleX(1.05);
+}
+
+.thumbnail { 
+  top:-50px; 
+  left:-35px; 
+  display:block; 
+  z-index:999; 
+  cursor: pointer; 
+  -webkit-transition-property: all; 
+  -webkit-transition-duration: 0.3s; 
+  -webkit-transition-timing-function: ease; 
+  } 
+  
+  /*change the number below to scale to the appropriate size*/ 
+  .thumbnail:hover { 
+  transform: scale(1.1); 
+  
+  }
+/* splide js */
+.splide:not( .is-overflow ) .splide__list {
+  justify-content: center;
+}
+.splide:not( .is-overflow ) .splide__slide:last-child {
+  margin: 0 !important;
+}
+
+li.splide__slide {
+  width:max-content !important;
+}
+.splide__pagination{
+  bottom: -20px;
+}
+.splide__pagination__page{
+background-color: #D9D9D9;
+width:16px;
+height: 4px;
+border-radius: 5px;
+}
+.splide__pagination__page.is-active{
+background: #737373;
+width:16px;
+height: 4px;
+border-radius: 5px;
+}
+
+
+/* mobile */
+@media screen and (max-width: 992px) {
+  .hero-section {
+    background: white;
+    background:linear-gradient(180deg, #F7F7F7 35.83%, rgba(242, 242, 242, 0.00) 100%),url("/home/hero-background.png");
+    background-size: cover, contain;
+    background-position: top, bottom;
+    background-repeat: no-repeat;
+  }
+  .dark-wrapper {
+    min-width: 14px;
+    max-width: 14px;
+    min-height: 14px;
+    max-height: 14px;
+    padding: 3.5px;
+  }
+}
+/* in-between mobile and large */
+@media (min-width: 992px) and (max-width: 1279px) {
+  .learn-how {
+    max-width: 350px;
+    max-height: 90px;
+  }
+  .thumbnail:hover { 
+    transform: scale(1.05); 
+    
+    }
+}
+/* large desktop */
+@media screen and (min-width: 1600px) {
+  .bg-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .hero-section {
+    background: white;
+    max-width: 1920px;
+    margin: 0 auto;
+    width: 100%;
+    background:linear-gradient(90deg, #FFF 35.83%, rgba(242, 242, 242, 0.00) 100%),url("/home/hero-background.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
 }
 
