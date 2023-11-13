@@ -31,7 +31,7 @@ const Step3 = () => {
       setCurrentIndex((prevIndex) =>
         prevIndex === images.length - 1 ? 0 : prevIndex + 1
       );
-    }, 10000); // Change slide every 3 seconds (3000 milliseconds)
+    }, 10000);
 
     return () => {
       clearInterval(interval);

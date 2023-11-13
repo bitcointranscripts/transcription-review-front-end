@@ -47,7 +47,6 @@ const NeedSection = () => {
           </Grid>
         </Flex>
       </Flex>
-      {/*  */}
       <Box
         backgroundImage={"/home/editing-section-bg.png"}
         width={"100%"}

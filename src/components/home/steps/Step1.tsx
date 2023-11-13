@@ -32,8 +32,7 @@ const Step1 = () => {
       setCurrentIndex((prevIndex) =>
         prevIndex === images.length - 1 ? 0 : prevIndex + 1
       );
-    }, 10000); // Change slide every 3 seconds (3000 milliseconds)
-
+    }, 10000);
     return () => {
       clearInterval(interval);
     };
@@ -46,7 +45,6 @@ const Step1 = () => {
       link={"https://www.youtube.com/watch?v=YNIFm0QFAuA&t=2m16s"}
     >
       <Flex flexDir={"column"} gap={10}>
-        {/* <Flex></Flex> */}
         <Box display={{ base: "block", md: "none" }}>
           <CarouselCards stepContents={step1Contents} />
         </Box>

@@ -23,7 +23,6 @@ const CarouselCards: FC<ICarouselCards> = ({ stepContents }) => {
           <CarouseCardSlide {...content} />
         </SplideSlide>
       ))}
-      {/* <SplideSlide></SplideSlide> */}
     </Splide>
   );
 };

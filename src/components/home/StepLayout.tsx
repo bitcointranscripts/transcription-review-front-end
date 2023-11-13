@@ -85,7 +85,6 @@ const StepLayout: FC<IStepLayout> = ({
               </Box>
             }
             fontSize={{ base: "12px", lg: "18px", "2xl": "24px" }}
-            // size={{ base: "md", lg: "lg" }}
             colorScheme="dark"
             border={"1px solid #D9D9D9"}
             py={{ base: "16px", lg: "28px" }}
