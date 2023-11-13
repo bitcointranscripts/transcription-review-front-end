@@ -2,14 +2,13 @@
 
 export const ROUTES_CONFIG = {
   HOME: "",
-  TUTORIAL: "tutorial",
   TRANSCRIPTS: "transcripts",
   WALLET: "wallet",
   TRANSACTIONS: "transactions",
 };
 
 export const UI_CONFIG = {
-  FULL_WIDTH_ROUTES: [ROUTES_CONFIG["HOME"], ROUTES_CONFIG["TUTORIAL"]],
+  FULL_WIDTH_ROUTES: [ROUTES_CONFIG["HOME"]],
   YOUTUBE_TIMESTAMP_IN_SECONDS: {
     1: 136,
     2: 152,

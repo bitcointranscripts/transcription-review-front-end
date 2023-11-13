@@ -9,6 +9,7 @@ type YouTubePlayerProps = {
 const YoutubeComponent = ({ player, setPlayer }: YouTubePlayerProps) => {
   const opts: YouTubeProps["opts"] = {
     playerVars: {
+      playsinline: 1,
       rel: 0,
     },
   };

@@ -8,11 +8,17 @@ const Footer = () => {
       <GlobalContainer py={8}>
         <Text
           fontSize={{ base: "14px", md: "16px" }}
-          color="gray.200"
+          color="white"
+          fontWeight={600}
           textAlign="center"
         >
           Built with ❤️ by{" "}
-          <Link href="https://bitcoindevs.xyz" isExternal color="orange.200">
+          <Link
+            href="https://bitcoindevs.xyz"
+            textDecor={"underline"}
+            isExternal
+            color="white"
+          >
             The Bitcoin Dev Project
           </Link>
         </Text>
@@ -21,7 +27,9 @@ const Footer = () => {
             href="https://cryptpad.fr/form/#/2/form/view/3P2CsohsHOkcH7C+WdtX0-tvqjBHqXnAmz5D9yx0e04/"
             isExternal
             fontSize={{ base: "12px", md: "16px" }}
-            color="orange.200"
+            color="white"
+            fontWeight={600}
+            textDecor={"underline"}
             textAlign="center"
           >
             Submit Feedback

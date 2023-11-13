@@ -15,6 +15,8 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@octokit/core": "^5.0.0",
+    "@splidejs/react-splide": "^0.7.12",
+    "@splidejs/splide": "^4.1.4",
     "@tanstack/react-query": "^4.32.6",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/markdown-it": "^13.0.0",

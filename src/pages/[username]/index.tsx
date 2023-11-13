@@ -1,8 +1,14 @@
 import CurrentJobsTable from "@/components/tables/CurrentJobsTable";
 import PastJobsTable from "@/components/tables/PastJobsTable";
 import { Heading } from "@chakra-ui/react";
+import { NextPage } from "next";
+import { Session } from "next-auth";
 
-export default function Profile() {
+export type HomePageProps = {
+  serverSession: Session | null;
+};
+
+const Profile: NextPage<HomePageProps> = () => {
   return (
     <>
       <Heading size="md" mb={6}>
@@ -12,4 +18,6 @@ export default function Profile() {
       <PastJobsTable />
     </>
   );
-}
+};
+
+export default Profile;
