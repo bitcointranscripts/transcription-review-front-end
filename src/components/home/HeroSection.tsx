@@ -36,8 +36,8 @@ const HeroSection = () => {
           pl={{ base: "24px", md: "32px", xl: "100px" }}
           pr={{ base: "24px", md: "32px", lg: "0px" }}
           position={"relative"}
-          pt={{ base: "0px", lg: "45px" }}
-          mt={{ base: "0px", lg: "45px" }}
+          pt={{ base: "0px", lg: "20px", xl: "45px" }}
+          mt={{ base: "0px", lg: "20px", xl: "45px" }}
           py={{ base: "16px", lg: "0px" }}
           width={"100%"}
           boxShadow={{
@@ -51,9 +51,9 @@ const HeroSection = () => {
             position={"absolute"}
             display={{ base: "none", lg: "block" }}
             top={{ lg: "-15px", xl: "-30px" }}
-            right={{ lg: "0px", xl: "50px" }}
+            right={{ lg: "20px", xl: "50px" }}
           >
-            <LearnHowText />
+            <LearnHowText className="learn-how" />
           </Box>
           <Box
             as="a"
@@ -65,7 +65,7 @@ const HeroSection = () => {
         </Flex>
       </Flex>
       <Flex
-        mt={{ base: "80px", lg: "40px" }}
+        mt={{ base: "80px", lg:"20px", xl: "40px" }}
         pl={{ base: "24px", md: "32px", xl: "100px" }}
         pr={{ base: "24px", md: "32px", lg: "0px" }}
         pt={{ base: "0px", lg: "45px" }}
@@ -76,7 +76,7 @@ const HeroSection = () => {
       >
         <Flex
           maxW={["100%", "100%", "100%", "49%", "49%"]}
-          gap={{ base: "28px", lg: "48px" }}
+          gap={{ base: "28px", lg: "32px", xl: "48px" }}
           flexDir={"column"}
           w={"full"}
         >
@@ -106,8 +106,8 @@ const HeroSection = () => {
             gap={{ base: 2, lg: 5 }}
             fontSize={{
               base: "1rem",
-              lg: "1.5rem",
-              xl: "2rem",
+              lg: "1.25rem",
+              xl: "1.6rem",
               "2xl": "2.5rem",
               "3xl": "3rem",
             }}
@@ -115,7 +115,7 @@ const HeroSection = () => {
             fontFamily={"Aeonik Fono"}
           >
             <Text>Get started in 3 simple steps:</Text>
-            <OrderedList>
+            <OrderedList pl={3}>
               <ListItem>
                 Register and{" "}
                 <Text fontWeight={700} as={"span"}>

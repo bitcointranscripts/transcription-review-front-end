@@ -40,7 +40,7 @@ const YoutubeTutorial = () => {
         >
           <Image
             display={{ lg: "none" }}
-            aspectRatio={"16:9"}
+            aspectRatio={"16/9"}
             zIndex={40}
             src={"home/hero-mobile.png"}
             style={{
