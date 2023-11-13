@@ -18,45 +18,66 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
   return (
     <Flex
       position={"relative"}
-      minW={["100%", "256px", "320px", "280px", "320px", "370px"]}
-      maxW={["100%", "256px", "320px", "280px", "320px", "370px"]}
-      minH={["217px", "217px", "320px"]}
-      maxH={["217px", "217px", "320px"]}
+      minW={{
+        base: "100%",
+        sm: "256px",
+        md: "320px",
+        lg: "280px",
+        xl: "267px",
+        "2xl": "370px",
+      }}
+      maxW={{
+        base: "100%",
+        sm: "256px",
+        md: "320px",
+        lg: "280px",
+        xl: "267px",
+        "2xl": "370px",
+      }}
+      flexDir={'column'}
+      minH={{ base: "200px", lg: "230px", "2xl": "320px" }}
+      maxH={{ base: "200px", lg: "230px", "2xl": "320px" }}
       margin={"0 auto"}
       bg={"#F7F7F7"}
       rounded={"30px"}
-      pt={{ base: "70px", lg: "70px" }}
-      pb={{ base: "0px", xl: "58px" }}
-      px={{ base: "24px", lg: "45px" }}
+      pt={{ base: "70px", sm: "40px", xl: "40px", "2xl": "70px" }}
+      pb={{ base: "32px", sm: "40px", xl: "41px", "2xl": "58px" }}
+      px={{ base: "24px", xl: "32px", "2xl": "45px" }}
     >
       <Box
-        width={{ base: "50px", lg: "70px" }}
+        width={{ base: "50px", lg: "50px", "2xl": "70px" }}
         rounded={"full"}
         display={"flex"}
         alignItems={"center"}
         justifyContent={"center"}
         bg={"orange"}
-        height={{ base: "50px", lg: "70px" }}
+        height={{ base: "50px", lg: "50px", "2xl": "70px" }}
         position={"absolute"}
-        padding={{ base: "15px", lg: "20px" }}
+        padding={{ base: "15px", lg: "15px", "2xl": "20px" }}
         left={{ base: "45%", lg: "-16px" }}
         top={"-16px"}
       >
         <Icon />
       </Box>
-      <Flex flexDir={"column"} fontFamily={"Aeonik Fono"} gap="4">
+      <Flex
+        flexDir={"column"}
+        fontFamily={"Aeonik Fono"}
+        gap={{ base: "3", "2xl": 4 }}
+        justifyContent={"space-between"}
+        alignItems={{ base: "center", lg: "start" }}
+      >
         <Text
           fontSize={[
             "1.25rem",
             "1.25rem",
             "1.5rem",
-            "1.5rem",
-            "1.5rem",
+            "1.4rem",
+            "1.4rem",
             "2rem",
           ]}
           textAlign={{ base: "center", lg: "left" }}
           fontWeight={700}
-          minHeight={{ base: "", lg: "5rem" }}
+          minHeight={{ base: "3rem", lg: "3rem", "2xl": "5rem" }}
           lineHeight={"125%"}
         >
           {heading}
@@ -67,9 +88,9 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
           fontSize={[
             "0.875rem",
             "0.875rem",
-            "1.25rem",
-            "1.25rem",
-            "1.25rem",
+            "1.05rem",
+            "1.05rem",
+            "1.05rem",
             "1.5rem",
           ]}
         >
