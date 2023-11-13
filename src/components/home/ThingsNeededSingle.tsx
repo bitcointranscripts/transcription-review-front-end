@@ -34,7 +34,7 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
         xl: "267px",
         "2xl": "370px",
       }}
-      flexDir={'column'}
+      flexDir={"column"}
       minH={{ base: "200px", lg: "230px", "2xl": "320px" }}
       maxH={{ base: "200px", lg: "230px", "2xl": "320px" }}
       margin={"0 auto"}

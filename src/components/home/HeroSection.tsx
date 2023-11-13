@@ -16,7 +16,9 @@ import { signIn } from "next-auth/react";
 import ArrowDown from "../svgs/ArrowDown";
 
 const HeroSection = () => {
-  const getStarted = () => signIn("github");
+  const getStarted = async () => {
+    signIn("github", { callbackUrl: "/signin", redirect: true });
+  };
   const [moreHover, setMoreHover] = useState(false);
   return (
     <Flex

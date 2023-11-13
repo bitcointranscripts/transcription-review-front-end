@@ -1,10 +1,12 @@
 import { Box } from "@chakra-ui/react";
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { YoutubeModalInfo } from "./Tutorial";
 
 const wrapperId = "home-media-viewer";
-
+export type YoutubeModalInfo = {
+  visible: boolean;
+  accordionStep: null | number;
+};
 type YoutubePortalProps = {
   children: React.ReactNode;
   modalInfo: YoutubeModalInfo;
