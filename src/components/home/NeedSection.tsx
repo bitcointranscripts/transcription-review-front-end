@@ -110,8 +110,6 @@ const NeedSection = () => {
               Well you’ll...
             </Text>
           </Flex>
-
-          {/*  */}
           <Flex flexDir={"column"} gap={{ base: 8, lg: "8", "2xl": "12" }}>
             {whyConsiderEdit.map((reasons) => (
               <EditingTranscriptSingle key={reasons.heading} {...reasons} />
