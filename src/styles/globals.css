@@ -283,6 +283,10 @@ border-radius: 5px;
     max-width: 350px;
     max-height: 90px;
   }
+  .thumbnail:hover { 
+    transform: scale(1.05); 
+    
+    }
 }
 /* large desktop */
 @media screen and (min-width: 1600px) {

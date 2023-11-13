@@ -36,8 +36,8 @@ const HeroSection = () => {
           pl={{ base: "24px", md: "32px", xl: "100px" }}
           pr={{ base: "24px", md: "32px", lg: "0px" }}
           position={"relative"}
-          pt={{ base: "0px", lg: "20px", xl: "45px" }}
-          mt={{ base: "0px", lg: "20px", xl: "45px" }}
+          pt={{ base: "0px", lg: "25px", xl: "25px" }}
+          mt={{ base: "0px", lg: "25px", xl: "30px" }}
           py={{ base: "16px", lg: "0px" }}
           width={"100%"}
           boxShadow={{
@@ -50,7 +50,7 @@ const HeroSection = () => {
           <Box
             position={"absolute"}
             display={{ base: "none", lg: "block" }}
-            top={{ lg: "-15px", xl: "-30px" }}
+            top={{ lg: "-25px", xl: "-10px" }}
             right={{ lg: "20px", xl: "50px" }}
           >
             <LearnHowText className="learn-how" />
@@ -65,10 +65,10 @@ const HeroSection = () => {
         </Flex>
       </Flex>
       <Flex
-        mt={{ base: "80px", lg:"20px", xl: "40px" }}
+        mt={{ base: "80px", lg: "20px", xl: "40px" }}
         pl={{ base: "24px", md: "32px", xl: "100px" }}
         pr={{ base: "24px", md: "32px", lg: "0px" }}
-        pt={{ base: "0px", lg: "45px" }}
+        pt={{ base: "0px", lg: "20px", xl: "45px" }}
         flexDir={["column", "column", "column", "row"]}
         justifyContent={"space-between"}
         gap={[20, 20, 20, 4]}
