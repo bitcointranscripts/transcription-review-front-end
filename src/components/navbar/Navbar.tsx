@@ -14,7 +14,7 @@ const Navbar = () => {
       bgColor="whiteAlpha.700"
       fontSize="14px"
       isolation="isolate"
-      zIndex={50}
+      zIndex={100}
       backdropFilter="auto"
       backdropBlur="base"
     >
