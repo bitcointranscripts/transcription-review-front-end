@@ -29,6 +29,7 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
         position={{ base: "fixed", lg: "relative" }}
         bg={{ base: "white", lg: "transparent" }}
         w={"full"}
+        display={isHomeRoute ? { base: "none", lg: "flex" } : "flex"}
         zIndex={80}
       >
         <Flex
@@ -49,10 +50,20 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
           <Box
             position={"absolute"}
             display={{ base: "none", lg: "block" }}
-            top={{ lg: "-25px", xl: "-10px" }}
-            right={{ lg: "20px", xl: "50px" }}
+            top={
+              isHomeRoute
+                ? { lg: "-25px", xl: "-30px" }
+                : { lg: "-25px", xl: "-10px" }
+            }
+            right={
+              isHomeRoute
+                ? { lg: "20px", xl: "100px" }
+                : { lg: "20px", xl: "50px" }
+            }
           >
-            <LearnHowText className="learn-how" />
+            <LearnHowText
+              className={isHomeRoute ? "learn-how-home" : "learn-how"}
+            />
           </Box>
           <Box
             as="a"

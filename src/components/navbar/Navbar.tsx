@@ -2,8 +2,10 @@ import { Box, Flex, Text, Image } from "@chakra-ui/react";
 import Link from "next/link";
 import GlobalContainer from "../GlobalContainer";
 import Menu from "./Menu";
+import useNoContainerLimit from "@/hooks/useNoContainerLimit";
 
 const Navbar = () => {
+  const { noRestriction } = useNoContainerLimit();
   return (
     <Box
       as="nav"
@@ -18,7 +20,7 @@ const Navbar = () => {
       backdropFilter="auto"
       backdropBlur="base"
     >
-      <GlobalContainer h="full">
+      <GlobalContainer h="full" {...(noRestriction ? { maxW: "1440px"} : {})}>
         <Flex justifyContent="space-between" alignItems="center" h="full">
           <Link href="/home">
             <Flex alignItems="center">
