@@ -30,6 +30,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </GlobalContainer>
       {!isHomePage && <Footer />}
     </div>
+    <script async src="https://visits.bitcoindevs.xyz/script.js" data-website-id="d9b96a7b-a2db-4ef1-9360-69d3b288859d"></script>
   );
 };
 
