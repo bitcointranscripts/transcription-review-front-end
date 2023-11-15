@@ -24,10 +24,8 @@ const MobileWarningModal = ({
         <ModalHeader>Ugh. We&apos;re sorry...</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>
-            We do not yet support mobile devices.
-          </Text>
-          <br/>
+          <Text>We do not yet support mobile devices.</Text>
+          <br />
           <Text>Your sats await. Just come back with a desktop or tablet.</Text>
         </ModalBody>
 
