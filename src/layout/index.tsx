@@ -10,7 +10,7 @@ import Navbar from "@/components/navbar/Navbar";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { noRestriction } = useNoContainerLimit();
   const router = useRouter();
-  const isHomePage = router.asPath === "/";
+  const isHomePage = ["/", "/home"].includes(router.asPath);
   return (
     <>
       <div className={styles.app_container}>

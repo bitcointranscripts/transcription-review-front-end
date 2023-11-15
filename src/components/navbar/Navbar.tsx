@@ -14,13 +14,13 @@ const Navbar = () => {
       bgColor="whiteAlpha.700"
       fontSize="14px"
       isolation="isolate"
-      zIndex={1}
+      zIndex={50}
       backdropFilter="auto"
       backdropBlur="base"
     >
       <GlobalContainer h="full">
         <Flex justifyContent="space-between" alignItems="center" h="full">
-          <Link href="/">
+          <Link href="/home">
             <Flex alignItems="center">
               <Image src="/btctranscripts.png" alt="Logo" boxSize={6} mr={2} />
               <Text color="gray.900" fontWeight={"semibold"}>
