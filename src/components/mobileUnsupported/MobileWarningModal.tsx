@@ -21,13 +21,14 @@ const MobileWarningModal = ({
     <Modal isOpen={isOpen} onClose={onClose} size="xs" isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Unsupported</ModalHeader>
+        <ModalHeader>Ugh. We&apos;re sorry...</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Text>
-            Unfortunately we do not support mobile devices at the moment.
+            We do not yet support mobile devices.
           </Text>
-          <Text>Please use a desktop or tablet.</Text>
+          <br/>
+          <Text>Your sats await. Just come back with a desktop or tablet.</Text>
         </ModalBody>
 
         <ModalFooter></ModalFooter>
