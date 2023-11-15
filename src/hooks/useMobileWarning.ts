@@ -3,7 +3,7 @@ import { useState } from "react";
 
 const useMobileWarning = () => {
   const [showWarning, setShowWarning] = useState(false);
-  const isMobileView = useMediaQuery("(max-width: 480px)");
+  const [isMobileView] = useMediaQuery("(max-width: 480px)");
   const isMobileAction = () => {
     if (isMobileView) {
       setShowWarning(true);
