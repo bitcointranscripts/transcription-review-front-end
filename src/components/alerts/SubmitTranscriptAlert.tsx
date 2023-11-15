@@ -110,7 +110,7 @@ const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
             <Button size="sm" mx="auto" ref={ref} onClick={onCancel}>
               Let me check a few things
             </Button>
-            <Link href="/tutorial">
+            <Link href="/tutorial" target="_blank">
               <Button size="sm" mx="auto" display="block">
                 View tutorial
               </Button>
