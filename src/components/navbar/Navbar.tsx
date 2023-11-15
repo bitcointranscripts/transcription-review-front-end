@@ -7,7 +7,7 @@ import useNoContainerLimit from "@/hooks/useNoContainerLimit";
 const Navbar = () => {
   const { homeRestriction } = useNoContainerLimit();
   const pl = { base: "24px", md: "32px", xl: "100px" };
-  const pr = { base: "24px", md: "32px", lg: "0px" }
+  const pr = { base: "24px", md: "32px", lg: "0px" };
   return (
     <Box
       as="nav"
