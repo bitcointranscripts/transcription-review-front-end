@@ -81,6 +81,7 @@ const Step3 = () => {
             pt={2}
             px={1}
             borderWidth={2}
+            borderBottom={0}
             borderColor={"#D9D9D9"}
             borderRadius={"30px 30px 0px 0px"}
           >
