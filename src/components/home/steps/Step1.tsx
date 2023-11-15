@@ -90,6 +90,7 @@ const Step1 = () => {
             px={1}
             pt={1}
             borderWidth={2}
+            borderBottom={0}
             className="slideshow"
             borderColor={"#D9D9D9"}
             maxW={["85%"]}
@@ -151,6 +152,7 @@ const Step1 = () => {
             pt={{ base: 0, lg: 1 }}
             pl={{ base: 0, lg: 1 }}
             borderWidth={{ base: 0, lg: 2 }}
+            borderBottom={0}
             borderRight={"0px"}
             width={"100%"}
             overflow={{ base: "unset", lg: "hidden" }}
