@@ -44,6 +44,10 @@ const CurrentJobsTable = () => {
     }) as ReviewTranscript[];
   }, [multipleStatusData]);
 
+  const hasActiveReview = tableData.find(
+    (data) => data.review?.submittedAt === null
+  );
+
   const ActionComponent = useCallback(
     ({ data }: { data: ReviewTranscript }) => {
       const pendingReview = data.review?.pr_url;
@@ -147,19 +151,30 @@ const CurrentJobsTable = () => {
   );
 
   return (
-    <BaseTable
-      data={tableData}
-      emptyView={<EmptyView />}
-      isLoading={isLoading}
-      isError={isError}
-      refetch={refetch}
-      tableStructure={tableStructure}
-      tableHeaderComponent={
-        <Heading size="sm" mb={1}>
-          Current Jobs
-        </Heading>
-      }
-    />
+    <>
+      <BaseTable
+        data={tableData}
+        emptyView={<EmptyView />}
+        isLoading={isLoading}
+        isError={isError}
+        refetch={refetch}
+        tableStructure={tableStructure}
+        tableHeaderComponent={
+          <Heading size="sm" mb={1}>
+            Current Jobs
+          </Heading>
+        }
+      />
+      {!hasActiveReview && tableData.length && (
+        <Flex justifyContent="center">
+          <NextLink href="/transcripts">
+            <Button size="xs" colorScheme="orange">
+              Choose transcript to edit
+            </Button>
+          </NextLink>
+        </Flex>
+      )}
+    </>
   );
 };
 
