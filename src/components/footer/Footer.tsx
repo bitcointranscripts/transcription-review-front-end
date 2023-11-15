@@ -40,10 +40,10 @@ const Footer = () => {
           color="white"
           fontWeight={600}
           textAlign="center"
-          >
-          Vistor counts publicly available via {" "}
+        >
+          Vistor counts publicly available via{" "}
           <Link
-            href='https://visits.bitcoindevs.xyz/share/6SxRjtdbASma578X/review-btctranscripts'
+            href="https://visits.bitcoindevs.xyz/share/6SxRjtdbASma578X/review-btctranscripts"
             isExternal
             fontSize={{ base: "12px", md: "16px" }}
             color="white"
