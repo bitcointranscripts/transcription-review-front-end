@@ -16,6 +16,8 @@ import ArrowDown from "../svgs/ArrowDown";
 import { useRouter } from "next/router";
 
 const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
+  const router = useRouter();
+  const isHomeRoute = router.asPath == "/home";
   const [moreHover, setMoreHover] = useState(false);
   return (
     <Flex
