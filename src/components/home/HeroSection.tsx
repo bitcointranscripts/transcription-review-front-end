@@ -12,13 +12,9 @@ import LearnHowText from "../svgs/LearnHow";
 import YoutubeTutorial from "./Youtube";
 import LearnHowMobile from "../svgs/LearnHowMobile";
 import ArrowUp from "../svgs/ArrowUp";
-import { signIn } from "next-auth/react";
 import ArrowDown from "../svgs/ArrowDown";
 
-const HeroSection = () => {
-  const getStarted = async () => {
-    signIn("github", { callbackUrl: "/signin", redirect: true });
-  };
+const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
   const [moreHover, setMoreHover] = useState(false);
   return (
     <Flex
