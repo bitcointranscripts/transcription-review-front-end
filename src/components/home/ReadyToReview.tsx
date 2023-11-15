@@ -1,9 +1,7 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
-import { signIn } from "next-auth/react";
 import React from "react";
 
-const ReadyToReview = () => {
-  const getStarted = () => signIn("github");
+const ReadyToReview = ({ getStarted }: { getStarted: () => void }) => {
   return (
     <Flex
       background={"white"}
