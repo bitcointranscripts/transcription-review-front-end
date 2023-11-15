@@ -29,7 +29,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       >
         {children}
       </GlobalContainer>
-      {!isHomePage || (!isHomeRouter && <Footer />)}
+      {!isHomePage && !isHomeRouter && <Footer />}
     </div>
   );
 };
