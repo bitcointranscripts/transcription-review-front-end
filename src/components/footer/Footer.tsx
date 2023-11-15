@@ -35,6 +35,24 @@ const Footer = () => {
             Submit Feedback
           </Link>
         </Text>
+        <Text
+          fontSize={{ base: "14px", md: "16px" }}
+          color="white"
+          fontWeight={600}
+          textAlign="center"
+          >
+          Vistor counts publicly available via {" "}
+          <Link
+            href='https://visits.bitcoindevs.xyz/share/6SxRjtdbASma578X/review-btctranscripts'
+            isExternal
+            fontSize={{ base: "12px", md: "16px" }}
+            color="white"
+            textDecor={"underline"}
+            textAlign="center"
+          >
+            umami
+          </Link>
+        </Text>
       </GlobalContainer>
     </Box>
   );
