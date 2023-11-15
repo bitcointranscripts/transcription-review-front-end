@@ -13,6 +13,7 @@ import YoutubeTutorial from "./Youtube";
 import LearnHowMobile from "../svgs/LearnHowMobile";
 import ArrowUp from "../svgs/ArrowUp";
 import ArrowDown from "../svgs/ArrowDown";
+import { useRouter } from "next/router";
 
 const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
   const [moreHover, setMoreHover] = useState(false);
@@ -28,7 +29,7 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
         position={{ base: "fixed", lg: "relative" }}
         bg={{ base: "white", lg: "transparent" }}
         w={"full"}
-        zIndex={90}
+        zIndex={80}
       >
         <Flex
           pl={{ base: "24px", md: "32px", xl: "100px" }}
@@ -44,7 +45,7 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
           }}
           justifyContent={"space-between"}
         >
-          <BTCLogo />
+          {!isHomeRoute && <BTCLogo />}
           <Box
             position={"absolute"}
             display={{ base: "none", lg: "block" }}

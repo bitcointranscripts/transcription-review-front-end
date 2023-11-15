@@ -60,6 +60,7 @@ const YoutubeTutorial = () => {
               right: "0px",
             }}
             alt="BTC Youtube"
+            zIndex={60}
           />
         </Flex>
       )}
