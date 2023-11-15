@@ -1,4 +1,9 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import {
+  RefetchOptions,
+  RefetchQueryFilters,
+  useQueries,
+  useQuery,
+} from "@tanstack/react-query";
 import type { UserReview } from "../../../../types";
 import axios from "../axios";
 import endpoints, { ReviewQueryOptions } from "../endpoints";
@@ -52,14 +57,19 @@ export const useUserMultipleReviews = ({
       };
     }),
   });
-  const resultQuery = queryInfo.find(
-    (query) => query.data && query.data.totalItems !== 0
-  );
-  const result = resultQuery && resultQuery.data ? resultQuery : null;
+
+  const result = queryInfo.map((result) => result.data?.data ?? []).flat();
+  const refetch = async <TPageData>(
+    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
+  ) => {
+    return queryInfo[0].refetch(options);
+  };
   return {
     data: result,
     isLoading: queryInfo.some(
       (query) => query.isLoading && query.fetchStatus === "fetching"
     ),
+    refetch,
+    isError: queryInfo.some((query) => query.isError),
   };
 };

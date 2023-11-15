@@ -19,20 +19,21 @@ const CurrentJobsTable = () => {
   const router = useRouter();
   const { data: userSession } = useSession();
 
-  const { data, isLoading } = useUserMultipleReviews({
+  const {
+    data: multipleStatusData,
+    isLoading,
+    refetch,
+    isError,
+  } = useUserMultipleReviews({
     userId: userSession?.user?.id,
     multipleStatus: ["pending", "active"],
   });
-  const multipleStatusData = data?.data;
-  const refetch = data?.refetch;
-  const isError = data?.isError || false;
 
   const tableData = useMemo(() => {
-    let allData = (multipleStatusData && multipleStatusData.data) ?? [];
-    if (!allData.length) return [];
+    if (!multipleStatusData.length) return [];
 
     // return data restructured as ReviewTranscript[]
-    return allData.map((item) => {
+    return multipleStatusData.map((item) => {
       const { transcript, ...rest } = item;
       return {
         ...transcript,
@@ -45,9 +46,7 @@ const CurrentJobsTable = () => {
 
   const ActionComponent = useCallback(
     ({ data }: { data: ReviewTranscript }) => {
-      const pendingReview = multipleStatusData?.data?.find(
-        (review) => review.pr_url !== null
-      );
+      const pendingReview = data.review?.pr_url;
 
       const handleResume = () => {
         if (!data.review?.id) {
@@ -79,7 +78,7 @@ const CurrentJobsTable = () => {
         </>
       );
     },
-    [multipleStatusData, router]
+    [router]
   );
 
   const tableStructure = useMemo(
