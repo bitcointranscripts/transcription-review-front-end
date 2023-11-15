@@ -23,7 +23,7 @@ import { BiWallet } from "react-icons/bi";
 import { CgTranscript } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
 import { FiUser } from "react-icons/fi";
-import { HiOutlineSwitchHorizontal } from "react-icons/hi";
+import { HiOutlineBookOpen, HiOutlineSwitchHorizontal } from "react-icons/hi";
 import MenuNav from "./MenuNav";
 import AdminMenu from "./AdminMenu";
 
@@ -147,6 +147,13 @@ const Menu = () => {
                         routeLink={ROUTES_CONFIG.TRANSCRIPTS}
                         handleClose={closeMenu}
                         icon={CgTranscript}
+                      />
+                      <MenuNav
+                        currentRoute={currentRoute}
+                        routeName={ROUTES_CONFIG.TUTORIAL}
+                        routeLink={ROUTES_CONFIG.TUTORIAL}
+                        handleClose={closeMenu}
+                        icon={HiOutlineBookOpen}
                       />
                       <MenuNav
                         currentRoute={currentRoute}
