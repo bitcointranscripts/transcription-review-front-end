@@ -2,12 +2,13 @@ import { Box, Flex, Text, Image } from "@chakra-ui/react";
 import Link from "next/link";
 import GlobalContainer from "../GlobalContainer";
 import Menu from "./Menu";
-import useNoContainerLimit from "@/hooks/useNoContainerLimit";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
-  const { homeRestriction } = useNoContainerLimit();
+  const router = useRouter();
+  const isHomeRoute = router.asPath === "/home";
   const pl = { base: "24px", md: "32px", xl: "100px" };
-  const pr = { base: "24px", md: "32px", lg: "0px" };
+  const pr = { base: "24px", md: "32px", lg: "100px" };
   return (
     <Box
       as="nav"
@@ -24,9 +25,14 @@ const Navbar = () => {
     >
       <GlobalContainer
         h="full"
-        {...(homeRestriction ? { maxW: "1440px", pl, pr } : {})}
+        {...(isHomeRoute ? { maxW: "1920px", pl, pr } : {})}
       >
-        <Flex justifyContent="space-between" alignItems="center" h="full">
+        <Flex
+          justifyContent="space-between"
+          alignItems="center"
+          h="full"
+          w="full"
+        >
           <Link href="/home">
             <Flex alignItems="center">
               <Image src="/btctranscripts.png" alt="Logo" boxSize={6} mr={2} />
