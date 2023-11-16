@@ -10,7 +10,6 @@ const Hero = ({
 }: {
   getStarted: () => void;
   youtube?: React.ReactNode;
-  // eslint-disable-next-line no-unused-vars
   setModalInfo: React.Dispatch<SetStateAction<YoutubeModalInfo>>;
 }) => {
   const openYoutubePlayer = () => {
