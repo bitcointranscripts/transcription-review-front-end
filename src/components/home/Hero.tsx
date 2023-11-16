@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import { YouTubePlayer } from "react-youtube";
-import React from "react";
+import React, { SetStateAction } from "react";
 import GlobalContainer from "../GlobalContainer";
+import { YoutubeModalInfo } from "./Youtube";
 
 const Hero = ({
   getStarted,
@@ -11,14 +11,11 @@ const Hero = ({
   getStarted: () => void;
   youtube?: React.ReactNode;
   // eslint-disable-next-line no-unused-vars
-  setModalInfo: any;
+  setModalInfo: React.Dispatch<SetStateAction<YoutubeModalInfo>>;
 }) => {
   const openYoutubePlayer = () => {
-    setModalInfo({ visible: true });
+    setModalInfo({ visible: true, accordionStep: 0 });
   };
-  const openAccordion = ()=>{
-    setModalInfo({ visible: false, accordionStep: 1 });
-  }
   return (
     <Box bgColor="gray.100" width={"100%"}>
       <GlobalContainer py={4}>
