@@ -9,5 +9,6 @@
   "defaultDirectoryPath": "misc",
   "youtube_video_id": "YNIFm0QFAuA",
   "max_active_reviews": 1,
-  "max_pending_reviews": 3
+  "max_pending_reviews": 3,
+  "prod_url": "https://review.btctranscripts.com"
 }
