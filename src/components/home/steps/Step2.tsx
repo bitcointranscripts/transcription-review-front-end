@@ -36,6 +36,8 @@ const Step2 = () => {
             borderWidth={{ base: 1.5, lg: "0px" }}
           >
             <SubStepSingle
+              step={0}
+              setStep={() => false}
               isActive
               heading="Using Markdown"
               sub="We use markdown. This is a way of writing text that tells computers how to display information - like what's a title, header, what’s bolded, and the like."
@@ -43,7 +45,9 @@ const Step2 = () => {
             />
             <SubStepSingle
               isActive
-              sub="You probably won’t need to use anything apart from Header 1, Header 2, bolding, italics, and hyperlinks. Here's a super quick primer."
+              step={0}
+              setStep={() => false}
+              sub="You probably won’t need to use anything apart from Header 1, Header 2, bolding, italics, and hyperlinks."
               maxW="536px"
               href="https://www.markdownguide.org/basic-syntax/"
               otherText="Here's a super "

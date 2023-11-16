@@ -32,11 +32,11 @@ const Step1 = () => {
       setCurrentIndex((prevIndex) =>
         prevIndex === images.length - 1 ? 0 : prevIndex + 1
       );
-    }, 10000);
+    }, 6000);
     return () => {
       clearInterval(interval);
     };
-  });
+  }, [currentIndex, images.length]);
   return (
     <StepLayout
       stepNumber={1}
@@ -67,6 +67,8 @@ const Step1 = () => {
           >
             <SubStepSingle
               isActive={currentIndex === 0}
+              step={0}
+              setStep={setCurrentIndex}
               heading="Connect"
               sub="Connect your GitHub account to BTCTranscripts by clicking “Get Started”"
               maxW="332px"
@@ -75,6 +77,8 @@ const Step1 = () => {
             />
             <SubStepSingle
               isActive={currentIndex === 1}
+              step={1}
+              setStep={setCurrentIndex}
               heading="Authorize"
               sub="Authorize Bitcoin Transcripts Dev to access to your Github account"
               maxW="332px"
@@ -82,6 +86,9 @@ const Step1 = () => {
               inActiveIcon="/steps-icon/step-authorize-inactive.png"
             />
             <SubStepSingle
+              isActive={currentIndex === 1}
+              step={1}
+              setStep={setCurrentIndex}
               sub="In simple English, it means that BTCTranscripts will write your transcript onto GitHub so that it can be reviewed."
               maxW="412px"
             />
