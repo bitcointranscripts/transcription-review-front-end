@@ -1,14 +1,24 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { YouTubePlayer } from "react-youtube";
 import React from "react";
 import GlobalContainer from "../GlobalContainer";
 
 const Hero = ({
   getStarted,
   youtube,
+  setModalInfo,
 }: {
   getStarted: () => void;
   youtube?: React.ReactNode;
+  // eslint-disable-next-line no-unused-vars
+  setModalInfo: any;
 }) => {
+  const openYoutubePlayer = () => {
+    setModalInfo({ visible: true });
+  };
+  const openAccordion = ()=>{
+    setModalInfo({ visible: false, accordionStep: 1 });
+  }
   return (
     <Box bgColor="gray.100" width={"100%"}>
       <GlobalContainer py={4}>
@@ -20,7 +30,7 @@ const Hero = ({
               color="gray.800"
               textShadow="dark-lg"
             >
-              Earn sats to review technical Bitcoin talk transcripts
+              To review technical Bitcoin talk transcripts
             </Heading>
             <Box
               as="ul"
@@ -40,15 +50,23 @@ const Hero = ({
                 <Text>Step 3: Submit (and earn 🤑)</Text>
               </li>
             </Box>
-            <Button
-              mt={4}
-              alignSelf="center"
-              variant="outline"
-              colorScheme="blue"
-              onClick={getStarted}
-            >
-              Get Started
-            </Button>
+            <Flex alignItems={"center"} mt={4} gap={4}>
+              <Button
+                onClick={openYoutubePlayer}
+                variant="solid"
+                colorScheme="blue"
+              >
+                Watch Video
+              </Button>
+              <Button
+                variant="outline"
+                colorScheme="blue"
+                onClick={getStarted}
+                maxW={"fit-content"}
+              >
+                Read Instructions.
+              </Button>
+            </Flex>
           </Flex>
           <Box flex="1 1 50%">{youtube}</Box>
         </Flex>

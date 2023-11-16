@@ -46,18 +46,19 @@ const ReadyToReview = ({ getStarted }: { getStarted: () => void }) => {
             Ready to review transcripts and earn sats?
           </Text>
           <Button
-            size={{ base: "md", "2xl": "lg" }}
-            maxW={"max-content"}
+            size={{ base: "md", xl: "lg" }}
+            maxW={{ base: "100%", md: "max-content" }}
             bg="#262626"
-            borderRadius={["8px", "8px", null]}
-            fontFamily={"Mona-Sans"}
+            borderRadius={{ base: "8px", xl: "12px" }}
+            py={{ base: "14px", xl: "28px" }}
+            px={{ base: "18px", xl: "36px" }}
             color={"#F7F7F7"}
-            onClick={getStarted}
             variant="outline"
-            _hover={{}}
+            onClick={getStarted}
+            _hover={{ backgroundColor: "orange" }}
             _active={{}}
           >
-            Get started for free!
+            Get Started
           </Button>
         </Flex>
       </Flex>
