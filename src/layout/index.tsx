@@ -7,6 +7,7 @@ import styles from "./layout.module.css";
 import { useRouter } from "next/router";
 import Navbar from "@/components/navbar/Navbar";
 import config from "@/config/config.json";
+import Script from "next/script";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isReviewSite, setIsReviewSite] = useState(false);
@@ -62,14 +63,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           {children}
         </GlobalContainer>
         {!isHomePage && !isHomeRouter && <Footer />}
+        {isReviewSite && (
+          <Script
+            async
+            src="https://visits.bitcoindevs.xyz/script.js"
+            data-website-id="d9b96a7b-a2db-4ef1-9360-69d3b288859d"
+          ></Script>
+        )}
       </div>
-      {isReviewSite && (
-        <script
-          async
-          src="https://visits.bitcoindevs.xyz/script.js"
-          data-website-id="d9b96a7b-a2db-4ef1-9360-69d3b288859d"
-        ></script>
-      )}
     </>
   );
 };
