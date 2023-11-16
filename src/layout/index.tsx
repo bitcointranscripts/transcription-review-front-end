@@ -2,18 +2,23 @@ import Footer from "@/components/footer/Footer";
 import GlobalContainer from "@/components/GlobalContainer";
 import useNoContainerLimit from "@/hooks/useNoContainerLimit";
 import Head from "next/head";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./layout.module.css";
 import { useRouter } from "next/router";
 import Navbar from "@/components/navbar/Navbar";
+import config from "@/config/config.json";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const [isReviewSite, setIsReviewSite] = useState(false);
   const { noRestriction } = useNoContainerLimit();
   const router = useRouter();
   const isHomePage = router.asPath === "/";
   const isHomeRouter = router.asPath === "/home";
-  const isReviewSite = process.env.VERCEL_URL === "review.btctranscripts.com";
-  console.log("VERCEL_URL", process.env.VERCEL_URL);
+
+  useEffect(() => {
+    setIsReviewSite(window.location.href.includes(config.prod_url));
+  }, []);
+
   return (
     <>
       <div className={styles.app_container}>
