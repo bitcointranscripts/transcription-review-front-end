@@ -165,7 +165,7 @@ const CurrentJobsTable = () => {
           </Heading>
         }
       />
-      {!hasActiveReview && tableData.length && (
+      {!hasActiveReview && tableData.length ? (
         <Flex justifyContent="center">
           <NextLink href="/transcripts">
             <Button size="xs" colorScheme="orange">
@@ -173,7 +173,7 @@ const CurrentJobsTable = () => {
             </Button>
           </NextLink>
         </Flex>
-      )}
+      ) : null}
     </>
   );
 };
