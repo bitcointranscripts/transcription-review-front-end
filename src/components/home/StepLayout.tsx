@@ -1,12 +1,16 @@
 import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import PlayIcon from "../svgs/PlayIcon";
-
+import YoutubePortal, { YoutubeModalInfo } from "./YoutubePortal";
+import YoutubeComponent from "./YoutubeComponent";
+import { YouTubePlayer } from "react-youtube";
+import { PreverVideoProps } from "./Steps";
+import { UI_CONFIG } from "@/config/ui-config";
 interface IStepLayout {
   children: React.ReactNode;
   heading: string;
   sub: string;
-  stepNumber: number;
+  stepNumber: 1 | 2 | 3;
   maxW?: string;
   src?: string;
   headingMaxW?: string;
@@ -22,6 +26,36 @@ const StepLayout: FC<IStepLayout> = ({
   headingMaxW,
   link,
 }) => {
+  const [modalPlayer, setModalPlayer] = useState<YouTubePlayer>(null);
+  const [modalInfo, setModalInfo] = useState<YoutubeModalInfo>({
+    visible: false,
+    accordionStep: null,
+  });
+  const handlePreferVideo: PreverVideoProps["handlePreferVideo"] = (
+    e,
+    step
+  ) => {
+    // continue from last playback if played on same accordion step
+    const playFromTimestamp = step !== modalInfo.accordionStep;
+    setModalInfo({ visible: true, accordionStep: step });
+    if (playFromTimestamp) {
+      //@ts-ignore
+      const timeStamp = UI_CONFIG.YOUTUBE_TIMESTAMP_IN_SECONDS[step];
+      modalPlayer.mute();
+      modalPlayer.seekTo(timeStamp);
+      // some delay to load thumbnail before pause, prevents infinite ui loading
+      setTimeout(() => {
+        modalPlayer.pauseVideo();
+        modalPlayer.unMute();
+      }, 1000);
+    }
+  };
+
+  const handleClose = () => {
+    modalPlayer.pauseVideo();
+    setModalInfo((prev) => ({ ...prev, visible: false }));
+  };
+
   const coloredText = heading.split(" ")[0];
   const othersText = heading.split(coloredText);
   return (
@@ -76,9 +110,7 @@ const StepLayout: FC<IStepLayout> = ({
           fontFamily={" Aeonik Fono"}
         >
           <Button
-            as={"a"}
-            target="_blank"
-            href={link}
+            onClick={(e) => handlePreferVideo(e, stepNumber)}
             leftIcon={
               <Box className="dark-wrapper">
                 <PlayIcon />
@@ -98,6 +130,9 @@ const StepLayout: FC<IStepLayout> = ({
         </Flex>
         {children}
       </Flex>
+      <YoutubePortal modalInfo={modalInfo} handleClose={handleClose}>
+        <YoutubeComponent player={modalPlayer} setPlayer={setModalPlayer} />
+      </YoutubePortal>
     </Flex>
   );
 };
