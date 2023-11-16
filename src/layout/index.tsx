@@ -13,6 +13,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const isHomePage = router.asPath === "/";
   const isHomeRouter = router.asPath === "/home";
   const isReviewSite = process.env.VERCEL_URL === "review.btctranscripts.com";
+  console.log("VERCEL_URL", process.env.VERCEL_URL);
   return (
     <>
       <div className={styles.app_container}>
