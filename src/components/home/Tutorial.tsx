@@ -80,6 +80,7 @@ const HomePageTutorial = () => {
     <Box width={"100%"}>
       <Hero
         getStarted={getStarted}
+        setModalInfo={setModalInfo}
         youtube={<YoutubeComponent player={player} setPlayer={setPlayer} />}
       />
       <Box>

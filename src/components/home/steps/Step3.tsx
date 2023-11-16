@@ -62,6 +62,8 @@ const Step3 = () => {
           <Flex gap={10}>
             <SubStepSingle
               isActive={currentIndex === 0}
+              step={0}
+              setStep={setCurrentIndex}
               heading="Submission"
               sub="Once you submit your transcript, it will create a PR (pull request)* of your edited transcript from the original transcript"
               maxW="528px"
@@ -70,6 +72,8 @@ const Step3 = () => {
             />
             <SubStepSingle
               isActive={currentIndex === 1}
+              step={1}
+              setStep={setCurrentIndex}
               heading="Check the PR"
               sub="If you want to see your transcript, visit your profile and click the link. On the transcript’s GitHub PR, you can click the “Files changed” nav button to view."
               maxW="660px"
