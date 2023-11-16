@@ -190,7 +190,7 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
               onMouseLeave={() => setMoreHover(false)}
               rightIcon={moreHover ? <ArrowDown /> : <></>}
             >
-              Tell me more
+              Tell Me More
             </Button>
           </Flex>
         </Flex>
