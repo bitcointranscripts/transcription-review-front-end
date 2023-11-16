@@ -9,6 +9,7 @@ type TitleWithTagsProps = {
   title: string;
   id: number;
   categories: string | string[];
+  loc?: string;
   allTags: string[];
   length: number;
   shouldSlice?: boolean;
@@ -17,6 +18,7 @@ const TitleWithTags = ({
   title,
   allTags,
   categories,
+  loc,
   id,
   length,
   shouldSlice = true,
@@ -33,7 +35,10 @@ const TitleWithTags = ({
   return (
     <Td width="40%">
       <Flex gap={2} flexDir="column">
-        <Text>{title}</Text>
+        <Box>
+          <Text>{title}</Text>
+          <Text fontSize={["0.7rem"]} color="gray.500">{loc}</Text>
+        </Box>
         <Flex wrap="wrap" gap={2} alignItems="center">
           {foundCategories && (
             <Box
