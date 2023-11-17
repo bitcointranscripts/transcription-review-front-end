@@ -13,8 +13,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isReviewSite, setIsReviewSite] = useState(false);
   const { noRestriction } = useNoContainerLimit();
   const router = useRouter();
-  const isHomePage = router.asPath === "/";
-  const isHomeRouter = router.asPath === "/home";
+  const isHomePage = router.pathname === "/";
+  const isHomeRouter = router.pathname === "/home";
 
   useEffect(() => {
     setIsReviewSite(window.location.href.includes(config.prod_url));
