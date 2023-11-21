@@ -21,22 +21,22 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
       minW={{
         base: "100%",
         sm: "256px",
-        md: "320px",
-        lg: "280px",
+        md: "300px",
+        lg: "260px",
         xl: "267px",
         "2xl": "370px",
       }}
       maxW={{
         base: "100%",
         sm: "256px",
-        md: "320px",
-        lg: "280px",
+        md: "300px",
+        lg: "260px",
         xl: "267px",
         "2xl": "370px",
       }}
       flexDir={"column"}
-      minH={{ base: "200px", lg: "230px", "2xl": "320px" }}
-      maxH={{ base: "200px", lg: "230px", "2xl": "320px" }}
+      minH={{ base: "220px", lg: "230px", "2xl": "320px" }}
+      maxH={{ base: "220px", lg: "230px", "2xl": "320px" }}
       margin={"0 auto"}
       bg={"#F7F7F7"}
       rounded={"30px"}
@@ -75,6 +75,7 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
             "1.4rem",
             "2rem",
           ]}
+          whiteSpace={"pre-line"}
           textAlign={{ base: "center", lg: "left" }}
           fontWeight={700}
           minHeight={{ base: "3rem", lg: "3rem", "2xl": "5rem" }}
@@ -85,6 +86,7 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
         <Text
           fontWeight={400}
           textAlign={{ base: "center", lg: "left" }}
+          whiteSpace={"pre-line"}
           fontSize={[
             "0.875rem",
             "0.875rem",
