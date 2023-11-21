@@ -17,7 +17,7 @@ import { useRouter } from "next/router";
 
 const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
   const router = useRouter();
-  const isHomeRoute = router.asPath == "/home";
+  const isHomeRoute = router.pathname == "/home";
   const [moreHover, setMoreHover] = useState(false);
   return (
     <Flex
@@ -77,7 +77,7 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
         </Flex>
       </Flex>
       <Flex
-        mt={{ base: "80px", lg: "20px", xl: "40px" }}
+        mt={{ base: "80px", lg: "30px", xl: "40px" }}
         pl={{ base: "24px", md: "32px", xl: "100px" }}
         pr={{ base: "24px", md: "32px", lg: "0px" }}
         pt={{ base: "0px", lg: "20px", xl: "45px" }}
@@ -94,6 +94,7 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
         >
           <Text
             fontFamily={"Polysans"}
+            whiteSpace={"pre-line"}
             fontSize={{
               base: "2.12rem",
               md: "3.25rem",
@@ -108,17 +109,17 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
             <Text color={"#F7931A"} as={"span"}>
               Review
             </Text>{" "}
-            Technical Bitcoin Transcripts and
+            Technical {"\n"} Bitcoin Transcripts {"\n"} and
             <Text color={"#F7931A"} as={"span"}>
               {" "}
               Earn Sats
             </Text>
           </Text>
           <Flex
-            gap={{ base: 2, lg: 5 }}
+            gap={{ base: 2, xl: 5 }}
             fontSize={{
               base: "1rem",
-              lg: "1.25rem",
+              lg: "1rem",
               xl: "1.6rem",
               "2xl": "2.5rem",
               "3xl": "3rem",

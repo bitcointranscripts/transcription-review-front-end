@@ -40,7 +40,6 @@ const YoutubeTutorial = () => {
         >
           <Image
             display={{ lg: "none" }}
-            aspectRatio={"16/9"}
             zIndex={40}
             src={"home/hero-mobile.png"}
             style={{
@@ -51,11 +50,11 @@ const YoutubeTutorial = () => {
           />
           <Image
             display={{ base: "none", lg: "block" }}
-            aspectRatio={"16:9"}
             className="thumbnail"
             src={"home/hero-thumbnail.png"}
+            width={"90%"}
             style={{
-              objectFit: "contain",
+              // objectFit:"contain",
               borderRadius: "30px 0px 0px 30px",
               right: "0px",
             }}
