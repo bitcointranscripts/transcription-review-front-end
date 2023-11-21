@@ -41,7 +41,7 @@ const EditingTranscriptSingle: FC<IEditingTranscript> = ({
           base: "1rem",
           lg: "1rem",
           xl: "1.4rem",
-          "3xl": "1.75rem",
+          "2xl": "1.75rem",
         }}
         textAlign={{ base: "center", md: "left" }}
         lineHeight={"125%"}
