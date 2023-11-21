@@ -1,3 +1,4 @@
+import { discordInvites } from "@/utils";
 import {
   Box,
   Divider,
@@ -68,10 +69,10 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
                       stepLoading
                         ? "orange.400"
                         : stepCompleted
-                        ? "green.400"
-                        : stepNotRun
-                        ? "gray.300"
-                        : "red.400"
+                          ? "green.400"
+                          : stepNotRun
+                            ? "gray.300"
+                            : "red.400"
                     }
                     fontWeight={stepNotRun ? 300 : 600}
                   >
@@ -124,6 +125,19 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
                       color="blue.400"
                     >
                       here
+                    </Link>
+                    .
+                  </Text>
+                  <Divider marginY={2} />
+                  <Text fontSize="sm" alignSelf='end'>
+                    Help us improve!{" "}
+                    <Link
+                      href={discordInvites.feedback}
+                      target="_blank"
+                      color="blue.400"
+                      data-umami-event="discord-feedback"
+                    >
+                      Tell us about your experience
                     </Link>
                     .
                   </Text>
