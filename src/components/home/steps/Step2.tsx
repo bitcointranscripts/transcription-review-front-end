@@ -1,6 +1,6 @@
 import React from "react";
 import StepLayout from "../StepLayout";
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Link, Text } from "@chakra-ui/react";
 import SubStepSingle from "./SubStepSingle";
 import Image from "next/image";
 
@@ -8,8 +8,8 @@ const Step2 = () => {
   return (
     <StepLayout
       stepNumber={2}
-      heading="Start reviewing and editing the transcript"
-      sub="TLDR; Use markdown. Make sure stuff is accurate. Use “replace” in case of multispeaker transcripts. Use split screen to listen and edit transcript at the same time."
+      heading={`Start reviewing \n and editing the transcript`}
+      sub={`TLDR; Use markdown. Make sure stuff is accurate. Use “replace”\n in case of multispeaker transcripts. Use split screen to listen\n and edit transcript at the same time.`}
       maxW={"1000px"}
       src="/home/edit-transcript.png"
       headingMaxW={"700px"}
@@ -27,27 +27,32 @@ const Step2 = () => {
           borderRadius={"30px 0px 30px 30px"}
         >
           <Flex
-            flexDir={{ base: "column", lg: "row" }}
+            flexDir={{ base: "column", md: "row" }}
             gap={{ base: "24px", lg: 16 }}
             py={{ base: "22px", lg: "0px" }}
             borderRadius={{ base: "12px", lg: "0px" }}
             px={{ base: "22px", lg: "0px" }}
             borderColor={"#D9D9D9"}
             borderWidth={{ base: 1.5, lg: "0px" }}
+            alignItems={{ base: "start", md: "end" }}
           >
             <SubStepSingle
               step={0}
+              isBulletList
               setStep={() => false}
               isActive
               heading="Using Markdown"
-              sub="We use markdown. This is a way of writing text that tells computers how to display information - like what's a title, header, what’s bolded, and the like."
+              activeIcon="/steps-icon/markdown.png"
+              inActiveIcon="/steps-icon/markdown.png"
+              sub={`We use markdown. This is a way of \n  writing text that tells computers how to \n display information - like what's a title,\n header, what’s bolded, and the like.`}
               maxW="540px"
             />
             <SubStepSingle
               isActive
+              isBulletList
               step={0}
               setStep={() => false}
-              sub="You probably won’t need to use anything apart from Header 1, Header 2, bolding, italics, and hyperlinks."
+              sub={`You probably won’t need to use anything\n apart from Header 1, Header 2, bolding,\n italics, and hyperlinks.`}
               maxW="536px"
               href="https://www.markdownguide.org/basic-syntax/"
               otherText="Here's a super "
@@ -57,15 +62,19 @@ const Step2 = () => {
         </Flex>
 
         <Flex
-          pt={{ base: "24px", lg: "90px" }}
-          pl={{ base: "14px", lg: "70px" }}
+          pt={{ base: "20px", md: "45px", "2xl": "90px" }}
+          pl={{ base: "20px", md: "35px", "2xl": "70px" }}
           justifyContent={"space-between"}
-          flexDir={{ base: "column", lg: "row" }}
+          flexDir={{ base: "column", md: "row" }}
           gap={10}
+          backgroundImage={"/home/dotted-bg.png"}
+          backgroundSize={"cover"}
+          backgroundRepeat={"no-repeat"}
+          backgroundPosition={"center"}
           borderWidth={2}
           overflow={"hidden"}
           borderColor={"#D9D9D9"}
-          borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
+          borderRadius={{ base: "12px", lg: "30px" }}
         >
           <Flex
             lineHeight={"135%"}
@@ -74,12 +83,13 @@ const Step2 = () => {
             pr={{ base: "14px", lg: "0px" }}
             maxW={"386px"}
             color={"#262626"}
-            fontSize={{ base: "1rem", xl: "1.75rem" }}
+            fontSize={{ base: "0.875rem", lg: "1.27rem", "2xl": "1.75rem" }}
             fontFamily={"Polysans"}
+            whiteSpace={"pre-line"}
           >
             <Text>
-              Here is what you’ll see as you{" "}
-              <Text as={"span"}>edit the transcript</Text>
+              Here is what you’ll see as {"\n"}you
+              <Text as={"span"}> edit the transcript</Text>
             </Text>
             <Text>
               Notice the use of Header 1, Header 2, and hyperlinks with
@@ -110,29 +120,45 @@ const Step2 = () => {
         </Flex>
 
         <Flex
-          pt={{ base: "20px", lg: "90px" }}
-          pl={{ base: "20px", lg: "70px" }}
+          pt={{ base: "20px", md: "45px", "2xl": "90px" }}
+          pl={{ base: "20px", md: "35px", "2xl": "70px" }}
           justifyContent={"space-between"}
-          overflow={"hidden"}
-          flexDir={{ base: "column", lg: "row" }}
+          flexDir={{ base: "column", md: "row" }}
           gap={10}
+          backgroundImage={"/home/dotted-bg.png"}
+          backgroundSize={"cover"}
+          backgroundRepeat={"no-repeat"}
+          backgroundPosition={"center"}
           borderWidth={2}
+          overflow={"hidden"}
           borderColor={"#D9D9D9"}
-          borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
+          borderRadius={{ base: "12px", lg: "30px" }}
         >
           <Flex
             lineHeight={"135%"}
             flexDir={"column"}
             gap={4}
             pr={{ base: "14px", lg: "0px" }}
-            maxW={"386px"}
+            width={"100%"}
+            maxW={"max-content"}
             color={"#262626"}
-            fontSize={{ base: "1rem", xl: "1.75rem" }}
+            fontSize={{ base: "0.875rem", lg: "1.27rem", "2xl": "1.75rem" }}
             fontFamily={"Polysans"}
           >
-            <Text>Here is what will live in the GitHub repository.</Text>
-            <Text>
-              This is automatically created when you submit your transcript.
+            <Text whiteSpace={"pre-line"}>
+              Here is what will live in the{`\n`}
+              <Link
+                isExternal
+                textDecoration={"underline"}
+                href="https://raw.githubusercontent.com/bitcointranscripts/bitcointranscripts/master/chaincode-labs/chaincode-podcast/2020-11-30-carl-dong-reproducible-builds.md"
+              >
+                {" "}
+                GitHub repository.
+              </Link>
+            </Text>
+            <Text whiteSpace={"pre-line"}>
+              This is automatically{"\n"} created when you submit {"\n"} your
+              transcript.
             </Text>
           </Flex>
           <Box
@@ -157,29 +183,45 @@ const Step2 = () => {
         </Flex>
 
         <Flex
-          pt={{ base: "20px", lg: "90px" }}
-          pl={{ base: "20px", lg: "70px" }}
+          pt={{ base: "20px", md: "45px", "2xl": "90px" }}
+          pl={{ base: "20px", md: "35px", "2xl": "70px" }}
           justifyContent={"space-between"}
           flexDir={{ base: "column", lg: "row" }}
           overflow={"hidden"}
+          backgroundImage={"/home/dotted-bg.png"}
+          backgroundSize={"cover"}
+          backgroundRepeat={"no-repeat"}
+          backgroundPosition={"center"}
           gap={10}
           borderWidth={2}
           borderColor={"#D9D9D9"}
-          borderRadius={{ base: "12px", lg: "30px 0px 30px 30px" }}
+          borderRadius={{ base: "12px", lg: "30px" }}
         >
           <Flex
             lineHeight={"135%"}
             flexDir={"column"}
             gap={4}
             pr={{ base: "14px", lg: "0px" }}
-            maxW={"386px"}
+            width={"100%"}
+            maxW={"max-content"}
             color={"#262626"}
-            fontSize={{ base: "1rem", xl: "1.75rem" }}
+            fontSize={{ base: "0.875rem", lg: "1.27rem", "2xl": "1.75rem" }}
             fontFamily={"Polysans"}
           >
-            <Text>Here is what will live on the live site.</Text>
-            <Text>
-              This is also automatically created once the review is finalized.
+            <Text whiteSpace={"pre-line"}>
+              Here is what will live on the{"\n"}
+              <Link
+                isExternal
+                textDecoration={"underline"}
+                href="https://btctranscripts.com/chaincode-labs/2022-04-12-carl-dong-libbitcoinkernel/"
+              >
+                {" "}
+                live site.
+              </Link>
+            </Text>
+            <Text whiteSpace={"pre-line"}>
+              This is also automatically {"\n"} created once the review {"\n"}{" "}
+              is finalized.
             </Text>
           </Flex>
           <Box
