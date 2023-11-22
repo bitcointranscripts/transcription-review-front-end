@@ -10,7 +10,12 @@ const EverythingYouNeed = () => {
       <Text
         textAlign={"center"}
         fontFamily={"Polysans"}
-        fontSize={{ base: "1.875rem", lg: "3.5rem", "2xl": "5.25rem" }}
+        fontSize={{
+          base: "1.875rem",
+          lg: "3.2rem",
+          xl: "4rem",
+          "2xl": "4.8rem",
+        }}
         fontWeight={600}
         lineHeight={"115%"}
       >

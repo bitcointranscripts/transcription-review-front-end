@@ -26,13 +26,19 @@ const LandingFooter = () => {
         >
           <Text
             fontSize={{
-              base: "0.875rem",
-              lg: "1.6rem",
-              xl: "1.6rem",
-              "2xl": "2rem",
+              base: "0.96rem",
+              lg: "1.16rem",
+              xl: "1.63rem",
+              "2xl": "2.25rem",
             }}
             lineHeight={"115%"}
-            maxW={{ base: "", lg: "369px", xl: "400px", "2xl": "none" }}
+            maxW={{
+              base: "",
+              sm: "200px",
+              lg: "300px",
+              xl: "400px",
+              "2xl": "500px",
+            }}
           >
             We’d love to hear your feedback on this project
           </Text>
@@ -59,14 +65,24 @@ const LandingFooter = () => {
         >
           <Text
             fontFamily={"Polysans"}
-            fontSize={{ base: "0.96rem", lg: "1.68rem", "2xl": "1.85rem" }}
+            fontSize={{
+              base: "0.96rem",
+              lg: "1.16rem",
+              xl: "1.63rem",
+              "2xl": "2.25rem",
+            }}
           >
             built with 🤍 by
           </Text>
           <Link
             href="https://bitcoindevs.xyz"
             isExternal
-            fontSize={{ base: "1.25rem", lg: "2.75rem", xl: "3.25rem" }}
+            fontSize={{
+              base: "1.25rem",
+              lg: "2.125rem",
+              xl: "3.125rem",
+              "2xl": "3.25rem",
+            }}
             textDecoration={"underline"}
             textAlign={"right"}
             lineHeight={{ base: "150%", lg: "115%" }}

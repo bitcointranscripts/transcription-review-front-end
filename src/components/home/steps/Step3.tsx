@@ -40,8 +40,9 @@ const Step3 = () => {
   return (
     <StepLayout
       stepNumber={3}
-      heading="Submit the edited transcript"
-      sub="TLDR; Once you submit, you’re done! The submitted transcripts are reviewed by a human and then published via GitHub"
+      heading={`Submit the \n edited transcript`}
+      src="/steps-icon/check-round.png"
+      sub={`TLDR; Once you submit, you’re done! \n The submitted transcripts are reviewed by\n a human and then published via GitHub`}
       link={"https://www.youtube.com/watch?v=YNIFm0QFAuA&t=5m02s"}
     >
       <Flex flexDir={"column"} gap={10}>
@@ -153,7 +154,7 @@ const Step3 = () => {
             lineHeight={"135%"}
             gap={{ base: 3, lg: 8 }}
             fontSize={{ base: "0.75rem", lg: "1.3rem", xl: "1.8rem" }}
-            fontFamily={"Aeonik Fono"}
+            fontFamily={"Polysans"}
           >
             <Text>
               <Text as="span" fontWeight={700}>

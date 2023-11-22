@@ -9,18 +9,18 @@ const OptimalSetup = () => {
       borderWidth={3}
       borderRadius={{ base: "12px", lg: "30px" }}
       flexDir={"column"}
-      gap={{ base: 5, lg: 0 }}
+      gap={{ base: 5, lg: 5 }}
       justifyContent={"space-between"}
-      py={{ base: "24px", xl: "70px" }}
-      px={{ base: "24px", xl: "60px" }}
+      py={{ base: "24px", xl: "50px", "2xl": "70px" }}
+      px={{ base: "24px", xl: "43px", "2xl": "60px" }}
       borderColor={"#262626"}
     >
-      <Flex flexDir={"column"} gap={{ base: 5, lg: 12 }}>
+      <Flex flexDir={"column"} gap={{ base: 5, lg: 6, "2xl": 12 }}>
         <Text
           fontSize={{
             base: "1.2rem",
-            lg: "2.25rem",
-            xl: "2.35rem",
+            lg: "1.6rem",
+            xl: "2.31rem",
             "2xl": "3.25rem",
           }}
           lineHeight={"115%"}
@@ -32,11 +32,12 @@ const OptimalSetup = () => {
         <Flex flexDir={"column"} fontFamily={"Aeonik Fono"}>
           <UnorderedList
             lineHeight={"150%"}
-            fontSize={{ base: "0.875rem", lg: "1.21rem", "2xl": "1.75rem" }}
+            fontSize={{ base: "0.875rem", lg: "1.21rem", "2xl": "1.625rem" }}
             letterSpacing={"0.78px"}
             display={"flex"}
+            paddingX={2}
             flexDir={"column"}
-            gap={{ base: 5, lg: 10 }}
+            gap={{ base: 3, "2xl": 8 }}
           >
             <ListItem>
               An ideal setup is using split screen to make edits while listening

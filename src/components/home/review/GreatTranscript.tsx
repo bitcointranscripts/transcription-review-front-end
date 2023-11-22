@@ -9,16 +9,16 @@ const GreatTranscript = () => {
       borderWidth={3}
       borderRadius={{ base: "12px", lg: "30px" }}
       flexDir={"column"}
-      gap={{ base: 5, lg: 12 }}
-      py={{ base: "24px", xl: "70px" }}
-      px={{ base: "24px", xl: "60px" }}
+      gap={{ base: 5, lg: 6, "2xl": 12 }}
+      py={{ base: "24px", xl: "50px", "2xl": "70px" }}
+      px={{ base: "24px", xl: "43px", "2xl": "60px" }}
       borderColor={"#262626"}
     >
       <Text
         fontSize={{
           base: "1.2rem",
-          lg: "2.25rem",
-          xl: "2.35rem",
+          lg: "1.6rem",
+          xl: "2.31rem",
           "2xl": "3.25rem",
         }}
         lineHeight={"115%"}
@@ -35,6 +35,7 @@ const GreatTranscript = () => {
         <Text
           fontSize={{
             base: "0.875rem",
+            lg: "1.25rem",
             xl: "1.31rem",
             "2xl": "1.75rem",
           }}
@@ -47,7 +48,8 @@ const GreatTranscript = () => {
         </Text>
         <UnorderedList
           lineHeight={"150%"}
-          fontSize={{ base: "0.875rem", lg: "1.21rem", "2xl": "1.75rem" }}
+          paddingX={2}
+          fontSize={{ base: "0.875rem", lg: "1.21rem", "2xl": "1.625rem" }}
           letterSpacing={"0.78px"}
         >
           <ListItem>Title</ListItem>

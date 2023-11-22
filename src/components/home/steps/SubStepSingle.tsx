@@ -5,6 +5,7 @@ interface ISubStepSingle {
   heading?: string;
   setStep: React.Dispatch<SetStateAction<number>>;
   step: number;
+  isBulletList?: boolean;
   isActive?: boolean;
   boldString?: string;
   sub: string;
@@ -27,24 +28,26 @@ const SubStepSingle: FC<ISubStepSingle> = ({
   inActiveIcon,
   activeIcon,
   step,
+  isBulletList,
   setStep,
 }) => {
   const handleClick = () => setStep(step);
 
   return (
     <Flex
+      as={isBulletList ? "ul" : Flex}
       flexDir={"column"}
       width={"100%"}
-      gap={{ base: 4, lg: 6 }}
+      gap={2}
       maxW={maxW}
       cursor={"pointer"}
       onClick={handleClick}
     >
-      <Flex gap={{ base: 3, lg: 4 }} alignItems={"center"}>
+      <Flex gap={{ base: 2, "2xl": 4 }} alignItems={"center"}>
         {activeIcon && inActiveIcon && (
           <Image
             objectFit={"contain"}
-            width={"30px"}
+            width={{ base: "20px", "2xl": "30px" }}
             src={isActive ? activeIcon : inActiveIcon}
             alt={heading}
           />
@@ -52,8 +55,7 @@ const SubStepSingle: FC<ISubStepSingle> = ({
         <Text
           fontFamily={"Polysans"}
           color={isActive ? "#333" : "#A6A6A6"}
-          fontSize={{ base: "1.125rem", xl: "1.5rem", "2xl": "1.5rem" }}
-          minH={{ base: "1.225rem", xl: "1.7rem", "2xl": "1.7rem" }}
+          fontSize={{ base: "1.125rem", lg: "1.125rem", "2xl": "1.5rem" }}
           fontWeight={700}
         >
           {heading || ""} <Text as="span">{boldString || ""}</Text>
@@ -61,8 +63,16 @@ const SubStepSingle: FC<ISubStepSingle> = ({
       </Flex>{" "}
       <Text
         fontFamily={"Aeonik Fono"}
+        as={isBulletList ? "li" : Text}
+        marginLeft={isBulletList ? "16px" : "0px"}
         color={isActive ? "#333" : "#A6A6A6"}
-        fontSize={{ base: "0.875rem", xl: "1.5rem", "2xl": "1.5rem" }}
+        whiteSpace={"pre-line"}
+        fontSize={{
+          base: "0.65rem",
+          sm: "0.875rem",
+          lg: "1.12rem",
+          "2xl": "1.5rem",
+        }}
       >
         {sub} <br />
         {link && (
@@ -74,7 +84,12 @@ const SubStepSingle: FC<ISubStepSingle> = ({
               textDecoration={"underline"}
               fontFamily={"Aeonik Fono"}
               color={isActive ? "#333" : "#A6A6A6"}
-              fontSize={{ base: "0.875rem", xl: "1.5rem", "2xl": "1.5rem" }}
+              fontSize={{
+                base: "0.65rem",
+                sm: "0.875rem",
+                lg: "1.12rem",
+                "2xl": "1.5rem",
+              }}
             >
               {link}
             </Link>
