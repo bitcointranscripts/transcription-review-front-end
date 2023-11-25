@@ -29,21 +29,26 @@ async function pullAndUpdatedPR(
   });
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
+  const owner = prRepo === "user" ? forkOwner : upstreamOwner;
+  const repo = prRepo === "user" ? forkRepo : upstreamRepo;
+
   const pullFiles = await octokit
     .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
-      owner: prRepo === "user" ? forkOwner : upstreamOwner,
-      repo: prRepo === "user" ? forkRepo : upstreamRepo,
+      owner,
+      repo,
       pull_number,
     })
-    .then((pr) => ({ data: pr?.data[0] }))
+    .then((pr) => ({
+      data: pr?.data,
+    }))
     .catch((_err) => {
       throw new Error("Error in fetching the pull request files");
     });
 
   const pullDetails: any = await octokit
     .request("GET /repos/:owner/:repo/pulls/:pull_number", {
-      owner: prRepo === "user" ? forkOwner : upstreamOwner,
-      repo: prRepo === "user" ? forkRepo : upstreamRepo,
+      owner,
+      repo,
       pull_number,
     })
     .then((_data) => _data)
@@ -53,14 +58,103 @@ async function pullAndUpdatedPR(
   if (pullDetails?.data?.merged) {
     throw new Error("Your transcript has been merged!");
   }
-  const pullRequestSHA = pullFiles?.data?.sha;
+
+  const pullRequestSHA = pullFiles?.data[0].sha;
   const pullRequestBranch = pullDetails?.data?.head?.ref;
+
+  async function deleteFileWithRetry(
+    octokit: InstanceType<typeof Octokit>,
+    owner: string,
+    repo: string,
+    path: string,
+    message: string,
+    branch: string,
+    sha: string,
+    retries = 2
+  ) {
+    try {
+      await octokit.request("DELETE /repos/{owner}/{repo}/contents/{path}", {
+        owner,
+        repo,
+        path,
+        message,
+        branch,
+        sha,
+      });
+    } catch (error) {
+      if (retries > 0 && (error as Error).message.includes("does not match")) {
+        // Fetch the latest SHA of the file
+        const latestFileDetails = await octokit.request(
+          "GET /repos/{owner}/{repo}/contents/{path}",
+          {
+            owner,
+            repo,
+            path,
+            ref: branch,
+          }
+        );
+        const latestFileDetailsData = latestFileDetails.data as { sha: string };
+
+        // Retry with the latest SHA
+        return deleteFileWithRetry(
+          octokit,
+          owner,
+          repo,
+          path,
+          message,
+          branch,
+          latestFileDetailsData.sha,
+          retries - 1
+        );
+      } else {
+        // If no retries left or error is not related to SHA mismatch,
+        // rethrow the error
+        console.error(`Error deleting file ${path} with sha ${sha}: ${error}`);
+        throw new Error("Error deleting the file");
+      }
+    }
+  }
+
+  // Loop through all files and prepare delete promises
+  const deletePromises = pullFiles.data.map((file) => {
+    const currentPath = file.filename;
+    const newFilePath = `${directoryPath}/${fileName}.md`;
+
+    if (currentPath !== newFilePath) {
+      const message = `Deleted "${metaData.fileTitle}" transcript submitted by ${forkOwner}`;
+      return deleteFileWithRetry(
+        octokit,
+        owner,
+        repo,
+        currentPath,
+        message,
+        pullRequestBranch,
+        file.sha
+      );
+    } else {
+      return Promise.resolve(); // If no change, resolve immediately
+    }
+  });
+
+  // wait for all operations to complete
+  const results = await Promise.allSettled(deletePromises);
+
+  results.forEach((result, index) => {
+    if (result.status === "rejected") {
+      console.error(
+        `Error processing file ${pullFiles.data[index].filename}: ${result.reason}`
+      );
+      // Todo!: batch errors and throw at the end
+    }
+  });
+
   // Create the file to be inserted
   const metadata = metaData.toString();
   const transcriptData = `${metadata}\n${transcribedText}\n`;
   const fileContent = Buffer.from(transcriptData).toString("base64");
 
   const fileSlug = deriveFileSlug(fileName);
+
   const updateContent = await octokit.request(
     "PUT /repos/:owner/:repo/contents/:path",
     {
@@ -73,6 +167,7 @@ async function pullAndUpdatedPR(
       sha: pullRequestSHA,
     }
   );
+
   if (updateContent.status < 200 || updateContent.status > 299) {
     throw new Error("Error updating the file content");
   }
@@ -83,6 +178,7 @@ async function pullAndUpdatedPR(
     },
   };
 }
+
 // function for creating a PR and Forking
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,
