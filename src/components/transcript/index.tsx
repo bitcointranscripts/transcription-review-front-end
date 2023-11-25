@@ -173,6 +173,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           onSettled(data) {
             if (data?.statusText === "OK") {
               queryClient.invalidateQueries(["transcript", transcriptId]);
+              queryClient.invalidateQueries(["review", reviewData.id]);
             }
           },
         }
@@ -250,6 +251,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       }));
     } finally {
       setSubmitState((prev) => ({ ...prev, isLoading: false }));
+      queryClient.invalidateQueries(["review", reviewData.id]);
     }
   };
 
