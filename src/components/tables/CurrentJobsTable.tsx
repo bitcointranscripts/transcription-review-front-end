@@ -68,11 +68,11 @@ const CurrentJobsTable = () => {
                   Under Review
                 </Button>
               </Link>
-              {/* {!data.review?.mergedAt && (
+              {!data.review?.mergedAt && (
                 <Button onClick={handleResume} colorScheme={"orange"} size="sm">
                   Resubmit
                 </Button>
-              )} */}
+              )}
             </Flex>
           ) : (
             <Button colorScheme={"orange"} size="sm" onClick={handleResume}>
