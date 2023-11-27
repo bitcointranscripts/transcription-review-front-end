@@ -1,16 +1,23 @@
 import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
+import { AxiosError } from "axios";
+
 import config from "@/config/config.json";
+import { Octokit } from "@octokit/core";
+
 import {
   deriveFileSlug,
   extractPullNumber,
   Metadata,
   newIndexFile,
-} from "@/utils";
-import { Octokit } from "@octokit/core";
-import type { NextApiRequest, NextApiResponse } from "next";
+} from "../../../utils";
+import {
+  deleteIndexMdIfDirectoryEmpty,
+  ensureIndexMdExists,
+} from "../../../utils/github";
 import { auth } from "../auth/[...nextauth]";
 
-// functions for an already open PR
+import type { NextApiRequest, NextApiResponse } from "next";
+
 async function pullAndUpdatedPR(
   octokit: InstanceType<typeof Octokit>,
   directoryPath: string,
@@ -18,10 +25,12 @@ async function pullAndUpdatedPR(
   transcribedText: string,
   metaData: Metadata,
   pull_number: number,
-  prRepo: TranscriptSubmitOptions
+  prRepo: TranscriptSubmitOptions,
+  oldDirectoryList: string[]
 ) {
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
+
   // To get the owner details
   const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
     owner: upstreamOwner,
@@ -32,148 +41,178 @@ async function pullAndUpdatedPR(
   const owner = prRepo === "user" ? forkOwner : upstreamOwner;
   const repo = prRepo === "user" ? forkRepo : upstreamRepo;
 
-  const pullFiles = await octokit
-    .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
-      owner,
-      repo,
-      pull_number,
-    })
-    .then((pr) => ({
-      data: pr?.data,
-    }))
-    .catch((_err) => {
-      throw new Error("Error in fetching the pull request files");
-    });
-
-  const pullDetails: any = await octokit
+  // Fetch the pull request details
+  const pullDetails = await octokit
     .request("GET /repos/:owner/:repo/pulls/:pull_number", {
       owner,
       repo,
       pull_number,
     })
-    .then((_data) => _data)
-    .catch((_err) => {
+    .then((data) => data)
+    .catch((err) => {
+      console.error(err);
       throw new Error("Error in fetching the pull request details");
     });
+
   if (pullDetails?.data?.merged) {
     throw new Error("Your transcript has been merged!");
   }
 
-  const pullRequestSHA = pullFiles?.data[0].sha;
-  const pullRequestBranch = pullDetails?.data?.head?.ref;
+  const prBranch = pullDetails.data.head.ref;
 
-  async function deleteFileWithRetry(
-    octokit: InstanceType<typeof Octokit>,
-    owner: string,
-    repo: string,
-    path: string,
-    message: string,
-    branch: string,
-    sha: string,
-    retries = 2
-  ) {
+  // Ensure _index.md exists in each directory level
+  await ensureIndexMdExists(octokit, owner, repo, directoryPath, prBranch);
+
+  // Construct the new file path
+  const newFilePath = `${directoryPath}/${deriveFileSlug(fileName)}.md`;
+  let oldFilePath;
+  let oldFileSha;
+  // loop through the old directory list and get the one that doesn't return a 404
+  for (const directory of oldDirectoryList) {
     try {
+      const response = await octokit.request(
+        "GET /repos/{owner}/{repo}/contents/{path}",
+        {
+          owner,
+          repo,
+          path: `${directory?.trim()}/${deriveFileSlug(fileName)}.md`,
+          ref: prBranch,
+        }
+      );
+      oldFilePath = `${directory?.trim()}/${deriveFileSlug(fileName)}.md`;
+      const dataWithSha = response.data as { sha: string };
+      oldFileSha = dataWithSha.sha;
+      break; // break out of the loop if the file is found
+    } catch (error) {
+      if ((error as AxiosError).status !== 404) {
+        console.error(error);
+        throw error; // If the old file doesn't exist, ignore the error; otherwise, rethrow
+      }
+      // If the file doesn't exist, continue to the next directory
+    }
+  }
+
+  // If the old directory path is provided and different from the new directory path, handle the file move
+  if (oldFilePath && oldFileSha) {
+    // Delete the old file
+    try {
+      // Delete the old file using the SHA
       await octokit.request("DELETE /repos/{owner}/{repo}/contents/{path}", {
         owner,
         repo,
-        path,
-        message,
-        branch,
-        sha,
+        path: oldFilePath,
+        message: `Remove outdated file in old directory path for ${fileName}`,
+        sha: oldFileSha,
+        branch: prBranch,
       });
-    } catch (error) {
-      if (retries > 0 && (error as Error).message.includes("does not match")) {
-        // Fetch the latest SHA of the file
-        const latestFileDetails = await octokit.request(
-          "GET /repos/{owner}/{repo}/contents/{path}",
-          {
-            owner,
-            repo,
-            path,
-            ref: branch,
-          }
-        );
-        const latestFileDetailsData = latestFileDetails.data as { sha: string };
 
-        // Retry with the latest SHA
-        return deleteFileWithRetry(
-          octokit,
-          owner,
-          repo,
-          path,
-          message,
-          branch,
-          latestFileDetailsData.sha,
-          retries - 1
-        );
-      } else {
-        // If no retries left or error is not related to SHA mismatch,
-        // rethrow the error
-        console.error(`Error deleting file ${path} with sha ${sha}: ${error}`);
-        throw new Error("Error deleting the file");
+      // check if the old directory is empty
+      const oldDirectory = oldFilePath.substring(
+        0,
+        oldFilePath.lastIndexOf("/")
+      );
+      // Delete the old _index.md file if the directory is now empty
+      await deleteIndexMdIfDirectoryEmpty(
+        octokit,
+        owner,
+        repo,
+        oldDirectory,
+        prBranch,
+        deriveFileSlug(fileName) + ".md"
+      );
+    } catch (error) {
+      console.error(error);
+      if ((error as AxiosError).status !== 404) {
+        console.error(error);
+        throw error; // If the old file doesn't exist, ignore the error; otherwise, rethrow
       }
     }
   }
 
-  // Loop through all files and prepare delete promises
-  const deletePromises = pullFiles.data.map((file) => {
-    const currentPath = file.filename;
-    const newFilePath = `${directoryPath}/${fileName}.md`;
+  const fileContent = Buffer.from(`${metaData}\n${transcribedText}\n`).toString(
+    "base64"
+  );
+  let finalResult: any;
 
-    if (currentPath !== newFilePath) {
-      const message = `Deleted "${metaData.fileTitle}" transcript submitted by ${forkOwner}`;
-      return deleteFileWithRetry(
-        octokit,
+  // Only update the file in the new directory path if the old directory path is not provided
+  // or if it's the same as the new directory path
+  // Get the SHA of the current file to update
+  try {
+    const { data: fileData } = await octokit.request(
+      "GET /repos/{owner}/{repo}/contents/{path}",
+      {
         owner,
         repo,
-        currentPath,
-        message,
-        pullRequestBranch,
-        file.sha
+        path: newFilePath,
+        ref: prBranch,
+      }
+    );
+    const dataWithSha = fileData as { sha: string };
+    const fileSha = dataWithSha.sha; // Get the SHA of the existing file
+
+    // Update the file with the new content
+    finalResult = await octokit.request(
+      "PUT /repos/{owner}/{repo}/contents/{path}",
+      {
+        owner,
+        repo,
+        path: newFilePath,
+        message: `Updated ${fileName}`,
+        content: fileContent,
+        branch: prBranch,
+        sha: fileSha, // Provide the SHA of the existing for the update
+      }
+    );
+
+    if (finalResult.status < 200 || finalResult.status > 299) {
+      throw new Error("Error updating the file content");
+    }
+  } catch (error) {
+    // If the file doesn't exist, it needs to be created instead of updated
+    if ((error as AxiosError).status === 404) {
+      // Update or create the file in the new directory path
+      finalResult = await octokit.request(
+        "PUT /repos/{owner}/{repo}/contents/{path}",
+        {
+          owner,
+          repo,
+          path: newFilePath,
+          message: `Updated ${fileName}`,
+          content: fileContent,
+          branch: prBranch,
+        }
       );
+      if (finalResult.status < 200 || finalResult.status > 299) {
+        throw new Error("Error updating the file content");
+      }
     } else {
-      return Promise.resolve(); // If no change, resolve immediately
+      console.error(error);
+      throw new Error("Error updating the file content");
     }
-  });
-
-  // wait for all operations to complete
-  const results = await Promise.allSettled(deletePromises);
-
-  results.forEach((result, index) => {
-    if (result.status === "rejected") {
-      console.error(
-        `Error processing file ${pullFiles.data[index].filename}: ${result.reason}`
-      );
-      // Todo!: batch errors and throw at the end
-    }
-  });
-
-  // Create the file to be inserted
-  const metadata = metaData.toString();
-  const transcriptData = `${metadata}\n${transcribedText}\n`;
-  const fileContent = Buffer.from(transcriptData).toString("base64");
-
-  const fileSlug = deriveFileSlug(fileName);
-
-  const updateContent = await octokit.request(
-    "PUT /repos/:owner/:repo/contents/:path",
-    {
-      owner: forkOwner,
-      repo: forkRepo,
-      path: `${directoryPath}/${fileSlug}.md`,
-      message: ` Updated  "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
-      content: fileContent,
-      branch: pullRequestBranch,
-      sha: pullRequestSHA,
-    }
-  );
-
-  if (updateContent.status < 200 || updateContent.status > 299) {
-    throw new Error("Error updating the file content");
   }
+
+  if (oldFilePath !== newFilePath) {
+    // update the pr title
+    const prTitle = `Add ${deriveFileSlug(fileName)} to ${directoryPath}`;
+    const prDescription = `This PR adds [${fileName}](${metaData.source}) transcript to the ${directoryPath} directory.`;
+    const prResult = await octokit.request(
+      "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+      {
+        owner,
+        repo,
+        pull_number,
+        title: prTitle,
+        body: prDescription,
+      }
+    );
+    if (prResult.status < 200 || prResult.status > 299) {
+      throw new Error("Error updating pull request title");
+    }
+  }
+
   return {
     data: {
-      ...updateContent?.data,
+      ...finalResult.data,
       html_url: pullDetails?.data?.html_url,
     },
   };
@@ -202,6 +241,7 @@ async function createForkAndPR(
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
   const baseBranchName = forkResult.data.default_branch;
+
   // recursion, run through path delimited by `/` and create _index.md file if it doesn't exist
   async function checkDirAndInitializeIndexFile(
     path: string,
@@ -224,7 +264,6 @@ async function createForkAndPR(
         path: `${currentDirPath}/_index.md`,
         branch,
       })
-      // eslint-disable-next-line no-unused-vars
       .then((_data) => true)
       .catch((err) => {
         if (err?.status === 404) {
@@ -290,6 +329,7 @@ async function createForkAndPR(
   // Create new file on the branch
   // const _trimmedFileName = fileName.trim();
   const fileSlug = deriveFileSlug(fileName);
+
   await octokit
     .request("PUT /repos/:owner/:repo/contents/:path", {
       owner: forkOwner,
@@ -337,6 +377,7 @@ export default async function handler(
   // Read directory path and fileName from the request
   const {
     directoryPath,
+    oldDirectoryList,
     fileName,
     url,
     date,
@@ -380,7 +421,8 @@ export default async function handler(
         transcribedText,
         newMetadata,
         +pull_number,
-        prRepo
+        prRepo,
+        oldDirectoryList
       );
       res.status(200).json(updatedPR.data);
     }

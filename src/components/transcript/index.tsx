@@ -211,10 +211,15 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       // save transcript
       await saveTranscript(getUpdatedContent());
       setSubmitState((prev) => ({ ...prev, stepIdx: 1 }));
+      const oldDirectoryList = localStorage.getItem("oldDirectoryList");
+      const directoryList = oldDirectoryList
+        ? JSON.parse(oldDirectoryList)
+        : [];
 
       // fork and create pr
       const prResult = await axios.post("/api/github/pr", {
         directoryPath: loc?.trim() ? loc.trim() : config.defaultDirectoryPath,
+        oldDirectoryList: directoryList,
         fileName: formatDataForMetadata(title),
         url: transcriptData?.content.media,
         prUrl: reviewData?.pr_url,
@@ -229,6 +234,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         prRepo,
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
+      localStorage.removeItem("oldDirectoryList");
 
       // update pr_url
       await asyncSubmitReview(
@@ -252,6 +258,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     } finally {
       setSubmitState((prev) => ({ ...prev, isLoading: false }));
       queryClient.invalidateQueries(["review", reviewData.id]);
+      localStorage.removeItem("oldDirectoryList");
     }
   };
 
