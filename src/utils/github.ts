@@ -96,3 +96,96 @@ export async function ensureIndexMdExists(
     }
   }
 }
+
+async function fetchLatestCommit(
+  octokit: InstanceType<typeof Octokit>,
+  owner: string,
+  repo: string,
+  branch = "master"
+) {
+  const { data: refData } = await octokit.request(
+    "GET /repos/{owner}/{repo}/git/ref/heads/{branch}",
+    {
+      owner,
+      repo,
+      branch,
+    }
+  );
+  return refData.object.sha;
+}
+
+async function updateFork(
+  octokit: InstanceType<typeof Octokit>,
+  forkOwner: string,
+  forkRepo: string,
+  branch: string,
+  latestUpstreamCommitSha: string
+) {
+  try {
+    await octokit.request(
+      "PATCH /repos/{owner}/{repo}/git/refs/heads/{branch}",
+      {
+        owner: forkOwner,
+        repo: forkRepo,
+        branch,
+        sha: latestUpstreamCommitSha,
+      }
+    );
+  } catch (error) {
+    if ((error as AxiosError).status === 422) {
+      // Handle non-fast-forward updates by forcing the update
+      await octokit.request(
+        "PATCH /repos/{owner}/{repo}/git/refs/heads/{branch}",
+        {
+          owner: forkOwner,
+          repo: forkRepo,
+          branch,
+          sha: latestUpstreamCommitSha,
+          force: true,
+        }
+      );
+    } else {
+      console.error(error);
+      throw error;
+    }
+  }
+}
+
+export async function syncForkWithUpstream({
+  octokit,
+  upstreamOwner,
+  upstreamRepo,
+  forkOwner,
+  forkRepo,
+  branch = "master",
+}: {
+  octokit: InstanceType<typeof Octokit>;
+  upstreamOwner: string;
+  upstreamRepo: string;
+  forkOwner: string;
+  forkRepo: string;
+  branch?: string;
+}) {
+  const latestUpstreamCommitSha = await fetchLatestCommit(
+    octokit,
+    upstreamOwner,
+    upstreamRepo,
+    branch
+  );
+  const latestForkCommitSha = await fetchLatestCommit(
+    octokit,
+    forkOwner,
+    forkRepo,
+    branch
+  );
+  if (latestUpstreamCommitSha === latestForkCommitSha) {
+    return;
+  }
+  await updateFork(
+    octokit,
+    forkOwner,
+    forkRepo,
+    branch,
+    latestUpstreamCommitSha
+  );
+}

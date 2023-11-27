@@ -13,6 +13,7 @@ import {
 import {
   deleteIndexMdIfDirectoryEmpty,
   ensureIndexMdExists,
+  syncForkWithUpstream,
 } from "../../../utils/github";
 import { auth } from "../auth/[...nextauth]";
 
@@ -40,6 +41,15 @@ async function pullAndUpdatedPR(
   const forkRepo = upstreamRepo;
   const owner = prRepo === "user" ? forkOwner : upstreamOwner;
   const repo = prRepo === "user" ? forkRepo : upstreamRepo;
+
+  await syncForkWithUpstream({
+    octokit,
+    upstreamOwner,
+    upstreamRepo,
+    forkOwner,
+    forkRepo,
+    branch: forkResult.data.default_branch,
+  });
 
   // Fetch the pull request details
   const pullDetails = await octokit
@@ -241,6 +251,15 @@ async function createForkAndPR(
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
   const baseBranchName = forkResult.data.default_branch;
+
+  await syncForkWithUpstream({
+    octokit,
+    upstreamOwner,
+    upstreamRepo,
+    forkOwner,
+    forkRepo,
+    branch: baseBranchName,
+  });
 
   // recursion, run through path delimited by `/` and create _index.md file if it doesn't exist
   async function checkDirAndInitializeIndexFile(
