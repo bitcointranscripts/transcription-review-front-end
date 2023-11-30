@@ -58,7 +58,10 @@ const NeedSection = () => {
           className="bg-container"
           width={"100%"}
           flexDir={{ base: "column", lg: "row" }}
-          justifyContent={"space-between"}
+          justifyContent={{
+            base: "space-between",
+            lg: "center",
+          }}
           gap={{ base: "40px", "2xl": "40px" }}
         >
           <Flex

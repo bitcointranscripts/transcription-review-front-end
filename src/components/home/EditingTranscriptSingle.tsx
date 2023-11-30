@@ -29,7 +29,7 @@ const EditingTranscriptSingle: FC<IEditingTranscript> = ({
           base: "1.5rem",
           lg: "1.25rem",
           xl: "1.875rem",
-          "2xl": "2.5rem",
+          "3xl": "2.5rem",
         }}
         lineHeight={"105%"}
         fontWeight={"semibold"}
@@ -41,7 +41,7 @@ const EditingTranscriptSingle: FC<IEditingTranscript> = ({
           base: "1rem",
           lg: "1rem",
           xl: "1.4rem",
-          "2xl": "1.75rem",
+          "3xl": "1.75rem",
         }}
         textAlign={{ base: "center", md: "left" }}
         lineHeight={"125%"}
