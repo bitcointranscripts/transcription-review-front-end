@@ -89,14 +89,13 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
           fontWeight={400}
           textAlign={{ base: "center", lg: "left" }}
           whiteSpace={"pre-line"}
-          fontSize={[
-            "0.875rem",
-            "0.875rem",
-            "1.05rem",
-            "1.05rem",
-            "1.05rem",
-            "1.5rem",
-          ]}
+          fontSize={{
+            base: "0.875rem",
+            md: "1.05rem",
+            xl: "1.05rem",
+            "2xl": "1.3rem",
+            "3xl": "1.5rem",
+          }}
         >
           {sub}{" "}
           {linkText && (
