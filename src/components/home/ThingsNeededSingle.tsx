@@ -24,7 +24,8 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
         md: "300px",
         lg: "260px",
         xl: "267px",
-        "2xl": "370px",
+        "2xl": "340px",
+        "3xl": "370px",
       }}
       maxW={{
         base: "100%",
@@ -32,7 +33,8 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
         md: "300px",
         lg: "260px",
         xl: "267px",
-        "2xl": "370px",
+        "2xl": "340px",
+        "3xl": "370px",
       }}
       flexDir={"column"}
       minH={{ base: "220px", lg: "230px", "2xl": "320px" }}
@@ -87,14 +89,13 @@ const ThingsNeededSingle: FC<IThingsNeeded> = ({
           fontWeight={400}
           textAlign={{ base: "center", lg: "left" }}
           whiteSpace={"pre-line"}
-          fontSize={[
-            "0.875rem",
-            "0.875rem",
-            "1.05rem",
-            "1.05rem",
-            "1.05rem",
-            "1.5rem",
-          ]}
+          fontSize={{
+            base: "0.875rem",
+            md: "1.05rem",
+            xl: "1.05rem",
+            "2xl": "1.3rem",
+            "3xl": "1.5rem",
+          }}
         >
           {sub}{" "}
           {linkText && (

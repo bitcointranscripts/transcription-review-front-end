@@ -121,8 +121,8 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
               base: "1rem",
               lg: "1rem",
               xl: "1.6rem",
-              "2xl": "2.5rem",
-              "3xl": "3rem",
+              "2xl": "2rem",
+              "3xl": "2.5rem",
             }}
             flexDir={"column"}
             fontFamily={"Aeonik Fono"}
