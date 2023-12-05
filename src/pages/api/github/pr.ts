@@ -71,7 +71,7 @@ async function pullAndUpdatedPR(
   const prBranch = pullDetails.data.head.ref;
 
   // Ensure _index.md exists in each directory level
-  await ensureIndexMdExists(octokit, owner, repo, directoryPath, prBranch);
+  await ensureIndexMdExists(octokit, forkOwner, repo, directoryPath, prBranch);
 
   // Construct the new file path
   const newFilePath = `${directoryPath}/${deriveFileSlug(fileName)}.md`;
@@ -83,7 +83,7 @@ async function pullAndUpdatedPR(
       const response = await octokit.request(
         "GET /repos/{owner}/{repo}/contents/{path}",
         {
-          owner,
+          owner: forkOwner,
           repo,
           path: `${directory?.trim()}/${deriveFileSlug(fileName)}.md`,
           ref: prBranch,
@@ -95,7 +95,7 @@ async function pullAndUpdatedPR(
       break; // break out of the loop if the file is found
     } catch (error) {
       if ((error as AxiosError).status !== 404) {
-        console.error(error);
+        console.error("err from oldDir", error);
         throw error; // If the old file doesn't exist, ignore the error; otherwise, rethrow
       }
       // If the file doesn't exist, continue to the next directory
@@ -108,7 +108,7 @@ async function pullAndUpdatedPR(
     try {
       // Delete the old file using the SHA
       await octokit.request("DELETE /repos/{owner}/{repo}/contents/{path}", {
-        owner,
+        owner: forkOwner,
         repo,
         path: oldFilePath,
         message: `Remove outdated file in old directory path for ${fileName}`,
@@ -124,7 +124,7 @@ async function pullAndUpdatedPR(
       // Delete the old _index.md file if the directory is now empty
       await deleteIndexMdIfDirectoryEmpty(
         octokit,
-        owner,
+        forkOwner,
         repo,
         oldDirectory,
         prBranch,
@@ -151,7 +151,7 @@ async function pullAndUpdatedPR(
     const { data: fileData } = await octokit.request(
       "GET /repos/{owner}/{repo}/contents/{path}",
       {
-        owner,
+        owner: forkOwner,
         repo,
         path: newFilePath,
         ref: prBranch,
@@ -164,7 +164,7 @@ async function pullAndUpdatedPR(
     finalResult = await octokit.request(
       "PUT /repos/{owner}/{repo}/contents/{path}",
       {
-        owner,
+        owner: forkOwner,
         repo,
         path: newFilePath,
         message: `Updated ${fileName}`,
@@ -184,7 +184,7 @@ async function pullAndUpdatedPR(
       finalResult = await octokit.request(
         "PUT /repos/{owner}/{repo}/contents/{path}",
         {
-          owner,
+          owner: forkOwner,
           repo,
           path: newFilePath,
           message: `Updated ${fileName}`,
