@@ -37,7 +37,9 @@ const TitleWithTags = ({
       <Flex gap={2} flexDir="column">
         <Box>
           <Text>{title}</Text>
-          <Text fontSize={["0.7rem"]} color="gray.500">{loc}</Text>
+          <Text fontSize={["0.7rem"]} color="gray.500">
+            {loc}
+          </Text>
         </Box>
         <Flex wrap="wrap" gap={2} alignItems="center">
           {foundCategories && (

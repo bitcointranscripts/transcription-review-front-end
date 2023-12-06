@@ -1,16 +1,24 @@
 import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
+import { AxiosError } from "axios";
+
 import config from "@/config/config.json";
+import { Octokit } from "@octokit/core";
+
 import {
   deriveFileSlug,
   extractPullNumber,
   Metadata,
   newIndexFile,
-} from "@/utils";
-import { Octokit } from "@octokit/core";
-import type { NextApiRequest, NextApiResponse } from "next";
+} from "../../../utils";
+import {
+  deleteIndexMdIfDirectoryEmpty,
+  ensureIndexMdExists,
+  syncForkWithUpstream,
+} from "../../../utils/github";
 import { auth } from "../auth/[...nextauth]";
 
-// functions for an already open PR
+import type { NextApiRequest, NextApiResponse } from "next";
+
 async function pullAndUpdatedPR(
   octokit: InstanceType<typeof Octokit>,
   directoryPath: string,
@@ -18,10 +26,12 @@ async function pullAndUpdatedPR(
   transcribedText: string,
   metaData: Metadata,
   pull_number: number,
-  prRepo: TranscriptSubmitOptions
+  prRepo: TranscriptSubmitOptions,
+  oldDirectoryList: string[]
 ) {
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
+
   // To get the owner details
   const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
     owner: upstreamOwner,
@@ -29,60 +39,195 @@ async function pullAndUpdatedPR(
   });
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
-  const pullFiles = await octokit
-    .request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
-      owner: prRepo === "user" ? forkOwner : upstreamOwner,
-      repo: prRepo === "user" ? forkRepo : upstreamRepo,
-      pull_number,
-    })
-    .then((pr) => ({ data: pr?.data[0] }))
-    .catch((_err) => {
-      throw new Error("Error in fetching the pull request files");
-    });
+  const owner = prRepo === "user" ? forkOwner : upstreamOwner;
+  const repo = prRepo === "user" ? forkRepo : upstreamRepo;
 
-  const pullDetails: any = await octokit
+  await syncForkWithUpstream({
+    octokit,
+    upstreamOwner,
+    upstreamRepo,
+    forkOwner,
+    forkRepo,
+    branch: forkResult.data.default_branch,
+  });
+
+  // Fetch the pull request details
+  const pullDetails = await octokit
     .request("GET /repos/:owner/:repo/pulls/:pull_number", {
-      owner: prRepo === "user" ? forkOwner : upstreamOwner,
-      repo: prRepo === "user" ? forkRepo : upstreamRepo,
+      owner,
+      repo,
       pull_number,
     })
-    .then((_data) => _data)
-    .catch((_err) => {
+    .then((data) => data)
+    .catch((err) => {
+      console.error(err);
       throw new Error("Error in fetching the pull request details");
     });
+
   if (pullDetails?.data?.merged) {
     throw new Error("Your transcript has been merged!");
   }
-  const pullRequestSHA = pullFiles?.data?.sha;
-  const pullRequestBranch = pullDetails?.data?.head?.ref;
-  // Create the file to be inserted
-  const metadata = metaData.toString();
-  const transcriptData = `${metadata}\n${transcribedText}\n`;
-  const fileContent = Buffer.from(transcriptData).toString("base64");
 
-  const fileSlug = deriveFileSlug(fileName);
-  const updateContent = await octokit.request(
-    "PUT /repos/:owner/:repo/contents/:path",
-    {
-      owner: forkOwner,
-      repo: forkRepo,
-      path: `${directoryPath}/${fileSlug}.md`,
-      message: ` Updated  "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
-      content: fileContent,
-      branch: pullRequestBranch,
-      sha: pullRequestSHA,
+  const prBranch = pullDetails.data.head.ref;
+
+  // Ensure _index.md exists in each directory level
+  await ensureIndexMdExists(octokit, forkOwner, repo, directoryPath, prBranch);
+
+  // Construct the new file path
+  const newFilePath = `${directoryPath}/${deriveFileSlug(fileName)}.md`;
+  let oldFilePath;
+  let oldFileSha;
+  // loop through the old directory list and get the one that doesn't return a 404
+  for (const directory of oldDirectoryList) {
+    try {
+      const response = await octokit.request(
+        "GET /repos/{owner}/{repo}/contents/{path}",
+        {
+          owner: forkOwner,
+          repo,
+          path: `${directory?.trim()}/${deriveFileSlug(fileName)}.md`,
+          ref: prBranch,
+        }
+      );
+      oldFilePath = `${directory?.trim()}/${deriveFileSlug(fileName)}.md`;
+      const dataWithSha = response.data as { sha: string };
+      oldFileSha = dataWithSha.sha;
+      break; // break out of the loop if the file is found
+    } catch (error) {
+      if ((error as AxiosError).status !== 404) {
+        console.error("err from oldDir", error);
+        throw error; // If the old file doesn't exist, ignore the error; otherwise, rethrow
+      }
+      // If the file doesn't exist, continue to the next directory
     }
-  );
-  if (updateContent.status < 200 || updateContent.status > 299) {
-    throw new Error("Error updating the file content");
   }
+
+  // If the old directory path is provided and different from the new directory path, handle the file move
+  if (oldFilePath && oldFileSha) {
+    // Delete the old file
+    try {
+      // Delete the old file using the SHA
+      await octokit.request("DELETE /repos/{owner}/{repo}/contents/{path}", {
+        owner: forkOwner,
+        repo,
+        path: oldFilePath,
+        message: `Remove outdated file in old directory path for ${fileName}`,
+        sha: oldFileSha,
+        branch: prBranch,
+      });
+
+      // check if the old directory is empty
+      const oldDirectory = oldFilePath.substring(
+        0,
+        oldFilePath.lastIndexOf("/")
+      );
+      // Delete the old _index.md file if the directory is now empty
+      await deleteIndexMdIfDirectoryEmpty(
+        octokit,
+        forkOwner,
+        repo,
+        oldDirectory,
+        prBranch,
+        deriveFileSlug(fileName) + ".md"
+      );
+    } catch (error) {
+      console.error(error);
+      if ((error as AxiosError).status !== 404) {
+        console.error(error);
+        throw error; // If the old file doesn't exist, ignore the error; otherwise, rethrow
+      }
+    }
+  }
+
+  const fileContent = Buffer.from(`${metaData}\n${transcribedText}\n`).toString(
+    "base64"
+  );
+  let finalResult: any;
+
+  // Only update the file in the new directory path if the old directory path is not provided
+  // or if it's the same as the new directory path
+  // Get the SHA of the current file to update
+  try {
+    const { data: fileData } = await octokit.request(
+      "GET /repos/{owner}/{repo}/contents/{path}",
+      {
+        owner: forkOwner,
+        repo,
+        path: newFilePath,
+        ref: prBranch,
+      }
+    );
+    const dataWithSha = fileData as { sha: string };
+    const fileSha = dataWithSha.sha; // Get the SHA of the existing file
+
+    // Update the file with the new content
+    finalResult = await octokit.request(
+      "PUT /repos/{owner}/{repo}/contents/{path}",
+      {
+        owner: forkOwner,
+        repo,
+        path: newFilePath,
+        message: `Updated ${fileName}`,
+        content: fileContent,
+        branch: prBranch,
+        sha: fileSha, // Provide the SHA of the existing for the update
+      }
+    );
+
+    if (finalResult.status < 200 || finalResult.status > 299) {
+      throw new Error("Error updating the file content");
+    }
+  } catch (error) {
+    // If the file doesn't exist, it needs to be created instead of updated
+    if ((error as AxiosError).status === 404) {
+      // Update or create the file in the new directory path
+      finalResult = await octokit.request(
+        "PUT /repos/{owner}/{repo}/contents/{path}",
+        {
+          owner: forkOwner,
+          repo,
+          path: newFilePath,
+          message: `Updated ${fileName}`,
+          content: fileContent,
+          branch: prBranch,
+        }
+      );
+      if (finalResult.status < 200 || finalResult.status > 299) {
+        throw new Error("Error updating the file content");
+      }
+    } else {
+      console.error(error);
+      throw new Error("Error updating the file content");
+    }
+  }
+
+  if (oldFilePath !== newFilePath) {
+    // update the pr title
+    const prTitle = `Add ${deriveFileSlug(fileName)} to ${directoryPath}`;
+    const prDescription = `This PR adds [${fileName}](${metaData.source}) transcript to the ${directoryPath} directory.`;
+    const prResult = await octokit.request(
+      "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+      {
+        owner,
+        repo,
+        pull_number,
+        title: prTitle,
+        body: prDescription,
+      }
+    );
+    if (prResult.status < 200 || prResult.status > 299) {
+      throw new Error("Error updating pull request title");
+    }
+  }
+
   return {
     data: {
-      ...updateContent?.data,
+      ...finalResult.data,
       html_url: pullDetails?.data?.html_url,
     },
   };
 }
+
 // function for creating a PR and Forking
 async function createForkAndPR(
   octokit: InstanceType<typeof Octokit>,
@@ -106,6 +251,16 @@ async function createForkAndPR(
   const forkOwner = forkResult.data.owner.login;
   const forkRepo = upstreamRepo;
   const baseBranchName = forkResult.data.default_branch;
+
+  await syncForkWithUpstream({
+    octokit,
+    upstreamOwner,
+    upstreamRepo,
+    forkOwner,
+    forkRepo,
+    branch: baseBranchName,
+  });
+
   // recursion, run through path delimited by `/` and create _index.md file if it doesn't exist
   async function checkDirAndInitializeIndexFile(
     path: string,
@@ -128,7 +283,6 @@ async function createForkAndPR(
         path: `${currentDirPath}/_index.md`,
         branch,
       })
-      // eslint-disable-next-line no-unused-vars
       .then((_data) => true)
       .catch((err) => {
         if (err?.status === 404) {
@@ -194,6 +348,7 @@ async function createForkAndPR(
   // Create new file on the branch
   // const _trimmedFileName = fileName.trim();
   const fileSlug = deriveFileSlug(fileName);
+
   await octokit
     .request("PUT /repos/:owner/:repo/contents/:path", {
       owner: forkOwner,
@@ -241,6 +396,7 @@ export default async function handler(
   // Read directory path and fileName from the request
   const {
     directoryPath,
+    oldDirectoryList,
     fileName,
     url,
     date,
@@ -284,7 +440,8 @@ export default async function handler(
         transcribedText,
         newMetadata,
         +pull_number,
-        prRepo
+        prRepo,
+        oldDirectoryList
       );
       res.status(200).json(updatedPR.data);
     }

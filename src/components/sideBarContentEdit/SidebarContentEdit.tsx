@@ -106,9 +106,18 @@ const SidebarContentEdit = ({
 
     updater({ data: date, type: "date", name: "date" });
   };
+  const saveOldDirectory = (dir: string) => {
+    const arrayOfDirectories = localStorage.getItem("oldDirectoryList")
+      ? JSON.parse(localStorage.getItem("oldDirectoryList") ?? "")
+      : [];
+    arrayOfDirectories.push(dir);
+    const uniqueDirectories = [...new Set(arrayOfDirectories)];
+    localStorage.setItem("oldDirectoryList", JSON.stringify(uniqueDirectories));
+  };
   const updateDirectory = (dir: string) => {
     setPath(`${dir}`);
     const updatedTranscript = getUpdatedTranscript();
+    saveOldDirectory(updatedTranscript.loc!);
     updatedTranscript.loc = dir;
     saveTranscript(updatedTranscript);
     updater({

@@ -1,11 +1,11 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { MetadataProps, UserReviewData } from "../types";
-import config from "./config/config.json";
-import ClockIcon from "./components/svgs/ClockIcon";
-import LaptopIcon from "./components/svgs/LaptopIcon";
-import GithubIcon from "./components/svgs/GithubIcon";
+import { MetadataProps, UserReviewData } from "../../types";
+import config from "../config/config.json";
+import ClockIcon from "../components/svgs/ClockIcon";
+import LaptopIcon from "../components/svgs/LaptopIcon";
+import GithubIcon from "../components/svgs/GithubIcon";
 
 const claim_duration_in_ms = hoursToMilliseconds(
   config.claim_duration_in_hours
