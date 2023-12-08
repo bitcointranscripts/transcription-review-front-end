@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { Octokit } from "@octokit/core";
 
-async function createFork(octokit: InstanceType<typeof Octokit>) {
+export async function createFork(octokit: InstanceType<typeof Octokit>) {
   const upstreamOwner = "bitcointranscripts";
   const upstreamRepo = "bitcointranscripts";
 
