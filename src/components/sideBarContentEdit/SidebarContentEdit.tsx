@@ -142,9 +142,8 @@ const SidebarContentEdit = ({
     const lowerCaseTags = tags.map((tag) => tag.toLowerCase());
     updatedTranscript.tags = lowerCaseTags;
     saveTranscript(updatedTranscript);
-
     updater({
-      data: tags,
+      data: lowerCaseTags,
       type: "list",
       name: "tags",
     });

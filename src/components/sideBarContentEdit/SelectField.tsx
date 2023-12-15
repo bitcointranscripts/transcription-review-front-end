@@ -222,7 +222,9 @@ export const OnlySelectField = ({
             gap={1}
             alignItems="center"
           >
-            <Text fontSize="14px">{speaker}</Text>
+            <Text textTransform={"capitalize"} fontSize="14px">
+              {speaker}
+            </Text>
             <IconButton
               fontSize="16px"
               p="6px"

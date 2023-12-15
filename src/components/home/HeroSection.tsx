@@ -189,7 +189,7 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
               className="animated-button"
               onMouseEnter={() => setMoreHover(true)}
               onMouseLeave={() => setMoreHover(false)}
-              rightIcon={moreHover ? <ArrowDown /> : <></>}
+              rightIcon={moreHover ? <ArrowDown className="desktop" /> : <></>}
             >
               Tell Me More
             </Button>
