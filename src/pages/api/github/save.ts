@@ -4,6 +4,10 @@ import { Metadata } from "@/utils";
 import { createFork } from "./fork";
 import { auth } from "../auth/[...nextauth]";
 
+import endpoints from "@/services/api/endpoints";
+import { Session } from "next-auth";
+import axios from "axios";
+
 type SaveEditProps = {
   octokit: InstanceType<typeof Octokit>;
   transcriptData: {
@@ -11,8 +15,10 @@ type SaveEditProps = {
     body: string;
   };
   ghSourcePath: string;
-  ghBranchName?: string;
+  ghBranchUrl?: string;
   directoryPath: string;
+  reviewId: number;
+  session: Session;
 };
 
 const upstreamRepo = "bitcointranscripts";
@@ -21,8 +27,10 @@ async function saveEdits({
   octokit,
   transcriptData,
   ghSourcePath,
-  ghBranchName,
+  ghBranchUrl,
   directoryPath,
+  reviewId,
+  session,
 }: SaveEditProps) {
   const forkResult = await createFork(octokit).catch((err) => {
     throw new Error("Repo fork failed");
@@ -31,14 +39,25 @@ async function saveEdits({
   const baseBranchName = forkResult.data.default_branch;
 
   const filepath = new URL(ghSourcePath).pathname.split("/").slice(4);
-  const srcDirName = filepath.slice(0, -1).join("/");
-  const fileName = filepath.slice(-1).toString();
-  const directoryName = directoryPath ? directoryPath : srcDirName;
+  const srcDirPath = filepath.slice(0, -1).join("/");
+  // get filename and remove .md extension
+  const fileName = filepath.slice(-1).toString().slice(0, -3);
+  const directoryName = directoryPath ? directoryPath : srcDirPath;
   const transcriptToSave = `${transcriptData.metaData.toString()}\n${
     transcriptData.body
   }\n`;
 
-  if (!ghBranchName) {
+  console.log({ ghSourcePath, fileName, filepath, srcDirPath, directoryPath });
+
+  const getBranchNameFromUrl = (url?: string) => {
+    if (!url) return "";
+    const branchName = new URL(url).pathname.split("/")[4];
+    return branchName;
+  };
+
+  let ghBranchName = getBranchNameFromUrl(ghBranchUrl);
+
+  if (!ghBranchUrl) {
     const baseBranch = await octokit.request(
       "GET /repos/{owner}/{repo}/git/ref/{ref}",
       {
@@ -50,7 +69,8 @@ async function saveEdits({
 
     // Create new branch
     const timeInSeconds = Math.floor(Date.now() / 1000);
-    const newBranchName = `${timeInSeconds}-${directoryName}`;
+    const baseDirName = directoryName.replaceAll("/", "--");
+    const newBranchName = `${timeInSeconds}-${baseDirName}`;
     const baseRefSha = baseBranch.data.object.sha;
 
     await octokit
@@ -66,9 +86,25 @@ async function saveEdits({
       .catch((_err) => {
         throw new Error("Error creating new branch");
       });
-
-    // TODO: Update branchNameUrl Column field on review table db
   }
+
+  let fileToUpdateSha = "";
+  await octokit
+    .request("GET /repos/{owner}/{repo}/contents/{path}", {
+      owner,
+      repo: upstreamRepo,
+      path: filepath.join("/"),
+      ref: ghBranchName,
+    })
+    .then((res) => {
+      const data = res.data as { sha: string };
+      fileToUpdateSha = data.sha;
+    })
+    .catch((err) => {
+      throw new Error(
+        `Cannot find ${fileName} sha ${err?.message && `\n ${err.message}`}`
+      );
+    });
 
   const fileContent = Buffer.from(transcriptToSave).toString("base64");
   await octokit
@@ -79,11 +115,51 @@ async function saveEdits({
       message: `Updated "${transcriptData.metaData.fileTitle}" transcript submitted by ${owner}`,
       content: fileContent,
       branch: ghBranchName,
+      sha: fileToUpdateSha,
     })
     .then()
     .catch((_err) => {
+      console.log({ _err });
       throw new Error("Error creating new file");
     });
+
+  // if (!ghBranchUrl) {
+  //   const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${ghBranchName}/${fileName}.md`;
+  //   // TODO: Update branchNameUrl Column field on review table db
+  //   const updateReviewEndpoint = `${
+  //     process.env.NEXT_PUBLIC_APP_QUEUE_BASE_URL
+  //   }/${endpoints.REVIEW_BY_ID(reviewId)}`;
+  //   console.log(updateReviewEndpoint);
+  //   await axios
+  //     .put(
+  //       updateReviewEndpoint,
+  //       {
+  //         branchUrl: newBranchUrl,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${session!.user!.jwt}`,
+  //         },
+  //       }
+  //     )
+  //     .then((res) => {
+  //       console.log({ res });
+  //       if (res.status < 200 || res.status > 299) {
+  //         throw new Error("Unable to save branchUrl to db");
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.error({ err });
+  //       const errMessage =
+  //         err?.response?.data?.message ??
+  //         err?.message ??
+  //         "Please try again later";
+  //       throw new Error(errMessage);
+  //     });
+
+  //   // return newBranchUrl;
+  // }
+  // return ghBranchUrl;
 }
 
 export default async function handler(
@@ -92,7 +168,12 @@ export default async function handler(
 ) {
   // Check if the user is authenticated
   const session = await auth(req, res);
-  if (!session || !session.accessToken || !session.user?.githubUsername) {
+  if (
+    !session ||
+    !session.accessToken ||
+    !session.user?.jwt ||
+    !session.user?.githubUsername
+  ) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -109,11 +190,12 @@ export default async function handler(
     categories,
     transcribedText,
     transcript_by,
-    prRepo,
-    prUrl,
+    // prRepo,
+    // prUrl,
     ghSourcePath,
-    ghBranchName,
+    ghBranchUrl,
     directoryPath,
+    reviewId,
   } = req.body;
 
   const newMetadata = new Metadata({
@@ -136,8 +218,10 @@ export default async function handler(
       octokit,
       transcriptData,
       ghSourcePath,
-      ghBranchName,
+      ghBranchUrl,
       directoryPath,
+      reviewId,
+      session,
     });
 
     res.status(200).json({ message: "Successfully saved edits" });

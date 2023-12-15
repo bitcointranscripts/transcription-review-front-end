@@ -167,9 +167,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const saveTranscript = async (updatedContent: TranscriptContent) => {
     // create an awaitable promise for mutation
 
-    // TODO: Get branchName from review and ghSourcePath from transcript
-    const ghBranchName = ""
-    const ghSourcePath = ""
+    const ghBranchUrl = reviewData.branchUrl;
+    const ghSourcePath = transcriptData.transcriptUrl;
     try {
       await mutateAsync(
         { content: updatedContent, transcriptId },
@@ -183,24 +182,33 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         }
       );
       if (ghSourcePath) {
-        await axios.post("/api/github/save", {
-          directoryPath: updatedContent.loc?.trim() ?? "",
-          fileName: formatDataForMetadata(updatedContent.title),
-          url: transcriptData?.content.media,
-          prUrl: reviewData?.pr_url,
-          date:
-            updatedContent.date && dateFormatGeneral(updatedContent.date, true),
-          tags: formatDataForMetadata(updatedContent.tags),
-          speakers: formatDataForMetadata(updatedContent.speakers),
-          categories: formatDataForMetadata(updatedContent.categories),
-          transcribedText: updatedContent.body,
-          transcript_by: formatDataForMetadata(
-            userSession?.user?.githubUsername ?? ""
-          ),
-          prRepo,
-          ghSourcePath,
-          ghBranchName,
-        });
+        await axios
+          .post("/api/github/save", {
+            directoryPath: updatedContent.loc?.trim() ?? "",
+            fileName: formatDataForMetadata(updatedContent.title),
+            url: transcriptData?.content.media,
+            // prUrl: reviewData?.pr_url,
+            date:
+              updatedContent.date &&
+              dateFormatGeneral(updatedContent.date, true),
+            tags: formatDataForMetadata(updatedContent.tags),
+            speakers: formatDataForMetadata(updatedContent.speakers),
+            categories: formatDataForMetadata(updatedContent.categories),
+            transcribedText: updatedContent.body,
+            transcript_by: formatDataForMetadata(
+              userSession?.user?.githubUsername ?? ""
+            ),
+            // prRepo,
+            ghSourcePath,
+            ghBranchUrl,
+            reviewId: reviewData.id,
+          })
+          .then((res) => {
+            // update reviewData with recently saved branchUrl
+            if (res.status === 200) {
+              queryClient.invalidateQueries(["review", reviewData.id]);
+            }
+          });
       }
     } catch (error) {
       throw error;
