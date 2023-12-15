@@ -55,7 +55,7 @@ const TitleWithTags = ({
                 fontSize={"11.323px"}
                 lineHeight={"normal"}
                 fontWeight={600}
-                textTransform={"capitalize"}
+                textTransform={"lowercase"}
                 color={tagColors[categories.length % 4]}
               >
                 {foundCategories?.name}
@@ -76,7 +76,7 @@ const TitleWithTags = ({
                 <Text
                   fontSize={"11.323px"}
                   lineHeight={"normal"}
-                  textTransform="capitalize"
+                  textTransform={"lowercase"}
                   color={tagColors[(id + index) % 4]}
                   key={tag}
                 >
