@@ -139,9 +139,7 @@ export function getRequestUrl(req: NextApiRequest) {
 }
 
 export function formatDataForMetadata(data: string[] | string) {
-  console.log(data)
   if (Array.isArray(data)) {
-
     if (data.length) {
       return JSON.stringify(data);
     } else {
