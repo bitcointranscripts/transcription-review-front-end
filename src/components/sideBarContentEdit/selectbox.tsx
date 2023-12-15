@@ -42,6 +42,7 @@ const SelectBox = ({
   handleUpdateEdit,
   handleInputChange,
   editState,
+  name,
   autoCompleteList,
   handleAutoCompleteSelect,
 }: SelectBoxProps) => {
@@ -70,6 +71,7 @@ const SelectBox = ({
                 autoCompleteList={autoCompleteList}
                 onAutoCompleteSelect={handleAutoCompleteSelect}
                 inputRef={inputRef}
+                name={name}
               />
             )}
           </Box>
@@ -210,6 +212,7 @@ export const OnlySelectBox = ({
                 ref={inputRef}
               />
               <AutoComplete
+                name={name}
                 editState={{ value: inputState } as SelectEditState}
                 autoCompleteList={autoCompleteList}
                 onAutoCompleteSelect={onAutoCompleteSelect}
