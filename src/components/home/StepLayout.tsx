@@ -60,8 +60,9 @@ const StepLayout: FC<IStepLayout> = ({
   const othersText = heading.split(coloredText);
   return (
     <Flex flexDir={"column"}>
-      <Flex gap={{ base: "18px", md: 10, xl: 20 }} alignItems={"start"}>
+      <Flex gap={{ base: "18px", md: 4, "2xl": 10 }} alignItems={"start"}>
         <Image
+          marginTop={"8px"}
           src={src ? src : "/home/cursor.png"}
           minW={{ base: "20px", lg: "40px", "2xl": "60px" }}
           minH={{ base: "20px", lg: "40px", "2xl": "60px" }}
@@ -73,26 +74,38 @@ const StepLayout: FC<IStepLayout> = ({
           flexDir={"column"}
           alignItems={"start"}
           justifyContent={"start"}
-          gap={{ base: 7, "2xl": 10 }}
-          maxW={maxW ? maxW : "660px"}
+          gap={{ base: 7, lg: 4, xl: 8, "2xl": 10 }}
+          maxW={{ base: maxW ? maxW : "660px", "2xl": "none" }}
         >
           <Text
             fontFamily={"Polysans"}
-            fontSize={{ base: "1.5rem", xl: "3.25rem", "2xl": "4.25rem" }}
-            maxW={headingMaxW ? headingMaxW : maxW}
+            fontSize={{
+              base: "1.5rem",
+              lg: "2.3rem",
+              xl: "3.25rem",
+              "2xl": "4.25rem",
+            }}
+            whiteSpace={{ base: "normal", md: "pre-line" }}
+            maxW={{ base: headingMaxW ? headingMaxW : maxW, "2xl": "none" }}
             lineHeight={"105%"}
           >
             Step {stepNumber}:{" "}
             <Text fontWeight={600} as={"span"}>
               <Text as="span" color={"orange"}>
-                {coloredText} {""}
+                {coloredText}
               </Text>
               {othersText}
             </Text>
           </Text>
           <Text
             fontFamily={"Aeonik Fono"}
-            fontSize={{ base: "1rem", xl: "2rem", "2xl": "2.25rem" }}
+            whiteSpace={{ base: "normal",  md: "pre-line" }}
+            fontSize={{
+              base: "1rem",
+              lg: "1.18rem",
+              xl: "1.625rem",
+              "2xl": "2rem",
+            }}
           >
             {sub}
           </Text>
@@ -107,7 +120,7 @@ const StepLayout: FC<IStepLayout> = ({
         <Flex
           justifyContent={{ base: "start", lg: "end" }}
           pl={"40px"}
-          fontFamily={" Aeonik Fono"}
+          fontFamily={"Aeonik Fono"}
         >
           <Button
             onClick={(e) => handlePreferVideo(e, stepNumber)}
@@ -118,12 +131,14 @@ const StepLayout: FC<IStepLayout> = ({
             }
             fontSize={{ base: "12px", lg: "18px", "2xl": "24px" }}
             colorScheme="dark"
-            border={"1px solid #D9D9D9"}
-            py={{ base: "16px", lg: "28px" }}
+            border={{ base: "1px solid #D9D9D9", "2xl": "3px solid #D9D9D9" }}
+            fontWeight={500}
+            py={{ base: "16px", lg: "28px", "2xl": "36px" }}
             px={{ base: "16px", lg: "28px" }}
             background={"#E6E6E6"}
             variant={"outline"}
             borderBottomRightRadius={{ base: "0.375rem", lg: "0px" }}
+            borderBottom={{ "2xl": 0 }}
           >
             Watch tutorial
           </Button>

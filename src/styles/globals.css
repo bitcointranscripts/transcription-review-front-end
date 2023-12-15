@@ -297,6 +297,15 @@ li.splide__slide {
     max-height: 14px;
     padding: 3.5px;
   }
+  
+  .desktop {
+    display: none;
+  }
+
+  .animated-button:hover {
+    transition: none;
+    transform: none;
+  }
 }
 
 /* in-between mobile and large */
@@ -307,10 +316,9 @@ li.splide__slide {
   }
 
   .learn-how-home {
-    max-width: 300px;
-    max-height: 80px;
+    max-width: 220px;
+    max-height: 70px;
   }
-
   .thumbnail:hover {
     transform: scale(1.05);
 

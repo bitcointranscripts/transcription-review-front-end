@@ -58,19 +58,27 @@ const NeedSection = () => {
           className="bg-container"
           width={"100%"}
           flexDir={{ base: "column", lg: "row" }}
-          justifyContent={"space-between"}
-          gap="50px"
+          justifyContent={{
+            base: "space-between",
+            lg: "center",
+          }}
+          gap={{ base: "40px", "2xl": "40px" }}
         >
           <Flex
             width={"100%"}
-            gap={{ base: 10, lg: 20 }}
+            gap={{ base: 10, xl: 20 }}
             fontFamily={"Polysans"}
             flexDir={"column"}
             justifyContent={"space-between"}
             maxW={{ base: "100%", lg: "49%" }}
           >
             <Text
-              fontSize={{ base: "2.25rem", xl: "3.125rem", "2xl": "4.5rem" }}
+              fontSize={{
+                base: "2.25rem",
+                lg: "2.3rem",
+                xl: "3.125rem",
+                "2xl": "3.5rem",
+              }}
               lineHeight={"105%"}
               fontWeight={"semibold"}
               display={{ base: "none", lg: "inline" }}
@@ -88,17 +96,12 @@ const NeedSection = () => {
             </Text>
             <Box
               position={"relative"}
-              minH={{ base: "240px", sm: "340px", lg: "500px", "2xl": "700px" }}
               borderRadius={"20px"}
               overflow={"hidden"}
               w={"100%"}
+              paddingBottom={{ base: "76.92%", lg: "78.1%" }}
             >
-              <Image
-                src="/home/consider-editing.png"
-                fill
-                alt="editing"
-                style={{ objectFit: "cover", aspectRatio: "13:10" }}
-              />
+              <Image src="/home/consider-editing.png" fill alt="editing" />
             </Box>
             <Text
               fontSize={"1.875rem"}
@@ -110,7 +113,11 @@ const NeedSection = () => {
               Well you’ll...
             </Text>
           </Flex>
-          <Flex flexDir={"column"} gap={{ base: 8, lg: "8", "2xl": "12" }}>
+          <Flex
+            flexDir={"column"}
+            justifyContent={"space-between"}
+            gap={{ base: 8, lg: 4, "2xl": "12" }}
+          >
             {whyConsiderEdit.map((reasons) => (
               <EditingTranscriptSingle key={reasons.heading} {...reasons} />
             ))}

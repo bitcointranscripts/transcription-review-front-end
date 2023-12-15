@@ -9,6 +9,7 @@ type AutoCompleteProps = {
   onAutoCompleteSelect: (x: AutoCompleteData) => void;
   inputRef: RefObject<HTMLInputElement>;
   embedded?: boolean;
+  name?: string;
 };
 
 const AutoComplete = ({
@@ -16,6 +17,7 @@ const AutoComplete = ({
   editState,
   onAutoCompleteSelect,
   inputRef,
+  name,
   embedded,
 }: AutoCompleteProps) => {
   const selectRef = useRef<HTMLDivElement>(null);
@@ -58,6 +60,7 @@ const AutoComplete = ({
             className="select-option"
             role="button"
             key={speaker.slug}
+            textTransform={name==="tags"?"lowercase":"capitalize"}
             onClick={() => handleClick(speaker)}
             color="gray.800"
             _hover={{ bg: "blue.600", color: "gray.100" }}

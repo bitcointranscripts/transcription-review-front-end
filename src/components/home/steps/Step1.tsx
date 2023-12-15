@@ -40,8 +40,8 @@ const Step1 = () => {
   return (
     <StepLayout
       stepNumber={1}
-      heading="Claim a recording to review"
-      sub="TLDR; Connect your GitHub to BTCtranscripts"
+      heading={`Claim a \n recording to review `}
+      sub={`TLDR; Connect your \n GitHub to BTCtranscripts`}
       link={"https://www.youtube.com/watch?v=YNIFm0QFAuA&t=2m16s"}
     >
       <Flex flexDir={"column"} gap={10}>
@@ -50,8 +50,8 @@ const Step1 = () => {
         </Box>
 
         <Flex
-          pt={"70px"}
-          px="70px"
+          pt={{ md: "45px", "2xl": "70px" }}
+          px={{ md: "45px", "2xl": "70px" }}
           display={{ base: "none", md: "flex" }}
           flexDir={"column"}
           borderWidth={2}
@@ -61,17 +61,22 @@ const Step1 = () => {
           borderRadius={"30px 0px 30px 30px"}
         >
           <Flex
-            gap={10}
-            flexDir={{ base: "column", lg: "row" }}
+            gap={{ base: 10, md: 1, lg: 5, "2xl": 10 }}
+            flexDir={{ base: "column", md: "row" }}
             flexWrap={{ base: "wrap", xl: "nowrap" }}
+            justifyContent={{ md: "space-between", "2xl": "center" }}
+            alignItems={"end"}
+            maxWidth={{ md: "100%", xl: "85%", "2xl": "none" }}
+            margin={"0 auto"}
+            width={"100%"}
           >
             <SubStepSingle
               isActive={currentIndex === 0}
               step={0}
               setStep={setCurrentIndex}
               heading="Connect"
-              sub="Connect your GitHub account to BTCTranscripts by clicking “Get Started”"
-              maxW="332px"
+              sub={`Connect your GitHub \n account to BTCTranscripts \n by clicking “Get Started”`}
+              maxW="max-content"
               activeIcon="/steps-icon/step-connect-active.png"
               inActiveIcon="/steps-icon/step-connect-inactive.png"
             />
@@ -80,8 +85,8 @@ const Step1 = () => {
               step={1}
               setStep={setCurrentIndex}
               heading="Authorize"
-              sub="Authorize Bitcoin Transcripts Dev to access to your Github account"
-              maxW="332px"
+              sub={`Authorize Bitcoin \n Transcripts Dev to access\n to your Github account`}
+              maxW="max-content"
               activeIcon="/steps-icon/step-authorize-active.png"
               inActiveIcon="/steps-icon/step-authorize-inactive.png"
             />
@@ -89,8 +94,8 @@ const Step1 = () => {
               isActive={currentIndex === 1}
               step={1}
               setStep={setCurrentIndex}
-              sub="In simple English, it means that BTCTranscripts will write your transcript onto GitHub so that it can be reviewed."
-              maxW="412px"
+              sub={`In simple English, it means \n that BTCTranscripts will write \n your transcript onto GitHub so \n that it can be reviewed.`}
+              maxW="max-content"
             />
           </Flex>
           <Box
@@ -129,29 +134,34 @@ const Step1 = () => {
         </Flex>
 
         <Flex
-          pt={{ base: "20px", lg: "90px" }}
-          pl={{ base: "20px", lg: "70px" }}
+          pt={{ base: "20px", md: "45px", "2xl": "90px" }}
+          pl={{ base: "20px", md: "35px", "2xl": "70px" }}
           justifyContent={"space-between"}
           gap={10}
-          flexDir={{ base: "column", lg: "row" }}
+          backgroundImage={"/home/dotted-bg.png"}
+          backgroundSize={"cover"}
+          backgroundRepeat={"no-repeat"}
+          backgroundPosition={"center"}
+          flexDir={{ base: "column", md: "row" }}
           borderWidth={2}
           borderColor={"#D9D9D9"}
           borderRadius={{
-            base: "12px 0px 12px 12px",
-            lg: "30px 30px 30px 30px",
+            base: "12px",
+            lg: "30px",
           }}
         >
           <Flex
             lineHeight={"135%"}
             flexDir={"column"}
-            fontSize={{ base: "0.875rem", xl: "1.75rem" }}
-            fontFamily={"Aeonik Fono"}
+            fontSize={{ base: "0.875rem", lg: "1.27rem", "2xl": "1.75rem" }}
+            fontFamily={"Polysans"}
             gap={4}
-            maxW={"386px"}
+            width={"100%"}
+            maxW={"max-content"}
           >
-            <Text>
-              Once signed in, find a transcript that catches your fancy, and
-              click “Claim.”
+            <Text whiteSpace={"pre-line"}>
+              Once signed in, find a {"\n"} transcript that catches your{"\n"}{" "}
+              fancy, and click “Claim.”
             </Text>
             <Text>Now, it’s time to edit!</Text>
           </Flex>
