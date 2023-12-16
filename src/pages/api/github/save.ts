@@ -41,7 +41,8 @@ async function saveEdits({
   const filepath = new URL(ghSourcePath).pathname.split("/").slice(4);
   const srcDirPath = filepath.slice(0, -1).join("/");
   // get filename and remove .md extension
-  const fileName = filepath.slice(-1).toString().slice(0, -3);
+  const fileName = filepath.slice(-1).toString();
+  const fileNameWithoutExtension = fileName.slice(0, -3);
   const directoryName = directoryPath ? directoryPath : srcDirPath;
   const transcriptToSave = `${transcriptData.metaData.toString()}\n${
     transcriptData.body
@@ -80,11 +81,45 @@ async function saveEdits({
         ref: `refs/heads/${newBranchName}`,
         sha: baseRefSha,
       })
-      .then(() => {
+      .then(async () => {
         ghBranchName = newBranchName;
+
+        // update branchUrl column in review table db
+        const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${ghBranchName}/${fileName}`;
+        const updateReviewEndpoint = `${
+          process.env.NEXT_PUBLIC_APP_QUEUE_BASE_URL
+        }/${endpoints.REVIEW_BY_ID(reviewId)}`;
+        await axios
+          .put(
+            updateReviewEndpoint,
+            {
+              branchUrl: newBranchUrl,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${session!.user!.jwt}`,
+              },
+            }
+          )
+          .then((res) => {
+            console.log("status: ", res.status, "data: ", res.data);
+            if (res.status < 200 || res.status > 299) {
+              throw new Error("Unable to save branchUrl to db");
+            }
+          })
+          .catch((err) => {
+            console.error({ err });
+            const errMessage =
+              err?.response?.data?.message ??
+              err?.message ??
+              "Error saving branchUrl to db";
+            throw new Error(errMessage);
+          });
       })
       .catch((_err) => {
-        throw new Error("Error creating new branch");
+        throw new Error(
+          _err.message ? _err.message : "Error creating new branch"
+        );
       });
   }
 
@@ -111,7 +146,7 @@ async function saveEdits({
     .request("PUT /repos/:owner/:repo/contents/:path", {
       owner,
       repo: upstreamRepo,
-      path: `${directoryName}/${fileName}.md`,
+      path: `${directoryName}/${fileName}`,
       message: `Updated "${transcriptData.metaData.fileTitle}" transcript submitted by ${owner}`,
       content: fileContent,
       branch: ghBranchName,
@@ -122,44 +157,6 @@ async function saveEdits({
       console.log({ _err });
       throw new Error("Error creating new file");
     });
-
-  // if (!ghBranchUrl) {
-  //   const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${ghBranchName}/${fileName}.md`;
-  //   // TODO: Update branchNameUrl Column field on review table db
-  //   const updateReviewEndpoint = `${
-  //     process.env.NEXT_PUBLIC_APP_QUEUE_BASE_URL
-  //   }/${endpoints.REVIEW_BY_ID(reviewId)}`;
-  //   console.log(updateReviewEndpoint);
-  //   await axios
-  //     .put(
-  //       updateReviewEndpoint,
-  //       {
-  //         branchUrl: newBranchUrl,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${session!.user!.jwt}`,
-  //         },
-  //       }
-  //     )
-  //     .then((res) => {
-  //       console.log({ res });
-  //       if (res.status < 200 || res.status > 299) {
-  //         throw new Error("Unable to save branchUrl to db");
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.error({ err });
-  //       const errMessage =
-  //         err?.response?.data?.message ??
-  //         err?.message ??
-  //         "Please try again later";
-  //       throw new Error(errMessage);
-  //     });
-
-  //   // return newBranchUrl;
-  // }
-  // return ghBranchUrl;
 }
 
 export default async function handler(
