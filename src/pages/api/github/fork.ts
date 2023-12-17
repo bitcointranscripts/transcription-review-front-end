@@ -29,10 +29,9 @@ export default async function handler(
   try {
     // Call the createForkAndPR function
     const forkResult = await createFork(octokit);
-    console.log("forked successfully")
     res.status(200).json(forkResult.data);
   } catch (error) {
-    console.log("fork failed")
+    console.error("fork failed");
     console.error(error);
     res.status(500).json({ message: "Error occurred while creating fork" });
   }

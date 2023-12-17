@@ -50,7 +50,7 @@ const updateTranscript = async (body: {
       ghBranchUrl,
       reviewId,
     } = newImplData;
-    console.log("saving data with new impl")
+
     return axios
       .post("/api/github/save", {
         directoryPath,
