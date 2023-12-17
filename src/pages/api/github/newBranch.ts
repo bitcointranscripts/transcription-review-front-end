@@ -27,7 +27,6 @@ export async function createNewBranch({
   const { srcDirPath, filePath } = resolveRawGHUrl(ghSourcePath);
   let baseRefSha = "";
   // Get baseBranch sha
-  console.log({owner, upstreamRepo, baseBranchName})
   try {
     const baseBranch = await octokit.request(
       "GET /repos/{owner}/{repo}/git/ref/{ref}",
@@ -55,7 +54,6 @@ export async function createNewBranch({
       sha: baseRefSha,
     })
     .then(async () => {
-      console.log("created new branch");
       // update branchUrl column in review table db
       const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${newBranchName}/${filePath}`;
       const updateReviewEndpoint = `${
@@ -74,7 +72,6 @@ export async function createNewBranch({
           }
         )
         .then((res) => {
-          console.log("status: ", res.status, "data: ", res.data);
           if (res.status < 200 || res.status > 299) {
             throw new Error("Unable to save branchUrl to db");
           }

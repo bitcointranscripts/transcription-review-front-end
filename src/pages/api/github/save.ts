@@ -38,8 +38,7 @@ async function saveEdits({
   });
   const owner = forkResult.data.owner.login;
   const baseBranchName = forkResult.data.default_branch;
-  const { fileName, fileNameWithoutExtension, filePath, srcDirPath } =
-    resolveRawGHUrl(ghSourcePath);
+  const { fileName, filePath, srcDirPath } = resolveRawGHUrl(ghSourcePath);
 
   const directoryName = srcDirPath;
   const transcriptToSave = `${transcriptData.metaData.toString()}\n${
@@ -47,8 +46,6 @@ async function saveEdits({
   }\n`;
 
   let ghBranchName = getBranchNameFromBranchUrl(ghBranchUrl);
-
-  console.log({ ghSourcePath, ghBranchName, owner, filePath, srcDirPath, baseBranchName });
 
   if (!ghBranchUrl) {
     const baseBranch = await octokit.request(
@@ -76,7 +73,6 @@ async function saveEdits({
       .then(async () => {
         ghBranchName = newBranchName;
 
-        console.log("newbranchname ", newBranchName)
         // update branchUrl column in review table db
         const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${ghBranchName}/${filePath}`;
         const updateReviewEndpoint = `${
@@ -95,7 +91,6 @@ async function saveEdits({
             }
           )
           .then((res) => {
-            console.log("status: ", res.status, "data: ", res.data);
             if (res.status < 200 || res.status > 299) {
               throw new Error("Unable to save branchUrl to db");
             }
@@ -145,11 +140,9 @@ async function saveEdits({
       branch: ghBranchName,
       sha: fileToUpdateSha,
     })
-    .then((res) => {
-      console.log("created new file")
-    })
+    .then((res) => {})
     .catch((_err) => {
-      console.log({ _err });
+      console.error({ _err });
       throw new Error("Error creating new file");
     });
 }

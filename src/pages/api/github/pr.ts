@@ -422,18 +422,15 @@ export default async function handler(
     });
 
     if (ghBranchUrl) {
-      console.log("lets use the new impl")
       // we are already saving to a branch and the branch has a pr no need to create a pr
       if (prUrl) {
-        console.log("returned pr_url", { html_url: prUrl });
         return res.status(200).json({ html_url: prUrl });
       }
-      const baseBranchName = "master";
 
-      const { fileNameWithoutExtension, srcBranch } = resolveRawGHUrl(ghSourcePath);
+      const { fileNameWithoutExtension, srcBranch } =
+        resolveRawGHUrl(ghSourcePath);
       const { owner, repo, branch, dir } = resolveGHBranchUrl(ghBranchUrl);
 
-      console.log({owner, repo, branch})
       const prTitle = `Add ${fileNameWithoutExtension} review to ${dir}`;
       const prDescription = `This PR adds [${fileNameWithoutExtension}](${newMetadata.source}) transcript review to the ${dir} directory.`;
       const prResult = await octokit.request(
@@ -444,13 +441,12 @@ export default async function handler(
           title: prTitle,
           body: prDescription,
           head: `${owner}:${branch}`,
-          base: baseBranchName,
+          base: srcBranch,
         }
       );
       if (prResult.status < 200 || prResult.status > 299) {
         throw new Error("Error creating pull request");
       }
-      console.log("created a pr", prResult.data.html_url);
       return res.status(200).json(prResult.data);
     }
     if (!pull_number) {
@@ -479,7 +475,7 @@ export default async function handler(
       res.status(200).json(updatedPR.data);
     }
   } catch (error: any) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({
       message:
         error?.message ?? "Error occurred while creating the fork and PR",

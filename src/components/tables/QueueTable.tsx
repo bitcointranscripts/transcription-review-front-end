@@ -150,12 +150,6 @@ const QueueTable = () => {
               const baseBranchName: string = forkResult.data.default_branch;
               if (transcript && transcript.transcriptUrl) {
                 try {
-                  console.log(
-                    "creating new branch",
-                    owner,
-                    baseBranchName,
-                    transcript.transcriptUrl
-                  );
                   await axios.post("/api/github/newBranch", {
                     reviewId,
                     baseBranchName,
