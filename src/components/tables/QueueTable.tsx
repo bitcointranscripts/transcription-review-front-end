@@ -118,6 +118,9 @@ const QueueTable = () => {
 
   const handleClaim = useCallback(
     async (transcriptId: number) => {
+      // handle new implementation
+      const transcript = data?.data.find((item) => item.id === transcriptId);
+
       if (status === "loading") {
         toast({
           status: "loading",
@@ -140,8 +143,29 @@ const QueueTable = () => {
           { userId: session.user.id, transcriptId },
           {
             onSuccess: async (data) => {
+              const reviewId = data.id;
               // Fork repo
-              axios.post("/api/github/fork");
+              const forkResult = await axios.post("/api/github/fork");
+              const owner = forkResult.data.owner.login;
+              const baseBranchName: string = forkResult.data.default_branch;
+              if (transcript && transcript.transcriptUrl) {
+                try {
+                  console.log(
+                    "creating new branch",
+                    owner,
+                    baseBranchName,
+                    transcript.transcriptUrl
+                  );
+                  await axios.post("/api/github/newBranch", {
+                    reviewId,
+                    baseBranchName,
+                    ghSourcePath: transcript.transcriptUrl,
+                    owner,
+                  });
+                } catch (err) {
+                  console.error(err);
+                }
+              }
 
               setClaimState((prev) => ({ ...prev, rowId: -1 }));
               if (data instanceof Error) {
