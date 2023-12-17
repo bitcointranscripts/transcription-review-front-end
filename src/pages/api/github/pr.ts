@@ -13,11 +13,14 @@ import {
 import {
   deleteIndexMdIfDirectoryEmpty,
   ensureIndexMdExists,
+  resolveGHBranchUrl,
+  resolveRawGHUrl,
   syncForkWithUpstream,
 } from "../../../utils/github";
 import { auth } from "../auth/[...nextauth]";
 
 import type { NextApiRequest, NextApiResponse } from "next";
+import { upstreamOwner, upstreamRepo } from "@/config/default";
 
 async function pullAndUpdatedPR(
   octokit: InstanceType<typeof Octokit>,
@@ -29,9 +32,6 @@ async function pullAndUpdatedPR(
   prRepo: TranscriptSubmitOptions,
   oldDirectoryList: string[]
 ) {
-  const upstreamOwner = "bitcointranscripts";
-  const upstreamRepo = "bitcointranscripts";
-
   // To get the owner details
   const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
     owner: upstreamOwner,
@@ -237,8 +237,6 @@ async function createForkAndPR(
   metaData: Metadata,
   prRepo: TranscriptSubmitOptions
 ) {
-  const upstreamOwner = "bitcointranscripts";
-  const upstreamRepo = "bitcointranscripts";
   const directoryName = directoryPath.split("/").slice(-1)[0];
   // Fork the repository
   const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
@@ -252,14 +250,14 @@ async function createForkAndPR(
   const forkRepo = upstreamRepo;
   const baseBranchName = forkResult.data.default_branch;
 
-  await syncForkWithUpstream({
-    octokit,
-    upstreamOwner,
-    upstreamRepo,
-    forkOwner,
-    forkRepo,
-    branch: baseBranchName,
-  });
+  // await syncForkWithUpstream({
+  //   octokit,
+  //   upstreamOwner,
+  //   upstreamRepo,
+  //   forkOwner,
+  //   forkRepo,
+  //   branch: baseBranchName,
+  // });
 
   // recursion, run through path delimited by `/` and create _index.md file if it doesn't exist
   async function checkDirAndInitializeIndexFile(
@@ -407,6 +405,8 @@ export default async function handler(
     transcript_by,
     prRepo,
     prUrl,
+    ghSourcePath,
+    ghBranchUrl,
   } = req.body;
   const pull_number = extractPullNumber(prUrl || "");
   try {
@@ -420,6 +420,39 @@ export default async function handler(
       speakers,
       categories,
     });
+
+    if (ghBranchUrl) {
+      console.log("lets use the new impl")
+      // we are already saving to a branch and the branch has a pr no need to create a pr
+      if (prUrl) {
+        console.log("returned pr_url", { html_url: prUrl });
+        return res.status(200).json({ html_url: prUrl });
+      }
+      const baseBranchName = "master";
+
+      const { fileNameWithoutExtension, srcBranch } = resolveRawGHUrl(ghSourcePath);
+      const { owner, repo, branch, dir } = resolveGHBranchUrl(ghBranchUrl);
+
+      console.log({owner, repo, branch})
+      const prTitle = `Add ${fileNameWithoutExtension} review to ${dir}`;
+      const prDescription = `This PR adds [${fileNameWithoutExtension}](${newMetadata.source}) transcript review to the ${dir} directory.`;
+      const prResult = await octokit.request(
+        "POST /repos/{owner}/{repo}/pulls",
+        {
+          owner: prRepo === "user" ? owner : upstreamOwner, // update to upstreamOwner once tested
+          repo: prRepo === "user" ? repo : upstreamRepo,
+          title: prTitle,
+          body: prDescription,
+          head: `${owner}:${branch}`,
+          base: baseBranchName,
+        }
+      );
+      if (prResult.status < 200 || prResult.status > 299) {
+        throw new Error("Error creating pull request");
+      }
+      console.log("created a pr", prResult.data.html_url);
+      return res.status(200).json(prResult.data);
+    }
     if (!pull_number) {
       // Call the createForkAndPR function
       const prResult = await createForkAndPR(
@@ -446,6 +479,7 @@ export default async function handler(
       res.status(200).json(updatedPR.data);
     }
   } catch (error: any) {
+    console.error(error)
     res.status(500).json({
       message:
         error?.message ?? "Error occurred while creating the fork and PR",

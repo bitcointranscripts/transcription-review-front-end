@@ -7,6 +7,7 @@ import { auth } from "../auth/[...nextauth]";
 import endpoints from "@/services/api/endpoints";
 import { Session } from "next-auth";
 import axios from "axios";
+import { getBranchNameFromBranchUrl, resolveRawGHUrl } from "@/utils/github";
 
 type SaveEditProps = {
   octokit: InstanceType<typeof Octokit>;
@@ -37,26 +38,17 @@ async function saveEdits({
   });
   const owner = forkResult.data.owner.login;
   const baseBranchName = forkResult.data.default_branch;
+  const { fileName, fileNameWithoutExtension, filePath, srcDirPath } =
+    resolveRawGHUrl(ghSourcePath);
 
-  const filepath = new URL(ghSourcePath).pathname.split("/").slice(4);
-  const srcDirPath = filepath.slice(0, -1).join("/");
-  // get filename and remove .md extension
-  const fileName = filepath.slice(-1).toString();
-  const fileNameWithoutExtension = fileName.slice(0, -3);
-  const directoryName = directoryPath ? directoryPath : srcDirPath;
+  const directoryName = srcDirPath;
   const transcriptToSave = `${transcriptData.metaData.toString()}\n${
     transcriptData.body
   }\n`;
 
-  console.log({ ghSourcePath, fileName, filepath, srcDirPath, directoryPath });
+  let ghBranchName = getBranchNameFromBranchUrl(ghBranchUrl);
 
-  const getBranchNameFromUrl = (url?: string) => {
-    if (!url) return "";
-    const branchName = new URL(url).pathname.split("/")[4];
-    return branchName;
-  };
-
-  let ghBranchName = getBranchNameFromUrl(ghBranchUrl);
+  console.log({ ghSourcePath, ghBranchName, owner, filePath, srcDirPath, baseBranchName });
 
   if (!ghBranchUrl) {
     const baseBranch = await octokit.request(
@@ -84,8 +76,9 @@ async function saveEdits({
       .then(async () => {
         ghBranchName = newBranchName;
 
+        console.log("newbranchname ", newBranchName)
         // update branchUrl column in review table db
-        const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${ghBranchName}/${fileName}`;
+        const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${ghBranchName}/${filePath}`;
         const updateReviewEndpoint = `${
           process.env.NEXT_PUBLIC_APP_QUEUE_BASE_URL
         }/${endpoints.REVIEW_BY_ID(reviewId)}`;
@@ -128,7 +121,7 @@ async function saveEdits({
     .request("GET /repos/{owner}/{repo}/contents/{path}", {
       owner,
       repo: upstreamRepo,
-      path: filepath.join("/"),
+      path: filePath,
       ref: ghBranchName,
     })
     .then((res) => {
@@ -152,7 +145,9 @@ async function saveEdits({
       branch: ghBranchName,
       sha: fileToUpdateSha,
     })
-    .then()
+    .then((res) => {
+      console.log("created new file")
+    })
     .catch((_err) => {
       console.log({ _err });
       throw new Error("Error creating new file");

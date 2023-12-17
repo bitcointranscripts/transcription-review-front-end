@@ -189,3 +189,52 @@ export async function syncForkWithUpstream({
     latestUpstreamCommitSha
   );
 }
+
+export function getBranchNameFromBranchUrl(url?: string) {
+  if (!url) return "";
+  const branchName = new URL(url).pathname.split("/")[4];
+  return branchName;
+}
+export function resolveGHBranchUrl(url: string) {
+  // reconcile url to heirarchical file path
+  // resolves to [{owner}, {repo}, {branch}, ...${dir}... , ${file}]
+  const levels = new URL(url).pathname.split("/").slice(1);
+  levels.splice(2, 1); // remove "/tree"
+  const owner = levels[0];
+  const repo = levels[1];
+  const branch = levels[2];
+  const file = levels.slice(-1).toString();
+  const path = levels.slice(3).join("/").toString();
+  const dir = levels.slice(3, -1).join("/").toString();
+
+  return {
+    owner,
+    repo,
+    branch,
+    file,
+    path,
+    dir,
+  };
+}
+
+export function resolveRawGHUrl(url: string) {
+  const levels = new URL(url).pathname.split("/").slice(1);
+
+  const srcOwner = levels[0];
+  const srcRepo = levels[1];
+  const srcBranch = levels[2];
+  const fileName = levels.slice(-1).toString();
+  const filePath = levels.slice(3).join("/").toString();
+  const fileNameWithoutExtension = fileName.slice(0, -3);
+  const srcDirPath = levels.slice(3, -1).join("/").toString();
+
+  return {
+    filePath,
+    fileName,
+    fileNameWithoutExtension,
+    srcDirPath,
+    srcOwner,
+    srcRepo,
+    srcBranch,
+  };
+}

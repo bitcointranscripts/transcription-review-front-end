@@ -253,7 +253,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           userSession?.user?.githubUsername ?? ""
         ),
         prRepo,
+        ghSourcePath,
+        ghBranchUrl,
       });
+      console.log({prResult})
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
       localStorage.removeItem("oldDirectoryList");
 
