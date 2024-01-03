@@ -144,33 +144,40 @@ const QueueTable = () => {
           { userId: session.user.id, transcriptId },
           {
             onSuccess: async (data) => {
-              const reviewId = data.id;
-              // Fork repo
-              const forkResult = await axios.post("/api/github/fork");
-              const owner =
-                process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
-                  ? forkResult.data.owner.login
-                  : upstreamOwner;
-              const baseBranchName: string = forkResult.data.default_branch;
-              if (transcript && transcript.transcriptUrl) {
-                try {
-                  await axios.post("/api/github/newBranch", {
-                    reviewId,
-                    baseBranchName,
-                    ghSourcePath: transcript.transcriptUrl,
-                    owner,
-                  });
-                } catch (err) {
-                  console.error(err);
+              try {
+                const reviewId = data.id;
+                if (!reviewId) {
+                  throw new Error("failed to claim transcript");
                 }
-              }
+                // Fork repo
+                const forkResult = await axios.post("/api/github/fork");
+                const owner =
+                  process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+                    ? forkResult.data.owner.login
+                    : upstreamOwner;
+                // const baseBranchName: string = forkResult.data.default_branch;
+                if (transcript && transcript.transcriptUrl) {
+                  try {
+                    await axios.post("/api/github/newBranch", {
+                      reviewId,
+                      // baseBranchName,
+                      ghSourcePath: transcript.transcriptUrl,
+                      owner,
+                    });
+                  } catch (err) {
+                    console.error(err);
+                  }
+                }
 
-              setClaimState((prev) => ({ ...prev, rowId: -1 }));
-              if (data instanceof Error) {
-                await retryLoginAndClaim(transcriptId);
-                return;
+                setClaimState((prev) => ({ ...prev, rowId: -1 }));
+                if (data instanceof Error) {
+                  await retryLoginAndClaim(transcriptId);
+                  return;
+                }
+                router.push(`/reviews/${data.id}`);
+              } catch (err) {
+                console.error(err);
               }
-              router.push(`/reviews/${data.id}`);
             },
 
             onError: (err) => {
