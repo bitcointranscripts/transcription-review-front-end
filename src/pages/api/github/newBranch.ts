@@ -10,7 +10,6 @@ import { auth } from "../auth/[...nextauth]";
 type NewBranchArgs = {
   octokit: InstanceType<typeof Octokit>;
   reviewId: string;
-  baseBranchName: string;
   ghSourcePath: string;
   owner: string;
   session: Session;
@@ -19,12 +18,13 @@ type NewBranchArgs = {
 export async function createNewBranch({
   octokit,
   reviewId,
-  baseBranchName,
   ghSourcePath,
   owner,
   session,
 }: NewBranchArgs) {
-  const { srcDirPath, filePath } = resolveRawGHUrl(ghSourcePath);
+  const { srcBranch, srcRepo, srcDirPath, filePath } =
+    resolveRawGHUrl(ghSourcePath);
+
   let baseRefSha = "";
   // Get baseBranch sha
   try {
@@ -32,8 +32,8 @@ export async function createNewBranch({
       "GET /repos/{owner}/{repo}/git/ref/{ref}",
       {
         owner,
-        repo: upstreamRepo,
-        ref: `heads/${baseBranchName}`,
+        repo: srcRepo,
+        ref: `heads/${srcBranch}`,
       }
     );
     baseRefSha = baseBranch.data.object.sha;
@@ -55,10 +55,12 @@ export async function createNewBranch({
     })
     .then(async () => {
       // update branchUrl column in review table db
-      const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${newBranchName}/${filePath}`;
+      const newBranchUrl = `https://raw.githubusercontent.com/${owner}/bitcointranscripts/${newBranchName}/${filePath}`;
+
       const updateReviewEndpoint = `${
         process.env.NEXT_PUBLIC_APP_QUEUE_BASE_URL
       }/${endpoints.REVIEW_BY_ID(Number(reviewId))}`;
+
       await axios
         .put(
           updateReviewEndpoint,
@@ -102,7 +104,7 @@ export default async function handler(
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const { reviewId, baseBranchName, ghSourcePath, owner } = req.body;
+  const { reviewId, ghSourcePath, owner } = req.body;
 
   // Initialize Octokit with the user's access token
   const octokit = new Octokit({ auth: session.accessToken });
@@ -112,7 +114,6 @@ export default async function handler(
     await createNewBranch({
       octokit,
       reviewId,
-      baseBranchName,
       ghSourcePath,
       owner,
       session,
