@@ -26,6 +26,7 @@ import Pagination from "./Pagination";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
 import Image from "next/image";
+import { upstreamOwner } from "@/config/default";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -146,7 +147,10 @@ const QueueTable = () => {
               const reviewId = data.id;
               // Fork repo
               const forkResult = await axios.post("/api/github/fork");
-              const owner = forkResult.data.owner.login;
+              const owner =
+                process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+                  ? forkResult.data.owner.login
+                  : upstreamOwner;
               const baseBranchName: string = forkResult.data.default_branch;
               if (transcript && transcript.transcriptUrl) {
                 try {
