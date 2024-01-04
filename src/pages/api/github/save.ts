@@ -43,9 +43,9 @@ async function saveEdits({
     resolveGHApiUrl(ghSourcePath);
 
   const directoryName = srcDirPath;
-  const transcriptToSave = `${transcriptData.metaData.toString()}\n${
+  const transcriptToSave = `${transcriptData.metaData.toString()}${
     transcriptData.body
-  }\n`;
+  }`;
 
   const ghBranchData = ghBranchUrl ? resolveGHApiUrl(ghBranchUrl) : null;
   let ghBranchName = ghBranchData?.srcBranch;
