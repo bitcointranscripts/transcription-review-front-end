@@ -164,11 +164,32 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     return updatedContent;
   };
 
+  const ghBranchUrl = reviewData.branchUrl;
+  const ghSourcePath = transcriptData.transcriptUrl;
+
   const saveTranscript = async (updatedContent: TranscriptContent) => {
     // create an awaitable promise for mutation
+
+    const newImplData = {
+      directoryPath: updatedContent.loc?.trim() ?? "",
+      fileName: formatDataForMetadata(updatedContent.title),
+      url: transcriptData?.content.media,
+      date: updatedContent.date && dateFormatGeneral(updatedContent.date, true),
+      tags: formatDataForMetadata(updatedContent.tags),
+      speakers: formatDataForMetadata(updatedContent.speakers),
+      categories: formatDataForMetadata(updatedContent.categories),
+      transcribedText: updatedContent.body,
+      transcript_by: formatDataForMetadata(
+        userSession?.user?.githubUsername ?? ""
+      ),
+      ghSourcePath,
+      ghBranchUrl,
+      reviewId: reviewData.id,
+    };
+
     try {
       await mutateAsync(
-        { content: updatedContent, transcriptId },
+        { content: updatedContent, transcriptId, newImplData },
         {
           onSettled(data) {
             if (data?.statusText === "OK") {
@@ -232,6 +253,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           userSession?.user?.githubUsername ?? ""
         ),
         prRepo,
+        ghSourcePath,
+        ghBranchUrl,
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
       localStorage.removeItem("oldDirectoryList");

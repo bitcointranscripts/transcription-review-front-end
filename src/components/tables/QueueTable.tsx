@@ -26,6 +26,7 @@ import Pagination from "./Pagination";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
 import Image from "next/image";
+import { upstreamOwner } from "@/config/default";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -118,6 +119,9 @@ const QueueTable = () => {
 
   const handleClaim = useCallback(
     async (transcriptId: number) => {
+      // handle new implementation
+      const transcript = data?.data.find((item) => item.id === transcriptId);
+
       if (status === "loading") {
         toast({
           status: "loading",
@@ -140,15 +144,39 @@ const QueueTable = () => {
           { userId: session.user.id, transcriptId },
           {
             onSuccess: async (data) => {
-              // Fork repo
-              axios.post("/api/github/fork");
+              try {
+                const reviewId = data.id;
+                if (!reviewId) {
+                  throw new Error("failed to claim transcript");
+                }
+                // Fork repo
+                const forkResult = await axios.post("/api/github/fork");
+                const owner =
+                  process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+                    ? forkResult.data.owner.login
+                    : upstreamOwner;
 
-              setClaimState((prev) => ({ ...prev, rowId: -1 }));
-              if (data instanceof Error) {
-                await retryLoginAndClaim(transcriptId);
-                return;
+                if (transcript && transcript.transcriptUrl) {
+                  try {
+                    await axios.post("/api/github/newBranch", {
+                      reviewId,
+                      ghSourcePath: transcript.transcriptUrl,
+                      owner,
+                    });
+                  } catch (err) {
+                    console.error(err);
+                  }
+                }
+
+                setClaimState((prev) => ({ ...prev, rowId: -1 }));
+                if (data instanceof Error) {
+                  await retryLoginAndClaim(transcriptId);
+                  return;
+                }
+                router.push(`/reviews/${data.id}`);
+              } catch (err) {
+                console.error(err);
               }
-              router.push(`/reviews/${data.id}`);
             },
 
             onError: (err) => {

@@ -12,6 +12,7 @@ export type Transcript = {
   transcriptHash: string;
   claimedBy: Nullable<number>;
   contentTotalWords: number;
+  transcriptUrl: Nullable<string>;
 };
 export type TranscriptData = {
   totalItems: number;
@@ -37,6 +38,7 @@ export type Review = {
   submittedAt: Nullable<Date>;
   mergedAt: Nullable<Date>;
   pr_url: Nullable<string>;
+  branchUrl: Nullable<string>;
 };
 
 export type UserReviewData = Review & {
