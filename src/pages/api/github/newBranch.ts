@@ -1,6 +1,6 @@
 import { upstreamRepo } from "@/config/default";
 import endpoints from "@/services/api/endpoints";
-import { constructGithubBranchUrl, resolveRawGHUrl } from "@/utils/github";
+import { constructGithubBranchApiUrl, resolveGHApiUrl } from "@/utils/github";
 import { Octokit } from "@octokit/core";
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -23,7 +23,7 @@ export async function createNewBranch({
   session,
 }: NewBranchArgs) {
   const { srcBranch, srcRepo, srcDirPath, filePath } =
-    resolveRawGHUrl(ghSourcePath);
+    resolveGHApiUrl(ghSourcePath);
 
   let baseRefSha = "";
   // Get baseBranch sha
@@ -55,7 +55,7 @@ export async function createNewBranch({
     })
     .then(async () => {
       // update branchUrl column in review table db
-      const newBranchUrl = constructGithubBranchUrl({
+      const newBranchUrl = constructGithubBranchApiUrl({
         owner,
         filePath,
         newBranchName,

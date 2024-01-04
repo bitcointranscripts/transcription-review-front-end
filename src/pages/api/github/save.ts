@@ -4,9 +4,9 @@ import { Metadata } from "@/utils";
 import { createFork } from "./fork";
 import { auth } from "../auth/[...nextauth]";
 import { Session } from "next-auth";
-import { resolveRawGHUrl } from "@/utils/github";
+import { resolveGHApiUrl } from "@/utils/github";
 import { createNewBranch } from "./newBranch";
-import { upstreamOwner } from "@/config/default";
+import { upstreamOwner, upstreamRepo } from "@/config/default";
 
 type SaveEditProps = {
   octokit: InstanceType<typeof Octokit>;
@@ -20,8 +20,6 @@ type SaveEditProps = {
   reviewId: number;
   session: Session;
 };
-
-const upstreamRepo = "bitcointranscripts";
 
 async function saveEdits({
   octokit,
@@ -42,14 +40,14 @@ async function saveEdits({
       : upstreamOwner;
 
   const { fileName, filePath, srcDirPath, srcRepo } =
-    resolveRawGHUrl(ghSourcePath);
+    resolveGHApiUrl(ghSourcePath);
 
   const directoryName = srcDirPath;
   const transcriptToSave = `${transcriptData.metaData.toString()}\n${
     transcriptData.body
   }\n`;
 
-  const ghBranchData = ghBranchUrl ? resolveRawGHUrl(ghBranchUrl) : null;
+  const ghBranchData = ghBranchUrl ? resolveGHApiUrl(ghBranchUrl) : null;
   let ghBranchName = ghBranchData?.srcBranch;
 
   if (!ghBranchUrl) {
@@ -62,7 +60,7 @@ async function saveEdits({
       session,
     })
       .then((branchUrl) => {
-        const { srcBranch } = resolveRawGHUrl(branchUrl);
+        const { srcBranch } = resolveGHApiUrl(branchUrl);
         ghBranchName = srcBranch;
         // ghBranchUrl = branchUrl;
       })
