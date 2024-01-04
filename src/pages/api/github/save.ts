@@ -3,11 +3,10 @@ import { Octokit } from "@octokit/core";
 import { Metadata } from "@/utils";
 import { createFork } from "./fork";
 import { auth } from "../auth/[...nextauth]";
-
-import endpoints from "@/services/api/endpoints";
 import { Session } from "next-auth";
-import axios from "axios";
-import { getBranchNameFromBranchUrl, resolveRawGHUrl } from "@/utils/github";
+import { resolveRawGHUrl } from "@/utils/github";
+import { createNewBranch } from "./newBranch";
+import { upstreamOwner } from "@/config/default";
 
 type SaveEditProps = {
   octokit: InstanceType<typeof Octokit>;
@@ -36,78 +35,43 @@ async function saveEdits({
   const forkResult = await createFork(octokit).catch((err) => {
     throw new Error("Repo fork failed");
   });
-  const owner = forkResult.data.owner.login;
-  const baseBranchName = forkResult.data.default_branch;
-  const { fileName, filePath, srcDirPath } = resolveRawGHUrl(ghSourcePath);
+
+  const owner =
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+      ? forkResult.data.owner.login
+      : upstreamOwner;
+
+  const { fileName, filePath, srcDirPath, srcRepo } =
+    resolveRawGHUrl(ghSourcePath);
 
   const directoryName = srcDirPath;
   const transcriptToSave = `${transcriptData.metaData.toString()}\n${
     transcriptData.body
   }\n`;
 
-  let ghBranchName = getBranchNameFromBranchUrl(ghBranchUrl);
+  const ghBranchData = ghBranchUrl ? resolveRawGHUrl(ghBranchUrl) : null;
+  let ghBranchName = ghBranchData?.srcBranch;
 
   if (!ghBranchUrl) {
-    const baseBranch = await octokit.request(
-      "GET /repos/{owner}/{repo}/git/ref/{ref}",
-      {
-        owner,
-        repo: upstreamRepo,
-        ref: `heads/${baseBranchName}`,
-      }
-    );
-
-    // Create new branch
-    const timeInSeconds = Math.floor(Date.now() / 1000);
-    const baseDirName = directoryName.replaceAll("/", "--");
-    const newBranchName = `${timeInSeconds}-${baseDirName}`;
-    const baseRefSha = baseBranch.data.object.sha;
-
-    await octokit
-      .request("POST /repos/{owner}/{repo}/git/refs", {
-        owner,
-        repo: upstreamRepo,
-        ref: `refs/heads/${newBranchName}`,
-        sha: baseRefSha,
+    // create new branch and update the branchUrl column in db
+    await createNewBranch({
+      octokit,
+      reviewId,
+      ghSourcePath,
+      owner,
+      session,
+    })
+      .then((branchUrl) => {
+        const { srcBranch } = resolveRawGHUrl(branchUrl);
+        ghBranchName = srcBranch;
+        // ghBranchUrl = branchUrl;
       })
-      .then(async () => {
-        ghBranchName = newBranchName;
-
-        // update branchUrl column in review table db
-        const newBranchUrl = `https://github.com/${owner}/bitcointranscripts/tree/${ghBranchName}/${filePath}`;
-        const updateReviewEndpoint = `${
-          process.env.NEXT_PUBLIC_APP_QUEUE_BASE_URL
-        }/${endpoints.REVIEW_BY_ID(reviewId)}`;
-        await axios
-          .put(
-            updateReviewEndpoint,
-            {
-              branchUrl: newBranchUrl,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${session!.user!.jwt}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res.status < 200 || res.status > 299) {
-              throw new Error("Unable to save branchUrl to db");
-            }
-          })
-          .catch((err) => {
-            console.error({ err });
-            const errMessage =
-              err?.response?.data?.message ??
-              err?.message ??
-              "Error saving branchUrl to db";
-            throw new Error(errMessage);
-          });
-      })
-      .catch((_err) => {
-        throw new Error(
-          _err.message ? _err.message : "Error creating new branch"
-        );
+      .catch((err) => {
+        const errMessage =
+          err?.response?.data?.message ??
+          err?.message ??
+          "Error saving branchUrl to db";
+        throw new Error(errMessage);
       });
   }
 
@@ -115,7 +79,7 @@ async function saveEdits({
   await octokit
     .request("GET /repos/{owner}/{repo}/contents/{path}", {
       owner,
-      repo: upstreamRepo,
+      repo: srcRepo,
       path: filePath,
       ref: ghBranchName,
     })

@@ -155,12 +155,11 @@ const QueueTable = () => {
                   process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
                     ? forkResult.data.owner.login
                     : upstreamOwner;
-                // const baseBranchName: string = forkResult.data.default_branch;
+
                 if (transcript && transcript.transcriptUrl) {
                   try {
                     await axios.post("/api/github/newBranch", {
                       reviewId,
-                      // baseBranchName,
                       ghSourcePath: transcript.transcriptUrl,
                       owner,
                     });

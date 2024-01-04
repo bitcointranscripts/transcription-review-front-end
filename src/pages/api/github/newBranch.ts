@@ -1,6 +1,6 @@
 import { upstreamRepo } from "@/config/default";
 import endpoints from "@/services/api/endpoints";
-import { resolveRawGHUrl } from "@/utils/github";
+import { constructGithubBranchUrl, resolveRawGHUrl } from "@/utils/github";
 import { Octokit } from "@octokit/core";
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -9,7 +9,7 @@ import { auth } from "../auth/[...nextauth]";
 
 type NewBranchArgs = {
   octokit: InstanceType<typeof Octokit>;
-  reviewId: string;
+  reviewId: number;
   ghSourcePath: string;
   owner: string;
   session: Session;
@@ -46,7 +46,7 @@ export async function createNewBranch({
   const baseDirName = srcDirPath.replaceAll("/", "--");
   const newBranchName = `${timeInSeconds}-${baseDirName}`;
 
-  await octokit
+  const newBranch = await octokit
     .request("POST /repos/{owner}/{repo}/git/refs", {
       owner,
       repo: upstreamRepo,
@@ -55,13 +55,17 @@ export async function createNewBranch({
     })
     .then(async () => {
       // update branchUrl column in review table db
-      const newBranchUrl = `https://raw.githubusercontent.com/${owner}/bitcointranscripts/${newBranchName}/${filePath}`;
+      const newBranchUrl = constructGithubBranchUrl({
+        owner,
+        filePath,
+        newBranchName,
+      });
 
       const updateReviewEndpoint = `${
         process.env.NEXT_PUBLIC_APP_QUEUE_BASE_URL
-      }/${endpoints.REVIEW_BY_ID(Number(reviewId))}`;
+      }/${endpoints.REVIEW_BY_ID(reviewId)}`;
 
-      await axios
+      const updatedReviewBranchUrl = await axios
         .put(
           updateReviewEndpoint,
           {
@@ -77,6 +81,7 @@ export async function createNewBranch({
           if (res.status < 200 || res.status > 299) {
             throw new Error("Unable to save branchUrl to db");
           }
+          return newBranchUrl;
         })
         .catch((err) => {
           console.error("failed to update db", { err });
@@ -86,12 +91,14 @@ export async function createNewBranch({
             "Error saving branchUrl to db";
           throw new Error(errMessage);
         });
+      return updatedReviewBranchUrl;
     })
     .catch((_err) => {
       throw new Error(
         _err.message ? _err.message : "Error creating new branch"
       );
     });
+  return newBranch;
 }
 
 export default async function handler(
@@ -111,9 +118,10 @@ export default async function handler(
 
   try {
     // Call the createNewBranch function
+    const parsedReviewId = parseInt(reviewId);
     await createNewBranch({
       octokit,
-      reviewId,
+      reviewId: parsedReviewId,
       ghSourcePath,
       owner,
       session,

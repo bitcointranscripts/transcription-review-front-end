@@ -4,6 +4,12 @@ import { Octokit } from "@octokit/core";
 
 import { newIndexFile } from ".";
 
+type BranchUrlConstructor = {
+  owner: string;
+  newBranchName: string;
+  filePath: string;
+};
+
 export async function deleteIndexMdIfDirectoryEmpty(
   octokit: InstanceType<typeof Octokit>,
   owner: string,
@@ -237,4 +243,12 @@ export function resolveRawGHUrl(url: string) {
     srcRepo,
     srcBranch,
   };
+}
+
+export function constructGithubBranchUrl({
+  owner,
+  filePath,
+  newBranchName,
+}: BranchUrlConstructor) {
+  return `https://raw.githubusercontent.com/${owner}/bitcointranscripts/${newBranchName}/${filePath}`;
 }
