@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Octokit } from "@octokit/core";
 import { upstreamOwner, upstreamRepo } from "@/config/default";
-import { auth } from "../auth/[...nextauth]";
 
 export async function createFork(octokit: InstanceType<typeof Octokit>) {
   // Fork the repository

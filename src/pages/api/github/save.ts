@@ -7,8 +7,6 @@ import { Session } from "next-auth";
 import { resolveGHApiUrl } from "@/utils/github";
 import { createNewBranch } from "./newBranch";
 import { upstreamOwner, upstreamRepo } from "@/config/default";
-import endpoints from "@/services/api/endpoints";
-import axios from "axios";
 
 type SaveEditProps = {
   octokit: InstanceType<typeof Octokit>;
@@ -23,7 +21,6 @@ type SaveEditProps = {
   session: Session;
 };
 
-// this save function handles only the new implementation
 async function saveEdits({
   octokit,
   transcriptData,
@@ -37,12 +34,10 @@ async function saveEdits({
     throw new Error("Repo fork failed");
   });
 
-  const env_owner =
+  const owner =
     process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
       ? forkResult.data.owner.login
       : upstreamOwner;
-
-  const owner = forkResult.data.owner.login;
 
   const { fileName, filePath, srcDirPath, srcRepo } =
     resolveGHApiUrl(ghSourcePath);
@@ -59,45 +54,15 @@ async function saveEdits({
     // create new branch and update the branchUrl column in db
     await createNewBranch({
       octokit,
+      reviewId,
       ghSourcePath,
       owner,
-      env_owner,
+      session,
     })
-      .then(async (branchUrl) => {
-        // update branchUrl in db
-        const updateReviewEndpoint = `${
-          process.env.NEXT_PUBLIC_APP_QUEUE_BASE_URL
-        }/${endpoints.REVIEW_BY_ID(reviewId)}`;
-
-        await axios
-          .put(
-            updateReviewEndpoint,
-            {
-              branchUrl,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${session!.user!.jwt}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res.status < 200 || res.status > 299) {
-              throw new Error("Unable to save branchUrl to db");
-            }
-          })
-          .catch((err) => {
-            console.error("failed to update db", { err });
-            const errMessage =
-              err?.response?.data?.message ??
-              err?.message ??
-              "Error saving branchUrl to db";
-            throw new Error(errMessage);
-          });
-
-        // get branchname to update content
+      .then((branchUrl) => {
         const { srcBranch } = resolveGHApiUrl(branchUrl);
         ghBranchName = srcBranch;
+        // ghBranchUrl = branchUrl;
       })
       .catch((err) => {
         const errMessage =
@@ -172,6 +137,8 @@ export default async function handler(
     categories,
     transcribedText,
     transcript_by,
+    // prRepo,
+    // prUrl,
     ghSourcePath,
     ghBranchUrl,
     directoryPath,

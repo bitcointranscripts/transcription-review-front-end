@@ -183,16 +183,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const ghBranchUrl = reviewData.branchUrl;
   const ghSourcePath = transcriptData.transcriptUrl;
 
-  useEffect(() => {
-    if (isFirstTime) {
-      guidelinesOnOpen();
-    }
-  }, [isFirstTime]);
-
-  const saveTranscript = async (
-    updatedContent: TranscriptContent,
-    onSuccessCallback?: () => void
-  ) => {
+  const saveTranscript = async (updatedContent: TranscriptContent) => {
     // create an awaitable promise for mutation
 
     const newImplData = {
@@ -211,15 +202,6 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ghBranchUrl,
       reviewId: reviewData.id,
     };
-
-    const isPreviousHash = compareTranscriptBetweenSave(newImplData);
-    if (isPreviousHash) {
-      toast({
-        status: "warning",
-        title: "Unable to save because no edits have been made",
-      });
-      return;
-    }
 
     try {
       await mutateAsync(
