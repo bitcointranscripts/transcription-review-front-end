@@ -245,10 +245,43 @@ export function resolveRawGHUrl(url: string) {
   };
 }
 
+export function resolveGHApiUrl(url: string) {
+  const resolvedUrl = new URL(url);
+
+  const srcBranch = resolvedUrl.searchParams.get("ref") ?? "";
+  const levels = resolvedUrl.pathname.split("/").slice(2);
+  levels.splice(2, 1);
+
+  const srcOwner = levels[0];
+  const srcRepo = levels[1];
+  const fileName = levels.slice(-1).toString();
+  const filePath = levels.slice(2).join("/").toString();
+  const fileNameWithoutExtension = fileName.slice(0, -3);
+  const srcDirPath = levels.slice(2, -1).join("/").toString();
+
+  return {
+    filePath,
+    fileName,
+    fileNameWithoutExtension,
+    srcDirPath,
+    srcOwner,
+    srcRepo,
+    srcBranch,
+  };
+}
+
 export function constructGithubBranchUrl({
   owner,
   filePath,
   newBranchName,
 }: BranchUrlConstructor) {
   return `https://raw.githubusercontent.com/${owner}/bitcointranscripts/${newBranchName}/${filePath}`;
+}
+
+export function constructGithubBranchApiUrl({
+  owner,
+  filePath,
+  newBranchName,
+}: BranchUrlConstructor) {
+  return `https://api.github.com/repos/${owner}/bitcointranscripts/contents/${filePath}?ref=${newBranchName}`;
 }

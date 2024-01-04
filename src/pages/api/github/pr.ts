@@ -13,8 +13,7 @@ import {
 import {
   deleteIndexMdIfDirectoryEmpty,
   ensureIndexMdExists,
-  resolveGHBranchUrl,
-  resolveRawGHUrl,
+  resolveGHApiUrl,
   syncForkWithUpstream,
 } from "../../../utils/github";
 import { auth } from "../auth/[...nextauth]";
@@ -428,8 +427,13 @@ export default async function handler(
       }
 
       const { fileNameWithoutExtension, srcBranch } =
-        resolveRawGHUrl(ghSourcePath);
-      const { owner, repo, branch, dir } = resolveGHBranchUrl(ghBranchUrl);
+        resolveGHApiUrl(ghSourcePath);
+      const {
+        srcOwner: owner,
+        srcRepo: repo,
+        srcBranch: branch,
+        srcDirPath: dir,
+      } = resolveGHApiUrl(ghBranchUrl);
 
       const prTitle = `Add ${fileNameWithoutExtension} review to ${dir}`;
       const prDescription = `This PR adds [${fileNameWithoutExtension}](${newMetadata.source}) transcript review to the ${dir} directory.`;
