@@ -1,8 +1,30 @@
 import { useMutation } from "@tanstack/react-query";
-import type { SaveToGHData, TranscriptContent } from "../../../../types";
+import type { TranscriptContent } from "../../../../types";
 import axiosInstance from "../axios";
 import axios from "axios";
 import endpoints from "../endpoints";
+
+type SaveToGHData = {
+  directoryPath: string;
+  fileName?: string;
+  url: string | null;
+  date:
+    | string
+    | {
+        day: string;
+        month: string;
+        year: string;
+      }
+    | null;
+  tags?: string;
+  speakers?: string;
+  categories?: string;
+  transcribedText: string;
+  transcript_by?: string;
+  ghSourcePath: string | null;
+  ghBranchUrl: string | null;
+  reviewId: number;
+};
 
 const updateTranscript = async (body: {
   content?: TranscriptContent;
