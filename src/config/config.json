@@ -10,5 +10,6 @@
   "youtube_video_id": "YNIFm0QFAuA",
   "max_active_reviews": 1,
   "max_pending_reviews": 3,
-  "prod_url": "https://review.btctranscripts.com"
+  "prod_url": "https://review.btctranscripts.com",
+  "local_storage_hash_query": "last_saved_edits_hash"
 }

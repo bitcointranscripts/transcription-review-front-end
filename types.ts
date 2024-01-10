@@ -172,3 +172,25 @@ export type TransactionQueryType =
 
 export type TransactionQueryStatus =
   (typeof TransactionStatus)[keyof typeof TransactionStatus];
+
+export type SaveToGHData = {
+  directoryPath: string;
+  fileName?: string;
+  url: string | null;
+  date:
+    | string
+    | {
+        day: string;
+        month: string;
+        year: string;
+      }
+    | null;
+  tags?: string;
+  speakers?: string;
+  categories?: string;
+  transcribedText: string;
+  transcript_by?: string;
+  ghSourcePath: string | null;
+  ghBranchUrl: string | null;
+  reviewId: number;
+};

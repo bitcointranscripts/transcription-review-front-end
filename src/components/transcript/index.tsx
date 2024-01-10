@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
 import type { TranscriptContent, UserReviewData } from "../../../types";
+import { compareTranscriptBetweenSave } from "@/utils/transcript";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -167,7 +168,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const ghBranchUrl = reviewData.branchUrl;
   const ghSourcePath = transcriptData.transcriptUrl;
 
-  const saveTranscript = async (updatedContent: TranscriptContent) => {
+  const saveTranscript = async (
+    updatedContent: TranscriptContent,
+    onSuccessCallback?: () => void
+  ) => {
     // create an awaitable promise for mutation
 
     const newImplData = {
@@ -187,6 +191,15 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       reviewId: reviewData.id,
     };
 
+    const isPreviousHash = compareTranscriptBetweenSave(newImplData);
+    if (isPreviousHash) {
+      toast({
+        status: "warning",
+        title: "Unable to save because no edits have been made",
+      });
+      return;
+    }
+
     try {
       await mutateAsync(
         { content: updatedContent, transcriptId, newImplData },
@@ -199,18 +212,21 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           },
         }
       );
+      onSuccessCallback && onSuccessCallback();
     } catch (error) {
       throw error;
     }
   };
 
   const handleSave = async () => {
-    try {
-      await saveTranscript(getUpdatedContent());
+    const onSuccessCallback = () => {
       toast({
         status: "success",
         title: "Saved successfully",
       });
+    };
+    try {
+      await saveTranscript(getUpdatedContent(), onSuccessCallback);
     } catch (err: any) {
       toast({
         status: "error",
