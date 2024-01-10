@@ -13,7 +13,13 @@ import {
   formatDataForMetadata,
   reconcileArray,
 } from "@/utils";
-import { Button, Flex, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Tooltip,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
@@ -74,6 +80,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ? "btc transcript"
       : "user"
   );
+
+  const reviewSubmissionDisabled =
+    !!reviewData.branchUrl && !!reviewData.pr_url;
+
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
@@ -328,20 +338,24 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
               >
                 Save
               </Button>
-              <Flex
-                overflow="hidden"
-                borderRadius="md"
-                bg="orange.500"
-                dir="row"
-              >
-                <Button
-                  borderRadius="none"
-                  size="sm"
-                  colorScheme="orange"
-                  onClick={onOpen}
+              <Flex overflow="hidden" borderRadius="md" dir="row">
+                <Tooltip
+                  label={
+                    reviewSubmissionDisabled
+                      ? "You cannot resubmit a submitted review, instead use save to update your submission"
+                      : undefined
+                  }
                 >
-                  Submit {isAdmin ? `(${prRepo})` : ""}
-                </Button>
+                  <Button
+                    borderRadius="none"
+                    size="sm"
+                    colorScheme="orange"
+                    onClick={onOpen}
+                    isDisabled={reviewSubmissionDisabled}
+                  >
+                    Submit {isAdmin ? `(${prRepo})` : ""}
+                  </Button>
+                </Tooltip>
                 {isAdmin && (
                   <>
                     <SubmitTranscriptMenu setPrRepo={setPrRepo} />
