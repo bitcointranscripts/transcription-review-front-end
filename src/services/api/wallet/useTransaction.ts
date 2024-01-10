@@ -1,5 +1,5 @@
 import axios from "../axios";
-
+import axiosBase from 'axios'
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import endpoints from "../endpoints";
@@ -38,4 +38,20 @@ export const useGetTransactions = (id: number) =>
 export const usePayInvoice = () =>
   useMutation({
     mutationFn: payInvoice,
+  });
+
+export const validateAddress = async ({
+  lnAddress,
+}: {
+  lnAddress: string;
+}): Promise<any> => {
+  return axiosBase
+    .post("/api/lightning/validate-address", { lnAddress })
+    .then((res) => res.data)
+    .catch((err) => err);
+};
+
+export const useValidateAddress = () =>
+  useMutation({
+    mutationFn: validateAddress,
   });
