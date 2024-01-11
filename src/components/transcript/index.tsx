@@ -13,7 +13,13 @@ import {
   formatDataForMetadata,
   reconcileArray,
 } from "@/utils";
-import { Button, Flex, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Tooltip,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
@@ -21,6 +27,7 @@ import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
 import type { TranscriptContent, UserReviewData } from "../../../types";
+import { compareTranscriptBetweenSave } from "@/utils/transcript";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -73,6 +80,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ? "btc transcript"
       : "user"
   );
+
+  const reviewSubmissionDisabled =
+    !!reviewData.branchUrl && !!reviewData.pr_url;
+
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
@@ -167,7 +178,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const ghBranchUrl = reviewData.branchUrl;
   const ghSourcePath = transcriptData.transcriptUrl;
 
-  const saveTranscript = async (updatedContent: TranscriptContent) => {
+  const saveTranscript = async (
+    updatedContent: TranscriptContent,
+    onSuccessCallback?: () => void
+  ) => {
     // create an awaitable promise for mutation
 
     const newImplData = {
@@ -187,6 +201,15 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       reviewId: reviewData.id,
     };
 
+    const isPreviousHash = compareTranscriptBetweenSave(newImplData);
+    if (isPreviousHash) {
+      toast({
+        status: "warning",
+        title: "Unable to save because no edits have been made",
+      });
+      return;
+    }
+
     try {
       await mutateAsync(
         { content: updatedContent, transcriptId, newImplData },
@@ -199,18 +222,21 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           },
         }
       );
+      onSuccessCallback && onSuccessCallback();
     } catch (error) {
       throw error;
     }
   };
 
   const handleSave = async () => {
-    try {
-      await saveTranscript(getUpdatedContent());
+    const onSuccessCallback = () => {
       toast({
         status: "success",
         title: "Saved successfully",
       });
+    };
+    try {
+      await saveTranscript(getUpdatedContent(), onSuccessCallback);
     } catch (err: any) {
       toast({
         status: "error",
@@ -312,20 +338,24 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
               >
                 Save
               </Button>
-              <Flex
-                overflow="hidden"
-                borderRadius="md"
-                bg="orange.500"
-                dir="row"
-              >
-                <Button
-                  borderRadius="none"
-                  size="sm"
-                  colorScheme="orange"
-                  onClick={onOpen}
+              <Flex overflow="hidden" borderRadius="md" dir="row">
+                <Tooltip
+                  label={
+                    reviewSubmissionDisabled
+                      ? "You cannot resubmit a submitted review, instead use save to update your submission"
+                      : undefined
+                  }
                 >
-                  Submit {isAdmin ? `(${prRepo})` : ""}
-                </Button>
+                  <Button
+                    borderRadius="none"
+                    size="sm"
+                    colorScheme="orange"
+                    onClick={onOpen}
+                    isDisabled={reviewSubmissionDisabled}
+                  >
+                    Submit {isAdmin ? `(${prRepo})` : ""}
+                  </Button>
+                </Tooltip>
                 {isAdmin && (
                   <>
                     <SubmitTranscriptMenu setPrRepo={setPrRepo} />
