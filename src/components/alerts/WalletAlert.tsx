@@ -1,4 +1,8 @@
-import { usePayInvoice, useValidateAddress } from "@/services/api/wallet";
+import {
+  usePayInvoice,
+  useValidateAddress,
+  useWithdrawSats,
+} from "@/services/api/wallet";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -22,6 +26,7 @@ type Props = {
   isOpen: boolean;
   onCancel: () => void;
   refetch: () => void;
+  balance: number;
 };
 export type LightningResponse = {
   status: string;
@@ -46,13 +51,14 @@ export type Email = {
   mandatory: boolean;
 };
 
-const WalletAlert = ({ isOpen, onCancel, refetch }: Props) => {
+const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   const { data: sessionData } = useSession();
   const sessionDataId = sessionData?.user?.id;
   const toast = useToast();
   const [invoiceInput, setInvoiceInput] = useState("");
+  const [amountToSend, setAmountToSend] = useState<number | string>();
   const [step, setStep] = useState(1);
   const [lightningData, setLightningData] = useState<
     LightningResponse | undefined
@@ -60,10 +66,12 @@ const WalletAlert = ({ isOpen, onCancel, refetch }: Props) => {
   const [error, setError] = useState("");
 
   const payInvoice = usePayInvoice();
+  const withdrawSats = useWithdrawSats();
   const validateAddress = useValidateAddress();
   const handleClose = () => {
     setInvoiceInput("");
     onCancel();
+    setStep(1);
   };
   const handleAddressValidation = (e: ChangeEvent<HTMLInputElement>) => {
     const lnAddress = e.target.value;
@@ -124,6 +132,96 @@ const WalletAlert = ({ isOpen, onCancel, refetch }: Props) => {
     );
   };
 
+  const handleWithdrawAmount = (e: ChangeEvent<HTMLInputElement>) => {
+    let sendingAmount = e.target.value;
+
+    if (sendingAmount.match(/^[0-9]+$/)) {
+      // turn into a number type
+      setAmountToSend(sendingAmount);
+    } else {
+      if (sendingAmount.length === 0) {
+        setAmountToSend("");
+      }
+    }
+  };
+
+  const handleWithdrawalValidation = () => {
+    const amountToSendParsed = +(amountToSend || 0);
+    const isWithinBalance = +amountToSendParsed <= +balance;
+    const minimumSendable = (lightningData?.minSendable || 1000) / 1000;
+    const maximumSendable = (lightningData?.maxSendable || 1000) / 1000;
+    const isWithinSendable =
+      +amountToSendParsed >= minimumSendable &&
+      amountToSendParsed <= maximumSendable;
+    setError("");
+    if (!isWithinBalance) {
+      setError("Error: send sats lower than balance");
+      return;
+    }
+
+    if (!isWithinSendable) {
+      setError("Error: send sats within range");
+      return;
+    }
+    payInvoice.mutate(
+      {
+        amount: amountToSend as string,
+        callbackUrl: lightningData?.callback as string,
+      },
+      {
+        onSuccess: (response) => {
+          if (
+            response?.response?.status >= 400 ||
+            response?.response?.status <= 500
+          ) {
+            toast({
+              title: "Error",
+              description:
+                response.response?.data?.message || "Something went wrong!",
+              status: "error",
+              duration: 9000,
+              isClosable: true,
+            });
+            return;
+          }
+          withdrawSats.mutate(
+            {
+              invoice: response?.pr || "",
+              userId: sessionDataId,
+            },
+            {
+              onSuccess: (response) => {
+                if (
+                  response?.response?.status >= 400 ||
+                  response?.response?.status <= 500
+                ) {
+                  toast({
+                    title: "Error",
+                    description:
+                      response.response.data.error || "Something went wrong!",
+                    status: "error",
+                    duration: 9000,
+                    isClosable: true,
+                  });
+                  return;
+                }
+                handleClose();
+                refetch();
+                toast({
+                  title: "Paid",
+                  description: "We've paid your invoice. Keep reviewing!",
+                  status: "success",
+                  duration: 9000,
+                  isClosable: true,
+                });
+                setStep(1);
+              },
+            }
+          );
+        },
+      }
+    );
+  };
   return (
     <AlertDialog
       isOpen={isOpen}
@@ -200,26 +298,38 @@ const WalletAlert = ({ isOpen, onCancel, refetch }: Props) => {
                     pr="4.5rem"
                     type="text"
                     placeholder="Enter amount to send"
+                    value={amountToSend}
+                    onChange={handleWithdrawAmount}
                   />
                   <InputRightElement width="4.5rem"></InputRightElement>
                 </InputGroup>
                 <Text mt="2" color="red" fontSize="sm">
                   {error}
                 </Text>
-                <Button
-                  colorScheme="orange"
-                  mt="4"
-                  size="md"
-                  disabled={
-                    payInvoice.isLoading ||
-                    invoiceInput === "" ||
-                    error.length > 1
-                  }
-                  isLoading={payInvoice.isLoading}
-                  onClick={handleValidation}
-                >
-                  Send
-                </Button>
+                <Flex gap={"2"}>
+                  <Button
+                    colorScheme="gray"
+                    mt="4"
+                    size="md"
+                    onClick={handleClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    colorScheme="orange"
+                    mt="4"
+                    size="md"
+                    disabled={
+                      payInvoice.isLoading ||
+                      invoiceInput === "" ||
+                      error.length > 1
+                    }
+                    isLoading={payInvoice.isLoading}
+                    onClick={handleWithdrawalValidation}
+                  >
+                    Send
+                  </Button>
+                </Flex>
               </Box>
             </AlertDialogBody>
           )}
