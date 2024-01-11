@@ -21,6 +21,13 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Tooltip,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
@@ -81,7 +88,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ? "btc transcript"
       : "user"
   );
-  const isFirstTime = router.query?.first_review === "true" ? true : false;
+
   const reviewSubmissionDisabled =
     !!reviewData.branchUrl && !!reviewData.pr_url;
 
@@ -183,7 +190,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const ghBranchUrl = reviewData.branchUrl;
   const ghSourcePath = transcriptData.transcriptUrl;
 
-  const saveTranscript = async (updatedContent: TranscriptContent) => {
+  const saveTranscript = async (
+    updatedContent: TranscriptContent,
+    onSuccessCallback?: () => void
+  ) => {
     // create an awaitable promise for mutation
 
     const newImplData = {
@@ -202,6 +212,15 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ghBranchUrl,
       reviewId: reviewData.id,
     };
+
+    const isPreviousHash = compareTranscriptBetweenSave(newImplData);
+    if (isPreviousHash) {
+      toast({
+        status: "warning",
+        title: "Unable to save because no edits have been made",
+      });
+      return;
+    }
 
     try {
       await mutateAsync(
