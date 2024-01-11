@@ -201,7 +201,9 @@ const Wallet = () => {
           filters={{ date: dateFilter, status: statusFilter, type: typeFilter }}
         />
       </Flex>
-      <WalletAlert isOpen={isOpen} onCancel={onClose} refetch={refetch} />
+      <WalletAlert 
+      balance={walletData?.balance ?? 0}
+      isOpen={isOpen} onCancel={onClose} refetch={refetch} />
     </>
   );
 };
