@@ -1,11 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function LighteningWithdraw(
+export default async function LightningWithdraw(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const amount = +req.body.amount ?? 0;
+  const amount = req.body.amount ?? 0;
   const callbackUrl = req.body.callbackUrl ?? "";
   try {
     const lightningResponse: AxiosResponse<any, any> = await axios.get(
