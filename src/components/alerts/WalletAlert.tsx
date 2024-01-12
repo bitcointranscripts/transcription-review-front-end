@@ -58,11 +58,9 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
   const sessionDataId = sessionData?.user?.id;
   const toast = useToast();
   const [invoiceInput, setInvoiceInput] = useState("");
-  const [amountToSend, setAmountToSend] = useState<number | string>();
+  const [amountToSend, setAmountToSend] = useState<number>();
   const [step, setStep] = useState(1);
-  const [lightningData, setLightningData] = useState<
-    LightningResponse | undefined
-  >();
+  const [lightningData, setLightningData] = useState<LightningResponse>();
   const [error, setError] = useState("");
 
   const payInvoice = usePayInvoice();
@@ -91,7 +89,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
       return;
     }
     if (!invoiceInput.match(/^[a-z0-9\-_.]+@[a-z0-9\-_.]+/)) {
-      setError("not a valid lightening address");
+      setError("not a valid lightning address");
       return;
     }
     validateAddress.mutate(
@@ -137,21 +135,21 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
 
     if (sendingAmount.match(/^[0-9]+$/)) {
       // turn into a number type
-      setAmountToSend(sendingAmount);
+      setAmountToSend(Number(sendingAmount));
     } else {
       if (sendingAmount.length === 0) {
-        setAmountToSend("");
+        setAmountToSend(undefined);
       }
     }
   };
 
   const handleWithdrawalValidation = () => {
-    const amountToSendParsed = +(amountToSend || 0);
+    const amountToSendParsed = Number(amountToSend || 0);
     const isWithinBalance = +amountToSendParsed <= +balance;
     const minimumSendable = (lightningData?.minSendable || 1000) / 1000;
     const maximumSendable = (lightningData?.maxSendable || 1000) / 1000;
     const isWithinSendable =
-      +amountToSendParsed >= minimumSendable &&
+      Number(amountToSendParsed) >= minimumSendable &&
       amountToSendParsed <= maximumSendable;
     setError("");
     if (!isWithinBalance) {
@@ -165,7 +163,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
     }
     payInvoice.mutate(
       {
-        amount: amountToSend as string,
+        amount: Number(amountToSend),
         callbackUrl: lightningData?.callback as string,
       },
       {

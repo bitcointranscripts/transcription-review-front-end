@@ -26,7 +26,7 @@ export const payInvoice = async ({
   amount,
   callbackUrl,
 }: {
-  amount: string;
+  amount: number;
   callbackUrl: string;
 }): Promise<any> => {
   return axiosBase
