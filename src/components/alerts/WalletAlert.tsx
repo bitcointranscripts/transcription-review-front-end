@@ -62,18 +62,63 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
   const [step, setStep] = useState(1);
   const [lightningData, setLightningData] = useState<LightningResponse>();
   const [error, setError] = useState("");
-
   const payInvoice = usePayInvoice();
   const withdrawSats = useWithdrawSats();
   const validateAddress = useValidateAddress();
+
+  // A Regex to check if the lightning address is valid
+  const lnAddressCheck = /^[a-z0-9\-_.]+@[a-z0-9\-_.]+/;
+
+  // A Regex to check if the lightning invoice is valid
+  const lnInvoiceCheck =
+    /^ln([a-z0-9]+)1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+[a-z0-9]?$/;
   const handleClose = () => {
     setInvoiceInput("");
     onCancel();
     setStep(1);
   };
+
+  // function to withdraw sats with invoice
+  const withdrawSatsWithInvoice = (invoice: string, userID: number) => {
+    withdrawSats.mutate(
+      {
+        invoice: invoice,
+        userId: userID,
+      },
+      {
+        onSuccess: (response) => {
+          if (
+            response?.response?.status >= 400 ||
+            response?.response?.status <= 500
+          ) {
+            toast({
+              title: "Error",
+              description:
+                response.response.data.error || "Something went wrong!",
+              status: "error",
+              duration: 9000,
+              isClosable: true,
+            });
+            return;
+          }
+          handleClose();
+          refetch();
+          toast({
+            title: "Paid",
+            description: "Payment successful. Keep reviewing!",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          });
+          setStep(1);
+        },
+      }
+    );
+  };
   const handleAddressValidation = (e: ChangeEvent<HTMLInputElement>) => {
     const lnAddress = e.target.value;
-    if (lnAddress.match(/^[a-z0-9\-_.]+@[a-z0-9\-_.]+/)) {
+
+    if (lnAddress.match(lnAddressCheck)) {
       setError("");
     }
     setInvoiceInput(e.target.value);
@@ -88,8 +133,12 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
     if (invoiceInput === "") {
       return;
     }
-    if (!invoiceInput.match(/^[a-z0-9\-_.]+@[a-z0-9\-_.]+/)) {
-      setError("not a valid lightning address");
+    if (invoiceInput.match(lnInvoiceCheck)) {
+      withdrawSatsWithInvoice(invoiceInput, sessionDataId as number);
+      return;
+    }
+    if (!invoiceInput.match(lnAddressCheck)) {
+      setError("not a valid lightning address / invoice");
       return;
     }
     validateAddress.mutate(
@@ -145,7 +194,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
 
   const handleWithdrawalValidation = () => {
     const amountToSendParsed = Number(amountToSend || 0);
-    const isWithinBalance = +amountToSendParsed <= +balance;
+    const isWithinBalance = Number(amountToSendParsed) <= Number(+balance);
     const minimumSendable = (lightningData?.minSendable || 1000) / 1000;
     const maximumSendable = (lightningData?.maxSendable || 1000) / 1000;
     const isWithinSendable =
@@ -153,12 +202,16 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
       amountToSendParsed <= maximumSendable;
     setError("");
     if (!isWithinBalance) {
-      setError("Error: send sats lower than balance");
+      setError(
+        "Insufficient balance: send sats lower than your wallet balance"
+      );
       return;
     }
 
     if (!isWithinSendable) {
-      setError("Error: send sats within range");
+      setError(
+        `Error: send sats within range of ${lightningData?.minSendable} and ${lightningData?.maxSendable}`
+      );
       return;
     }
     payInvoice.mutate(
@@ -183,40 +236,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
             });
             return;
           }
-          withdrawSats.mutate(
-            {
-              invoice: response?.pr,
-              userId: sessionDataId,
-            },
-            {
-              onSuccess: (response) => {
-                if (
-                  response?.response?.status >= 400 ||
-                  response?.response?.status <= 500
-                ) {
-                  toast({
-                    title: "Error",
-                    description:
-                      response.response.data.error || "Something went wrong!",
-                    status: "error",
-                    duration: 9000,
-                    isClosable: true,
-                  });
-                  return;
-                }
-                handleClose();
-                refetch();
-                toast({
-                  title: "Paid",
-                  description: "We've paid your invoice. Keep reviewing!",
-                  status: "success",
-                  duration: 9000,
-                  isClosable: true,
-                });
-                setStep(1);
-              },
-            }
-          );
+          withdrawSatsWithInvoice(response.pr, sessionDataId as number);
         },
       }
     );
