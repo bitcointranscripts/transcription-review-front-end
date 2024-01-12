@@ -169,6 +169,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
       {
         onSuccess: (response) => {
           if (
+            response?.pr ||
             response?.response?.status >= 400 ||
             response?.response?.status <= 500
           ) {
@@ -184,7 +185,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
           }
           withdrawSats.mutate(
             {
-              invoice: response?.pr || "",
+              invoice: response?.pr,
               userId: sessionDataId,
             },
             {
