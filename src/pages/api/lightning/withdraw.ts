@@ -16,8 +16,8 @@ export default async function LightningWithdraw(
     );
     res.status(200).json(lightningResponse.data);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: error?.message || `could not withdraw sats` });
+    res.status(500).json({
+      message: error?.message || `unable to make payment, try again later`,
+    });
   }
 }
