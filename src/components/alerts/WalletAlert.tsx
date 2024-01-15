@@ -94,7 +94,8 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
             toast({
               title: "Error",
               description:
-                response.response.data.error || "Something went wrong!",
+                response.response.data.error ||
+                "unable to make payment, try again later",
               status: "error",
               duration: 9000,
               isClosable: true,
