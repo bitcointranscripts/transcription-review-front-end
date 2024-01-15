@@ -222,7 +222,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
       {
         onSuccess: (response) => {
           if (
-            response?.pr ||
+            !response?.pr ||
             response?.response?.status >= 400 ||
             response?.response?.status <= 500
           ) {
@@ -260,7 +260,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
                     width={"500px"}
                     pr="4.5rem"
                     type="text"
-                    placeholder="Enter a lightning address"
+                    placeholder="Enter a lightning address or invoice"
                     value={invoiceInput}
                     disabled={validateAddress.isLoading}
                     onChange={handleAddressValidation}
