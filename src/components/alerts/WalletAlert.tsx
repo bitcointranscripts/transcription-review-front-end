@@ -284,7 +284,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
                     invoiceInput === "" ||
                     error.length > 1
                   }
-                  isLoading={payInvoice.isLoading || withdrawSats.isLoading}
+                  isLoading={payInvoice.isLoading}
                   onClick={handleValidation}
                 >
                   Submit
@@ -344,7 +344,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
                       invoiceInput === "" ||
                       error.length > 1
                     }
-                    isLoading={payInvoice.isLoading}
+                    isLoading={payInvoice.isLoading || withdrawSats.isLoading}
                     onClick={handleWithdrawalValidation}
                   >
                     Send
