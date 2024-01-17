@@ -184,24 +184,6 @@ const QueueTable = () => {
                 if (!reviewId) {
                   throw new Error("failed to claim transcript");
                 }
-                // Fork repo
-                const forkResult = await axios.post("/api/github/fork");
-                const owner =
-                  process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
-                    ? forkResult.data.owner.login
-                    : upstreamOwner;
-
-                if (transcript && transcript.transcriptUrl) {
-                  try {
-                    await axios.post("/api/github/newBranch", {
-                      reviewId,
-                      ghSourcePath: transcript.transcriptUrl,
-                      owner,
-                    });
-                  } catch (err) {
-                    console.error(err);
-                  }
-                }
 
                 setClaimState((prev) => ({ ...prev, rowId: -1 }));
                 if (data instanceof Error) {
