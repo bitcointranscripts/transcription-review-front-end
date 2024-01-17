@@ -6,10 +6,12 @@ import endpoints from "../endpoints";
 const claimTranscript = async (body: {
   userId: number;
   transcriptId: number;
+  branchUrl?: string;
 }): Promise<Review> => {
   return axios
     .put(endpoints.CLAIM_TRANSCRIPT(body.transcriptId), {
       claimedBy: body.userId,
+      branchUrl: body.branchUrl,
     })
     .then((res) => {
       return res.data;

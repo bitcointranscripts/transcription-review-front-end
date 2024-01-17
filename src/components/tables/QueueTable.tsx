@@ -139,33 +139,46 @@ const QueueTable = () => {
       if (session?.user?.id) {
         setClaimState((prev) => ({ ...prev, rowId: transcriptId }));
 
+        // Fork repo
+        const forkResult = await axios.post("/api/github/fork");
+        const owner = forkResult.data.owner.login;
+
+        const env_owner =
+          process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+            ? forkResult.data.owner.login
+            : upstreamOwner;
+
+        let branchUrl;
+
+        if (transcript && transcript.transcriptUrl) {
+          try {
+            await axios
+              .post("/api/github/newBranch", {
+                ghSourcePath: transcript.transcriptUrl,
+                owner,
+                env_owner,
+              })
+              .then((res) => {
+                branchUrl = res.data.branchUrl;
+              })
+              .catch((err) => {
+                throw err;
+              });
+          } catch (err: any) {
+            console.error(err);
+            throw new Error(err.message);
+          }
+        }
+
         // Claim transcript
         claimTranscript.mutate(
-          { userId: session.user.id, transcriptId },
+          { userId: session.user.id, transcriptId, branchUrl },
           {
             onSuccess: async (data) => {
               try {
                 const reviewId = data.id;
                 if (!reviewId) {
                   throw new Error("failed to claim transcript");
-                }
-                // Fork repo
-                const forkResult = await axios.post("/api/github/fork");
-                const owner =
-                  process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
-                    ? forkResult.data.owner.login
-                    : upstreamOwner;
-
-                if (transcript && transcript.transcriptUrl) {
-                  try {
-                    await axios.post("/api/github/newBranch", {
-                      reviewId,
-                      ghSourcePath: transcript.transcriptUrl,
-                      owner,
-                    });
-                  } catch (err) {
-                    console.error(err);
-                  }
                 }
 
                 setClaimState((prev) => ({ ...prev, rowId: -1 }));
@@ -193,7 +206,7 @@ const QueueTable = () => {
         await retryLoginAndClaim(transcriptId);
       }
     },
-    [status, session?.user?.id, claimTranscript, router, toast]
+    [status, session?.user?.id, claimTranscript, router, toast, data]
   );
   // updated totalPages if data changes
   useEffect(() => {
