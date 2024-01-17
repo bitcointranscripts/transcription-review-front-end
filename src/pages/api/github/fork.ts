@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getSession } from "next-auth/react";
 import { Octokit } from "@octokit/core";
 import { upstreamOwner, upstreamRepo } from "@/config/default";
+import { auth } from "../auth/[...nextauth]";
 
 export async function createFork(octokit: InstanceType<typeof Octokit>) {
   // Fork the repository
@@ -18,7 +18,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   // Check if the user is authenticated
-  const session = await getSession({ req });
+  const session = await auth(req, res);
   if (!session || !session.accessToken || !session.user?.githubUsername) {
     return res.status(401).json({ message: "Unauthorized" });
   }
