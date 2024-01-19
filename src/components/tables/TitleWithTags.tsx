@@ -40,7 +40,7 @@ const TitleWithTags = ({
     <Td width="40%">
       <Flex gap={2} flexDir="column">
         <Box>
-          <Link href={`${base_url}${loc}`}>
+          <Link target="_blank" rel="noopener" href={`${base_url}${loc}`}>
             <Text>{title}</Text>
           </Link>
           <Text fontSize={["0.7rem"]} color="gray.500">
