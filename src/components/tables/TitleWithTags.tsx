@@ -6,6 +6,8 @@ import {
 import { Box, Flex, Td, Text } from "@chakra-ui/react";
 import Link from "next/link";
 
+import config from "@/config/config.json";
+
 type TitleWithTagsProps = {
   title: string;
   id: number;
@@ -32,12 +34,13 @@ const TitleWithTags = ({
     (trs) => trs.slug.toLowerCase() === stringCategories.toLocaleLowerCase()
   );
   const tags = shouldSlice ? allTags.slice(0, 1) : allTags;
+  const base_url = config.btctranscripts_base_url;
 
   return (
     <Td width="40%">
       <Flex gap={2} flexDir="column">
         <Box>
-          <Link href={`https://btctranscripts.com/${loc}`}>
+          <Link href={`${base_url}${loc}`}>
             <Text>{title}</Text>
           </Link>
           <Text fontSize={["0.7rem"]} color="gray.500">
