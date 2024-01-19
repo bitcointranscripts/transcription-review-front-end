@@ -4,6 +4,7 @@ import {
   transcriptsCategories,
 } from "@/utils";
 import { Box, Flex, Td, Text } from "@chakra-ui/react";
+import Link from "next/link";
 
 type TitleWithTagsProps = {
   title: string;
@@ -36,7 +37,9 @@ const TitleWithTags = ({
     <Td width="40%">
       <Flex gap={2} flexDir="column">
         <Box>
-          <Text>{title}</Text>
+          <Link href={`https://btctranscripts.com/${loc}`}>
+            <Text>{title}</Text>
+          </Link>
           <Text fontSize={["0.7rem"]} color="gray.500">
             {loc}
           </Text>
