@@ -85,7 +85,7 @@ export class Metadata {
     // eslint-disable-next-line prettier/prettier
     this.metaData =
       `---\n` +
-      `title: ${fileTitle}\n` +
+      `title: "${fileTitle}"\n` +
       `transcript_by: ${transcript_by} via ${config.app_tag}\n`;
 
     this.metaData += `media: ${url}\n`;
