@@ -243,6 +243,7 @@ const QueueTable = () => {
                 allTags={allTags}
                 categories={data.content.categories}
                 loc={data.content.loc}
+                transcriptUrl={data.transcriptUrl}
                 id={data.id}
                 length={allTags.length}
                 shouldSlice={false}
