@@ -1,15 +1,30 @@
+import { Box, Flex, Td, Text } from "@chakra-ui/react";
+import Link from "next/link";
+
 import {
   convertStringToArray,
   tagColors,
   transcriptsCategories,
 } from "@/utils";
-import { Box, Flex, Td, Text } from "@chakra-ui/react";
+import config from "@/config/config.json";
+import { resolveGHApiUrl } from "@/utils/github";
+
+
+const resolveTranscriptUrl = (transcriptUrl: string | null) => {
+  if (transcriptUrl) {
+    const { filePath, srcDirPath } = resolveGHApiUrl(transcriptUrl)
+    // btctranscripts.com url for this transcript
+    return { url: `${config.btctranscripts_base_url}${filePath.slice(0, -3)}`, loc: srcDirPath }
+  }
+  return null
+}
 
 type TitleWithTagsProps = {
   title: string;
   id: number;
   categories: string | string[];
   loc?: string;
+  transcriptUrl?: string | null;
   allTags: string[];
   length: number;
   shouldSlice?: boolean;
@@ -19,6 +34,7 @@ const TitleWithTags = ({
   allTags,
   categories,
   loc,
+  transcriptUrl = null,
   id,
   length,
   shouldSlice = true,
@@ -31,14 +47,20 @@ const TitleWithTags = ({
     (trs) => trs.slug.toLowerCase() === stringCategories.toLocaleLowerCase()
   );
   const tags = shouldSlice ? allTags.slice(0, 1) : allTags;
+  const transcript = resolveTranscriptUrl(transcriptUrl)
 
   return (
     <Td width="40%">
       <Flex gap={2} flexDir="column">
         <Box>
-          <Text>{title}</Text>
+          {!transcript && <Text>{title}</Text>}
+          {transcript && (
+            <Link target="_blank" rel="noopener" href={transcript.url}>
+              <Text>{title}</Text>
+            </Link>
+          )}
           <Text fontSize={["0.7rem"]} color="gray.500">
-            {loc}
+            {transcript ? transcript.loc : loc}
           </Text>
         </Box>
         <Flex wrap="wrap" gap={2} alignItems="center">
