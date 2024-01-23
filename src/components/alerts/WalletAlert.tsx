@@ -58,7 +58,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
   const sessionDataId = sessionData?.user?.id;
   const toast = useToast();
   const [invoiceInput, setInvoiceInput] = useState("");
-  const [amountToSend, setAmountToSend] = useState<number>();
+  const [amountToSend, setAmountToSend] = useState<number>(0);
   const [step, setStep] = useState(1);
   const [lightningData, setLightningData] = useState<LightningResponse>();
   const [error, setError] = useState("");
@@ -188,14 +188,14 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
       setAmountToSend(Number(sendingAmount));
     } else {
       if (sendingAmount.length === 0) {
-        setAmountToSend(undefined);
+        setAmountToSend(0);
       }
     }
   };
 
   const handleWithdrawalValidation = () => {
     const amountToSendParsed = Number(amountToSend || 0);
-    const isWithinBalance = Number(amountToSendParsed) <= Number(+balance);
+    const isWithinBalance = Number(amountToSendParsed) <= Number(balance);
     const minimumSendable = (lightningData?.minSendable || 1000) / 1000;
     const maximumSendable = (lightningData?.maxSendable || 1000) / 1000;
     const isWithinSendable =
@@ -211,7 +211,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
 
     if (!isWithinSendable) {
       setError(
-        `Error: send sats within range of ${lightningData?.minSendable} and ${lightningData?.maxSendable}`
+        `Error: send sats within range of ${minimumSendable} and ${maximumSendable}`
       );
       return;
     }
