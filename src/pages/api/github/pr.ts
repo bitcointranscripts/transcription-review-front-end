@@ -346,6 +346,20 @@ async function createForkAndPR(
   // const _trimmedFileName = fileName.trim();
   const fileSlug = deriveFileSlug(fileName);
 
+  let fileToUpdateSha = "";
+  await octokit
+    .request("GET /repos/{owner}/{repo}/contents/{path}", {
+      owner: forkOwner,
+      repo: forkRepo,
+      path: `${directoryPath}/${fileSlug}.md`,
+      ref: newBranchName,
+    })
+    .then((res) => {
+      const data = res.data as { sha: string };
+      fileToUpdateSha = data.sha;
+    })
+    .catch((err) => {});
+
   await octokit
     .request("PUT /repos/:owner/:repo/contents/:path", {
       owner: forkOwner,
@@ -354,6 +368,7 @@ async function createForkAndPR(
       message: `Added "${metaData.fileTitle}" transcript submitted by ${forkOwner}`,
       content: fileContent,
       branch: newBranchName,
+      sha: fileToUpdateSha || undefined,
     })
     .then()
     .catch((_err) => {
