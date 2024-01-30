@@ -27,6 +27,7 @@ import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
 import Image from "next/image";
 import { upstreamOwner } from "@/config/default";
+import { useUserMultipleReviews } from "@/services/api/reviews";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -105,6 +106,10 @@ const QueueTable = () => {
 
   const [claimState, setClaimState] = useState({
     rowId: -1,
+  });
+  const { data: multipleStatusData } = useUserMultipleReviews({
+    userId: session?.user?.id,
+    multipleStatus: ["pending", "active", "inactive"],
   });
 
   const retryLoginAndClaim = async (transcriptId: number) => {
@@ -186,7 +191,11 @@ const QueueTable = () => {
                   await retryLoginAndClaim(transcriptId);
                   return;
                 }
-                router.push(`/reviews/${data.id}`);
+                if (multipleStatusData.length > 0) {
+                  router.push(`/reviews/${data.id}`);
+                } else {
+                  router.push(`/reviews/${data.id}?first-review=true`);
+                }
               } catch (err) {
                 console.error(err);
               }

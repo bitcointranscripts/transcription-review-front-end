@@ -28,6 +28,7 @@ import { useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
 import type { TranscriptContent, UserReviewData } from "../../../types";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
+import ReviewGuidelinesAlert from "../alerts/ReviewGuidelinesAlert";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -379,6 +380,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         onCancel={onClose}
         onSubmit={handleSubmit}
       />
+      <ReviewGuidelinesAlert isOpen={true} onCancel={() => {}} />
     </>
   );
 };
