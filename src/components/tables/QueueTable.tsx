@@ -194,7 +194,7 @@ const QueueTable = () => {
                 if (multipleStatusData.length > 0) {
                   router.push(`/reviews/${data.id}`);
                 } else {
-                  router.push(`/reviews/${data.id}?first-review=true`);
+                  router.push(`/reviews/${data.id}?first_review=true`);
                 }
               } catch (err) {
                 console.error(err);

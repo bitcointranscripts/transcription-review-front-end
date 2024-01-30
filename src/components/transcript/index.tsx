@@ -24,7 +24,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
 import type { TranscriptContent, UserReviewData } from "../../../types";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
@@ -81,7 +81,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ? "btc transcript"
       : "user"
   );
-
+  const isFirstTime = router.query?.first_review === "true" ? true : false;
   const reviewSubmissionDisabled =
     !!reviewData.branchUrl && !!reviewData.pr_url;
 
@@ -129,7 +129,11 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const editorRef = useRef<MdEditor | null>(null);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const {
+    isOpen: guidelinesIsOpen,
+    onOpen: guidelinesOnOpen,
+    onClose: guidelinesOnClose,
+  } = useDisclosure();
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
     editorRef.current?.setText(transcriptData.originalContent?.body);
@@ -179,6 +183,11 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const ghBranchUrl = reviewData.branchUrl;
   const ghSourcePath = transcriptData.transcriptUrl;
 
+  useEffect(() => {
+    if (isFirstTime) {
+      guidelinesOnOpen();
+    }
+  }, [isFirstTime]);
   const saveTranscript = async (
     updatedContent: TranscriptContent,
     onSuccessCallback?: () => void
@@ -370,6 +379,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           mdData={editedData}
           update={setEditedData}
           editorRef={editorRef}
+          openGuidelines={guidelinesOnOpen}
           restoreOriginal={restoreOriginal}
         />
       </Flex>
@@ -380,7 +390,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         onCancel={onClose}
         onSubmit={handleSubmit}
       />
-      <ReviewGuidelinesAlert isOpen={true} onCancel={() => {}} />
+      <ReviewGuidelinesAlert
+        isOpen={guidelinesIsOpen}
+        onCancel={guidelinesOnClose}
+      />
     </>
   );
 };

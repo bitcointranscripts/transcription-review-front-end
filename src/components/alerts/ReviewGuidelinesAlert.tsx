@@ -1,10 +1,4 @@
-import { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Button,
   Flex,
   ListItem,
@@ -16,7 +10,7 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { forwardRef, useRef } from "react";
 
 type Props = {
@@ -28,9 +22,10 @@ type GuidelinesContentProps = Omit<Props, "isOpen">;
 
 const ReviewGuidelinesAlert = ({ isOpen, onCancel }: Props) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
-
+  const router = useRouter();
   const handleClose = () => {
     onCancel();
+    router.query.first_review = "false";
   };
 
   return (
@@ -42,7 +37,7 @@ const ReviewGuidelinesAlert = ({ isOpen, onCancel }: Props) => {
           position={"relative"}
           overflowY={"auto"}
         >
-          <GuidelinesContent onCancel={onCancel} ref={cancelRef} />
+          <GuidelinesContent onCancel={handleClose} ref={cancelRef} />
         </ModalContent>
       </ModalOverlay>
     </Modal>
