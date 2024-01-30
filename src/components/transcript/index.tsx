@@ -188,6 +188,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       guidelinesOnOpen();
     }
   }, [isFirstTime]);
+
   const saveTranscript = async (
     updatedContent: TranscriptContent,
     onSuccessCallback?: () => void

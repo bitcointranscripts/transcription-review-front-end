@@ -15,6 +15,7 @@ import { forwardRef, useRef } from "react";
 
 type Props = {
   isOpen: boolean;
+  isFirstTime?: boolean;
   onCancel: () => void;
 };
 
@@ -23,13 +24,18 @@ type GuidelinesContentProps = Omit<Props, "isOpen">;
 const ReviewGuidelinesAlert = ({ isOpen, onCancel }: Props) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
+  const isFirstTime = router.query.first_review === "true" ? true : false;
   const handleClose = () => {
     onCancel();
     router.query.first_review = "false";
   };
 
   return (
-    <Modal size={"2xl"} isOpen={isOpen} onClose={handleClose}>
+    <Modal
+      size={"2xl"}
+      isOpen={isOpen}
+      onClose={!isFirstTime ? handleClose : () => {}}
+    >
       <ModalOverlay>
         <ModalContent
           maxH={"600px"}
@@ -37,7 +43,11 @@ const ReviewGuidelinesAlert = ({ isOpen, onCancel }: Props) => {
           position={"relative"}
           overflowY={"auto"}
         >
-          <GuidelinesContent onCancel={handleClose} ref={cancelRef} />
+          <GuidelinesContent
+            onCancel={handleClose}
+            ref={cancelRef}
+            isFirstTime={isFirstTime}
+          />
         </ModalContent>
       </ModalOverlay>
     </Modal>
@@ -47,7 +57,7 @@ const ReviewGuidelinesAlert = ({ isOpen, onCancel }: Props) => {
 export default ReviewGuidelinesAlert;
 
 const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
-  ({ onCancel }, ref) => {
+  ({ onCancel, isFirstTime }, ref) => {
     return (
       <>
         <ModalHeader px={5} fontSize="lg" fontWeight="bold">
@@ -191,25 +201,27 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
             </UnorderedList>
           </Flex>
 
-          <Flex
-            position={"sticky"}
-            bottom={"0px"}
-            width={"100%"}
-            py={2}
-            backgroundColor={"white"}
-            direction="column"
-            gap={3}
-          >
-            <Button
-              size="sm"
-              colorScheme="orange"
-              mx="auto"
-              ref={ref}
-              onClick={onCancel}
+          {isFirstTime && (
+            <Flex
+              position={"sticky"}
+              bottom={"0px"}
+              width={"100%"}
+              py={2}
+              backgroundColor={"white"}
+              direction="column"
+              gap={3}
             >
-              Got it, ready for review!
-            </Button>
-          </Flex>
+              <Button
+                size="sm"
+                colorScheme="orange"
+                mx="auto"
+                ref={ref}
+                onClick={onCancel}
+              >
+                Got it, ready for review!
+              </Button>
+            </Flex>
+          )}
         </ModalBody>
       </>
     );
