@@ -28,7 +28,7 @@ import { useEffect, useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
 import type { TranscriptContent, UserReviewData } from "../../../types";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
-import ReviewGuidelinesAlert from "../alerts/ReviewGuidelinesAlert";
+import ReviewGuidelinesAlert from "../modals/ReviewGuidelinesAlert";
 
 const defaultSubmitState = {
   stepIdx: 0,

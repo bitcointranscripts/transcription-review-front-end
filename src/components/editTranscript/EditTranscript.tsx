@@ -16,6 +16,8 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { MutableRefObject, useEffect, useState } from "react";
 import MarkdownIt from "markdown-it";
+import { FaBook } from "react-icons/fa";
+import { MdBook } from "react-icons/md";
 
 // Interfaces for react-markdown-editior
 export interface IHandleEditorChange {
@@ -101,10 +103,11 @@ const EditTranscript = ({
               onClick={openGuidelines}
               size="xs"
               ml="auto"
-              display="block"
+              display="flex"
+              gap={"4px"}
               variant="solid"
             >
-              Review Guidelines
+              <FaBook /> Review Guidelines
             </Button>
           </Box>
 
