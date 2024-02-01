@@ -88,7 +88,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ? "btc transcript"
       : "user"
   );
-
+  const isFirstTime = router.query?.first_review === "true" ? true : false;
   const reviewSubmissionDisabled =
     !!reviewData.branchUrl && !!reviewData.pr_url;
 
@@ -189,6 +189,12 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
 
   const ghBranchUrl = reviewData.branchUrl;
   const ghSourcePath = transcriptData.transcriptUrl;
+
+  useEffect(() => {
+    if (isFirstTime) {
+      guidelinesOnOpen();
+    }
+  }, [isFirstTime]);
 
   const saveTranscript = async (
     updatedContent: TranscriptContent,
