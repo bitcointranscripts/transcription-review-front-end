@@ -25,7 +25,7 @@ type Props = {
 
 type GuidelinesContentProps = Omit<Props, "isOpen">;
 
-const ReviewGuidelinesAlert = ({ isOpen, onCancel }: Props) => {
+const ReviewGuidelinesModal = ({ isOpen, onCancel }: Props) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const isFirstTime = router.query.first_review === "true" ? true : false;
@@ -59,7 +59,7 @@ const ReviewGuidelinesAlert = ({ isOpen, onCancel }: Props) => {
   );
 };
 
-export default ReviewGuidelinesAlert;
+export default ReviewGuidelinesModal;
 
 const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
   ({ onCancel, isFirstTime }, ref) => {

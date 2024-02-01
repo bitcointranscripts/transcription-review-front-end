@@ -4,6 +4,7 @@ import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscrip
 import SubmitTranscriptMenu from "@/components/menus/SubmitTranscriptMenu";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
+import ReviewGuidelinesModal from "@/components/modals/ReviewGuidelinesModal";
 import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
 import config from "@/config/config.json";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
@@ -28,7 +29,6 @@ import { useEffect, useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
 import type { TranscriptContent, UserReviewData } from "../../../types";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
-import ReviewGuidelinesAlert from "../modals/ReviewGuidelinesAlert";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -391,7 +391,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         onCancel={onClose}
         onSubmit={handleSubmit}
       />
-      <ReviewGuidelinesAlert
+      <ReviewGuidelinesModal
         isOpen={guidelinesIsOpen}
         onCancel={guidelinesOnClose}
       />
