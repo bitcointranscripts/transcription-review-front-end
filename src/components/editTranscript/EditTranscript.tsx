@@ -17,7 +17,6 @@ import "react-markdown-editor-lite/lib/index.css";
 import { MutableRefObject, useEffect, useState } from "react";
 import MarkdownIt from "markdown-it";
 import { FaBook } from "react-icons/fa";
-import { MdBook } from "react-icons/md";
 
 // Interfaces for react-markdown-editior
 export interface IHandleEditorChange {
