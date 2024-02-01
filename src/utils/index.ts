@@ -341,7 +341,7 @@ export const whyConsiderEdit = [
 // GUIDELINES REVIEW DATA
 export const guidelinesReviewArray = [
   {
-    heading: "Transcription Style:",
+    heading: "Transcription Style",
     paragraphs: [
       'Aim for an "edited transcription" style, preserving text meaning without paraphrasing.',
       "Omit stammering, filler words ('like,' 'you know'), and unnecessary non-verbal communication.",
@@ -349,7 +349,7 @@ export const guidelinesReviewArray = [
     ],
   },
   {
-    heading: "Transcript Structure:",
+    heading: "Transcript Structure",
     paragraphs: [
       'Maintain original "one-sentence-per-line" formatting and timestamps.',
       "Ensure coherent paragraphing around chapter titles and speaker timestamps.",
@@ -357,33 +357,31 @@ export const guidelinesReviewArray = [
     ],
   },
   {
-    heading: "Chapters:",
+    heading: "Chapters",
     paragraphs: [
-      "Include relevant chapters that break the transcript into manageable segments, ensuring coherence and flow.",
+      "Break the transcript into manageable segments using your familiarity with the material.",
       "Utilize source materials (slides, video description, content) to derive and integrate chapters.",
-      "Start chapters with H2 formatting, title is automatically rendered as H1",
+      "Start chapters with H2 formatting, title is automatically rendered as H1.",
     ],
   },
   {
-    heading: "Accuracy:",
+    heading: "Accuracy",
     paragraphs: [
-      "Identify and fix AI transcription errors, especially related to technical terms and Bitcoin-specific jargon.",
-      "Ensure code-related technical terms or math equations are enclosed in backticks (`) to enhance clarity.",
+      "Identify and fix AI transcription errors, especially related to technical and Bitcoin-specific jargon.",
+      "Ensure code-related technical terms or math equations are `enclosed in backticks`.",
     ],
   },
   {
-    heading: "Speaker Attribution:",
+    heading: "Speaker Attribution",
     paragraphs: [
       "Accurately attribute speakers, preventing potential mix-ups or merging of dialogue caused by AI transcription errors.",
-      'Use square brackets for infrequent speaker contributions (e.g. [Audience]: "Hello world")"',
-      "Maintain completeness while ensuring readability by eliminating mid-sentence rephrasings and non-essential lines.",
+      'Use square brackets for infrequent speaker contributions (e.g. [Audience]: "Hello world").',
     ],
   },
   {
-    heading: "Final Review:",
+    heading: "Final Review",
     paragraphs: [
       "Upon completion, read through the entire transcript for coherence and readability.",
-      "Add relevant tags and precise metadata (title, speaker names, date) to aid content discoverability.",
       "Leverage your familiarity with the material to identify appropriate tags.",
     ],
   },

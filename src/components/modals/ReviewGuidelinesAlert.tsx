@@ -6,6 +6,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
@@ -36,6 +37,7 @@ const ReviewGuidelinesAlert = ({ isOpen, onCancel }: Props) => {
       size={"2xl"}
       isOpen={isOpen}
       onClose={!isFirstTime ? handleClose : () => {}}
+      autoFocus={false}
     >
       <ModalOverlay>
         <ModalContent
@@ -61,55 +63,53 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
   ({ onCancel, isFirstTime }, ref) => {
     return (
       <>
-        <ModalHeader px={5} fontSize="lg" fontWeight="bold">
+        <ModalHeader fontSize="2xl" fontWeight="bold">
           Review Guidelines
         </ModalHeader>
-        <ModalBody p={0}>
-          <Text fontSize={"sm"} px={5} pb={2}>
-            To ensure a shared quality of transcripts, please review and make
-            sure you meet the following guidelines:
-          </Text>
-          {guidelinesReviewArray.map((guideline) => (
-            <Flex
-              key={guideline.heading}
-              my={2}
-              flexDir={"column"}
-              px={5}
-              gap={2}
-            >
-              <Text>{guideline.heading}</Text>
-              <UnorderedList pl={3} color="gray.700" fontSize="14px">
-                {guideline.paragraphs.map((paragraph) => (
-                  <ListItem key={paragraph}>
-                    <Text>{paragraph}</Text>
-                  </ListItem>
-                ))}
-              </UnorderedList>
-            </Flex>
-          ))}
-
-          {isFirstTime && (
-            <Flex
-              position={"sticky"}
-              bottom={"0px"}
-              width={"100%"}
-              py={2}
-              backgroundColor={"white"}
-              direction="column"
-              gap={3}
-            >
-              <Button
-                size="sm"
-                colorScheme="orange"
-                mx="auto"
-                ref={ref}
-                onClick={onCancel}
+        <ModalBody>
+          <Flex
+            flexDir={"column"}
+            gap={2}
+          >
+            <Text>
+              To ensure a shared quality of transcripts, please
+              follow the guidelines below
+            </Text>
+            {guidelinesReviewArray.map((guideline) => (
+              <Flex
+                key={guideline.heading}
+                flexDir={"column"}
+                gap={2}
               >
-                Got it, ready for review!
-              </Button>
-            </Flex>
-          )}
+                <Text fontWeight="bold">{guideline.heading}</Text>
+                <UnorderedList pl={3} color="gray.700" fontSize="14px">
+                  {guideline.paragraphs.map((paragraph) => (
+                    <ListItem key={paragraph}>
+                      <Text>{paragraph}</Text>
+                    </ListItem>
+                  ))}
+                </UnorderedList>
+
+              </Flex>
+            ))}
+          </Flex>
         </ModalBody>
+
+        {isFirstTime && (
+          <ModalFooter
+          >
+            <Button
+              size="sm"
+              colorScheme="orange"
+              mx="auto"
+              ref={ref}
+              onClick={onCancel}
+            >
+              Got it, ready for review!
+            </Button>
+          </ModalFooter>
+        )}
+
       </>
     );
   }
