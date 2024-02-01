@@ -4,6 +4,7 @@ import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscrip
 import SubmitTranscriptMenu from "@/components/menus/SubmitTranscriptMenu";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
+import ReviewGuidelinesModal from "@/components/modals/ReviewGuidelinesModal";
 import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
 import config from "@/config/config.json";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
@@ -13,14 +14,21 @@ import {
   formatDataForMetadata,
   reconcileArray,
 } from "@/utils";
-import { Button, Flex, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Tooltip,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
 import type { TranscriptContent, UserReviewData } from "../../../types";
+import { compareTranscriptBetweenSave } from "@/utils/transcript";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -73,6 +81,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ? "btc transcript"
       : "user"
   );
+  const isFirstTime = router.query?.first_review === "true" ? true : false;
+  const reviewSubmissionDisabled =
+    !!reviewData.branchUrl && !!reviewData.pr_url;
+
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
@@ -117,7 +129,11 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const editorRef = useRef<MdEditor | null>(null);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const {
+    isOpen: guidelinesIsOpen,
+    onOpen: guidelinesOnOpen,
+    onClose: guidelinesOnClose,
+  } = useDisclosure();
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
     editorRef.current?.setText(transcriptData.originalContent?.body);
@@ -164,11 +180,50 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     return updatedContent;
   };
 
-  const saveTranscript = async (updatedContent: TranscriptContent) => {
+  const ghBranchUrl = reviewData.branchUrl;
+  const ghSourcePath = transcriptData.transcriptUrl;
+
+  useEffect(() => {
+    if (isFirstTime) {
+      guidelinesOnOpen();
+    }
+  }, [isFirstTime]);
+
+  const saveTranscript = async (
+    updatedContent: TranscriptContent,
+    onSuccessCallback?: () => void
+  ) => {
     // create an awaitable promise for mutation
+
+    const newImplData = {
+      directoryPath: updatedContent.loc?.trim() ?? "",
+      fileName: formatDataForMetadata(updatedContent.title),
+      url: transcriptData?.content.media,
+      date: updatedContent.date && dateFormatGeneral(updatedContent.date, true),
+      tags: formatDataForMetadata(updatedContent.tags),
+      speakers: formatDataForMetadata(updatedContent.speakers),
+      categories: formatDataForMetadata(updatedContent.categories),
+      transcribedText: updatedContent.body,
+      transcript_by: formatDataForMetadata(
+        userSession?.user?.githubUsername ?? ""
+      ),
+      ghSourcePath,
+      ghBranchUrl,
+      reviewId: reviewData.id,
+    };
+
+    const isPreviousHash = compareTranscriptBetweenSave(newImplData);
+    if (isPreviousHash) {
+      toast({
+        status: "warning",
+        title: "Unable to save because no edits have been made",
+      });
+      return;
+    }
+
     try {
       await mutateAsync(
-        { content: updatedContent, transcriptId },
+        { content: updatedContent, transcriptId, newImplData },
         {
           onSettled(data) {
             if (data?.statusText === "OK") {
@@ -178,18 +233,21 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           },
         }
       );
+      onSuccessCallback && onSuccessCallback();
     } catch (error) {
       throw error;
     }
   };
 
   const handleSave = async () => {
-    try {
-      await saveTranscript(getUpdatedContent());
+    const onSuccessCallback = () => {
       toast({
         status: "success",
         title: "Saved successfully",
       });
+    };
+    try {
+      await saveTranscript(getUpdatedContent(), onSuccessCallback);
     } catch (err: any) {
       toast({
         status: "error",
@@ -232,6 +290,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           userSession?.user?.githubUsername ?? ""
         ),
         prRepo,
+        ghSourcePath,
+        ghBranchUrl,
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
       localStorage.removeItem("oldDirectoryList");
@@ -289,20 +349,24 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
               >
                 Save
               </Button>
-              <Flex
-                overflow="hidden"
-                borderRadius="md"
-                bg="orange.500"
-                dir="row"
-              >
-                <Button
-                  borderRadius="none"
-                  size="sm"
-                  colorScheme="orange"
-                  onClick={onOpen}
+              <Flex overflow="hidden" borderRadius="md" dir="row">
+                <Tooltip
+                  label={
+                    reviewSubmissionDisabled
+                      ? "You cannot resubmit a submitted review, instead use save to update your submission"
+                      : undefined
+                  }
                 >
-                  Submit {isAdmin ? `(${prRepo})` : ""}
-                </Button>
+                  <Button
+                    borderRadius="none"
+                    size="sm"
+                    colorScheme="orange"
+                    onClick={onOpen}
+                    isDisabled={reviewSubmissionDisabled}
+                  >
+                    Submit {isAdmin ? `(${prRepo})` : ""}
+                  </Button>
+                </Tooltip>
                 {isAdmin && (
                   <>
                     <SubmitTranscriptMenu setPrRepo={setPrRepo} />
@@ -316,6 +380,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           mdData={editedData}
           update={setEditedData}
           editorRef={editorRef}
+          openGuidelines={guidelinesOnOpen}
           restoreOriginal={restoreOriginal}
         />
       </Flex>
@@ -325,6 +390,10 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         isOpen={isOpen}
         onCancel={onClose}
         onSubmit={handleSubmit}
+      />
+      <ReviewGuidelinesModal
+        isOpen={guidelinesIsOpen}
+        onCancel={guidelinesOnClose}
       />
     </>
   );

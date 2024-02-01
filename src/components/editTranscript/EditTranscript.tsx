@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -15,6 +16,7 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { MutableRefObject, useEffect, useState } from "react";
 import MarkdownIt from "markdown-it";
+import { FaBook } from "react-icons/fa";
 
 // Interfaces for react-markdown-editior
 export interface IHandleEditorChange {
@@ -32,12 +34,14 @@ const EditTranscript = ({
   update,
   restoreOriginal,
   editorRef,
+  openGuidelines,
 }: {
   mdData: string;
   editorRef: MutableRefObject<MdEditor | null>;
   // eslint-disable-next-line no-unused-vars
   update: (x: any) => void;
   restoreOriginal: () => void;
+  openGuidelines: () => void;
 }) => {
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
   const [isModalOpen, setIsModalopen] = useState(false);
@@ -91,18 +95,34 @@ const EditTranscript = ({
         display="flex"
         flexDir="column"
       >
-        <Box my={2}>
-          <Button
-            colorScheme="gray"
-            onClick={() => setIsModalopen(true)}
-            size="xs"
-            ml="auto"
-            display="block"
-            variant="outline"
-          >
-            Restore Original
-          </Button>
-        </Box>
+        <Flex my={2} justifyContent={"space-between"}>
+          <Box>
+            <Button
+              colorScheme="orange"
+              onClick={openGuidelines}
+              size="xs"
+              ml="auto"
+              display="flex"
+              gap={"4px"}
+              variant="solid"
+            >
+              <FaBook /> Review Guidelines
+            </Button>
+          </Box>
+
+          <Box>
+            <Button
+              colorScheme="gray"
+              onClick={() => setIsModalopen(true)}
+              size="xs"
+              ml="auto"
+              display="block"
+              variant="outline"
+            >
+              Restore Original
+            </Button>
+          </Box>
+        </Flex>
         <Box h="full" id="simplemde-container-controller">
           <MdEditor
             ref={editorRef}

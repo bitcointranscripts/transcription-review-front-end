@@ -3,12 +3,10 @@
   "claim_duration_in_hours": 24,
   "maximum_nested_directory_depth": 3,
   "btctranscripts_base_url": "https://btctranscripts.com/",
-  "btctranscripts_tags_url": "https://btctranscripts.com/tags/",
-  "btctranscripts_speakers_url": "https://btctranscripts.com/speakers/",
-  "btctranscripts_categories_url": "https://btctranscripts.com/categories/",
   "defaultDirectoryPath": "misc",
   "youtube_video_id": "YNIFm0QFAuA",
   "max_active_reviews": 1,
   "max_pending_reviews": 3,
-  "prod_url": "https://review.btctranscripts.com"
+  "prod_url": "https://review.btctranscripts.com",
+  "local_storage_hash_query": "last_saved_edits_hash"
 }

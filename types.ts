@@ -12,6 +12,7 @@ export type Transcript = {
   transcriptHash: string;
   claimedBy: Nullable<number>;
   contentTotalWords: number;
+  transcriptUrl: Nullable<string>;
 };
 export type TranscriptData = {
   totalItems: number;
@@ -37,6 +38,7 @@ export type Review = {
   submittedAt: Nullable<Date>;
   mergedAt: Nullable<Date>;
   pr_url: Nullable<string>;
+  branchUrl: Nullable<string>;
 };
 
 export type UserReviewData = Review & {
@@ -170,3 +172,25 @@ export type TransactionQueryType =
 
 export type TransactionQueryStatus =
   (typeof TransactionStatus)[keyof typeof TransactionStatus];
+
+export type SaveToGHData = {
+  directoryPath: string;
+  fileName?: string;
+  url: string | null;
+  date:
+    | string
+    | {
+        day: string;
+        month: string;
+        year: string;
+      }
+    | null;
+  tags?: string;
+  speakers?: string;
+  categories?: string;
+  transcribedText: string;
+  transcript_by?: string;
+  ghSourcePath: string | null;
+  ghBranchUrl: string | null;
+  reviewId: number;
+};

@@ -4,6 +4,12 @@ import { Octokit } from "@octokit/core";
 
 import { newIndexFile } from ".";
 
+type BranchUrlConstructor = {
+  owner: string;
+  newBranchName: string;
+  filePath: string;
+};
+
 export async function deleteIndexMdIfDirectoryEmpty(
   octokit: InstanceType<typeof Octokit>,
   owner: string,
@@ -188,4 +194,94 @@ export async function syncForkWithUpstream({
     branch,
     latestUpstreamCommitSha
   );
+}
+
+export function getBranchNameFromBranchUrl(url?: string) {
+  if (!url) return "";
+  const branchName = new URL(url).pathname.split("/")[4];
+  return branchName;
+}
+export function resolveGHBranchUrl(url: string) {
+  // reconcile url to heirarchical file path
+  // resolves to [{owner}, {repo}, {branch}, ...${dir}... , ${file}]
+  const levels = new URL(url).pathname.split("/").slice(1);
+  levels.splice(2, 1); // remove "/tree"
+  const owner = levels[0];
+  const repo = levels[1];
+  const branch = levels[2];
+  const file = levels.slice(-1).toString();
+  const path = levels.slice(3).join("/").toString();
+  const dir = levels.slice(3, -1).join("/").toString();
+
+  return {
+    owner,
+    repo,
+    branch,
+    file,
+    path,
+    dir,
+  };
+}
+
+export function resolveRawGHUrl(url: string) {
+  const levels = new URL(url).pathname.split("/").slice(1);
+
+  const srcOwner = levels[0];
+  const srcRepo = levels[1];
+  const srcBranch = levels[2];
+  const fileName = levels.slice(-1).toString();
+  const filePath = levels.slice(3).join("/").toString();
+  const fileNameWithoutExtension = fileName.slice(0, -3);
+  const srcDirPath = levels.slice(3, -1).join("/").toString();
+
+  return {
+    filePath,
+    fileName,
+    fileNameWithoutExtension,
+    srcDirPath,
+    srcOwner,
+    srcRepo,
+    srcBranch,
+  };
+}
+
+export function resolveGHApiUrl(url: string) {
+  const resolvedUrl = new URL(url);
+
+  const srcBranch = resolvedUrl.searchParams.get("ref") ?? "";
+  const levels = resolvedUrl.pathname.split("/").slice(2);
+  levels.splice(2, 1);
+
+  const srcOwner = levels[0];
+  const srcRepo = levels[1];
+  const fileName = levels.slice(-1).toString();
+  const filePath = levels.slice(2).join("/").toString();
+  const fileNameWithoutExtension = fileName.slice(0, -3);
+  const srcDirPath = levels.slice(2, -1).join("/").toString();
+
+  return {
+    filePath,
+    fileName,
+    fileNameWithoutExtension,
+    srcDirPath,
+    srcOwner,
+    srcRepo,
+    srcBranch,
+  };
+}
+
+export function constructGithubBranchUrl({
+  owner,
+  filePath,
+  newBranchName,
+}: BranchUrlConstructor) {
+  return `https://raw.githubusercontent.com/${owner}/bitcointranscripts/${newBranchName}/${filePath}`;
+}
+
+export function constructGithubBranchApiUrl({
+  owner,
+  filePath,
+  newBranchName,
+}: BranchUrlConstructor) {
+  return `https://api.github.com/repos/${owner}/bitcointranscripts/contents/${filePath}?ref=${newBranchName}`;
 }

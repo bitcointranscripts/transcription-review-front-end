@@ -18,3 +18,6 @@ export const FilterQueryNames = {
   type: "type",
   status: "status",
 } as const;
+
+export const upstreamOwner = "bitcointranscripts";
+export const upstreamRepo = "bitcointranscripts";

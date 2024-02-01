@@ -13,7 +13,6 @@ import {
   SideBarData,
   SidebarSubType,
 } from "../transcript";
-import SelectDirectory from "./SelectDirectory";
 import { OnlySelectField, SingleSelectField } from "./SelectField";
 import styles from "./sidebarContentEdit.module.css";
 import TextField from "./TextField";
@@ -106,26 +105,6 @@ const SidebarContentEdit = ({
 
     updater({ data: date, type: "date", name: "date" });
   };
-  const saveOldDirectory = (dir: string) => {
-    const arrayOfDirectories = localStorage.getItem("oldDirectoryList")
-      ? JSON.parse(localStorage.getItem("oldDirectoryList") ?? "")
-      : [];
-    arrayOfDirectories.push(dir);
-    const uniqueDirectories = [...new Set(arrayOfDirectories)];
-    localStorage.setItem("oldDirectoryList", JSON.stringify(uniqueDirectories));
-  };
-  const updateDirectory = (dir: string) => {
-    setPath(`${dir}`);
-    const updatedTranscript = getUpdatedTranscript();
-    saveOldDirectory(updatedTranscript.loc!);
-    updatedTranscript.loc = dir;
-    saveTranscript(updatedTranscript);
-    updater({
-      data: dir,
-      type: "loc",
-      name: "loc",
-    });
-  };
   const updateCategories = (categories: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.categories = categories;
@@ -192,18 +171,6 @@ const SidebarContentEdit = ({
             data={data.content?.title ?? ""}
             editedData={sideBarData.text.title}
             updateData={updateTitle}
-          />
-        </Box>
-        <Box>
-          <Text fontWeight={600} mb={2}>
-            Choose Directory
-          </Text>
-          <SelectDirectory
-            path={path}
-            setPath={setPath}
-            options={directoryList}
-            updateData={updateDirectory}
-            getUpdatedTranscript={getUpdatedTranscript}
           />
         </Box>
         <Box>

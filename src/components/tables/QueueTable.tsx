@@ -26,6 +26,8 @@ import Pagination from "./Pagination";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
 import Image from "next/image";
+import { upstreamOwner } from "@/config/default";
+import { useUserMultipleReviews } from "@/services/api/reviews";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -105,6 +107,10 @@ const QueueTable = () => {
   const [claimState, setClaimState] = useState({
     rowId: -1,
   });
+  const { data: multipleStatusData } = useUserMultipleReviews({
+    userId: session?.user?.id,
+    multipleStatus: ["pending", "active", "inactive"],
+  });
 
   const retryLoginAndClaim = async (transcriptId: number) => {
     await signOut({ redirect: false });
@@ -118,6 +124,9 @@ const QueueTable = () => {
 
   const handleClaim = useCallback(
     async (transcriptId: number) => {
+      // handle new implementation
+      const transcript = data?.data.find((item) => item.id === transcriptId);
+
       if (status === "loading") {
         toast({
           status: "loading",
@@ -135,20 +144,61 @@ const QueueTable = () => {
       if (session?.user?.id) {
         setClaimState((prev) => ({ ...prev, rowId: transcriptId }));
 
+        // Fork repo
+        const forkResult = await axios.post("/api/github/fork");
+        const owner = forkResult.data.owner.login;
+
+        const env_owner =
+          process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+            ? forkResult.data.owner.login
+            : upstreamOwner;
+
+        let branchUrl;
+
+        if (transcript && transcript.transcriptUrl) {
+          try {
+            await axios
+              .post("/api/github/newBranch", {
+                ghSourcePath: transcript.transcriptUrl,
+                owner,
+                env_owner,
+              })
+              .then((res) => {
+                branchUrl = res.data.branchUrl;
+              })
+              .catch((err) => {
+                throw err;
+              });
+          } catch (err: any) {
+            console.error(err);
+            throw new Error(err.message);
+          }
+        }
+
         // Claim transcript
         claimTranscript.mutate(
-          { userId: session.user.id, transcriptId },
+          { userId: session.user.id, transcriptId, branchUrl },
           {
             onSuccess: async (data) => {
-              // Fork repo
-              axios.post("/api/github/fork");
+              try {
+                const reviewId = data.id;
+                if (!reviewId) {
+                  throw new Error("failed to claim transcript");
+                }
 
-              setClaimState((prev) => ({ ...prev, rowId: -1 }));
-              if (data instanceof Error) {
-                await retryLoginAndClaim(transcriptId);
-                return;
+                setClaimState((prev) => ({ ...prev, rowId: -1 }));
+                if (data instanceof Error) {
+                  await retryLoginAndClaim(transcriptId);
+                  return;
+                }
+                if (multipleStatusData.length > 0) {
+                  router.push(`/reviews/${data.id}`);
+                } else {
+                  router.push(`/reviews/${data.id}?first_review=true`);
+                }
+              } catch (err) {
+                console.error(err);
               }
-              router.push(`/reviews/${data.id}`);
             },
 
             onError: (err) => {
@@ -165,7 +215,7 @@ const QueueTable = () => {
         await retryLoginAndClaim(transcriptId);
       }
     },
-    [status, session?.user?.id, claimTranscript, router, toast]
+    [status, session?.user?.id, claimTranscript, router, toast, data]
   );
   // updated totalPages if data changes
   useEffect(() => {
@@ -202,6 +252,7 @@ const QueueTable = () => {
                 allTags={allTags}
                 categories={data.content.categories}
                 loc={data.content.loc}
+                transcriptUrl={data.transcriptUrl}
                 id={data.id}
                 length={allTags.length}
                 shouldSlice={false}
