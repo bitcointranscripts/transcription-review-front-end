@@ -300,7 +300,6 @@ export const isNullOrUndefined = (value: any) => {
 };
 
 // Landing Page dummies
-
 export const thingsYouNeed = [
   {
     Icon: LaptopIcon,
@@ -338,3 +337,56 @@ export const whyConsiderEdit = [
     sub: "Make it easier to discover,\n search for, and use information\n about technical bitcoin concepts",
   },
 ];
+
+// GUIDELINES REVIEW DATA
+export const guidelinesReviewArray = [
+  {
+    heading: "Transcription Style",
+    paragraphs: [
+      'Aim for an "edited transcription" style, preserving text meaning without paraphrasing.',
+      "Omit stammering, filler words ('like,' 'you know'), and unnecessary non-verbal communication.",
+      "Maintain completeness while ensuring readability by eliminating mid-sentence rephrasings and non-essential lines.",
+    ],
+  },
+  {
+    heading: "Transcript Structure",
+    paragraphs: [
+      'Maintain original "one-sentence-per-line" formatting and timestamps.',
+      "Ensure coherent paragraphing around chapter titles and speaker timestamps.",
+      "Break text into paragraphs and ensure accurate punctuation for better readability.",
+    ],
+  },
+  {
+    heading: "Chapters",
+    paragraphs: [
+      "Break the transcript into manageable segments using your familiarity with the material.",
+      "Utilize source materials (slides, video description, content) to derive and integrate chapters.",
+      "Start chapters with H2 formatting, title is automatically rendered as H1.",
+    ],
+  },
+  {
+    heading: "Accuracy",
+    paragraphs: [
+      "Identify and fix AI transcription errors, especially related to technical and Bitcoin-specific jargon.",
+      "Ensure code-related technical terms or math equations are `enclosed in backticks`.",
+    ],
+  },
+  {
+    heading: "Speaker Attribution",
+    paragraphs: [
+      "Accurately attribute speakers, preventing potential mix-ups or merging of dialogue caused by AI transcription errors.",
+      'Use square brackets for infrequent speaker contributions (e.g. [Audience]: "Hello world").',
+    ],
+  },
+  {
+    heading: "Final Review",
+    paragraphs: [
+      "Upon completion, read through the entire transcript for coherence and readability.",
+      "Leverage your familiarity with the material to identify appropriate tags.",
+    ],
+  },
+];
+
+export const discordInvites = {
+  review_guidelines: "https://discord.gg/jqj4maCs8p"
+}
