@@ -191,7 +191,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
 
   const saveTranscript = async (
     updatedContent: TranscriptContent,
-    onSuccessCallback?: () => void
+    onSuccessCallback?: () => void,
+    onNoEditsCallback?: () => void
   ) => {
     // create an awaitable promise for mutation
 
@@ -214,10 +215,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
 
     const isPreviousHash = compareTranscriptBetweenSave(newImplData);
     if (isPreviousHash) {
-      toast({
-        status: "warning",
-        title: "Unable to save because no edits have been made",
-      });
+      onNoEditsCallback && onNoEditsCallback();
       return;
     }
 
@@ -246,8 +244,18 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         title: "Saved successfully",
       });
     };
+    const onNoEditsCallback = () => {
+      toast({
+        status: "warning",
+        title: "Unable to save because no edits have been made",
+      });
+    };
     try {
-      await saveTranscript(getUpdatedContent(), onSuccessCallback);
+      await saveTranscript(
+        getUpdatedContent(),
+        onSuccessCallback,
+        onNoEditsCallback
+      );
     } catch (err: any) {
       toast({
         status: "error",
