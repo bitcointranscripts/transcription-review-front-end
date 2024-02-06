@@ -1,3 +1,4 @@
+import config from "@/config/config.json";
 import {
   RefetchOptions,
   RefetchQueryFilters,
@@ -7,6 +8,7 @@ import {
 import type { UserReview } from "../../../../types";
 import axios from "../axios";
 import endpoints, { ReviewQueryOptions } from "../endpoints";
+import { isReviewActive } from "@/utils";
 
 const userReviews = async ({
   userId,
@@ -72,4 +74,12 @@ export const useUserMultipleReviews = ({
     refetch,
     isError: queryInfo.some((query) => query.isError),
   };
+};
+
+export const useHasExceededMaxActiveReviews = (userId: number | undefined) => {
+  const { data: allReviews = { data: [] } } = useUserReviews({
+    userId,
+  });
+  const activeReviews = allReviews?.data?.filter(isReviewActive);
+  return activeReviews.length >= config.max_active_reviews;
 };
