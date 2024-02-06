@@ -231,7 +231,16 @@ const QueueTable = () => {
         await retryLoginAndClaim(transcriptId);
       }
     },
-    [status, session?.user?.id, claimTranscript, router, toast, data]
+    [
+      hasExceededActiveReviewLimit,
+      data?.data,
+      status,
+      session?.user?.id,
+      toast,
+      claimTranscript,
+      multipleStatusData.length,
+      router,
+    ]
   );
   // updated totalPages if data changes
   useEffect(() => {
