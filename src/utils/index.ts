@@ -1,11 +1,11 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { MetadataProps, UserReviewData } from "../../types";
-import config from "../config/config.json";
+import { MetadataProps } from "../../types";
 import ClockIcon from "../components/svgs/ClockIcon";
-import LaptopIcon from "../components/svgs/LaptopIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
+import LaptopIcon from "../components/svgs/LaptopIcon";
+import config from "../config/config.json";
 
 const claim_duration_in_ms = hoursToMilliseconds(
   config.claim_duration_in_hours
@@ -222,28 +222,6 @@ export function calculateReadingTime(wordCount: number, wpm = 150) {
   }
 }
 
-export function isReviewActive(review: UserReviewData) {
-  const currentTime = new Date().getTime();
-  const timeStringAt24HoursPrior = new Date(
-    currentTime - claim_duration_in_ms
-  ).toISOString();
-
-  return (
-    String(review.createdAt) >= timeStringAt24HoursPrior &&
-    review.mergedAt === null &&
-    review.archivedAt === null &&
-    review.submittedAt === null
-  );
-}
-
-export function isReviewPending(review: UserReviewData) {
-  return (
-    review.submittedAt !== null &&
-    review.mergedAt === null &&
-    review.archivedAt === null
-  );
-}
-
 // Convert a string to an array
 export const convertStringToArray = (text: string[] | string) => {
   let stringArray = text as string;
@@ -388,5 +366,5 @@ export const guidelinesReviewArray = [
 ];
 
 export const discordInvites = {
-  review_guidelines: "https://discord.gg/jqj4maCs8p"
-}
+  review_guidelines: "https://discord.gg/jqj4maCs8p",
+};
