@@ -1,3 +1,8 @@
+import { upstreamOwner } from "@/config/default";
+import {
+  useHasExceededMaxActiveReviews,
+  useUserMultipleReviews,
+} from "@/services/api/reviews";
 import {
   useArchiveTranscript,
   useClaimTranscript,
@@ -7,12 +12,12 @@ import {
   calculateReadingTime,
   convertStringToArray,
   displaySatCoinImage,
-  isReviewActive,
 } from "@/utils";
 import { Button, CheckboxGroup, Flex, Text, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import React, {
   useCallback,
@@ -26,13 +31,6 @@ import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
-import Image from "next/image";
-import { upstreamOwner } from "@/config/default";
-import {
-  useHasExceededMaxActiveReviews,
-  useUserMultipleReviews,
-  useUserReviews,
-} from "@/services/api/reviews";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -56,7 +54,7 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
     const ids = selectedIds.map(Number);
 
     if (userSession?.user?.id) {
-      const archivedBy = userSession?.user.id;
+      const archivedBy = userSession?.user?.id;
       try {
         await Promise.all(
           ids.map((transcriptId) =>
@@ -141,7 +139,7 @@ const QueueTable = () => {
         return;
       }
       // handle new implementation
-      const transcript = data?.data.find((item) => item.id === transcriptId);
+      const transcript = data?.data?.find((item) => item.id === transcriptId);
 
       if (status === "loading") {
         toast({
