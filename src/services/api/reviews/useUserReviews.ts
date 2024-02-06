@@ -8,7 +8,6 @@ import {
 import type { UserReview } from "../../../../types";
 import axios from "../axios";
 import endpoints, { ReviewQueryOptions } from "../endpoints";
-import { isReviewActive } from "@/utils";
 
 const userReviews = async ({
   userId,
@@ -77,9 +76,10 @@ export const useUserMultipleReviews = ({
 };
 
 export const useHasExceededMaxActiveReviews = (userId: number | undefined) => {
-  const { data: allReviews = { data: [] } } = useUserReviews({
+  const { data } = useUserReviews({
     userId,
+    status: "active",
   });
-  const activeReviews = allReviews?.data?.filter(isReviewActive);
+  const activeReviews = data?.data ?? [];
   return activeReviews.length >= config.max_active_reviews;
 };
