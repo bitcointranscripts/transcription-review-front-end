@@ -7,6 +7,7 @@ import {
   calculateReadingTime,
   convertStringToArray,
   displaySatCoinImage,
+  isReviewActive,
 } from "@/utils";
 import { Button, CheckboxGroup, Flex, Text, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,7 +28,11 @@ import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
 import Image from "next/image";
 import { upstreamOwner } from "@/config/default";
-import { useUserMultipleReviews } from "@/services/api/reviews";
+import {
+  useHasExceededMaxActiveReviews,
+  useUserMultipleReviews,
+  useUserReviews,
+} from "@/services/api/reviews";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -99,6 +104,9 @@ const QueueTable = () => {
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
+  const hasExceededActiveReviewLimit = useHasExceededMaxActiveReviews(
+    session?.user?.id
+  );
   const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
   const toast = useToast();
 
@@ -124,6 +132,14 @@ const QueueTable = () => {
 
   const handleClaim = useCallback(
     async (transcriptId: number) => {
+      if (hasExceededActiveReviewLimit) {
+        toast({
+          status: "error",
+          title:
+            "Please finish editing & submit the transcript you're working on first",
+        });
+        return;
+      }
       // handle new implementation
       const transcript = data?.data.find((item) => item.id === transcriptId);
 
