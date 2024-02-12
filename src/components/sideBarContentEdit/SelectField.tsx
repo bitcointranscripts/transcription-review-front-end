@@ -290,6 +290,7 @@ export const SingleSelectField = ({
       size="sm"
       textTransform={name !== "speakers" ? "lowercase" : "none"}
       defaultValue={editedData[0]}
+      key={editedData[0]}
     >
       {newAutoCompleteList.map((item, index) => (
         <option key={`${item.slug}${index}`} value={item.value}>
