@@ -1,7 +1,6 @@
 import SubmitTranscriptAlert from "@/components/alerts/SubmitTranscriptAlert";
 import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
-import SubmitTranscriptMenu from "@/components/menus/SubmitTranscriptMenu";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
 import ReviewGuidelinesModal from "@/components/modals/ReviewGuidelinesModal";
@@ -14,20 +13,7 @@ import {
   formatDataForMetadata,
   reconcileArray,
 } from "@/utils";
-import {
-  Button,
-  Flex,
-  Tooltip,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
-import {
-  Button,
-  Flex,
-  Tooltip,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
+import { Flex, useDisclosure } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
@@ -75,22 +61,18 @@ export type sideBarContentUpdateParams<T, K> = {
 };
 
 const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
-  const transcriptId = reviewData.transcript.id;
   const transcriptData = reviewData.transcript;
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { mutateAsync, isLoading: saveLoading } = useUpdateTranscript();
+  const { mutateAsync } = useUpdateTranscript();
   const { mutateAsync: asyncSubmitReview } = useSubmitReview();
   const { data: userSession } = useSession();
-  const isAdmin = userSession?.user?.permissions === "admin";
   const [prRepo, setPrRepo] = useState<TranscriptSubmitOptions>(
     process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
       ? "btc transcript"
       : "user"
   );
   const isFirstTime = router.query?.first_review === "true" ? true : false;
-  const reviewSubmissionDisabled =
-    !!reviewData.branchUrl && !!reviewData.pr_url;
 
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
@@ -134,8 +116,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const [submitState, setSubmitState] =
     useState<SubmitState>(defaultSubmitState);
   const editorRef = useRef<MdEditor | null>(null);
-  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const transcriptId = reviewData.transcript.id;
   const {
     isOpen: guidelinesIsOpen,
     onOpen: guidelinesOnOpen,
@@ -244,34 +226,6 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     }
   };
 
-  const handleSave = async () => {
-    const onSuccessCallback = () => {
-      toast({
-        status: "success",
-        title: "Saved successfully",
-      });
-    };
-    const onNoEditsCallback = () => {
-      toast({
-        status: "warning",
-        title: "Unable to save because no edits have been made",
-      });
-    };
-    try {
-      await saveTranscript(
-        getUpdatedContent(),
-        onSuccessCallback,
-        onNoEditsCallback
-      );
-    } catch (err: any) {
-      toast({
-        status: "error",
-        title: "Error while saving",
-        description: err?.message,
-      });
-    }
-  };
-
   const handleSubmit = async () => {
     const {
       list: { speakers, categories, tags },
@@ -353,50 +307,20 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
             updater={sideBarContentUpdater}
             getUpdatedTranscript={getUpdatedContent}
             saveTranscript={saveTranscript}
-          >
-            <Flex gap={2}>
-              <Button
-                size="sm"
-                colorScheme="orange"
-                variant="outline"
-                onClick={handleSave}
-                isLoading={saveLoading}
-              >
-                Save
-              </Button>
-              <Flex overflow="hidden" borderRadius="md" dir="row">
-                <Tooltip
-                  label={
-                    reviewSubmissionDisabled
-                      ? "You cannot resubmit a submitted review, instead use save to update your submission"
-                      : undefined
-                  }
-                >
-                  <Button
-                    borderRadius="none"
-                    size="sm"
-                    colorScheme="orange"
-                    onClick={onOpen}
-                    isDisabled={reviewSubmissionDisabled}
-                  >
-                    Submit {isAdmin ? `(${prRepo})` : ""}
-                  </Button>
-                </Tooltip>
-                {isAdmin && (
-                  <>
-                    <SubmitTranscriptMenu setPrRepo={setPrRepo} />
-                  </>
-                )}
-              </Flex>
-            </Flex>
-          </SidebarContentEdit>
+          />
         )}
         <EditTranscript
           mdData={editedData}
+          reviewData={reviewData}
           update={setEditedData}
           editorRef={editorRef}
           openGuidelines={guidelinesOnOpen}
           restoreOriginal={restoreOriginal}
+          saveTranscript={saveTranscript}
+          getUpdatedTranscript={getUpdatedContent}
+          onOpen={onOpen}
+          prRepo={prRepo}
+          setPrRepo={setPrRepo}
         />
       </Flex>
       <SubmitTranscriptModal submitState={submitState} onClose={onExitModal} />
