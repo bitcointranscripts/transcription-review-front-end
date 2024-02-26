@@ -319,17 +319,23 @@ export const whyConsiderEdit = [
 // GUIDELINES REVIEW DATA
 export const guidelinesReviewArray = [
   {
+    heading: "Transcription Accuracy",
+    paragraphs: [
+      "**Correct AI transcription mistakes**: Look out for and fix errors made by the AI, particularly with technical terms and Bitcoin-related language. The AI might not fully understand certain audio parts or might not know specific jargon, leading to mistakes.",
+      "**Use backticks for technical terms and equations**: When you encounter code-related technical terms or math equations, make sure to put them \\`inside backticks\\` to highlight them.",
+    ],
+  },
+  {
     heading: "Transcription Style",
     paragraphs: [
-      'Aim for an "edited transcription" style, preserving text meaning without paraphrasing.',
-      "Omit stammering, filler words ('like,' 'you know'), and unnecessary non-verbal communication.",
-      "Maintain completeness while ensuring readability by eliminating mid-sentence rephrasings and non-essential lines.",
+      "**Use clean verbatim transcription style**: Capture the recorded content precisely, removing all unnecessary distractions to improve clarity.",
+      "**Remove distractions and avoid paraphrasing**: Focus on the speaker's exact words by removing distractions such as false starts, filler words, stammers, self-corrections, and non-verbal interruptions. Simultaneously, avoid paraphrasing to preserve the original speech's integrity and readability.",
     ],
   },
   {
     heading: "Transcript Structure",
     paragraphs: [
-      'Maintain original "one-sentence-per-line" formatting and timestamps.',
+      'Maintain the original "one-sentence-per-line" formatting and timestamps.',
       "Ensure coherent paragraphing around chapter titles and speaker timestamps.",
       "Break text into paragraphs and ensure accurate punctuation for better readability.",
     ],
@@ -343,13 +349,6 @@ export const guidelinesReviewArray = [
     ],
   },
   {
-    heading: "Accuracy",
-    paragraphs: [
-      "Identify and fix AI transcription errors, especially related to technical and Bitcoin-specific jargon.",
-      "Ensure code-related technical terms or math equations are `enclosed in backticks`.",
-    ],
-  },
-  {
     heading: "Speaker Attribution",
     paragraphs: [
       "Accurately attribute speakers, preventing potential mix-ups or merging of dialogue caused by AI transcription errors.",
@@ -360,7 +359,7 @@ export const guidelinesReviewArray = [
     heading: "Final Review",
     paragraphs: [
       "Upon completion, read through the entire transcript for coherence and readability.",
-      "Leverage your familiarity with the material to identify appropriate tags.",
+      "Leverage your familiarity with the material to identify appropriate tags and chapters.",
     ],
   },
 ];
