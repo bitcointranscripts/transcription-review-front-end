@@ -79,23 +79,6 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
               To ensure a shared quality of transcripts, please follow the
               guidelines below
             </Text>
-            {guidelinesReviewArray.map((guideline) => (
-              <Flex
-                key={guideline.heading}
-                flexDir={"column"}
-                gap={2}
-              >
-                <Heading size='md'>{guideline.heading}</Heading>
-                <UnorderedList pl={3} color="gray.700" fontSize="14px">
-                  {guideline.paragraphs.map((paragraph) => (
-                    <ListItem key={paragraph}>
-                      <Text dangerouslySetInnerHTML={{ __html: mdParser.render(paragraph) }}></Text>
-                    </ListItem>
-                  ))}
-                </UnorderedList>
-
-              </Flex>
-            ))}
             <>
               <Divider marginY={2} />
               <Text fontSize="sm" alignSelf="end">
