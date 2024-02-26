@@ -81,6 +81,22 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
               To ensure a shared quality of transcripts, please
               follow the guidelines below
             </Text>
+            <>
+              <Divider marginY={2} />
+              <Text fontSize="sm" alignSelf='end'>
+                Need help or have questions?{" "}
+                <Link
+                  href={discordInvites.review_guidelines}
+                  target="_blank"
+                  color="blue.400"
+                  data-umami-event="discord-review_guidelines"
+                >
+                  Join us on Discord
+                </Link>
+                .
+              </Text>
+              <Divider marginY={2} />
+            </>
             {guidelinesReviewArray.map((guideline) => (
               <Flex
                 key={guideline.heading}
@@ -98,22 +114,6 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
 
               </Flex>
             ))}
-            <>
-              <Divider marginY={2} />
-              <Text fontSize="sm" alignSelf='end'>
-                Need help or have questions?{" "}
-                <Link
-                  href={discordInvites.review_guidelines}
-                  target="_blank"
-                  color="blue.400"
-                  data-umami-event="discord-review_guidelines"
-                >
-                  Join us on Discord
-                </Link>
-                .
-              </Text>
-              <Divider marginY={2} />
-            </>
           </Flex>
         </ModalBody>
 
