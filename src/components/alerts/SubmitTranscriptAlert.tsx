@@ -13,7 +13,6 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react";
-import Link from "next/link";
 import { forwardRef, useRef } from "react";
 
 type Props = {
@@ -41,6 +40,7 @@ const SubmitTranscriptAlert = ({
 
   return (
     <AlertDialog
+      size={'xl'}
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
       onClose={handleClose}
@@ -66,7 +66,7 @@ const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
   ({ onCancel }, ref) => {
     return (
       <>
-        <AlertDialogHeader fontSize="lg" fontWeight="bold">
+        <AlertDialogHeader fontSize="xl">
           Let&apos;s review your edits
         </AlertDialogHeader>
         <AlertDialogBody>
@@ -78,43 +78,27 @@ const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
               <Text>Title</Text>
             </ListItem>
             <ListItem>
-              <Text>Author(s)</Text>
-            </ListItem>
-            <ListItem>
-              <Text>Corrected speaker names in case of multiple speakers</Text>
+              <Text>Speaker(s)</Text>
             </ListItem>
             <ListItem>
               <Text>Date of original presentation</Text>
             </ListItem>
             <ListItem>
-              <Text>
-                Categories (for example, conference, meetup, and the like)
-              </Text>
-            </ListItem>
-            <ListItem>
-              <Text>Tags (that is, main topics)</Text>
-            </ListItem>
-            <ListItem>
-              <Text>
-                Sections (blocks of conversation that are grouped by a theme)
-              </Text>
-            </ListItem>
-            <ListItem>
-              <Text>Grammar and spelling (especially technical concepts)</Text>
-            </ListItem>
-            <ListItem>
-              <Text>Used markdown</Text>
+              <Text>Tags for the main topics of discussion</Text>
             </ListItem>
           </UnorderedList>
           <Flex my={4} direction="column" gap={3}>
+            <Text size="sm" pb={2}>
+              <Text fontWeight="bold">Did you follow the Review Guidelines?</Text>
+              Please confirm you have corrected AI errors, adopted a clean
+              verbatim transcription style, maintained structure and organized
+              chapters effectively, attributed speakers accurately, and
+              conducted a final coherence check to ensure the transcript
+              is not only accurate but also readable.
+            </Text>
             <Button size="sm" mx="auto" ref={ref} onClick={onCancel}>
               Let me check a few things
             </Button>
-            <Link href="/tutorial" target="_blank">
-              <Button size="sm" mx="auto" display="block">
-                View tutorial
-              </Button>
-            </Link>
           </Flex>
         </AlertDialogBody>
       </>
