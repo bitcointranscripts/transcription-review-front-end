@@ -1,7 +1,7 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { MetadataProps } from "../../types";
+import { ArbitraryFieldValues, MetadataProps } from "../../types";
 import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
@@ -123,17 +123,15 @@ export function getRequestUrl(req: NextApiRequest) {
   return requestUrl;
 }
 
-export function formatDataForMetadata(data: string[] | string) {
-  if (Array.isArray(data)) {
-    if (data.length) {
+export function formatDataForMetadata(data: ArbitraryFieldValues) {
+  switch (true) {
+    case typeof data === "boolean":
+    case Array.isArray(data) && !!data.length:
       return JSON.stringify(data);
-    } else {
+    case typeof data === "string" && !!data.trim():
+      return data?.toString();
+    default:
       return undefined;
-    }
-  } else if (data.trim()) {
-    return data;
-  } else {
-    return undefined;
   }
 }
 
