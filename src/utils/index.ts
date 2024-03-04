@@ -70,19 +70,10 @@ export class Metadata {
   public fileTitle: string;
   public source: string;
 
-  constructor({
-    fileTitle,
-    transcript_by,
-    url,
-    date,
-    tags,
-    speakers,
-    categories,
-  }: MetadataProps) {
+  constructor({ fileTitle, transcript_by, url, ...restProps }: MetadataProps) {
     this.fileTitle = fileTitle;
     this.source = url;
 
-    // eslint-disable-next-line prettier/prettier
     this.metaData =
       `---\n` +
       `title: "${fileTitle}"\n` +
@@ -90,18 +81,12 @@ export class Metadata {
 
     this.metaData += `media: ${url}\n`;
 
-    if (tags) {
-      this.metaData += `tags: ${tags}\n`;
+    for (const field of Object.keys(restProps)) {
+      const fieldValue = restProps[field];
+      if (fieldValue) {
+        this.metaData += `${field}: ${fieldValue}\n`;
+      }
     }
-
-    if (speakers) {
-      this.metaData += `speakers: ${speakers}\n`;
-    }
-
-    if (categories) {
-      this.metaData += `categories: ${categories}\n`;
-    }
-    this.metaData += `date: ${date}\n`;
 
     this.metaData += `---\n`;
   }
@@ -366,5 +351,5 @@ export const guidelinesReviewArray = [
 
 export const discordInvites = {
   review_guidelines: "https://discord.gg/jqj4maCs8p",
-  feedback: "https://discord.gg/W4cmWRhMnr"
+  feedback: "https://discord.gg/W4cmWRhMnr",
 };
