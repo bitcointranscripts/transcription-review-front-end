@@ -351,3 +351,36 @@ export const discordInvites = {
   review_guidelines: "https://discord.gg/jqj4maCs8p",
   feedback: "https://discord.gg/W4cmWRhMnr",
 };
+
+export const knownMetaData = [
+  "title",
+  "speakers",
+  "date",
+  "categories",
+  "tags",
+];
+
+export function omit<
+  Key extends string,
+  OmittedKey extends Key,
+  Object extends Record<Key, unknown>,
+>(object: Object, keysToOmit: OmittedKey[]) {
+  const result = {} as Object;
+  const keys = Object.keys(object) as Key[];
+  keys.forEach((key) => {
+    if (!keysToOmit.includes(key as OmittedKey)) {
+      result[key] = object[key];
+    }
+  });
+  return result as Omit<Object, OmittedKey>;
+}
+
+export function toTitleCase(str: string) {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}

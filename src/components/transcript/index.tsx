@@ -11,6 +11,7 @@ import { useUpdateTranscript } from "@/services/api/transcripts";
 import {
   dateFormatGeneral,
   formatDataForMetadata,
+  omit,
   reconcileArray,
 } from "@/utils";
 import { Flex, useDisclosure } from "@chakra-ui/react";
@@ -20,7 +21,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
-import type { TranscriptContent, UserReviewData } from "../../../types";
+import type {
+  SaveToGHData,
+  TranscriptContent,
+  UserReviewData,
+} from "../../../types";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
 
 const defaultSubmitState = {
@@ -34,18 +39,18 @@ const defaultSubmitState = {
 };
 
 export type SideBarData = {
-  list: {
+  list: Record<string, string[]> & {
     speakers: string[];
     categories: string[];
     tags: string[];
   };
-  loc: {
+  loc: Record<string, string> & {
     loc: string;
   };
-  text: {
+  text: Record<string, string> & {
     title: string;
   };
-  date: {
+  date: Record<string, Date | null> & {
     date: Date | null;
   };
 };
@@ -77,23 +82,55 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
-  const [sideBarData, setSideBarData] = useState({
-    list: {
-      speakers: reconcileArray(transcriptData?.content?.speakers),
-      categories: reconcileArray(transcriptData?.content?.categories),
-      tags: reconcileArray(transcriptData?.content?.tags),
-    },
-    text: {
-      title: transcriptData.content?.title ?? "",
-    },
-    loc: {
-      loc: transcriptData?.content?.loc ?? "",
-    },
-    date: {
-      date: transcriptData.content?.date
-        ? new Date(transcriptData.content.date)
-        : null,
-    },
+  const [sideBarData, setSideBarData] = useState(() => {
+    const {
+      speakers,
+      categories,
+      tags,
+      title = "",
+      loc = "",
+      date,
+      ...restContent
+    } = transcriptData.content;
+    const data: SideBarData = {
+      list: {
+        speakers: reconcileArray(speakers),
+        categories: reconcileArray(categories),
+        tags: reconcileArray(tags),
+      },
+      text: {
+        title,
+      },
+      loc: {
+        loc,
+      },
+      date: {
+        date: date ? new Date(date) : null,
+      },
+    };
+
+    for (const field of Object.keys(
+      omit(restContent, ["body", "media", "transcript_by"])
+    )) {
+      const fieldValue = restContent[field];
+
+      if (Array.isArray(fieldValue)) {
+        data.list[field] = reconcileArray(fieldValue);
+        continue;
+      }
+
+      if (typeof fieldValue === "string") {
+        data.text[field] = fieldValue;
+        continue;
+      }
+
+      if (fieldValue instanceof Date) {
+        data.date[field] = fieldValue;
+        continue;
+      }
+    }
+
+    return data;
   });
 
   const sideBarContentUpdater = <
@@ -183,17 +220,15 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     onSuccessCallback?: () => void,
     onNoEditsCallback?: () => void
   ) => {
+    const { loc, title, date, body, ...restContent } = updatedContent;
     // create an awaitable promise for mutation
 
-    const newImplData = {
-      directoryPath: updatedContent.loc?.trim() ?? "",
-      fileName: formatDataForMetadata(updatedContent.title),
-      url: transcriptData?.content.media,
-      date: updatedContent.date && dateFormatGeneral(updatedContent.date, true),
-      tags: formatDataForMetadata(updatedContent.tags),
-      speakers: formatDataForMetadata(updatedContent.speakers),
-      categories: formatDataForMetadata(updatedContent.categories),
-      transcribedText: updatedContent.body,
+    const newImplData: SaveToGHData = {
+      directoryPath: loc?.trim() ?? "",
+      fileName: formatDataForMetadata(title),
+      url: transcriptData.content.media,
+      date: date && dateFormatGeneral(date, true),
+      transcribedText: body,
       transcript_by: formatDataForMetadata(
         userSession?.user?.githubUsername ?? ""
       ),
@@ -202,9 +237,18 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       reviewId: reviewData.id,
     };
 
+    for (const field of Object.keys(
+      omit(restContent, ["media", "transcript_by"])
+    )) {
+      const fieldValue = restContent[field];
+      if (fieldValue) {
+        newImplData[field] = formatDataForMetadata(fieldValue);
+      }
+    }
+
     const isPreviousHash = compareTranscriptBetweenSave(newImplData);
     if (isPreviousHash) {
-      onNoEditsCallback && onNoEditsCallback();
+      onNoEditsCallback?.();
       return;
     }
 
@@ -220,7 +264,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           },
         }
       );
-      onSuccessCallback && onSuccessCallback();
+      onSuccessCallback?.();
     } catch (error) {
       throw error;
     }

@@ -1,22 +1,26 @@
+import config from "@/config/config.json";
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
-import { getTimeLeftText } from "@/utils";
+import { getTimeLeftText, knownMetaData, omit, toTitleCase } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
 import jsonData from "../../../public/static/directoryMetadata.json";
-import { IDir, Review, Transcript, TranscriptContent } from "../../../types";
 import {
-  sideBarContentUpdateParams,
+  ArbitraryFieldValues,
+  IDir,
+  Review,
+  Transcript,
+  TranscriptContent,
+} from "../../../types";
+import {
   SideBarData,
   SidebarSubType,
+  sideBarContentUpdateParams,
 } from "../transcript";
-import { OnlySelectField, SingleSelectField } from "./SelectField";
-import styles from "./sidebarContentEdit.module.css";
-import TextField from "./TextField";
-import config from "@/config/config.json";
+import { DateEdit, ListEdit, TextEdit } from "./CategoryEdit";
+import { OnlySelectField } from "./SelectField";
 
 function extractDirFormat(input: Record<string, any> = {}): IDir[] {
   if (Object.keys(input).length === 0) return [];
@@ -56,30 +60,45 @@ const SidebarContentEdit = ({
   getUpdatedTranscript: () => TranscriptContent;
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
+  // TODO: Why are this values not read?
+  const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
   const [path, setPath] = useState<string>("");
   const [initialCount, setInitialCount] = useState(1);
   const { data: selectableListData } = useGetMetaData();
-  const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
-  const updateTitle = (newTitle: string) => {
+
+  const updateTextField = (field: string) => (value: string) => {
     const updatedTranscript = getUpdatedTranscript();
-    updatedTranscript.title = newTitle;
+    updatedTranscript[field] = value;
     saveTranscript(updatedTranscript);
 
     updater({
-      data: newTitle,
+      data: value,
       type: "text",
-      name: "title",
+      name: field,
     });
   };
 
-  const updateSpeaker = (speakers: string[]) => {
+  const updateListField = (field: string) => (value: string[]) => {
     const updatedTranscript = getUpdatedTranscript();
-    updatedTranscript.speakers = speakers;
+    updatedTranscript[field] = value;
     saveTranscript(updatedTranscript);
+
     updater({
-      data: speakers,
+      data: value,
       type: "list",
-      name: "speakers",
+      name: field,
+    });
+  };
+
+  const updateDateField = (field: string) => (value: Date) => {
+    const updatedTranscript = getUpdatedTranscript();
+    updatedTranscript[field] = value;
+    saveTranscript(updatedTranscript);
+
+    updater({
+      data: value,
+      type: "date",
+      name: field,
     });
   };
 
@@ -98,40 +117,22 @@ const SidebarContentEdit = ({
     }
   }, []);
 
-  const updateDate = (date: Date) => {
-    const updatedTranscript = getUpdatedTranscript();
-    updatedTranscript.date = date;
-    saveTranscript(updatedTranscript);
+  const arbitraryFields = omit(
+    {
+      ...sideBarData.text,
+      ...sideBarData.list,
+      ...sideBarData.date,
+    },
+    knownMetaData
+  ) as Record<string, ArbitraryFieldValues>;
 
-    updater({ data: date, type: "date", name: "date" });
-  };
-  const updateCategories = (categories: string[]) => {
-    const updatedTranscript = getUpdatedTranscript();
-    updatedTranscript.categories = categories;
-    saveTranscript(updatedTranscript);
-
-    updater({
-      data: categories,
-      type: "list",
-      name: "categories",
-    });
-  };
-  const updateTags = (tags: string[]) => {
-    const updatedTranscript = getUpdatedTranscript();
-    const lowerCaseTags = tags.map((tag) => tag.toLowerCase());
-    updatedTranscript.tags = lowerCaseTags;
-    saveTranscript(updatedTranscript);
-    updater({
-      data: lowerCaseTags,
-      type: "list",
-      name: "tags",
-    });
-  };
   return (
     <Box
       w="full"
       flex="1 1 30%"
       p={4}
+      maxH="75vh"
+      overflow="auto"
       boxShadow="lg"
       borderRadius="lg"
       border="2px solid"
@@ -163,54 +164,32 @@ const SidebarContentEdit = ({
             </Button>
           </Link>
         </Box>
-        <Box>
-          <Text fontWeight={600} mb={2}>
-            Title
-          </Text>
-          <TextField
-            data={data.content?.title ?? ""}
-            editedData={sideBarData.text.title}
-            updateData={updateTitle}
-          />
-        </Box>
-        <Box>
-          <Text fontWeight={600} mb={2}>
-            Speakers
-          </Text>
-          <OnlySelectField
-            name="speakers"
-            editedData={sideBarData.list.speakers}
-            updateData={updateSpeaker}
-            autoCompleteList={selectableListData?.speakers ?? []}
-            userCanAddToList
-          />
-        </Box>
-        <Box>
-          <Text display="inline-block" fontWeight={600} mb={2}>
-            Date of Recording
-          </Text>
-          <Text ml={3} display="inline-block" color="gray.400">
-            YYYY-MM-DD format
-          </Text>
-
-          <DatePicker
-            selected={sideBarData.date.date}
-            onChange={updateDate}
-            dateFormat="yyyy-MM-dd"
-            className={styles.customDatePicker}
-          />
-        </Box>
-        <Box>
-          <Text fontWeight={600} mb={2}>
-            Categories
-          </Text>
-          <SingleSelectField
-            name="category"
-            editedData={sideBarData.list.categories}
-            updateData={updateCategories}
-            autoCompleteList={selectableListData?.categories ?? []}
-          />
-        </Box>
+        <TextEdit
+          editedData={sideBarData.text.title}
+          updateData={updateTextField("title")}
+          heading="Title"
+        />
+        <ListEdit
+          heading="Speakers"
+          name="speakers"
+          editedData={sideBarData.list.speakers}
+          updateData={updateListField("speakers")}
+          autoCompleteList={selectableListData?.speakers ?? []}
+          userCanAddToList
+        />
+        <DateEdit
+          heading="Date of Recording"
+          editedData={sideBarData.date.date}
+          updateData={updateDateField("date")}
+        />
+        <ListEdit
+          type="singleSelect"
+          heading="Categories"
+          name="category"
+          editedData={sideBarData.list.categories}
+          updateData={updateListField("categories")}
+          autoCompleteList={selectableListData?.categories ?? []}
+        />
         <Box>
           <Flex gap={2}>
             <Text fontWeight={600} mb={2}>
@@ -229,10 +208,54 @@ const SidebarContentEdit = ({
           <OnlySelectField
             name="tags"
             editedData={sideBarData.list.tags}
-            updateData={updateTags}
+            updateData={(tags) =>
+              updateListField("tags")(tags.map((tag) => tag.toLowerCase()))
+            }
             autoCompleteList={selectableListData?.tags ?? []}
           />
         </Box>
+        {Object.keys(arbitraryFields).map((field) => {
+          const fieldValue = arbitraryFields[field];
+
+          if (Array.isArray(fieldValue)) {
+            return (
+              <ListEdit
+                key={field}
+                // TODO: Determine dynamically which arbitrary field is a single select or onlySelect
+                type="singleSelect"
+                heading={toTitleCase(field)}
+                name={field}
+                editedData={sideBarData.list[field]}
+                updateData={updateListField(field)}
+                // TODO: Determine how to autocomplete for arbitrary data that is an array
+                autoCompleteList={selectableListData?.categories ?? []}
+              />
+            );
+          }
+
+          if (typeof fieldValue === "string") {
+            return (
+              <TextEdit
+                key={field}
+                editedData={sideBarData.text[field]}
+                updateData={updateTextField(field)}
+                heading={toTitleCase(field)}
+              />
+            );
+          }
+
+          if (fieldValue instanceof Date)
+            return (
+              <DateEdit
+                key={field}
+                heading={toTitleCase(field)}
+                editedData={sideBarData.date[field]}
+                updateData={updateDateField(field)}
+              />
+            );
+
+          return null;
+        })}
         {children}
       </Flex>
     </Box>
