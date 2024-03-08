@@ -1,6 +1,12 @@
 import config from "@/config/config.json";
 import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
-import { getTimeLeftText, knownMetaData, omit, toTitleCase } from "@/utils";
+import {
+  getTimeLeftText,
+  isStringArray,
+  knownMetaData,
+  omit,
+  toTitleCase,
+} from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
@@ -217,7 +223,7 @@ const SidebarContentEdit = ({
         {Object.keys(arbitraryFields).map((field) => {
           const fieldValue = arbitraryFields[field];
 
-          if (Array.isArray(fieldValue)) {
+          if (Array.isArray(fieldValue) && isStringArray(fieldValue)) {
             return (
               <ListEdit
                 key={field}
@@ -225,7 +231,7 @@ const SidebarContentEdit = ({
                 type="singleSelect"
                 heading={toTitleCase(field)}
                 name={field}
-                editedData={sideBarData.list[field]}
+                editedData={fieldValue}
                 updateData={updateListField(field)}
                 // TODO: Determine how to autocomplete for arbitrary data that is an array
                 autoCompleteList={selectableListData?.categories ?? []}
@@ -237,7 +243,7 @@ const SidebarContentEdit = ({
             return (
               <TextEdit
                 key={field}
-                editedData={sideBarData.text[field]}
+                editedData={fieldValue}
                 updateData={updateTextField(field)}
                 heading={toTitleCase(field)}
               />
@@ -249,7 +255,7 @@ const SidebarContentEdit = ({
               <DateEdit
                 key={field}
                 heading={toTitleCase(field)}
-                editedData={sideBarData.date[field]}
+                editedData={fieldValue}
                 updateData={updateDateField(field)}
               />
             );
