@@ -384,3 +384,7 @@ export function toTitleCase(str: string) {
     })
     .join(" ");
 }
+
+export function isStringArray(arr: string[] | unknown[]): arr is string[] {
+  return arr.every((item) => typeof item === "string");
+}

@@ -55,7 +55,13 @@ export type UserReview = {
   data: UserReviewData[];
 };
 
-export type ArbitraryFieldValues = string | Date | boolean | string[] | null;
+export type ArbitraryFieldValues =
+  | string
+  | Date
+  | boolean
+  | string[]
+  | null
+  | unknown[];
 
 export type TranscriptContent = Record<string, ArbitraryFieldValues> & {
   body: string;
