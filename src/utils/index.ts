@@ -1,7 +1,7 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { ArbitraryFieldValues, MetadataProps } from "../../types";
+import { ArbitraryFieldValues, Flatten, MetadataProps } from "../../types";
 import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
@@ -360,19 +360,32 @@ export const knownMetaData = [
   "tags",
 ];
 
+export const whitelistedArbitraryMetaData = [];
+
 export function omit<
-  Key extends string,
-  OmittedKey extends Key,
-  Object extends Record<Key, unknown>,
->(object: Object, keysToOmit: OmittedKey[]) {
+  Object extends Record<string, unknown>,
+  OmittedKeys extends keyof Object,
+>(object: Object, keysToOmit: OmittedKeys[]) {
   const result = {} as Object;
-  const keys = Object.keys(object) as Key[];
-  keys.forEach((key) => {
-    if (!keysToOmit.includes(key as OmittedKey)) {
+  (Object.keys(object) as Array<keyof Object>).forEach((key) => {
+    if (!keysToOmit.includes(key as OmittedKeys)) {
       result[key] = object[key];
     }
   });
-  return result as Omit<Object, OmittedKey>;
+  return result as Flatten<Omit<Object, OmittedKeys>>;
+}
+
+export function pick<
+  Object extends Record<string, unknown>,
+  PickedKeys extends keyof Object,
+>(object: Object, keysToPick: PickedKeys[]) {
+  const result = {} as Flatten<Pick<Object, PickedKeys>>;
+  keysToPick.forEach((key) => {
+    if (key in object) {
+      result[key] = object[key];
+    }
+  });
+  return result;
 }
 
 export function toTitleCase(str: string) {

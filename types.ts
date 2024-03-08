@@ -202,3 +202,9 @@ export type SaveToGHData = Record<string, unknown> & {
   ghBranchUrl: string | null;
   reviewId: number;
 };
+
+export type Identity<T> = T;
+
+export type Flatten<T> = Identity<{
+  [K in keyof T]: T[K];
+}>;

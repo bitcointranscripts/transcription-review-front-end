@@ -5,7 +5,9 @@ import {
   isStringArray,
   knownMetaData,
   omit,
+  pick,
   toTitleCase,
+  whitelistedArbitraryMetaData,
 } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
@@ -123,13 +125,16 @@ const SidebarContentEdit = ({
     }
   }, []);
 
-  const arbitraryFields = omit(
-    {
-      ...sideBarData.text,
-      ...sideBarData.list,
-      ...sideBarData.date,
-    },
-    knownMetaData
+  const arbitraryFields = pick(
+    omit(
+      {
+        ...sideBarData.text,
+        ...sideBarData.list,
+        ...sideBarData.date,
+      },
+      knownMetaData
+    ),
+    whitelistedArbitraryMetaData
   ) as Record<string, ArbitraryFieldValues>;
 
   return (
