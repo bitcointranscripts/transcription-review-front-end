@@ -33,16 +33,21 @@ export function ListEdit(
         type: "singleSelect";
       })
   ) & {
-    heading: string;
+    heading: string | JSX.Element;
   }
 ) {
   return (
     <Box>
-      <Text fontWeight={600} mb={2}>
-        {props.heading}
-      </Text>
+      {typeof props.heading === "string" ? (
+        <Text fontWeight={600} mb={2}>
+          {props.heading}
+        </Text>
+      ) : (
+        props.heading
+      )}
+
       {props.type === "onlySelect" ? (
-        <OnlySelectField {...props} />
+        <OnlySelectField userCanAddToList {...props} />
       ) : (
         <SingleSelectField {...props} />
       )}
