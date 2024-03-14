@@ -28,7 +28,6 @@ import {
   sideBarContentUpdateParams,
 } from "../transcript";
 import { DateEdit, ListEdit, TextEdit } from "./CategoryEdit";
-import { OnlySelectField } from "./SelectField";
 
 function extractDirFormat(input: Record<string, any> = {}): IDir[] {
   if (Object.keys(input).length === 0) return [];
@@ -202,30 +201,31 @@ const SidebarContentEdit = ({
           updateData={updateListField("categories")}
           autoCompleteList={selectableListData?.categories ?? []}
         />
-        <Box>
-          <Flex gap={2}>
-            <Text fontWeight={600} mb={2}>
-              Tags
-            </Text>
-            <span>
-              (
-              <Link href="https://btctranscripts.com/tags/" target="_blank">
-                <Text display="inline" color="blue.600" fontSize="12px">
-                  What&apos;s this?
-                </Text>
-              </Link>
-              )
-            </span>
-          </Flex>
-          <OnlySelectField
-            name="tags"
-            editedData={sideBarData.list.tags}
-            updateData={(tags) =>
-              updateListField("tags")(tags.map((tag) => tag.toLowerCase()))
-            }
-            autoCompleteList={selectableListData?.tags ?? []}
-          />
-        </Box>
+        <ListEdit
+          type="onlySelect"
+          heading={
+            <Flex gap={2}>
+              <Text fontWeight={600} mb={2}>
+                Tags
+              </Text>
+              <span>
+                (
+                <Link href="https://btctranscripts.com/tags/" target="_blank">
+                  <Text display="inline" color="blue.600" fontSize="12px">
+                    What&apos;s this?
+                  </Text>
+                </Link>
+                )
+              </span>
+            </Flex>
+          }
+          name="tags"
+          editedData={sideBarData.list.tags}
+          updateData={(tags) =>
+            updateListField("tags")(tags.map((tag) => tag.toLowerCase()))
+          }
+          autoCompleteList={selectableListData?.tags ?? []}
+        />
         {Object.keys(arbitraryFields).map((field) => {
           const fieldValue = arbitraryFields[field];
 
