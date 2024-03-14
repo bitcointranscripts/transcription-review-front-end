@@ -181,6 +181,7 @@ const SidebarContentEdit = ({
           heading="Title"
         />
         <ListEdit
+          type="onlySelect"
           heading="Speakers"
           name="speakers"
           editedData={sideBarData.list.speakers}
