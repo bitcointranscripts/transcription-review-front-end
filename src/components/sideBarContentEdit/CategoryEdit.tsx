@@ -27,10 +27,10 @@ export function TextEdit({
 export function ListEdit(
   props: (
     | (React.ComponentProps<typeof OnlySelectField> & {
-        type?: "onlySelect";
+        type: "onlySelect";
       })
     | (React.ComponentProps<typeof SingleSelectField> & {
-        type?: "singleSelect";
+        type: "singleSelect";
       })
   ) & {
     heading: string;
