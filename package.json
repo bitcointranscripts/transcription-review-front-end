@@ -21,6 +21,7 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/markdown-it": "^13.0.0",
     "axios": "^1.4.0",
+    "bolt11": "^1.4.1",
     "date-fns": "^2.30.0",
     "framer-motion": "^10.15.1",
     "jsonwebtoken": "^9.0.1",
