@@ -1,8 +1,14 @@
+import "react-datepicker/dist/react-datepicker.css";
+
+import { useSession } from "next-auth/react";
+import { ChangeEvent, useRef, useState } from "react";
+
 import {
   usePayInvoice,
   useValidateAddress,
   useWithdrawSats,
 } from "@/services/api/wallet";
+import { validateInvoice } from "@/utils/invoice";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -18,9 +24,6 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
-import { ChangeEvent, useRef, useState } from "react";
-import "react-datepicker/dist/react-datepicker.css";
 
 type Props = {
   isOpen: boolean;
@@ -73,6 +76,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
   const lnInvoiceCheck =
     /^ln([a-z0-9]+)1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+[a-z0-9]?$/;
   const handleClose = () => {
+    setError("");
     setInvoiceInput("");
     onCancel();
     setStep(1);
@@ -80,6 +84,19 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
 
   // function to withdraw sats with invoice
   const withdrawSatsWithInvoice = (invoice: string, userID: number) => {
+    const validateInvoiceResult = validateInvoice(invoice);
+    if (!validateInvoiceResult.success) {
+      setError(validateInvoiceResult.message);
+      toast({
+        title: "Error",
+        description: validateInvoiceResult.message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
     withdrawSats.mutate(
       {
         invoice: invoice,
@@ -242,6 +259,7 @@ const WalletAlert = ({ isOpen, onCancel, refetch, balance }: Props) => {
       }
     );
   };
+
   return (
     <AlertDialog
       isOpen={isOpen}

@@ -25,7 +25,6 @@ import { useGetWallet } from "@/services/api/wallet";
 
 import { Transaction } from "../../../types";
 
-// eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (item: T) => void;
 
 const FilterItem = ({ text }: { text: string }) => (
@@ -201,9 +200,12 @@ const Wallet = () => {
           filters={{ date: dateFilter, status: statusFilter, type: typeFilter }}
         />
       </Flex>
-      <WalletAlert 
-      balance={walletData?.balance ?? 0}
-      isOpen={isOpen} onCancel={onClose} refetch={refetch} />
+      <WalletAlert
+        balance={walletData?.balance ?? 0}
+        isOpen={isOpen}
+        onCancel={onClose}
+        refetch={refetch}
+      />
     </>
   );
 };
