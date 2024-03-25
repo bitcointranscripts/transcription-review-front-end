@@ -1,7 +1,7 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { MetadataProps } from "../../types";
+import { ArbitraryFieldValues, Flatten, MetadataProps } from "../../types";
 import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
@@ -70,19 +70,10 @@ export class Metadata {
   public fileTitle: string;
   public source: string;
 
-  constructor({
-    fileTitle,
-    transcript_by,
-    url,
-    date,
-    tags,
-    speakers,
-    categories,
-  }: MetadataProps) {
+  constructor({ fileTitle, transcript_by, url, ...restProps }: MetadataProps) {
     this.fileTitle = fileTitle;
     this.source = url;
 
-    // eslint-disable-next-line prettier/prettier
     this.metaData =
       `---\n` +
       `title: "${fileTitle}"\n` +
@@ -90,18 +81,12 @@ export class Metadata {
 
     this.metaData += `media: ${url}\n`;
 
-    if (tags) {
-      this.metaData += `tags: ${tags}\n`;
+    for (const field of Object.keys(restProps)) {
+      const fieldValue = restProps[field];
+      if (fieldValue) {
+        this.metaData += `${field}: ${fieldValue}\n`;
+      }
     }
-
-    if (speakers) {
-      this.metaData += `speakers: ${speakers}\n`;
-    }
-
-    if (categories) {
-      this.metaData += `categories: ${categories}\n`;
-    }
-    this.metaData += `date: ${date}\n`;
 
     this.metaData += `---\n`;
   }
@@ -138,17 +123,15 @@ export function getRequestUrl(req: NextApiRequest) {
   return requestUrl;
 }
 
-export function formatDataForMetadata(data: string[] | string) {
-  if (Array.isArray(data)) {
-    if (data.length) {
+export function formatDataForMetadata(data: ArbitraryFieldValues) {
+  switch (true) {
+    case typeof data === "boolean":
+    case Array.isArray(data) && !!data.length:
       return JSON.stringify(data);
-    } else {
+    case typeof data === "string" && !!data.trim():
+      return data?.toString();
+    default:
       return undefined;
-    }
-  } else if (data.trim()) {
-    return data;
-  } else {
-    return undefined;
   }
 }
 
@@ -366,5 +349,55 @@ export const guidelinesReviewArray = [
 
 export const discordInvites = {
   review_guidelines: "https://discord.gg/jqj4maCs8p",
-  feedback: "https://discord.gg/W4cmWRhMnr"
+  feedback: "https://discord.gg/W4cmWRhMnr",
 };
+
+export const knownMetaData = [
+  "title",
+  "speakers",
+  "date",
+  "categories",
+  "tags",
+];
+
+export const whitelistedArbitraryMetaData = [];
+
+export function omit<
+  Object extends Record<string, unknown>,
+  OmittedKeys extends keyof Object,
+>(object: Object, keysToOmit: OmittedKeys[]) {
+  const result = {} as Object;
+  (Object.keys(object) as Array<keyof Object>).forEach((key) => {
+    if (!keysToOmit.includes(key as OmittedKeys)) {
+      result[key] = object[key];
+    }
+  });
+  return result as Flatten<Omit<Object, OmittedKeys>>;
+}
+
+export function pick<
+  Object extends Record<string, unknown>,
+  PickedKeys extends keyof Object,
+>(object: Object, keysToPick: PickedKeys[]) {
+  const result = {} as Flatten<Pick<Object, PickedKeys>>;
+  keysToPick.forEach((key) => {
+    if (key in object) {
+      result[key] = object[key];
+    }
+  });
+  return result;
+}
+
+export function toTitleCase(str: string) {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
+export function isStringArray(arr: string[] | unknown[]): arr is string[] {
+  return arr.every((item) => typeof item === "string");
+}

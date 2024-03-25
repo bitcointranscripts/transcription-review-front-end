@@ -55,7 +55,15 @@ export type UserReview = {
   data: UserReviewData[];
 };
 
-export type TranscriptContent = {
+export type ArbitraryFieldValues =
+  | string
+  | Date
+  | boolean
+  | string[]
+  | null
+  | unknown[];
+
+export type TranscriptContent = Record<string, ArbitraryFieldValues> & {
   body: string;
   categories: string[];
   date: Nullable<Date>;
@@ -69,7 +77,7 @@ export type TranscriptContent = {
 
 type Nullable<T> = T | null;
 
-export type MetadataProps = {
+export type MetadataProps = Record<string, ArbitraryFieldValues> & {
   fileTitle: string;
   transcript_by: string;
   url: string;
@@ -173,7 +181,7 @@ export type TransactionQueryType =
 export type TransactionQueryStatus =
   (typeof TransactionStatus)[keyof typeof TransactionStatus];
 
-export type SaveToGHData = {
+export type SaveToGHData = Record<string, unknown> & {
   directoryPath: string;
   fileName?: string;
   url: string | null;
@@ -194,3 +202,9 @@ export type SaveToGHData = {
   ghBranchUrl: string | null;
   reviewId: number;
 };
+
+export type Identity<T> = T;
+
+export type Flatten<T> = Identity<{
+  [K in keyof T]: T[K];
+}>;
