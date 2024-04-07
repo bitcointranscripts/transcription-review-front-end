@@ -24,7 +24,7 @@ const MaintenanceBanner = () => {
           textTransform={"uppercase"}
           paddingBottom={"4apx"}
         >
-          Service Disprution !!!
+          Service Disruption !!!
         </Text>
         <Text fontSize={["13px", "16px"]}>
           Withdrawals are currently unavailable as we are experiencing a
