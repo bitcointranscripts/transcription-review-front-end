@@ -24,7 +24,7 @@ import TransactionsTable from "@/components/tables/TransactionsTable";
 import { useGetWallet } from "@/services/api/wallet";
 
 import { Transaction } from "../../../types";
-import MaintenanceBanner from '@/components/banner/MaintenanceBanner';
+import MaintenanceBanner from "@/components/banner/MaintenanceBanner";
 
 type OnSelect<T> = (item: T) => void;
 
