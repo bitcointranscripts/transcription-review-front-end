@@ -19,5 +19,10 @@ export const FilterQueryNames = {
   status: "status",
 } as const;
 
+export const INVOICE_PREFIX = {
+  mainnet: "lnbc",
+  signet: "lnbs",
+} as const;
+
 export const upstreamOwner = "bitcointranscripts";
 export const upstreamRepo = "bitcointranscripts";

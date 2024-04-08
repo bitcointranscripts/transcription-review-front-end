@@ -24,8 +24,8 @@ import TransactionsTable from "@/components/tables/TransactionsTable";
 import { useGetWallet } from "@/services/api/wallet";
 
 import { Transaction } from "../../../types";
+import MaintenanceBanner from '@/components/banner/MaintenanceBanner';
 
-// eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (item: T) => void;
 
 const FilterItem = ({ text }: { text: string }) => (
@@ -139,6 +139,7 @@ const Wallet = () => {
   return (
     <>
       <Flex flexDir="column">
+        <MaintenanceBanner />
         <Heading size={"md"} mb={10}>
           My Wallet
         </Heading>
@@ -201,9 +202,12 @@ const Wallet = () => {
           filters={{ date: dateFilter, status: statusFilter, type: typeFilter }}
         />
       </Flex>
-      <WalletAlert 
-      balance={walletData?.balance ?? 0}
-      isOpen={isOpen} onCancel={onClose} refetch={refetch} />
+      <WalletAlert
+        balance={walletData?.balance ?? 0}
+        isOpen={isOpen}
+        onCancel={onClose}
+        refetch={refetch}
+      />
     </>
   );
 };
