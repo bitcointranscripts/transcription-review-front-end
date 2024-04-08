@@ -70,21 +70,17 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
     return (
       <>
         <ModalHeader fontSize="2xl" fontWeight="bold" paddingBottom={0}>
-        <ModalHeader fontSize="2xl" fontWeight="bold" paddingBottom={0}>
           Review Guidelines
         </ModalHeader>
         <ModalBody>
-          <Flex
-            flexDir={"column"}
-            gap={2}
-          >
+          <Flex flexDir={"column"} gap={2}>
             <Text>
-              To ensure a shared quality of transcripts, please
-              follow the guidelines below
+              To ensure a shared quality of transcripts, please follow the
+              guidelines below
             </Text>
             <>
               <Divider marginY={2} />
-              <Text fontSize="sm" alignSelf='end'>
+              <Text fontSize="sm" alignSelf="end">
                 Need help or have questions?{" "}
                 <Link
                   href={discordInvites.review_guidelines}
@@ -99,28 +95,26 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
               <Divider marginY={2} />
             </>
             {guidelinesReviewArray.map((guideline) => (
-              <Flex
-                key={guideline.heading}
-                flexDir={"column"}
-                gap={2}
-              >
-                <Heading size='md'>{guideline.heading}</Heading>
+              <Flex key={guideline.heading} flexDir={"column"} gap={2}>
+                <Heading size="md">{guideline.heading}</Heading>
                 <UnorderedList pl={3} color="gray.700" fontSize="14px">
                   {guideline.paragraphs.map((paragraph) => (
                     <ListItem key={paragraph}>
-                      <Text dangerouslySetInnerHTML={{ __html: mdParser.render(paragraph) }}></Text>
+                      <Text
+                        dangerouslySetInnerHTML={{
+                          __html: mdParser.render(paragraph),
+                        }}
+                      ></Text>
                     </ListItem>
                   ))}
                 </UnorderedList>
-
               </Flex>
             ))}
           </Flex>
         </ModalBody>
 
         {isFirstTime && (
-          <ModalFooter
-          >
+          <ModalFooter>
             <Button
               size="sm"
               colorScheme="orange"
@@ -132,7 +126,6 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
             </Button>
           </ModalFooter>
         )}
-
       </>
     );
   }
