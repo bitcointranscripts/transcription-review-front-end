@@ -70,7 +70,6 @@ const GuidelinesContent = forwardRef<HTMLButtonElement, GuidelinesContentProps>(
     return (
       <>
         <ModalHeader fontSize="2xl" fontWeight="bold" paddingBottom={0}>
-        <ModalHeader fontSize="2xl" fontWeight="bold" paddingBottom={0}>
           Review Guidelines
         </ModalHeader>
         <ModalBody>
