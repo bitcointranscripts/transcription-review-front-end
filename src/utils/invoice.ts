@@ -18,7 +18,7 @@ export const validateInvoice = (invoice: string) => {
       };
     }
     if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
-      if (decodedInvoice.prefix !== INVOICE_PREFIX.mainnet) {
+      if (!decodedInvoice.prefix?.includes(INVOICE_PREFIX.mainnet)) {
         return {
           success: false,
           message: "Invalid invoice. Please use a mainnet invoice",
@@ -36,6 +36,7 @@ export const validateInvoice = (invoice: string) => {
       message: "Invoice is valid",
     };
   } catch (error) {
+    console.error("validateInvoice error", error);
     return {
       success: false,
       message: "Invalid invoice",
