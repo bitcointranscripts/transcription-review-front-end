@@ -139,7 +139,8 @@ const Wallet = () => {
   return (
     <>
       <Flex flexDir="column">
-        <MaintenanceBanner />
+        {/* Commented and not deleted incase of an incident and we need the banner again */}
+        {/* <MaintenanceBanner /> */}
         <Heading size={"md"} mb={10}>
           My Wallet
         </Heading>
