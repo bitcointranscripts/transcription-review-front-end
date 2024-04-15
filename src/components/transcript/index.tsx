@@ -11,6 +11,7 @@ import { useUpdateTranscript } from "@/services/api/transcripts";
 import {
   dateFormatGeneral,
   formatDataForMetadata,
+  parseJsonArray,
   omit,
   reconcileArray,
 } from "@/utils";
@@ -65,6 +66,58 @@ export type sideBarContentUpdateParams<T, K> = {
   name: K;
 };
 
+const getTranscriptContent = (content: TranscriptContent) => {
+  const {
+    speakers,
+    categories,
+    tags,
+    title = "",
+    loc = "",
+    date,
+    ...restContent
+  } = content;
+  const data: SideBarData = {
+    list: {
+      speakers: reconcileArray(speakers),
+      categories: reconcileArray(categories),
+      tags: reconcileArray(tags),
+    },
+    text: {
+      title,
+    },
+    loc: {
+      loc,
+    },
+    date: {
+      date: date ? new Date(date) : null,
+    },
+  };
+
+  for (const field of Object.keys(
+    omit(restContent, ["body", "media", "transcript_by"])
+  )) {
+    const fieldValue = restContent[field];
+
+    const jsonArray = parseJsonArray<any>(field);
+    if (jsonArray.ok) {
+      data.list[field] = jsonArray.data;
+      continue;
+    }
+
+    if (typeof fieldValue === "string") {
+      data.text[field] = fieldValue;
+      continue;
+    }
+
+    if (fieldValue instanceof Date) {
+      data.date[field] = fieldValue;
+      continue;
+    }
+  }
+
+  return data;
+};
+
 const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const transcriptData = reviewData.transcript;
   const router = useRouter();
@@ -82,56 +135,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
-  const [sideBarData, setSideBarData] = useState(() => {
-    const {
-      speakers,
-      categories,
-      tags,
-      title = "",
-      loc = "",
-      date,
-      ...restContent
-    } = transcriptData.content;
-    const data: SideBarData = {
-      list: {
-        speakers: reconcileArray(speakers),
-        categories: reconcileArray(categories),
-        tags: reconcileArray(tags),
-      },
-      text: {
-        title,
-      },
-      loc: {
-        loc,
-      },
-      date: {
-        date: date ? new Date(date) : null,
-      },
-    };
-
-    for (const field of Object.keys(
-      omit(restContent, ["body", "media", "transcript_by"])
-    )) {
-      const fieldValue = restContent[field];
-
-      if (Array.isArray(fieldValue)) {
-        data.list[field] = reconcileArray(fieldValue);
-        continue;
-      }
-
-      if (typeof fieldValue === "string") {
-        data.text[field] = fieldValue;
-        continue;
-      }
-
-      if (fieldValue instanceof Date) {
-        data.date[field] = fieldValue;
-        continue;
-      }
-    }
-
-    return data;
-  });
+  const [sideBarData, setSideBarData] = useState(() =>
+    getTranscriptContent(transcriptData.content)
+  );
 
   const sideBarContentUpdater = <
     T extends keyof SideBarData,
@@ -163,24 +169,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
     editorRef.current?.setText(transcriptData.originalContent?.body);
-    setSideBarData({
-      list: {
-        speakers: reconcileArray(transcriptData.originalContent?.speakers),
-        categories: reconcileArray(transcriptData.originalContent?.categories),
-        tags: reconcileArray(transcriptData.originalContent?.tags),
-      },
-      text: {
-        title: transcriptData.originalContent.title,
-      },
-      loc: {
-        loc: transcriptData?.content?.loc ?? "",
-      },
-      date: {
-        date: transcriptData.originalContent?.date
-          ? new Date(transcriptData.originalContent.date)
-          : null,
-      },
-    });
+    setSideBarData(() => getTranscriptContent(transcriptData.originalContent));
     setEditedData(transcriptData.originalContent.body ?? "");
   };
 

@@ -162,6 +162,18 @@ export function reconcileArray(possibleArray: unknown): string[] {
   return [];
 }
 
+export function parseJsonArray<T>(possibleArray: unknown): {
+  ok: boolean;
+  data: T | null;
+} {
+  try {
+    const data = JSON.parse(possibleArray as string);
+    return { ok: Array.isArray(data), data };
+  } catch (e) {
+    return { ok: false, data: null };
+  }
+}
+
 export function newIndexFile(directoryName: string) {
   const title = directoryName
     .split("-")
