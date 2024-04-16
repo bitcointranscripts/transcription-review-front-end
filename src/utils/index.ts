@@ -205,7 +205,7 @@ export function derivePublishUrl(
   loc: string = config.defaultDirectoryPath
 ) {
   const base_url = config.btctranscripts_base_url;
-  const publishUrl = base_url + loc + "/" + fileName;
+  const publishUrl = base_url + loc + fileName;
   return publishUrl;
 }
 
