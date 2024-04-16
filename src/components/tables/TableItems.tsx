@@ -313,10 +313,16 @@ export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
   const { pr_url } = data.review!;
   let publishUrl = "";
   const isPublished = data.review?.mergedAt;
-
+  const directoryUrlMatch = data.transcriptUrl
+    ? // checks for strings between contents/ and the last "/" (file name)
+      data.transcriptUrl.match(
+        /https:\/\/api\.github\.com\/repos\/[^\/]*\/[^\/]*\/contents\/((?:[^\/]*\/)+)/
+      )
+    : "";
+  const directoryPath = directoryUrlMatch ? directoryUrlMatch[1] : "";
   if (isPublished) {
-    let fileSlug = deriveFileSlug(data.content.title);
-    publishUrl = derivePublishUrl(fileSlug, data.content.loc);
+    let fileSlug = deriveFileSlug(data.content.title, /:/);
+    publishUrl = derivePublishUrl(fileSlug, directoryPath);
   }
 
   return (
