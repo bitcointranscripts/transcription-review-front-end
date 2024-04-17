@@ -24,6 +24,7 @@ import { ReviewTranscript } from "../../../types";
 import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableDataElement, TableStructure } from "./types";
+import { resolveGHApiUrl } from "@/utils/github";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -311,18 +312,16 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
 
 export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
   const { pr_url } = data.review!;
-  let publishUrl = "";
   const isPublished = data.review?.mergedAt;
-  const directoryUrlMatch = data.transcriptUrl
-    ? // checks for strings between contents/ and the last "/" (file name)
-      data.transcriptUrl.match(
-        /https:\/\/api\.github\.com\/repos\/[^\/]*\/[^\/]*\/contents\/((?:[^\/]*\/)+)/
-      )
-    : "";
-  const directoryPath = directoryUrlMatch ? directoryUrlMatch[1] : "";
+  const newTranscriptsUrl =
+    data.transcriptUrl && resolveGHApiUrl(data.transcriptUrl);
+  let publishUrl = "";
+
   if (isPublished) {
     let fileSlug = deriveFileSlug(data.content.title, /:/);
-    publishUrl = derivePublishUrl(fileSlug, directoryPath);
+    publishUrl = newTranscriptsUrl
+      ? derivePublishUrl(fileSlug, newTranscriptsUrl.srcDirPath)
+      : derivePublishUrl(fileSlug, data.content.loc);
   }
 
   return (
