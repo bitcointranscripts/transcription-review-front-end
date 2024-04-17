@@ -50,7 +50,6 @@ const TitleWithTags = ({
   );
   const tags = shouldSlice ? allTags.slice(0, 1) : allTags;
   const transcript = resolveTranscriptUrl(transcriptUrl);
-
   return (
     <Td width="40%">
       <Flex gap={2} flexDir="column">
