@@ -1,4 +1,5 @@
 import { dateFormat, deriveFileSlug, derivePublishUrl } from "@/utils";
+import config from "../../config/config.json";
 import {
   Box,
   Button,
@@ -313,15 +314,18 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
 export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
   const { pr_url } = data.review!;
   const isPublished = data.review?.mergedAt;
-  const newTranscriptsUrl =
-    data.transcriptUrl && resolveGHApiUrl(data.transcriptUrl);
   let publishUrl = "";
 
   if (isPublished) {
-    let fileSlug = deriveFileSlug(data.content.title, /:/);
-    publishUrl = newTranscriptsUrl
-      ? derivePublishUrl(fileSlug, newTranscriptsUrl.srcDirPath)
-      : derivePublishUrl(fileSlug, data.content.loc);
+    if (data.transcriptUrl) {
+      // new queueing implementation
+      const { filePath } = resolveGHApiUrl(data.transcriptUrl);
+      publishUrl = `${config.btctranscripts_base_url}${filePath.slice(0, -3)}`;
+    } else {
+      // old queueing implementation
+      let fileSlug = deriveFileSlug(data.content.title);
+      publishUrl = derivePublishUrl(fileSlug, data.content.loc);
+    }
   }
 
   return (
