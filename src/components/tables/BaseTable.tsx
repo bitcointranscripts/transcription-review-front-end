@@ -23,9 +23,6 @@ type Props<T> = {
   refetch?: <TPageData>(
     options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
   ) => Promise<QueryObserverResult<any, unknown>>;
-  actionState?: {
-    rowId: number;
-  };
   tableStructure: TableStructure<T>[];
   tableHeader?: string;
   tableHeaderComponent?: React.ReactNode;
@@ -40,7 +37,6 @@ const BaseTable = <T extends object>({
   emptyView,
   isLoading,
   refetch,
-  actionState,
   tableStructure,
   tableHeader,
   tableHeaderComponent,
@@ -90,7 +86,6 @@ const BaseTable = <T extends object>({
                 }-data-row-${idx}`}
                 row={dataRow}
                 ts={tableStructure}
-                actionState={actionState}
               />
             ))
           ) : (
@@ -105,12 +100,10 @@ const BaseTable = <T extends object>({
 const TableRow = <T extends object>({
   row,
   ts,
-  actionState,
   showControls,
 }: {
   row: T;
   ts: TableStructure<T>[];
-  actionState: Props<T>["actionState"];
   showControls: boolean;
 }) => {
   return (
@@ -121,7 +114,6 @@ const TableRow = <T extends object>({
           key={tableItem.name}
           tableItem={tableItem}
           row={row}
-          actionState={actionState}
         />
       ))}
     </Tr>

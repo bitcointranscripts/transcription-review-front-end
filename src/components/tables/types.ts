@@ -22,7 +22,4 @@ export type TableStructure<T> = {
 export type TableDataElement<T> = {
   tableItem: TableStructure<T>;
   row: T;
-  actionState?: {
-    rowId: number;
-  };
 };

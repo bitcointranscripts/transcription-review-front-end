@@ -110,9 +110,7 @@ const QueueTable = () => {
 
   const retriedClaim = useRef(0);
 
-  const [claimState, setClaimState] = useState({
-    rowId: -1,
-  });
+  const [selectedTranscriptId, setSelectedTranscriptId] = useState(-1);
   const { data: multipleStatusData } = useUserMultipleReviews({
     userId: session?.user?.id,
     multipleStatus: ["pending", "active", "inactive"],
@@ -156,7 +154,7 @@ const QueueTable = () => {
         return;
       }
       if (session?.user?.id) {
-        setClaimState((prev) => ({ ...prev, rowId: transcriptId }));
+        setSelectedTranscriptId(transcriptId);
 
         // Fork repo
         const forkResult = await axios.post("/api/github/fork");
@@ -200,7 +198,7 @@ const QueueTable = () => {
                   throw new Error("failed to claim transcript");
                 }
 
-                setClaimState((prev) => ({ ...prev, rowId: -1 }));
+                setSelectedTranscriptId(-1);
                 if (data instanceof Error) {
                   await retryLoginAndClaim(transcriptId);
                   return;
@@ -217,7 +215,7 @@ const QueueTable = () => {
 
             onError: (err) => {
               const error = err as Error;
-              setClaimState((prev) => ({ ...prev, rowId: -1 }));
+              setSelectedTranscriptId(-1);
               toast({
                 status: "error",
                 title: error?.message,
@@ -347,8 +345,8 @@ const QueueTable = () => {
           modifier: (data) => data.id,
           component: (data) => (
             <Button
-              isDisabled={claimState.rowId !== -1}
-              isLoading={data.id == claimState.rowId}
+              isDisabled={selectedTranscriptId !== -1}
+              isLoading={data.id == selectedTranscriptId}
               bgColor={"#EB9B00"}
               color="white"
               _hover={{ bgColor: "#EB9B00AE" }}
@@ -361,7 +359,7 @@ const QueueTable = () => {
           ),
         },
       ] as TableStructure<Transcript>[],
-    [handleClaim, claimState.rowId]
+    [handleClaim, selectedTranscriptId]
   );
 
   return (
@@ -369,7 +367,6 @@ const QueueTable = () => {
       {({ handleArchive, hasAdminSelected, isArchiving }) => (
         <>
           <BaseTable
-            actionState={claimState}
             data={data?.data}
             emptyView="There are no transcripts awaiting review"
             handleArchive={handleArchive}
