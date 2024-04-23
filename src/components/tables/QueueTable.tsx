@@ -198,7 +198,6 @@ const QueueTable = () => {
                   throw new Error("failed to claim transcript");
                 }
 
-                setSelectedTranscriptId(-1);
                 if (data instanceof Error) {
                   await retryLoginAndClaim(transcriptId);
                   return;
