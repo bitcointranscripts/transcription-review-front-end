@@ -156,72 +156,71 @@ const QueueTable = () => {
       if (session?.user?.id) {
         setSelectedTranscriptId(transcriptId);
 
-        // Fork repo
-        const forkResult = await axios.post("/api/github/fork");
-        const owner = forkResult.data.owner.login;
+        try {
+          // Fork repo
+          const forkResult = await axios.post("/api/github/fork");
+          const owner = forkResult.data.owner.login;
 
-        const env_owner =
-          process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
-            ? forkResult.data.owner.login
-            : upstreamOwner;
+          const env_owner =
+            process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+              ? forkResult.data.owner.login
+              : upstreamOwner;
 
-        let branchUrl;
+          let branchUrl;
 
-        if (transcript && transcript.transcriptUrl) {
-          try {
-            await axios
-              .post("/api/github/newBranch", {
-                ghSourcePath: transcript.transcriptUrl,
-                owner,
-                env_owner,
-              })
-              .then((res) => {
-                branchUrl = res.data.branchUrl;
-              })
-              .catch((err) => {
-                throw err;
-              });
-          } catch (err: any) {
-            console.error(err);
-            throw new Error(err.message);
+          if (transcript && transcript.transcriptUrl) {
+            const result = await axios.post("/api/github/newBranch", {
+              ghSourcePath: transcript.transcriptUrl,
+              owner,
+              env_owner,
+            })
+            branchUrl = result.data.branchUrl
           }
+
+          // Claim transcript
+          claimTranscript.mutate(
+            { userId: session.user.id, transcriptId, branchUrl },
+            {
+              onSuccess: async (data) => {
+                try {
+                  const reviewId = data.id;
+                  if (!reviewId) {
+                    throw new Error("failed to claim transcript");
+                  }
+
+                  if (data instanceof Error) {
+                    await retryLoginAndClaim(transcriptId);
+                    return;
+                  }
+                  if (multipleStatusData.length > 0) {
+                    router.push(`/reviews/${data.id}`);
+                  } else {
+                    router.push(`/reviews/${data.id}?first_review=true`);
+                  }
+                } catch (err) {
+                  console.error(err);
+                }
+              },
+
+              onError: (err) => {
+                throw err
+              },
+            }
+          );
+        } catch (error: any) {
+          // handles all errors from claiming process
+          let errorTitle = error.message
+          if (error.response) {
+            // for errors coming from axios requests
+            // we display our custom error message
+            errorTitle = error.response.data.message
+          }
+          setSelectedTranscriptId(-1);
+          toast({
+            status: "error",
+            title: errorTitle,
+          });
         }
-
-        // Claim transcript
-        claimTranscript.mutate(
-          { userId: session.user.id, transcriptId, branchUrl },
-          {
-            onSuccess: async (data) => {
-              try {
-                const reviewId = data.id;
-                if (!reviewId) {
-                  throw new Error("failed to claim transcript");
-                }
-
-                if (data instanceof Error) {
-                  await retryLoginAndClaim(transcriptId);
-                  return;
-                }
-                if (multipleStatusData.length > 0) {
-                  router.push(`/reviews/${data.id}`);
-                } else {
-                  router.push(`/reviews/${data.id}?first_review=true`);
-                }
-              } catch (err) {
-                console.error(err);
-              }
-            },
-
-            onError: (err) => {
-              const error = err as Error;
-              setSelectedTranscriptId(-1);
-              toast({
-                status: "error",
-                title: error?.message,
-              });
-            },
-          }
-        );
       } else {
         await retryLoginAndClaim(transcriptId);
       }
