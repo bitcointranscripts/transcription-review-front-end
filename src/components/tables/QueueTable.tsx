@@ -347,6 +347,7 @@ const QueueTable = () => {
           modifier: (data) => data.id,
           component: (data) => (
             <Button
+              isDisabled={claimState.rowId !== -1}
               isLoading={data.id == claimState.rowId}
               bgColor={"#EB9B00"}
               color="white"
