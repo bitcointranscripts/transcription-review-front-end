@@ -347,6 +347,7 @@ const QueueTable = () => {
           modifier: (data) => data.id,
           component: (data) => (
             <Button
+              isLoading={data.id == claimState.rowId}
               bgColor={"#EB9B00"}
               color="white"
               _hover={{ bgColor: "#EB9B00AE" }}
@@ -359,7 +360,7 @@ const QueueTable = () => {
           ),
         },
       ] as TableStructure<Transcript>[],
-    [handleClaim]
+    [handleClaim, claimState.rowId]
   );
 
   return (
