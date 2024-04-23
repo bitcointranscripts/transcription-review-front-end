@@ -110,7 +110,6 @@ export const Tags = <T extends object>({
 export const TableAction = <T extends object>({
   tableItem,
   row,
-  actionState,
   showControls,
 }: TableDataElement<T> & { showControls: boolean }) => {
   const { data: userSession } = useSession();
@@ -120,7 +119,6 @@ export const TableAction = <T extends object>({
     tableItem.action(row);
   };
 
-  const isLoading = "id" in row && row.id === actionState?.rowId;
   const isAdmin = userSession?.user?.permissions === "admin";
   const showCheckBox = isAdmin && showControls;
 
@@ -134,7 +132,6 @@ export const TableAction = <T extends object>({
           <Button
             title={tableItem.isDisabledText}
             isDisabled={tableItem.isDisabled}
-            isLoading={isLoading}
             colorScheme="orange"
             size="sm"
             onClick={handleClick}
@@ -211,7 +208,6 @@ export const DataEmpty = ({
 export const RowData = <T extends object>({
   row,
   tableItem,
-  actionState,
   showControls,
 }: TableDataElement<T> & { showControls: boolean }) => {
   switch (tableItem.type) {
@@ -234,7 +230,6 @@ export const RowData = <T extends object>({
           key={tableItem.name}
           tableItem={tableItem}
           row={row}
-          actionState={actionState}
         />
       );
 
