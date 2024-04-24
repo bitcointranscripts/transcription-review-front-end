@@ -217,16 +217,8 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ghSourcePath,
       ghBranchUrl,
       reviewId: reviewData.id,
+      ...omit(restContent, ["media", "transcript_by"]),
     };
-
-    for (const field of Object.keys(
-      omit(restContent, ["media", "transcript_by"])
-    )) {
-      const fieldValue = restContent[field];
-      if (fieldValue) {
-        newImplData[field] = formatDataForMetadata(fieldValue);
-      }
-    }
 
     const isPreviousHash = compareTranscriptBetweenSave(newImplData);
     if (isPreviousHash) {
@@ -253,12 +245,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   };
 
   const handleSubmit = async () => {
-    const {
-      list: { speakers, categories, tags },
-      text: { title },
-      loc: { loc },
-      date: { date },
-    } = sideBarData;
+    const { loc, title, date, ...restContent } = getUpdatedContent();
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
     try {
       // save transcript
@@ -277,9 +264,6 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         url: transcriptData?.content.media,
         prUrl: reviewData?.pr_url,
         date: date && dateFormatGeneral(date, true),
-        tags: formatDataForMetadata(tags),
-        speakers: formatDataForMetadata(speakers),
-        categories: formatDataForMetadata(categories),
         transcribedText: editedData,
         transcript_by: formatDataForMetadata(
           userSession?.user?.githubUsername ?? ""
@@ -287,6 +271,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         prRepo,
         ghSourcePath,
         ghBranchUrl,
+        ...omit(restContent, ["media", "transcript_by"]),
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
       localStorage.removeItem("oldDirectoryList");

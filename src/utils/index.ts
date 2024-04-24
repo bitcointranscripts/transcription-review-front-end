@@ -6,6 +6,7 @@ import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
 import config from "../config/config.json";
+import yaml from "js-yaml";
 
 const claim_duration_in_ms = hoursToMilliseconds(
   config.claim_duration_in_hours
@@ -74,21 +75,19 @@ export class Metadata {
     this.fileTitle = fileTitle;
     this.source = url;
 
+    const jsonData = {
+      title: fileTitle,
+      transcript_by: `${transcript_by} via ${config.app_tag}`,
+      media: url,
+      ...restProps,
+    };
+
     this.metaData =
       `---\n` +
-      `title: "${fileTitle}"\n` +
-      `transcript_by: ${transcript_by} via ${config.app_tag}\n`;
-
-    this.metaData += `media: ${url}\n`;
-
-    for (const field of Object.keys(restProps)) {
-      const fieldValue = restProps[field];
-      if (fieldValue) {
-        this.metaData += `${field}: ${fieldValue}\n`;
-      }
-    }
-
-    this.metaData += `---\n`;
+      yaml.dump(jsonData, {
+        forceQuotes: true,
+      }) +
+      "---\n";
   }
 
   public toString(): string {
