@@ -176,6 +176,7 @@ export default async function handler(
     ghBranchUrl,
     directoryPath,
     reviewId,
+    ...otherMetaData
   } = req.body;
 
   const newMetadata = new Metadata({
@@ -186,6 +187,7 @@ export default async function handler(
     tags,
     speakers,
     categories,
+    ...otherMetaData,
   });
 
   const transcriptData = {

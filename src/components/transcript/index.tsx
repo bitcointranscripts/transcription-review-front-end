@@ -24,7 +24,11 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
 
-import type { TranscriptContent, UserReviewData } from "../../../types";
+import type {
+  SaveToGHData,
+  TranscriptContent,
+  UserReviewData,
+} from "../../../types";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -199,28 +203,27 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     onSuccessCallback?: () => void,
     onNoEditsCallback?: () => void
   ) => {
+    const { loc, title, date, body, ...restContent } = updatedContent;
     // create an awaitable promise for mutation
 
-    const newImplData = {
-      directoryPath: updatedContent.loc?.trim() ?? "",
-      fileName: formatDataForMetadata(updatedContent.title),
-      url: transcriptData?.content.media,
-      date: updatedContent.date && dateFormatGeneral(updatedContent.date, true),
-      tags: formatDataForMetadata(updatedContent.tags),
-      speakers: formatDataForMetadata(updatedContent.speakers),
-      categories: formatDataForMetadata(updatedContent.categories),
-      transcribedText: updatedContent.body,
+    const newImplData: SaveToGHData = {
+      directoryPath: loc?.trim() ?? "",
+      fileName: formatDataForMetadata(title),
+      url: transcriptData.content.media,
+      date: date && dateFormatGeneral(date, true),
+      transcribedText: body,
       transcript_by: formatDataForMetadata(
         userSession?.user?.githubUsername ?? ""
       ),
       ghSourcePath,
       ghBranchUrl,
       reviewId: reviewData.id,
+      ...omit(restContent, ["media", "transcript_by"]),
     };
 
     const isPreviousHash = compareTranscriptBetweenSave(newImplData);
     if (isPreviousHash) {
-      onNoEditsCallback && onNoEditsCallback();
+      onNoEditsCallback?.();
       return;
     }
 
@@ -236,19 +239,14 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           },
         }
       );
-      onSuccessCallback && onSuccessCallback();
+      onSuccessCallback?.();
     } catch (error) {
       throw error;
     }
   };
 
   const handleSubmit = async () => {
-    const {
-      list: { speakers, categories, tags },
-      text: { title },
-      loc: { loc },
-      date: { date },
-    } = sideBarData;
+    const { loc, title, date, ...restContent } = getUpdatedContent();
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
     try {
       // save transcript
@@ -267,9 +265,6 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         url: transcriptData?.content.media,
         prUrl: reviewData?.pr_url,
         date: date && dateFormatGeneral(date, true),
-        tags: formatDataForMetadata(tags),
-        speakers: formatDataForMetadata(speakers),
-        categories: formatDataForMetadata(categories),
         transcribedText: editedData,
         transcript_by: formatDataForMetadata(
           userSession?.user?.githubUsername ?? ""
@@ -277,6 +272,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         prRepo,
         ghSourcePath,
         ghBranchUrl,
+        ...omit(restContent, ["media", "transcript_by"]),
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
       localStorage.removeItem("oldDirectoryList");

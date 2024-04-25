@@ -421,6 +421,7 @@ export default async function handler(
     prUrl,
     ghSourcePath,
     ghBranchUrl,
+    ...otherMetaData
   } = req.body;
   const pull_number = extractPullNumber(prUrl || "");
   try {
@@ -433,6 +434,7 @@ export default async function handler(
       tags,
       speakers,
       categories,
+      ...otherMetaData,
     });
 
     if (ghBranchUrl) {
