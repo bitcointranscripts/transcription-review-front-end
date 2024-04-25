@@ -122,17 +122,15 @@ export function getRequestUrl(req: NextApiRequest) {
 }
 
 export function formatDataForMetadata(data: string[] | string) {
-  if (Array.isArray(data)) {
-    if (data.length) {
-      return JSON.stringify(data);
-    } else {
-      return undefined;
-    }
-  } else if (data.trim()) {
-    return data;
-  } else {
-    return undefined;
+  if (Array.isArray(data) && data.length > 0) {
+    return JSON.stringify(data);
   }
+
+  if (typeof data === "string" && !!data.trim()) {
+    return data.trim();
+  }
+
+  return undefined;
 }
 
 export function reconcileArray(possibleArray: unknown): string[] {
