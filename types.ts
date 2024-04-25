@@ -77,6 +77,7 @@ export type MetadataProps = {
   tags?: string[];
   speakers?: string[];
   categories?: string[];
+  [x: string]: any;
 };
 
 export type AbstractedChakraComponentProps<T> = {

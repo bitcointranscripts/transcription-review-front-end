@@ -6,7 +6,7 @@ import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
 import config from "../config/config.json";
-
+import yaml from "js-yaml";
 const claim_duration_in_ms = hoursToMilliseconds(
   config.claim_duration_in_hours
 );
@@ -70,40 +70,23 @@ export class Metadata {
   public fileTitle: string;
   public source: string;
 
-  constructor({
-    fileTitle,
-    transcript_by,
-    url,
-    date,
-    tags,
-    speakers,
-    categories,
-  }: MetadataProps) {
+  constructor({ fileTitle, transcript_by, url, ...restProps }: MetadataProps) {
     this.fileTitle = fileTitle;
     this.source = url;
 
-    // eslint-disable-next-line prettier/prettier
+    const jsonData = {
+      title: fileTitle,
+      transcript_by: `${transcript_by} via ${config.app_tag}`,
+      media: url,
+      ...restProps,
+    };
+
     this.metaData =
       `---\n` +
-      `title: "${fileTitle}"\n` +
-      `transcript_by: ${transcript_by} via ${config.app_tag}\n`;
-
-    this.metaData += `media: ${url}\n`;
-
-    if (tags) {
-      this.metaData += `tags: ${tags}\n`;
-    }
-
-    if (speakers) {
-      this.metaData += `speakers: ${speakers}\n`;
-    }
-
-    if (categories) {
-      this.metaData += `categories: ${categories}\n`;
-    }
-    this.metaData += `date: ${date}\n`;
-
-    this.metaData += `---\n`;
+      yaml.dump(jsonData, {
+        forceQuotes: true,
+      }) +
+      "---\n";
   }
 
   public toString(): string {
