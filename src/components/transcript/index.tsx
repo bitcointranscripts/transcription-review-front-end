@@ -171,21 +171,14 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   };
 
   const getUpdatedContent = () => {
-    const {
-      list: { speakers, categories, tags },
-      text: { title },
-      loc: { loc },
-      date: { date },
-    } = sideBarData;
+    const { list, text, loc, date } = sideBarData;
     const content = transcriptData.content;
     const updatedContent = {
       ...content,
-      title,
-      speakers,
-      categories,
-      tags,
-      date,
-      loc,
+      ...list,
+      ...text,
+      ...loc,
+      ...date,
       body: editedData,
     };
 
