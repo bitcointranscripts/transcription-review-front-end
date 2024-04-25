@@ -65,6 +65,7 @@ export type TranscriptContent = {
   title: string;
   transcript_by: Nullable<string>;
   loc?: string;
+  [x: string]: any;
 };
 
 type Nullable<T> = T | null;

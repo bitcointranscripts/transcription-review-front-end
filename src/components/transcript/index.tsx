@@ -1,9 +1,9 @@
 import SubmitTranscriptAlert from "@/components/alerts/SubmitTranscriptAlert";
 import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
+import ReviewGuidelinesModal from "@/components/modals/ReviewGuidelinesModal";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
-import ReviewGuidelinesModal from "@/components/modals/ReviewGuidelinesModal";
 import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
 import config from "@/config/config.json";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
@@ -11,8 +11,11 @@ import { useUpdateTranscript } from "@/services/api/transcripts";
 import {
   dateFormatGeneral,
   formatDataForMetadata,
+  omit,
+  parseJsonArray,
   reconcileArray,
 } from "@/utils";
+import { compareTranscriptBetweenSave } from "@/utils/transcript";
 import { Flex, useDisclosure } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
@@ -20,8 +23,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
+
 import type { TranscriptContent, UserReviewData } from "../../../types";
-import { compareTranscriptBetweenSave } from "@/utils/transcript";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -34,18 +37,18 @@ const defaultSubmitState = {
 };
 
 export type SideBarData = {
-  list: {
+  list: Record<string, string[]> & {
     speakers: string[];
     categories: string[];
     tags: string[];
   };
-  loc: {
+  loc: Record<string, string> & {
     loc: string;
   };
-  text: {
+  text: Record<string, string> & {
     title: string;
   };
-  date: {
+  date: Record<string, Date | null> & {
     date: Date | null;
   };
 };
@@ -58,6 +61,58 @@ export type sideBarContentUpdateParams<T, K> = {
   data: string | string[] | Date | null;
   type: T;
   name: K;
+};
+
+const getTranscriptContent = (content: TranscriptContent) => {
+  const {
+    speakers,
+    categories,
+    tags,
+    title = "",
+    loc = "",
+    date,
+    ...restContent
+  } = content;
+  const data: SideBarData = {
+    list: {
+      speakers: reconcileArray(speakers),
+      categories: reconcileArray(categories),
+      tags: reconcileArray(tags),
+    },
+    text: {
+      title,
+    },
+    loc: {
+      loc,
+    },
+    date: {
+      date: date ? new Date(date) : null,
+    },
+  };
+
+  for (const field of Object.keys(
+    omit(restContent, ["body", "media", "transcript_by"])
+  )) {
+    const fieldValue = restContent[field];
+
+    const jsonArray = parseJsonArray<any>(field);
+    if (jsonArray.ok) {
+      data.list[field] = jsonArray.data;
+      continue;
+    }
+
+    if (typeof fieldValue === "string") {
+      data.text[field] = fieldValue;
+      continue;
+    }
+
+    if (fieldValue instanceof Date) {
+      data.date[field] = fieldValue;
+      continue;
+    }
+  }
+
+  return data;
 };
 
 const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
@@ -77,24 +132,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
-  const [sideBarData, setSideBarData] = useState({
-    list: {
-      speakers: reconcileArray(transcriptData?.content?.speakers),
-      categories: reconcileArray(transcriptData?.content?.categories),
-      tags: reconcileArray(transcriptData?.content?.tags),
-    },
-    text: {
-      title: transcriptData.content?.title ?? "",
-    },
-    loc: {
-      loc: transcriptData?.content?.loc ?? "",
-    },
-    date: {
-      date: transcriptData.content?.date
-        ? new Date(transcriptData.content.date)
-        : null,
-    },
-  });
+  const [sideBarData, setSideBarData] = useState(() =>
+    getTranscriptContent(transcriptData.content)
+  );
 
   const sideBarContentUpdater = <
     T extends keyof SideBarData,
@@ -126,24 +166,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
     editorRef.current?.setText(transcriptData.originalContent?.body);
-    setSideBarData({
-      list: {
-        speakers: reconcileArray(transcriptData.originalContent?.speakers),
-        categories: reconcileArray(transcriptData.originalContent?.categories),
-        tags: reconcileArray(transcriptData.originalContent?.tags),
-      },
-      text: {
-        title: transcriptData.originalContent.title,
-      },
-      loc: {
-        loc: transcriptData?.content?.loc ?? "",
-      },
-      date: {
-        date: transcriptData.originalContent?.date
-          ? new Date(transcriptData.originalContent.date)
-          : null,
-      },
-    });
+    setSideBarData(() => getTranscriptContent(transcriptData.originalContent));
     setEditedData(transcriptData.originalContent.body ?? "");
   };
 
