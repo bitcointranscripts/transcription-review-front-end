@@ -10,7 +10,7 @@ export type ReviewQueryOptions = {
   multipleStatus?: ReviewQueryStatus[];
 };
 
-export type ReviewQueryStatus = "active" | "pending" | "inactive";
+export type ReviewQueryStatus = "active" | "pending" | "expired";
 
 export type TransactionQueryOptions = {
   userId?: number;
@@ -18,6 +18,14 @@ export type TransactionQueryOptions = {
   txId?: string;
   status?: TransactionQueryStatus;
   type?: TransactionQueryType;
+  page?: number;
+};
+
+export type ReviewAdminQueryOptions = {
+  userId?: number;
+  userInfo?: string;
+  reviewId?: string;
+  status?: ReviewQueryStatus | null;
   page?: number;
 };
 
@@ -80,6 +88,10 @@ const GET_TRANSACTIONS_ADMIN = ({
   );
 };
 
+const GET_REVIEWS_ADMIN = ({ status, page }: ReviewAdminQueryOptions) => {
+  return "reviews/all" + buildQueryParams({ status, page });
+};
+
 const GET_WALLET = (id?: number) => `users/${id}/wallet`;
 
 const USER_SIGN_OUT = () => `logout`;
@@ -100,6 +112,7 @@ const endpoints = {
   PAY_INVOICE,
   GET_TRANSACTIONS,
   GET_TRANSACTIONS_ADMIN,
+  GET_REVIEWS_ADMIN,
   GET_WALLET,
   USER_SIGN_OUT,
 };
