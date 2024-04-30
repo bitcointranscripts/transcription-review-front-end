@@ -24,5 +24,10 @@ export const INVOICE_PREFIX = {
   signet: "lnbs",
 } as const;
 
+export const ReviewStatus = {
+  SUCCESS: "expired",
+  PENDING: "pending",
+  FAILED: "active",
+} as const;
 export const upstreamOwner = "bitcointranscripts";
 export const upstreamRepo = "bitcointranscripts";

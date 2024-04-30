@@ -1,4 +1,4 @@
-import { TransactionStatus, TransactionType } from "@/config/default";
+import { ReviewStatus, TransactionStatus, TransactionType } from "@/config/default";
 
 export type Transcript = {
   id: number;
@@ -167,6 +167,7 @@ export type AdminTransaction = Transaction & {
   };
 };
 
+
 export type TransactionQueryType =
   (typeof TransactionType)[keyof typeof TransactionType];
 
@@ -194,3 +195,7 @@ export type SaveToGHData = {
   ghBranchUrl: string | null;
   reviewId: number;
 };
+
+// Reviews for admin;
+export type ReviewQueryStatus =
+  (typeof ReviewStatus)[keyof typeof ReviewStatus];
