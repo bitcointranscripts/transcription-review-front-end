@@ -26,6 +26,7 @@ import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableDataElement, TableStructure } from "./types";
 import { resolveGHApiUrl } from "@/utils/github";
+import { AdminReview } from "@/services/api/admin/useReviews";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -306,7 +307,7 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
   );
 };
 
-export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
+export const GroupedLinks = ({ data }: { data: any }) => {
   const { pr_url } = data.review!;
   const isPublished = data.review?.mergedAt;
   let publishUrl = "";
@@ -320,6 +321,55 @@ export const GroupedLinks = ({ data }: { data: ReviewTranscript }) => {
       // old queueing implementation
       let fileSlug = deriveFileSlug(data.content.title);
       publishUrl = derivePublishUrl(fileSlug, data.content.loc);
+    }
+  }
+
+  return (
+    <Flex alignItems="center" gap={2}>
+      {pr_url ? (
+        <Link target="_blank" href={pr_url as any}>
+          <Icon
+            _hover={{
+              cursor: "pointer",
+              color: "orange.300",
+            }}
+            w="20px"
+            h="20px"
+            color="gray.500"
+            as={FaGithub}
+            display="block"
+          />
+        </Link>
+      ) : null}
+      {isPublished && (
+        <Link target="_blank" href={publishUrl as any}>
+          <Image
+            alt="btctranscript"
+            height="20"
+            width="20"
+            src="/btctranscripts.png"
+          />
+        </Link>
+      )}
+    </Flex>
+  );
+};
+
+
+export const AdminGroupedLinks = ({ data }: { data: AdminReview }) => {
+  const pr_url = data.pr_url;
+  const isPublished = data.mergedAt;
+  let publishUrl = "";
+
+  if (isPublished) {
+    if (data.transcript.transcriptUrl) {
+      // new queueing implementation
+      const { filePath } = resolveGHApiUrl(data.transcript.transcriptUrl);
+      publishUrl = `${config.btctranscripts_base_url}${filePath.slice(0, -3)}`;
+    } else {
+      // old queueing implementation
+      let fileSlug = deriveFileSlug(data.transcript.content.title);
+      publishUrl = derivePublishUrl(fileSlug, data.transcript.content.loc);
     }
   }
 
