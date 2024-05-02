@@ -7,6 +7,8 @@ export const ROUTES_CONFIG = {
   TRANSCRIPTS: "transcripts",
   WALLET: "wallet",
   TRANSACTIONS: "transactions",
+  ALL_REVIEWS: "reviews/all?status=active",
+  REVIEWS: "reviews",
 };
 
 export const UI_CONFIG = {

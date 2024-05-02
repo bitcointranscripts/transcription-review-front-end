@@ -23,7 +23,7 @@ export type TransactionQueryOptions = {
 
 export type ReviewAdminQueryOptions = {
   userId?: number;
-  userInfo?: string;
+  user?: string;
   reviewId?: string;
   status?: ReviewQueryStatus | null;
   page?: number;
@@ -88,8 +88,8 @@ const GET_TRANSACTIONS_ADMIN = ({
   );
 };
 
-const GET_REVIEWS_ADMIN = ({ status, page }: ReviewAdminQueryOptions) => {
-  return "reviews/all" + buildQueryParams({ status, page });
+const GET_REVIEWS_ADMIN = ({ status, page, user }: ReviewAdminQueryOptions) => {
+  return "reviews/all" + buildQueryParams({ status, page, user });
 };
 
 const GET_WALLET = (id?: number) => `users/${id}/wallet`;
