@@ -32,12 +32,15 @@ export type AdminReview = {
 type ReviewsQueryFromURL = {
   page: string | null;
   status: string | null;
+  user: string | null;
 };
 export const getReviews = async ({
   page,
   status,
+  user,
 }: ReviewsQueryFromURL): Promise<AdminReviewsResponse> => {
   const reviewsQueryOptions = {
+    user: user ?? undefined,
     page: page ? parseInt(page) ?? 0 : 0,
     status: Object.values(ReviewStatus).includes(status as ReviewQueryStatus)
       ? (status as ReviewQueryStatus)
@@ -49,10 +52,10 @@ export const getReviews = async ({
     .catch((err) => err);
 };
 
-export const useGetAllReviews = ({ page, status }: ReviewsQueryFromURL) =>
+export const useGetAllReviews = ({ page, status, user }: ReviewsQueryFromURL) =>
   useQuery({
-    queryFn: () => getReviews({ page, status }),
-    queryKey: ["all_reviews", page, status],
+    queryFn: () => getReviews({ page, status, user }),
+    queryKey: ["all_reviews", page, status, user],
     refetchOnWindowFocus: false,
     enabled: true,
   });

@@ -172,6 +172,13 @@ const Menu = () => {
                           handleClose={closeMenu}
                           icon={HiOutlineSwitchHorizontal}
                         />
+                        <MenuNav
+                          currentRoute={currentRoute}
+                          routeName={ROUTES_CONFIG.REVIEWS}
+                          routeLink={ROUTES_CONFIG.ALL_REVIEWS}
+                          handleClose={closeMenu}
+                          icon={CgTranscript}
+                        />
                       </AdminMenu>
                     ) : null}
                   </Box>

@@ -2,6 +2,7 @@ import {
   Button,
   Flex,
   Heading,
+  Input,
   Menu,
   MenuButton,
   MenuItem,
@@ -16,6 +17,7 @@ import { useGetTransactions } from "@/services/api/admin";
 import { useRouter } from "next/router";
 import {
   FilterQueryNames,
+  ReviewStatus,
   TransactionStatus,
   TransactionType,
 } from "@/config/default";
@@ -96,6 +98,7 @@ const Transactions = () => {
   } = useGetAllReviews({
     page: pageQuery,
     status: statusFilter,
+    user: userFilter,
   });
   const { data, totalPages, currentPage } = adminReviews ?? {};
 
@@ -157,12 +160,19 @@ const Transactions = () => {
         <Heading size={"md"} mb={10}>
           Reviews
         </Heading>
-        {/* <Flex
+        <Flex
           gap={6}
           wrap="wrap"
           justifyContent="space-between"
           alignItems={"center"}
         >
+          <Flex basis="500px" gap={2} grow={{ base: 1, md: 0 }}>
+            <Input
+              name={FilterQueryNames.user}
+              onChange={debounceSearch}
+              placeholder="Search by username or email"
+            />
+          </Flex>
           <Flex gap={4} alignItems={"center"}>
             <Flex gap={1} alignItems="center" color={"orange.500"}>
               <Text
@@ -175,18 +185,12 @@ const Transactions = () => {
               <IoIosFunnel />
             </Flex>
             <SelectFilter
-              hasValue={typeFilter != undefined}
-              onSelect={handleFilterSelect}
-              options={Object.values(TransactionType)}
-              name="type"
-            />
-            <SelectFilter
               hasValue={statusFilter != undefined}
               onSelect={handleFilterSelect}
-              options={Object.values(TransactionStatus)}
+              options={Object.values(ReviewStatus)}
               name="status"
             />
-            {refetch && <RefetchButton refetch={refetch} />}
+            {/* {refetch && <RefetchButton refetch={refetch} />}
             {showReset && (
               <Button
                 onClick={resetFilters}
@@ -199,9 +203,9 @@ const Transactions = () => {
             )}
             <Text fontWeight="bold" fontSize="14px" color="gray.500">
               Results: {totalTransactions ?? 0}
-            </Text>
+            </Text> */}
           </Flex>
-        </Flex> */}
+        </Flex>
         <AdminReviewsTable
           reviews={sortedData ?? []}
           isError={isError}
