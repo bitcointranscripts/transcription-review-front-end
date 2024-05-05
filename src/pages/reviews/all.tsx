@@ -13,20 +13,14 @@ import { useSession } from "next-auth/react";
 import { BiChevronDown } from "react-icons/bi";
 import { IoIosFunnel } from "react-icons/io";
 import AuthStatus from "@/components/transcript/AuthStatus";
-import { useGetTransactions } from "@/services/api/admin";
 import { useRouter } from "next/router";
-import {
-  FilterQueryNames,
-  ReviewStatus,
-  TransactionStatus,
-  TransactionType,
-} from "@/config/default";
+import { FilterQueryNames, ReviewStatus } from "@/config/default";
 import Pagination from "@/components/tables/Pagination";
 import { useDebouncedCallback } from "use-debounce";
 import { UI_CONFIG } from "@/config/ui-config";
-import { RefetchButton } from "@/components/tables/TableItems";
 import AdminReviewsTable from "@/components/tables/AdminReviewsTable";
 import { useGetAllReviews } from "@/services/api/admin/useReviews";
+import { RefetchButton } from "@/components/tables/TableItems";
 
 // eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (name: string, item: T) => void;
@@ -83,7 +77,6 @@ const Transactions = () => {
 
   const userFilter = urlParams.get(FilterQueryNames.user);
   const txIdFilter = urlParams.get(FilterQueryNames.txId);
-  const typeFilter = urlParams.get(FilterQueryNames.type);
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
 
@@ -95,10 +88,12 @@ const Transactions = () => {
     data: adminReviews,
     isLoading,
     isError,
+    refetch,
   } = useGetAllReviews({
     page: pageQuery,
     status: statusFilter,
     user: userFilter,
+    txId: txIdFilter,
   });
   const { data, totalPages, currentPage } = adminReviews ?? {};
 
@@ -171,6 +166,13 @@ const Transactions = () => {
               name={FilterQueryNames.user}
               onChange={debounceSearch}
               placeholder="Search by username or email"
+              _placeholder={{ fontSize: "14px" }}
+            />
+            <Input
+              name={FilterQueryNames.txId}
+              onChange={debounceSearch}
+              placeholder="Search by transcript ID"
+              _placeholder={{ fontSize: "14px" }}
             />
           </Flex>
           <Flex gap={4} alignItems={"center"}>
@@ -190,7 +192,7 @@ const Transactions = () => {
               options={Object.values(ReviewStatus)}
               name="status"
             />
-            {/* {refetch && <RefetchButton refetch={refetch} />}
+            {refetch && <RefetchButton refetch={refetch} />}
             {showReset && (
               <Button
                 onClick={resetFilters}
@@ -201,9 +203,6 @@ const Transactions = () => {
                 Reset
               </Button>
             )}
-            <Text fontWeight="bold" fontSize="14px" color="gray.500">
-              Results: {totalTransactions ?? 0}
-            </Text> */}
           </Flex>
         </Flex>
         <AdminReviewsTable
