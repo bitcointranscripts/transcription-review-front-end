@@ -32,6 +32,7 @@ export type ReviewAdminQueryOptions = {
   reviewId?: string;
   status?: ReviewQueryStatus | null;
   page?: number;
+  txId?: string;
 };
 
 function buildQueryParams(options: any) {
@@ -93,8 +94,15 @@ const GET_TRANSACTIONS_ADMIN = ({
   );
 };
 
-const GET_REVIEWS_ADMIN = ({ status, page, user }: ReviewAdminQueryOptions) => {
-  return "reviews/all" + buildQueryParams({ status, page, user });
+const GET_REVIEWS_ADMIN = ({
+  status,
+  page,
+  user,
+  txId,
+}: ReviewAdminQueryOptions) => {
+  return (
+    "reviews/all" + buildQueryParams({ status, page, user, transcriptId: txId })
+  );
 };
 
 const GET_WALLET = (id?: number) => `users/${id}/wallet`;
