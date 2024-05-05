@@ -25,9 +25,10 @@ export const INVOICE_PREFIX = {
 } as const;
 
 export const ReviewStatus = {
-  SUCCESS: "expired",
+  EXPIRED: "expired",
   PENDING: "pending",
-  FAILED: "active",
+  ACTIVE: "active",
+  ALL: "all",
 } as const;
 export const upstreamOwner = "bitcointranscripts";
 export const upstreamRepo = "bitcointranscripts";

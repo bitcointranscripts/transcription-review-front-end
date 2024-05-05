@@ -4,13 +4,18 @@ import { TransactionQueryStatus, TransactionQueryType } from "../../../types";
 export type ReviewQueryOptions = {
   userId?: number;
   username?: string;
-  status?: "active" | "pending" | "inactive";
+  status?: ReviewQueryStatus;
   page?: number;
   /* To be used for only multiple request with useQueries */
   multipleStatus?: ReviewQueryStatus[];
 };
 
-export type ReviewQueryStatus = "active" | "pending" | "expired";
+export type ReviewQueryStatus =
+  | "active"
+  | "pending"
+  | "inactive"
+  | "expired"
+  | "all";
 
 export type TransactionQueryOptions = {
   userId?: number;
