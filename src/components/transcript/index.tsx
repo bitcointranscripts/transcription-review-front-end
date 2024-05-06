@@ -11,7 +11,6 @@ import { useUpdateTranscript } from "@/services/api/transcripts";
 import {
   dateFormatGeneral,
   formatDataForMetadata,
-  omit,
   parseJsonArray,
 } from "@/utils";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
@@ -67,6 +66,8 @@ export type sideBarContentUpdateParams<T, K> = {
 };
 
 const getTranscriptContent = (content: TranscriptContent) => {
+  // eslint-disable-next-line no-unused-vars
+  const { body, media, transcript_by, ...pickedContent } = content;
   const {
     speakers,
     categories,
@@ -75,7 +76,7 @@ const getTranscriptContent = (content: TranscriptContent) => {
     loc = "",
     date,
     ...restContent
-  } = content;
+  } = pickedContent;
   const data: SideBarData = {
     list: {
       speakers,
@@ -93,9 +94,7 @@ const getTranscriptContent = (content: TranscriptContent) => {
     },
   };
 
-  for (const field of Object.keys(
-    omit(restContent, ["body", "media", "transcript_by"])
-  )) {
+  for (const field of Object.keys(restContent)) {
     const fieldValue = restContent[field];
 
     const jsonArray = parseJsonArray<any>(field);
@@ -202,7 +201,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     onSuccessCallback?: () => void,
     onNoEditsCallback?: () => void
   ) => {
-    const { loc, title, date, body, ...restContent } = updatedContent;
+    // eslint-disable-next-line no-unused-vars
+    const { loc, title, date, body, media, transcript_by, ...restContent } =
+      updatedContent;
     // create an awaitable promise for mutation
 
     const newImplData: SaveToGHData = {
@@ -217,7 +218,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
       ghSourcePath,
       ghBranchUrl,
       reviewId: reviewData.id,
-      ...omit(restContent, ["media", "transcript_by"]),
+      ...restContent,
     };
 
     const isPreviousHash = compareTranscriptBetweenSave(newImplData);
@@ -245,11 +246,14 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   };
 
   const handleSubmit = async () => {
-    const { loc, title, date, ...restContent } = getUpdatedContent();
+    const updatedContent = getUpdatedContent();
+    // eslint-disable-next-line no-unused-vars
+    const { loc, title, date, media, transcript_by, ...restContent } =
+      updatedContent;
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
     try {
       // save transcript
-      await saveTranscript(getUpdatedContent());
+      await saveTranscript(updatedContent);
       setSubmitState((prev) => ({ ...prev, stepIdx: 1 }));
       const oldDirectoryList = localStorage.getItem("oldDirectoryList");
       const directoryList = oldDirectoryList
@@ -271,7 +275,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         prRepo,
         ghSourcePath,
         ghBranchUrl,
-        ...omit(restContent, ["media", "transcript_by"]),
+        ...restContent,
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
       localStorage.removeItem("oldDirectoryList");

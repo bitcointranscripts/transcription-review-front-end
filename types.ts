@@ -187,9 +187,9 @@ export type SaveToGHData = {
         year: string;
       }
     | null;
-  tags?: string;
-  speakers?: string;
-  categories?: string;
+  tags?: string[];
+  speakers?: string[];
+  categories?: string[];
   transcribedText: string;
   transcript_by?: string;
   ghSourcePath: string | null;
