@@ -17,6 +17,7 @@ export const FilterQueryNames = {
   sort: "sort",
   type: "type",
   status: "status",
+  transcriptId: "transcriptId",
 } as const;
 
 export const INVOICE_PREFIX = {

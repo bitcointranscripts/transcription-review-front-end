@@ -23,3 +23,7 @@ export type TableDataElement<T> = {
   tableItem: TableStructure<T>;
   row: T;
 };
+
+export type TableData<T> = {
+  data: T;
+};
