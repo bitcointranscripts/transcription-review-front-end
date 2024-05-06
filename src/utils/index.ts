@@ -1,7 +1,7 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { Flatten, MetadataProps } from "../../types";
+import { MetadataProps } from "../../types";
 import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
@@ -322,19 +322,6 @@ export const discordInvites = {
   review_guidelines: "https://discord.gg/jqj4maCs8p",
   feedback: "https://discord.gg/W4cmWRhMnr",
 };
-
-export function omit<
-  Object extends Record<string, unknown>,
-  OmittedKeys extends keyof Object,
->(object: Object, keysToOmit: OmittedKeys[]) {
-  const result = {} as Object;
-  (Object.keys(object) as Array<keyof Object>).forEach((key) => {
-    if (!keysToOmit.includes(key as OmittedKeys)) {
-      result[key] = object[key];
-    }
-  });
-  return result as Flatten<Omit<Object, OmittedKeys>>;
-}
 
 export function parseJsonArray<T>(possibleArray: unknown): {
   ok: boolean;
