@@ -15,6 +15,7 @@ type AdminReviewsResponse = {
   data: AdminReview[];
 };
 type Nullable<T> = T | null;
+
 export type AdminReview = {
   id: number;
   submittedAt: Nullable<Date>;
@@ -33,16 +34,16 @@ type ReviewsQueryFromURL = {
   page: string | null;
   status: string | null;
   user: string | null;
-  txId: string | null;
+  transcriptId: string | null;
 };
 export const getReviews = async ({
   page,
   status,
   user,
-  txId,
+  transcriptId,
 }: ReviewsQueryFromURL): Promise<AdminReviewsResponse> => {
   const reviewsQueryOptions = {
-    txId: txId ?? undefined,
+    txId: transcriptId ?? undefined,
     user: user ?? undefined,
     page: page ? parseInt(page) ?? 0 : 0,
     status: Object.values(ReviewStatus).includes(status as ReviewQueryStatus)
@@ -59,11 +60,11 @@ export const useGetAllReviews = ({
   page,
   status,
   user,
-  txId,
+  transcriptId,
 }: ReviewsQueryFromURL) =>
   useQuery({
-    queryFn: () => getReviews({ page, status, user, txId }),
-    queryKey: ["all_reviews", page, status, user, txId],
+    queryFn: () => getReviews({ page, status, user, transcriptId }),
+    queryKey: ["all_reviews", page, status, user, transcriptId],
     refetchOnWindowFocus: false,
     enabled: true,
   });

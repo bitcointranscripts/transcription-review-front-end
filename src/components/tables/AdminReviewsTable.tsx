@@ -1,9 +1,8 @@
 import { Flex, Text } from "@chakra-ui/react";
-import { Review } from "../../../types";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 import { AdminReview } from "@/services/api/admin/useReviews";
-import { AdminGroupedLinks, GroupedLinks } from "./TableItems";
+import { GroupedLinks } from "./TableItems";
 
 const tableStructure = [
   {
@@ -32,7 +31,15 @@ const tableStructure = [
     name: "Link",
     type: "action",
     modifier: (data) => data,
-    component: (data) => <AdminGroupedLinks data={data} />,
+    component: (data) => (
+      <GroupedLinks
+        data={{
+          review: data,
+          transcriptUrl: data.transcript?.transcriptUrl,
+          content: data.transcript.content,
+        }}
+      />
+    ),
   },
 ] satisfies TableStructure<AdminReview>[];
 
