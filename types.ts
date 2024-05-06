@@ -55,7 +55,7 @@ export type UserReview = {
   data: UserReviewData[];
 };
 
-export type TranscriptContent = {
+export type TranscriptContent = Record<string, any> & {
   body: string;
   categories: string[];
   date: Nullable<Date>;
@@ -65,12 +65,11 @@ export type TranscriptContent = {
   title: string;
   transcript_by: Nullable<string>;
   loc?: string;
-  [x: string]: any;
 };
 
 type Nullable<T> = T | null;
 
-export type MetadataProps = {
+export type MetadataProps = Record<string, any> & {
   fileTitle: string;
   transcript_by: string;
   url: string;
@@ -78,7 +77,6 @@ export type MetadataProps = {
   tags?: string[];
   speakers?: string[];
   categories?: string[];
-  [x: string]: any;
 };
 
 export type AbstractedChakraComponentProps<T> = {
