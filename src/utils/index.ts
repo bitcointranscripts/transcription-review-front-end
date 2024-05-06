@@ -1,4 +1,5 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
+import yaml from "js-yaml";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
 import { MetadataProps } from "../../types";
@@ -6,7 +7,7 @@ import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
 import config from "../config/config.json";
-import yaml from "js-yaml";
+
 const claim_duration_in_ms = hoursToMilliseconds(
   config.claim_duration_in_hours
 );
