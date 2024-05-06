@@ -133,33 +133,6 @@ export function formatDataForMetadata(data: string[] | string) {
   return undefined;
 }
 
-export function reconcileArray(possibleArray: unknown): string[] {
-  if (Array.isArray(possibleArray)) return possibleArray;
-  if (possibleArray === "None") return [];
-  if (typeof possibleArray === "string") {
-    if (
-      possibleArray[0] === "[" &&
-      possibleArray[possibleArray.length - 1] === "]"
-    ) {
-      const newArray = possibleArray
-        .substring(1, possibleArray.length - 1)
-        .replace(/['"]+/g, "")
-        .split(", ");
-      return newArray;
-    } else if (possibleArray.includes(",")) {
-      const newArray = possibleArray
-        .replace(/['"]+/g, "")
-        .split(",")
-        .map((item) => item.trim())
-        .filter((item) => item);
-      return newArray;
-    } else {
-      return [];
-    }
-  }
-  return [];
-}
-
 export function newIndexFile(directoryName: string) {
   const title = directoryName
     .split("-")

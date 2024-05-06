@@ -13,7 +13,6 @@ import {
   formatDataForMetadata,
   omit,
   parseJsonArray,
-  reconcileArray,
 } from "@/utils";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
 import { Flex, useDisclosure } from "@chakra-ui/react";
@@ -79,9 +78,9 @@ const getTranscriptContent = (content: TranscriptContent) => {
   } = content;
   const data: SideBarData = {
     list: {
-      speakers: reconcileArray(speakers),
-      categories: reconcileArray(categories),
-      tags: reconcileArray(tags),
+      speakers,
+      categories,
+      tags,
     },
     text: {
       title,
