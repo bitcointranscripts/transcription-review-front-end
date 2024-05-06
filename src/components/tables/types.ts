@@ -26,3 +26,7 @@ export type TableDataElement<T> = {
     rowId: number;
   };
 };
+
+export type TableData<T> = {
+  data: T;
+};

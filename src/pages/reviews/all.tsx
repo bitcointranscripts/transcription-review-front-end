@@ -22,7 +22,6 @@ import AdminReviewsTable from "@/components/tables/AdminReviewsTable";
 import { useGetAllReviews } from "@/services/api/admin/useReviews";
 import { RefetchButton } from "@/components/tables/TableItems";
 
-// eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (name: string, item: T) => void;
 
 const FilterItem = ({ text }: { text: string }) => (
@@ -70,13 +69,13 @@ const SelectFilter = <T extends string>({
   );
 };
 
-const Transactions = () => {
+const Reviews = () => {
   const router = useRouter();
   const queryString = router.asPath.split("?").slice(1).join("");
   const urlParams = new URLSearchParams(queryString);
 
   const userFilter = urlParams.get(FilterQueryNames.user);
-  const txIdFilter = urlParams.get(FilterQueryNames.txId);
+  const transcriptIdFilter = urlParams.get(FilterQueryNames.transcriptId);
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
 
@@ -93,7 +92,7 @@ const Transactions = () => {
     page: pageQuery,
     status: statusFilter,
     user: userFilter,
-    txId: txIdFilter,
+    transcriptId: transcriptIdFilter,
   });
   const { data, totalPages, currentPage } = adminReviews ?? {};
 
@@ -169,7 +168,7 @@ const Transactions = () => {
               _placeholder={{ fontSize: "14px" }}
             />
             <Input
-              name={FilterQueryNames.txId}
+              name={FilterQueryNames.transcriptId}
               onChange={debounceSearch}
               placeholder="Search by transcript ID"
               _placeholder={{ fontSize: "14px" }}
@@ -223,4 +222,4 @@ const Transactions = () => {
   );
 };
 
-export default Transactions;
+export default Reviews;

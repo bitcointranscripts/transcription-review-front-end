@@ -1,4 +1,9 @@
-import { ReviewStatus, TransactionStatus, TransactionType } from "@/config/default";
+import {
+  ReviewStatus,
+  TransactionStatus,
+  TransactionType,
+} from "@/config/default";
+import { AdminReview } from "@/services/api/admin/useReviews";
 
 export type Transcript = {
   id: number;
@@ -24,7 +29,7 @@ export type TranscriptData = {
   data: Transcript[];
 };
 export type ReviewTranscript = Transcript & {
-  review?: Review;
+  review: Review;
 };
 
 export type Review = {
@@ -167,7 +172,6 @@ export type AdminTransaction = Transaction & {
   };
 };
 
-
 export type TransactionQueryType =
   (typeof TransactionType)[keyof typeof TransactionType];
 
@@ -199,3 +203,9 @@ export type SaveToGHData = {
 // Reviews for admin;
 export type ReviewQueryStatus =
   (typeof ReviewStatus)[keyof typeof ReviewStatus];
+
+export type GroupedDataType = {
+  review: AdminReview | Review;
+  transcriptUrl?: Nullable<string>;
+  content?: TranscriptContent;
+};
