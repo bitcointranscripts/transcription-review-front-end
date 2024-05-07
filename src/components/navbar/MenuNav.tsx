@@ -15,7 +15,8 @@ const MenuNav = ({
   handleClose?: () => void;
   icon?: IconType;
 }) => {
-  const isCurrentRoute = currentRoute === routeLink;
+  const isCurrentRoute = currentRoute.split("?")[0] === routeLink.split("?")[0];
+
   return (
     <Link onClick={handleClose} href={`/${routeLink}`}>
       <Flex

@@ -165,20 +165,22 @@ const Menu = () => {
                     </Flex>
                     {isAdmin ? (
                       <AdminMenu>
-                        <MenuNav
-                          currentRoute={currentRoute}
-                          routeName={ROUTES_CONFIG.TRANSACTIONS}
-                          routeLink={ROUTES_CONFIG.TRANSACTIONS}
-                          handleClose={closeMenu}
-                          icon={HiOutlineSwitchHorizontal}
-                        />
-                        <MenuNav
-                          currentRoute={currentRoute}
-                          routeName={ROUTES_CONFIG.REVIEWS}
-                          routeLink={ROUTES_CONFIG.ALL_REVIEWS}
-                          handleClose={closeMenu}
-                          icon={CgTranscript}
-                        />
+                        <Flex direction="column" gap={2}>
+                          <MenuNav
+                            currentRoute={currentRoute}
+                            routeName={ROUTES_CONFIG.TRANSACTIONS}
+                            routeLink={ROUTES_CONFIG.TRANSACTIONS}
+                            handleClose={closeMenu}
+                            icon={HiOutlineSwitchHorizontal}
+                          />
+                          <MenuNav
+                            currentRoute={currentRoute}
+                            routeName={ROUTES_CONFIG.REVIEWS}
+                            routeLink={ROUTES_CONFIG.ALL_REVIEWS}
+                            handleClose={closeMenu}
+                            icon={CgTranscript}
+                          />
+                        </Flex>
                       </AdminMenu>
                     ) : null}
                   </Box>
