@@ -13,7 +13,14 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
-import { Button, CheckboxGroup, Flex, Text, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  CheckboxGroup,
+  Flex,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -26,12 +33,14 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { BiBookAdd } from "react-icons/bi";
 import { Transcript } from "../../../types";
+import { SuggestModal } from "../modals/SuggestModal";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
+import { ArchiveButton } from "./TableItems";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
-import { ArchiveButton } from "./TableItems";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -100,6 +109,11 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
 const QueueTable = () => {
   const { data: session, status } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
+  const {
+    isOpen: showSuggestModal,
+    onClose: closeSuggestModal,
+    onOpen: openSuggestModal,
+  } = useDisclosure();
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
@@ -368,6 +382,16 @@ const QueueTable = () => {
           <BaseTable
             actionItems={
               <>
+                <Button
+                  size="sm"
+                  gap={2}
+                  colorScheme="orange"
+                  variant="outline"
+                  onClick={openSuggestModal}
+                >
+                  Suggest source
+                  <BiBookAdd />
+                </Button>
                 {hasAdminSelected && (
                   <ArchiveButton
                     isArchiving={isArchiving}
@@ -389,6 +413,10 @@ const QueueTable = () => {
             setCurrentPage={setCurrentPage}
             currentPage={currentPage}
             pages={totalPages}
+          />
+          <SuggestModal
+            handleClose={closeSuggestModal}
+            isOpen={showSuggestModal}
           />
         </>
       )}
