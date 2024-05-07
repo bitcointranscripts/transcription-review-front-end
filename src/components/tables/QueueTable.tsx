@@ -31,6 +31,7 @@ import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
+import { ArchiveButton } from "./TableItems";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -173,8 +174,8 @@ const QueueTable = () => {
               ghSourcePath: transcript.transcriptUrl,
               owner,
               env_owner,
-            })
-            branchUrl = result.data.branchUrl
+            });
+            branchUrl = result.data.branchUrl;
           }
 
           // Claim transcript
@@ -203,17 +204,17 @@ const QueueTable = () => {
               },
 
               onError: (err) => {
-                throw err
+                throw err;
               },
             }
           );
         } catch (error: any) {
           // handles all errors from claiming process
-          let errorTitle = error.message
+          let errorTitle = error.message;
           if (error.response) {
             // for errors coming from axios requests
             // we display our custom error message
-            errorTitle = error.response.data.message
+            errorTitle = error.response.data.message;
           }
           setSelectedTranscriptId(-1);
           toast({
@@ -365,12 +366,19 @@ const QueueTable = () => {
       {({ handleArchive, hasAdminSelected, isArchiving }) => (
         <>
           <BaseTable
+            actionItems={
+              <>
+                {hasAdminSelected && (
+                  <ArchiveButton
+                    isArchiving={isArchiving}
+                    handleArchive={handleArchive}
+                  />
+                )}
+              </>
+            }
             data={data?.data}
             emptyView="There are no transcripts awaiting review"
-            handleArchive={handleArchive}
-            hasAdminSelected={hasAdminSelected}
             isError={isError}
-            isArchiving={isArchiving}
             isLoading={isLoading}
             refetch={refetch}
             showAdminControls
