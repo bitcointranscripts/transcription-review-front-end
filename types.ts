@@ -97,6 +97,7 @@ export type SelectableMetadataList = {
   categories: SelectableMetadataType[];
   speakers: SelectableMetadataType[];
   tags: SelectableMetadataType[];
+  media: string[];
 };
 export type DirectoriesDataType = {
   dir: SelectableMetadataType[];
