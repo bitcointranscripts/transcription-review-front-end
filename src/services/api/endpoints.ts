@@ -15,6 +15,7 @@ export type ReviewQueryStatus =
   | "pending"
   | "inactive"
   | "expired"
+  | "merged"
   | "all";
 
 export type TransactionQueryOptions = {
