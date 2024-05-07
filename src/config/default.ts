@@ -26,6 +26,7 @@ export const INVOICE_PREFIX = {
 } as const;
 
 export const ReviewStatus = {
+  MERGED: "merged",
   EXPIRED: "expired",
   PENDING: "pending",
   ACTIVE: "active",
