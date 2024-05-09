@@ -8,11 +8,7 @@ import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEd
 import config from "@/config/config.json";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 import { useUpdateTranscript } from "@/services/api/transcripts";
-import {
-  dateFormatGeneral,
-  formatDataForMetadata,
-  parseJsonArray,
-} from "@/utils";
+import { dateFormatGeneral, formatDataForMetadata } from "@/utils";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
 import { Flex, useDisclosure } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -97,9 +93,8 @@ const getTranscriptContent = (content: TranscriptContent) => {
   for (const field of Object.keys(restContent)) {
     const fieldValue = restContent[field];
 
-    const jsonArray = parseJsonArray<any>(field);
-    if (jsonArray.ok) {
-      data.list[field] = jsonArray.data;
+    if (Array.isArray(field)) {
+      data.list[field] = field;
       continue;
     }
 

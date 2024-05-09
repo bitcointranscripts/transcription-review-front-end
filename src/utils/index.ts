@@ -328,15 +328,3 @@ export const discordInvites = {
   review_guidelines: "https://discord.gg/jqj4maCs8p",
   feedback: "https://discord.gg/W4cmWRhMnr",
 };
-
-export function parseJsonArray<T>(possibleArray: unknown): {
-  ok: boolean;
-  data: T | null;
-} {
-  try {
-    const data = JSON.parse(possibleArray as string);
-    return { ok: Array.isArray(data), data };
-  } catch (e) {
-    return { ok: false, data: null };
-  }
-}
