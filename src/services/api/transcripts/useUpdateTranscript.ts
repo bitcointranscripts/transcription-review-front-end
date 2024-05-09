@@ -27,7 +27,7 @@ const updateTranscript = async (body: {
       ghSourcePath,
       ghBranchUrl,
       reviewId,
-      ...otherMetaData
+      ...otherMetadata
     } = newImplData;
 
     return axios
@@ -44,7 +44,7 @@ const updateTranscript = async (body: {
         ghSourcePath,
         ghBranchUrl,
         reviewId,
-        ...otherMetaData,
+        ...otherMetadata,
       })
       .then((res) => {
         return res;

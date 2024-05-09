@@ -83,18 +83,18 @@ export type AbstractedChakraComponentProps<T> = {
   children: React.ReactNode;
 } & Omit<T, "children">;
 
-export type SelectableMetaDataType = {
+export type SelectableMetadataType = {
   slug: string;
   value: string;
 };
 
-export type SelectableMetaDataList = {
-  categories: SelectableMetaDataType[];
-  speakers: SelectableMetaDataType[];
-  tags: SelectableMetaDataType[];
+export type SelectableMetadataList = {
+  categories: SelectableMetadataType[];
+  speakers: SelectableMetadataType[];
+  tags: SelectableMetadataType[];
 };
 export type DirectoriesDataType = {
-  dir: SelectableMetaDataType[];
+  dir: SelectableMetadataType[];
   code?: string;
 };
 

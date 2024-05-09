@@ -1,35 +1,35 @@
-name: Generate MetaData JSON files
+name: Generate Metadata JSON files
 
 on:
   schedule:
-    - cron:  '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Use Node.js
-      uses: actions/setup-node@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
 
-    - name: Install yarn
-      run: npm i yarn -g
+      - name: Install yarn
+        run: npm i yarn -g
 
-    - name: Install dependencies
-      run: yarn install
+      - name: Install dependencies
+        run: yarn install
 
-    - name: Compile scripts
-      run: yarn compile:scripts
+      - name: Compile scripts
+        run: yarn compile:scripts
 
-    - name: Run script
-      run: node scriptsOut/index.js
-    
-    - name: Commit and push changes
-      run: |
-        git config --global user.email "${{secrets.EMAIL}}"
-        git config --global user.name "${{secrets.NAME}}"
-        git add .
-        git commit -am "generated dir metadata" || echo "Couldn't generate metadata"
-        git push
+      - name: Run script
+        run: node scriptsOut/index.js
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "${{secrets.EMAIL}}"
+          git config --global user.name "${{secrets.NAME}}"
+          git add .
+          git commit -am "generated dir metadata" || echo "Couldn't generate metadata"
+          git push

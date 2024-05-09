@@ -67,11 +67,16 @@ export const getCount = (item: number | string) => {
 };
 
 export class Metadata {
-  private metaData: string;
+  private metadata: string;
   public fileTitle: string;
   public source: string;
 
-  constructor({ fileTitle, transcript_by, url, ...restProps }: MetadataProps) {
+  constructor({
+    fileTitle,
+    transcript_by,
+    url,
+    ...otherMetadata
+  }: MetadataProps) {
     this.fileTitle = fileTitle;
     this.source = url;
 
@@ -79,10 +84,10 @@ export class Metadata {
       title: fileTitle,
       transcript_by: `${transcript_by} via ${config.app_tag}`,
       media: url,
-      ...restProps,
+      ...otherMetadata,
     };
 
-    this.metaData =
+    this.metadata =
       `---\n` +
       yaml.dump(jsonData, {
         forceQuotes: true,
@@ -91,7 +96,7 @@ export class Metadata {
   }
 
   public toString(): string {
-    return this.metaData;
+    return this.metadata;
   }
 }
 
