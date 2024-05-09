@@ -61,9 +61,10 @@ export type sideBarContentUpdateParams<T, K> = {
   name: K;
 };
 
-const getTranscriptContent = (content: TranscriptContent) => {
+const getTranscriptMetadata = (content: TranscriptContent) => {
+  // body, media, and transcript_by are omitted because they are not needed when constructing metadata
   // eslint-disable-next-line no-unused-vars
-  const { body, media, transcript_by, ...pickedContent } = content;
+  const { body, media, transcript_by, ...metadata } = content;
   const {
     speakers,
     categories,
@@ -71,8 +72,8 @@ const getTranscriptContent = (content: TranscriptContent) => {
     title = "",
     loc = "",
     date,
-    ...restContent
-  } = pickedContent;
+    ...arbitraryMetadata
+  } = metadata;
   const data: SideBarData = {
     list: {
       speakers,
@@ -90,8 +91,9 @@ const getTranscriptContent = (content: TranscriptContent) => {
     },
   };
 
-  for (const field of Object.keys(restContent)) {
-    const fieldValue = restContent[field];
+  // Iterating over the rest content in order to handle arbitrary fields which can get lost otherwise
+  for (const field of Object.keys(arbitraryMetadata)) {
+    const fieldValue = arbitraryMetadata[field];
 
     if (Array.isArray(field)) {
       data.list[field] = field;
@@ -130,7 +132,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     transcriptData.content?.body ?? ""
   );
   const [sideBarData, setSideBarData] = useState(() =>
-    getTranscriptContent(transcriptData.content)
+    getTranscriptMetadata(transcriptData.content)
   );
 
   const sideBarContentUpdater = <
@@ -163,7 +165,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
     editorRef.current?.setText(transcriptData.originalContent?.body);
-    setSideBarData(() => getTranscriptContent(transcriptData.originalContent));
+    setSideBarData(() => getTranscriptMetadata(transcriptData.originalContent));
     setEditedData(transcriptData.originalContent.body ?? "");
   };
 
