@@ -133,6 +133,14 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
     <Modal isOpen={isOpen} onClose={resetAndCloseForm}>
       <ModalOverlay />
       <ModalContent
+        css={{
+          overflowY: "scroll",
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
+          "::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
         mx={{ base: "16px", lg: "0px" }}
         maxW={{ base: "400px", lg: "580px" }}
         maxH="80vh"
@@ -179,7 +187,7 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                     required
                     maxLength={255}
                   />
-                  {!urlError && !!formValues.url && (
+                  {(!!urlError || !formValues.url) && (
                     <FormHelperText
                       fontSize={{ base: "xs", lg: "sm" }}
                       color={urlError ? "red" : undefined}
