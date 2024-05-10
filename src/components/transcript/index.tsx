@@ -1,18 +1,15 @@
 import SubmitTranscriptAlert from "@/components/alerts/SubmitTranscriptAlert";
 import EditTranscript from "@/components/editTranscript/EditTranscript";
 import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
+import ReviewGuidelinesModal from "@/components/modals/ReviewGuidelinesModal";
 import type { SubmitState } from "@/components/modals/SubmitTranscriptModal";
 import SubmitTranscriptModal from "@/components/modals/SubmitTranscriptModal";
-import ReviewGuidelinesModal from "@/components/modals/ReviewGuidelinesModal";
 import SidebarContentEdit from "@/components/sideBarContentEdit/SidebarContentEdit";
 import config from "@/config/config.json";
 import { useSubmitReview } from "@/services/api/reviews/useSubmitReview";
 import { useUpdateTranscript } from "@/services/api/transcripts";
-import {
-  dateFormatGeneral,
-  formatDataForMetadata,
-  reconcileArray,
-} from "@/utils";
+import { dateFormatGeneral, formatDataForMetadata } from "@/utils";
+import { compareTranscriptBetweenSave } from "@/utils/transcript";
 import { Flex, useDisclosure } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
@@ -20,8 +17,12 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import MdEditor from "react-markdown-editor-lite";
-import type { TranscriptContent, UserReviewData } from "../../../types";
-import { compareTranscriptBetweenSave } from "@/utils/transcript";
+
+import type {
+  SaveToGHData,
+  TranscriptContent,
+  UserReviewData,
+} from "../../../types";
 
 const defaultSubmitState = {
   stepIdx: 0,
@@ -34,18 +35,18 @@ const defaultSubmitState = {
 };
 
 export type SideBarData = {
-  list: {
+  list: Record<string, string[]> & {
     speakers: string[];
     categories: string[];
     tags: string[];
   };
-  loc: {
+  loc: Record<string, string> & {
     loc: string;
   };
-  text: {
+  text: Record<string, string> & {
     title: string;
   };
-  date: {
+  date: Record<string, Date | null> & {
     date: Date | null;
   };
 };
@@ -58,6 +59,59 @@ export type sideBarContentUpdateParams<T, K> = {
   data: string | string[] | Date | null;
   type: T;
   name: K;
+};
+
+const getTranscriptMetadata = (content: TranscriptContent) => {
+  // body, media, and transcript_by are omitted because they are not needed when constructing metadata
+  // eslint-disable-next-line no-unused-vars
+  const { body, media, transcript_by, ...metadata } = content;
+  const {
+    speakers,
+    categories,
+    tags,
+    title = "",
+    loc = "",
+    date,
+    ...arbitraryMetadata
+  } = metadata;
+  const data: SideBarData = {
+    list: {
+      speakers,
+      categories,
+      tags,
+    },
+    text: {
+      title,
+    },
+    loc: {
+      loc,
+    },
+    date: {
+      date: date ? new Date(date) : null,
+    },
+  };
+
+  // Iterating over the rest content in order to handle arbitrary fields which can get lost otherwise
+  for (const field of Object.keys(arbitraryMetadata)) {
+    const fieldValue = arbitraryMetadata[field];
+
+    if (Array.isArray(field)) {
+      data.list[field] = field;
+      continue;
+    }
+
+    if (typeof fieldValue === "string") {
+      data.text[field] = fieldValue;
+      continue;
+    }
+
+    if (fieldValue instanceof Date) {
+      data.date[field] = fieldValue;
+      continue;
+    }
+  }
+
+  return data;
 };
 
 const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
@@ -77,24 +131,9 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const [editedData, setEditedData] = useState(
     transcriptData.content?.body ?? ""
   );
-  const [sideBarData, setSideBarData] = useState({
-    list: {
-      speakers: reconcileArray(transcriptData?.content?.speakers),
-      categories: reconcileArray(transcriptData?.content?.categories),
-      tags: reconcileArray(transcriptData?.content?.tags),
-    },
-    text: {
-      title: transcriptData.content?.title ?? "",
-    },
-    loc: {
-      loc: transcriptData?.content?.loc ?? "",
-    },
-    date: {
-      date: transcriptData.content?.date
-        ? new Date(transcriptData.content.date)
-        : null,
-    },
-  });
+  const [sideBarData, setSideBarData] = useState(() =>
+    getTranscriptMetadata(transcriptData.content)
+  );
 
   const sideBarContentUpdater = <
     T extends keyof SideBarData,
@@ -126,43 +165,19 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
   const restoreOriginal = () => {
     if (!transcriptData?.originalContent) return;
     editorRef.current?.setText(transcriptData.originalContent?.body);
-    setSideBarData({
-      list: {
-        speakers: reconcileArray(transcriptData.originalContent?.speakers),
-        categories: reconcileArray(transcriptData.originalContent?.categories),
-        tags: reconcileArray(transcriptData.originalContent?.tags),
-      },
-      text: {
-        title: transcriptData.originalContent.title,
-      },
-      loc: {
-        loc: transcriptData?.content?.loc ?? "",
-      },
-      date: {
-        date: transcriptData.originalContent?.date
-          ? new Date(transcriptData.originalContent.date)
-          : null,
-      },
-    });
+    setSideBarData(() => getTranscriptMetadata(transcriptData.originalContent));
     setEditedData(transcriptData.originalContent.body ?? "");
   };
 
   const getUpdatedContent = () => {
-    const {
-      list: { speakers, categories, tags },
-      text: { title },
-      loc: { loc },
-      date: { date },
-    } = sideBarData;
+    const { list, text, loc, date } = sideBarData;
     const content = transcriptData.content;
     const updatedContent = {
       ...content,
-      title,
-      speakers,
-      categories,
-      tags,
-      date,
-      loc,
+      ...list,
+      ...text,
+      ...loc,
+      ...date,
       body: editedData,
     };
 
@@ -183,28 +198,29 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
     onSuccessCallback?: () => void,
     onNoEditsCallback?: () => void
   ) => {
+    // eslint-disable-next-line no-unused-vars
+    const { loc, title, date, body, media, transcript_by, ...restContent } =
+      updatedContent;
     // create an awaitable promise for mutation
 
-    const newImplData = {
-      directoryPath: updatedContent.loc?.trim() ?? "",
-      fileName: formatDataForMetadata(updatedContent.title),
-      url: transcriptData?.content.media,
-      date: updatedContent.date && dateFormatGeneral(updatedContent.date, true),
-      tags: formatDataForMetadata(updatedContent.tags),
-      speakers: formatDataForMetadata(updatedContent.speakers),
-      categories: formatDataForMetadata(updatedContent.categories),
-      transcribedText: updatedContent.body,
+    const newImplData: SaveToGHData = {
+      directoryPath: loc?.trim() ?? "",
+      fileName: formatDataForMetadata(title),
+      url: transcriptData.content.media,
+      date: date && dateFormatGeneral(date, true),
+      transcribedText: body,
       transcript_by: formatDataForMetadata(
         userSession?.user?.githubUsername ?? ""
       ),
       ghSourcePath,
       ghBranchUrl,
       reviewId: reviewData.id,
+      ...restContent,
     };
 
     const isPreviousHash = compareTranscriptBetweenSave(newImplData);
     if (isPreviousHash) {
-      onNoEditsCallback && onNoEditsCallback();
+      onNoEditsCallback?.();
       return;
     }
 
@@ -220,23 +236,21 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
           },
         }
       );
-      onSuccessCallback && onSuccessCallback();
+      onSuccessCallback?.();
     } catch (error) {
       throw error;
     }
   };
 
   const handleSubmit = async () => {
-    const {
-      list: { speakers, categories, tags },
-      text: { title },
-      loc: { loc },
-      date: { date },
-    } = sideBarData;
+    const updatedContent = getUpdatedContent();
+    // eslint-disable-next-line no-unused-vars
+    const { loc, title, date, media, transcript_by, ...restContent } =
+      updatedContent;
     setSubmitState((prev) => ({ ...prev, isLoading: true, isModalOpen: true }));
     try {
       // save transcript
-      await saveTranscript(getUpdatedContent());
+      await saveTranscript(updatedContent);
       setSubmitState((prev) => ({ ...prev, stepIdx: 1 }));
       const oldDirectoryList = localStorage.getItem("oldDirectoryList");
       const directoryList = oldDirectoryList
@@ -251,9 +265,6 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         url: transcriptData?.content.media,
         prUrl: reviewData?.pr_url,
         date: date && dateFormatGeneral(date, true),
-        tags: formatDataForMetadata(tags),
-        speakers: formatDataForMetadata(speakers),
-        categories: formatDataForMetadata(categories),
         transcribedText: editedData,
         transcript_by: formatDataForMetadata(
           userSession?.user?.githubUsername ?? ""
@@ -261,6 +272,7 @@ const Transcript = ({ reviewData }: { reviewData: UserReviewData }) => {
         prRepo,
         ghSourcePath,
         ghBranchUrl,
+        ...restContent,
       });
       setSubmitState((prev) => ({ ...prev, stepIdx: 2, prResult }));
       localStorage.removeItem("oldDirectoryList");
