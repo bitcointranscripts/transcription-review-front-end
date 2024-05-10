@@ -12,6 +12,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
@@ -165,8 +166,8 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
               standards for reliable, technical Bitcoin content.
             </Text>
           </ModalHeader>
-          <ModalBody p={0}>
-            <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
+            <ModalBody p={0}>
               <Flex flexDir="column" gap={{ base: "24px", lg: "32px" }}>
                 <FormControl gap={{ base: "6px", lg: "xs" }}>
                   <FormLabel>Title</FormLabel>
@@ -212,7 +213,16 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                     }
                     autoCompleteList={selectableListData?.tags ?? []}
                     userCanAddToList
+                    horizontal
                   />
+                  {formValues.tags.length === 0 && (
+                    <FormHelperText
+                      fontSize={{ base: "xs", lg: "sm" }}
+                      fontWeight="medium"
+                    >
+                      This is optional
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl gap={{ base: "6px", lg: "xs" }}>
                   <FormLabel>Speakers</FormLabel>
@@ -227,35 +237,49 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                     }
                     autoCompleteList={selectableListData?.speakers ?? []}
                     userCanAddToList
+                    horizontal
                   />
+                  {formValues.speakers.length === 0 && (
+                    <FormHelperText
+                      fontSize={{ base: "xs", lg: "sm" }}
+                      fontWeight="medium"
+                    >
+                      This is optional
+                    </FormHelperText>
+                  )}
                 </FormControl>
-                <Flex gap={{ base: "8px", lg: "md" }}>
-                  <Button
-                    w="full"
-                    py={3}
-                    mx="auto"
-                    rounded="10px"
-                    isDisabled={createPR.isLoading}
-                    onClick={handleClose}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    w="full"
-                    isLoading={createPR.isLoading}
-                    py={3}
-                    mx="auto"
-                    colorScheme="orange"
-                    rounded="10px"
-                    isDisabled={!formIsComplete}
-                    type="submit"
-                  >
-                    Suggest Source
-                  </Button>
-                </Flex>
               </Flex>
-            </form>
-          </ModalBody>
+            </ModalBody>
+            <ModalFooter
+              mt={{ base: "24px", lg: "32px" }}
+              p={0}
+              gap={{ base: "8px", lg: "md" }}
+              w="full"
+            >
+              <Button
+                w="full"
+                py={3}
+                mx="auto"
+                rounded="10px"
+                isDisabled={createPR.isLoading}
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                w="full"
+                isLoading={createPR.isLoading}
+                py={3}
+                mx="auto"
+                colorScheme="orange"
+                rounded="10px"
+                isDisabled={!formIsComplete}
+                type="submit"
+              >
+                Suggest Source
+              </Button>
+            </ModalFooter>
+          </form>
         </Flex>
       </ModalContent>
     </Modal>
