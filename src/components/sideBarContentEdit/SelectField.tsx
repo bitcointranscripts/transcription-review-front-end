@@ -13,6 +13,7 @@ type Props = {
   updateData: (x: string[]) => void;
   autoCompleteList: Array<AutoCompleteData>;
   userCanAddToList?: boolean;
+  horizontal?: boolean;
 };
 
 export type AutoCompleteData = {
@@ -182,6 +183,7 @@ export const OnlySelectField = ({
   updateData,
   autoCompleteList,
   userCanAddToList,
+  horizontal,
 }: Props) => {
   const handleAddItem = (value: string) => {
     let updatedList = [...editedData];
@@ -214,34 +216,44 @@ export const OnlySelectField = ({
         autoCompleteList={newAutoCompleteList}
         handleAutoCompleteSelect={handleAutoCompleteSelect}
       />
-      {editedData?.map((speaker: string, idx: number) => {
-        return (
-          <Flex
-            key={`${speaker}-idx-${idx}`}
-            justifyContent="space-between"
-            gap={1}
-            alignItems="center"
-          >
-            <Text
-              textTransform={name !== "speakers" ? "lowercase" : "none"}
-              fontSize="14px"
+      <Flex
+        flexWrap="wrap"
+        gap={horizontal ? 2 : undefined}
+        flexDir={horizontal ? "row" : "column"}
+      >
+        {editedData?.map((speaker: string, idx: number) => {
+          return (
+            <Flex
+              key={`${speaker}-idx-${idx}`}
+              justifyContent="space-between"
+              alignItems="center"
+              py={1}
+              px={2}
+              gap={2}
+              borderRadius={6}
+              bg={horizontal ? "orange.100" : undefined}
             >
-              {speaker}
-            </Text>
-            <IconButton
-              fontSize="16px"
-              p="6px"
-              size="sm"
-              minW="auto"
-              h="auto"
-              variant="ghost"
-              onClick={() => handleRemoveItem(idx)}
-              aria-label="edit speaker"
-              icon={<BiX />}
-            />
-          </Flex>
-        );
-      })}
+              <Text
+                textTransform={name !== "speakers" ? "lowercase" : "none"}
+                fontSize="14px"
+              >
+                {speaker}
+              </Text>
+              <IconButton
+                fontSize="16px"
+                p="6px"
+                size="sm"
+                minW="auto"
+                h="auto"
+                variant="ghost"
+                onClick={() => handleRemoveItem(idx)}
+                aria-label="edit speaker"
+                icon={<BiX />}
+              />
+            </Flex>
+          );
+        })}
+      </Flex>
     </>
   );
 };
