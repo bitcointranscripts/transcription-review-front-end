@@ -1,4 +1,5 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
+import yaml from "js-yaml";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
 import { MetadataProps } from "../../types";
@@ -66,7 +67,7 @@ export const getCount = (item: number | string) => {
 };
 
 export class Metadata {
-  private metaData: string;
+  private metadata: string;
   public fileTitle: string;
   public source: string;
 
@@ -74,40 +75,28 @@ export class Metadata {
     fileTitle,
     transcript_by,
     url,
-    date,
-    tags,
-    speakers,
-    categories,
+    ...otherMetadata
   }: MetadataProps) {
     this.fileTitle = fileTitle;
     this.source = url;
 
-    // eslint-disable-next-line prettier/prettier
-    this.metaData =
+    const jsonData = {
+      title: fileTitle,
+      transcript_by: `${transcript_by} via ${config.app_tag}`,
+      media: url,
+      ...otherMetadata,
+    };
+
+    this.metadata =
       `---\n` +
-      `title: "${fileTitle}"\n` +
-      `transcript_by: ${transcript_by} via ${config.app_tag}\n`;
-
-    this.metaData += `media: ${url}\n`;
-
-    if (tags) {
-      this.metaData += `tags: ${tags}\n`;
-    }
-
-    if (speakers) {
-      this.metaData += `speakers: ${speakers}\n`;
-    }
-
-    if (categories) {
-      this.metaData += `categories: ${categories}\n`;
-    }
-    this.metaData += `date: ${date}\n`;
-
-    this.metaData += `---\n`;
+      yaml.dump(jsonData, {
+        forceQuotes: true,
+      }) +
+      "---\n";
   }
 
   public toString(): string {
-    return this.metaData;
+    return this.metadata;
   }
 }
 
@@ -139,44 +128,15 @@ export function getRequestUrl(req: NextApiRequest) {
 }
 
 export function formatDataForMetadata(data: string[] | string) {
-  if (Array.isArray(data)) {
-    if (data.length) {
-      return JSON.stringify(data);
-    } else {
-      return undefined;
-    }
-  } else if (data.trim()) {
-    return data;
-  } else {
-    return undefined;
+  if (Array.isArray(data) && data.length > 0) {
+    return JSON.stringify(data);
   }
-}
 
-export function reconcileArray(possibleArray: unknown): string[] {
-  if (Array.isArray(possibleArray)) return possibleArray;
-  if (possibleArray === "None") return [];
-  if (typeof possibleArray === "string") {
-    if (
-      possibleArray[0] === "[" &&
-      possibleArray[possibleArray.length - 1] === "]"
-    ) {
-      const newArray = possibleArray
-        .substring(1, possibleArray.length - 1)
-        .replace(/['"]+/g, "")
-        .split(", ");
-      return newArray;
-    } else if (possibleArray.includes(",")) {
-      const newArray = possibleArray
-        .replace(/['"]+/g, "")
-        .split(",")
-        .map((item) => item.trim())
-        .filter((item) => item);
-      return newArray;
-    } else {
-      return [];
-    }
+  if (typeof data === "string" && !!data.trim()) {
+    return data.trim();
   }
-  return [];
+
+  return undefined;
 }
 
 export function newIndexFile(directoryName: string) {

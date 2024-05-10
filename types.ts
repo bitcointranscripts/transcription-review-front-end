@@ -60,7 +60,7 @@ export type UserReview = {
   data: UserReviewData[];
 };
 
-export type TranscriptContent = {
+export type TranscriptContent = Record<string, any> & {
   body: string;
   categories: string[];
   date: Nullable<Date>;
@@ -74,7 +74,7 @@ export type TranscriptContent = {
 
 type Nullable<T> = T | null;
 
-export type MetadataProps = {
+export type MetadataProps = Record<string, any> & {
   fileTitle: string;
   transcript_by: string;
   url: string;
@@ -88,18 +88,18 @@ export type AbstractedChakraComponentProps<T> = {
   children: React.ReactNode;
 } & Omit<T, "children">;
 
-export type SelectableMetaDataType = {
+export type SelectableMetadataType = {
   slug: string;
   value: string;
 };
 
-export type SelectableMetaDataList = {
-  categories: SelectableMetaDataType[];
-  speakers: SelectableMetaDataType[];
-  tags: SelectableMetaDataType[];
+export type SelectableMetadataList = {
+  categories: SelectableMetadataType[];
+  speakers: SelectableMetadataType[];
+  tags: SelectableMetadataType[];
 };
 export type DirectoriesDataType = {
-  dir: SelectableMetaDataType[];
+  dir: SelectableMetadataType[];
   code?: string;
 };
 
@@ -190,9 +190,9 @@ export type SaveToGHData = {
         year: string;
       }
     | null;
-  tags?: string;
-  speakers?: string;
-  categories?: string;
+  tags?: string[];
+  speakers?: string[];
+  categories?: string[];
   transcribedText: string;
   transcript_by?: string;
   ghSourcePath: string | null;

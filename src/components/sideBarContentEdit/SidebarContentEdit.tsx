@@ -1,4 +1,4 @@
-import { useGetMetaData } from "@/services/api/transcripts/useGetMetaData";
+import { useGetMetadata } from "@/services/api/transcripts/useGetMetadata";
 import { getTimeLeftText } from "@/utils";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
@@ -58,7 +58,7 @@ const SidebarContentEdit = ({
 }) => {
   const [path, setPath] = useState<string>("");
   const [initialCount, setInitialCount] = useState(1);
-  const { data: selectableListData } = useGetMetaData();
+  const { data: selectableListData } = useGetMetadata();
   const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
   const updateTitle = (newTitle: string) => {
     const updatedTranscript = getUpdatedTranscript();
