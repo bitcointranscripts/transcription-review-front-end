@@ -134,18 +134,8 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
     <Modal isOpen={isOpen} onClose={resetAndCloseForm}>
       <ModalOverlay />
       <ModalContent
-        css={{
-          overflowY: "scroll",
-          msOverflowStyle: "none",
-          scrollbarWidth: "none",
-          "::-webkit-scrollbar": {
-            display: "none",
-          },
-        }}
         mx={{ base: "16px", lg: "0px" }}
         maxW={{ base: "400px", lg: "580px" }}
-        maxH="80vh"
-        overflow="scroll"
         borderRadius={20}
       >
         <Flex p={10} flexDir="column">
@@ -159,17 +149,18 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
             </Text>
             <Text
               fontWeight="600"
-              fontSize={{ base: "sm", lg: "md" }}
+              fontSize={{ base: "xs", lg: "sm" }}
               textAlign="center"
             >
-              We manually review every suggestion to ensure it meets our
-              standards for reliable, technical Bitcoin content.
+              Suggest a source for transcription. We manually review every
+              suggestion to ensure it meets our standards for reliable,
+              technical Bitcoin content.
             </Text>
           </ModalHeader>
           <form onSubmit={handleSubmit}>
             <ModalBody p={0}>
               <Flex flexDir="column" gap={{ base: "24px", lg: "32px" }}>
-                <FormControl gap={{ base: "6px", lg: "xs" }}>
+                <FormControl isRequired gap={{ base: "6px", lg: "xs" }}>
                   <FormLabel>Title</FormLabel>
                   <Input
                     placeholder="Add transcript title"
@@ -179,7 +170,7 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                     required
                   />
                 </FormControl>
-                <FormControl gap={{ base: "6px", lg: "xs" }}>
+                <FormControl isRequired gap={{ base: "6px", lg: "xs" }}>
                   <FormLabel>Source&apos;s URL</FormLabel>
                   <Input
                     type="url"
@@ -215,14 +206,6 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                     userCanAddToList
                     horizontal
                   />
-                  {formValues.tags.length === 0 && (
-                    <FormHelperText
-                      fontSize={{ base: "xs", lg: "sm" }}
-                      fontWeight="medium"
-                    >
-                      This is optional
-                    </FormHelperText>
-                  )}
                 </FormControl>
                 <FormControl gap={{ base: "6px", lg: "xs" }}>
                   <FormLabel>Speakers</FormLabel>
@@ -239,14 +222,6 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                     userCanAddToList
                     horizontal
                   />
-                  {formValues.speakers.length === 0 && (
-                    <FormHelperText
-                      fontSize={{ base: "xs", lg: "sm" }}
-                      fontWeight="medium"
-                    >
-                      This is optional
-                    </FormHelperText>
-                  )}
                 </FormControl>
               </Flex>
             </ModalBody>
@@ -276,7 +251,7 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                 isDisabled={!formIsComplete}
                 type="submit"
               >
-                Suggest Source
+                Suggest source
               </Button>
             </ModalFooter>
           </form>
