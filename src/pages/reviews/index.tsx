@@ -124,6 +124,7 @@ const Reviews = () => {
 
   const handleFilterSelect = <T extends string>(name: string, item: T) => {
     urlParams.set(name, item);
+    removeFilter("page");
     router.push(router.pathname + "?" + urlParams.toString(), undefined, {
       shallow: true,
     });

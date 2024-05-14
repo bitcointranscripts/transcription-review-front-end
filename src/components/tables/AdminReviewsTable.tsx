@@ -1,4 +1,11 @@
-import { CheckboxGroup, Flex, Text, useToast } from "@chakra-ui/react";
+import {
+  CheckboxGroup,
+  Flex,
+  Td,
+  Text,
+  Tooltip,
+  useToast,
+} from "@chakra-ui/react";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 import { AdminReview } from "@/services/api/admin/useReviews";
@@ -7,6 +14,8 @@ import { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useResetReview } from "@/services/api/reviews/useResetReviews";
+import { dateFormatGeneral, getFormattedTime } from "@/utils";
+import { getReviewStatus } from "@/utils/review";
 
 const tableStructure = [
   {
@@ -27,9 +36,26 @@ const tableStructure = [
   {
     name: "status",
     type: "text-short",
-    modifier: (data) => data.transcript.status,
+    modifier: (data) => getReviewStatus(data),
   },
-  { name: "Claim Date", type: "date", modifier: (data) => data.createdAt },
+  {
+    name: "Claim Date",
+    type: "default",
+    modifier: (data) => data.createdAt,
+    component: (data) => (
+      <Td>
+        <Tooltip
+          label={`${getFormattedTime(data.createdAt)}`}
+          cursor={"pointer"}
+        >
+          <Text cursor={"pointer"}>{`${dateFormatGeneral(
+            data.createdAt,
+            true
+          )}`}</Text>
+        </Tooltip>
+      </Td>
+    ),
+  },
   {
     name: "Link",
     type: "action",
@@ -73,7 +99,7 @@ type AdminResetSelectProps = {
     isArchiving: boolean;
   }) => React.ReactNode;
 };
-const AdminArchiveSelect = ({ children }: AdminResetSelectProps) => {
+const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const toast = useToast();
   const { data: userSession } = useSession();
@@ -134,7 +160,7 @@ const AdminReviewsTable = ({
   totalPages,
 }: Props) => {
   return (
-    <AdminArchiveSelect>
+    <AdminResetSelect>
       {({ handleReset, hasAdminSelected, isArchiving }) => (
         <BaseTable
           data={reviews}
@@ -148,7 +174,7 @@ const AdminReviewsTable = ({
           ActionButton={ResetButton}
         />
       )}
-    </AdminArchiveSelect>
+    </AdminResetSelect>
   );
 };
 

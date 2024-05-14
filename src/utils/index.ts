@@ -31,6 +31,23 @@ export const dateFormatGeneral = (date: Date | null, stringFormat: boolean) => {
   return { day, month, year };
 };
 
+export const getFormattedTime = (dateString: Date) => {
+  if (!dateString) return null;
+
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date string");
+  }
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+};
+
 export const getTimeLeft = (date: Date | null): number | null => {
   if (!date) {
     return null;
