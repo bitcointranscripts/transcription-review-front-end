@@ -37,7 +37,7 @@ export const getFormattedTime = (dateString: Date) => {
   const date = new Date(dateString);
 
   if (isNaN(date.getTime())) {
-    throw new Error("Invalid date string");
+    return null;
   }
 
   return date.toLocaleTimeString("en-US", {
