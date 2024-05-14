@@ -27,6 +27,13 @@ type Props<T> = {
   tableHeader?: string;
   tableHeaderComponent?: React.ReactNode;
   showAdminControls?: boolean;
+  handleArchive?: () => Promise<void>;
+  isArchiving?: boolean;
+  hasAdminSelected?: boolean;
+  ActionButton?: React.ComponentType<{
+    isLoading?: boolean;
+    handleRequest?: () => Promise<void>;
+  }>;
 };
 
 const BaseTable = <T extends object>({

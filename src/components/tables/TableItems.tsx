@@ -264,21 +264,44 @@ export const RefetchButton = ({
 );
 
 export const ArchiveButton = ({
-  isArchiving,
-  handleArchive,
+  isLoading,
+  handleRequest,
 }: {
-  isArchiving?: boolean;
-  handleArchive?: () => void;
+  isLoading?: boolean;
+  handleRequest?: () => void;
 }) => (
   <Button
     size="sm"
     gap={2}
     aria-label="archive table"
     colorScheme="orange"
-    onClick={handleArchive}
+    onClick={handleRequest}
   >
     Archive
-    {isArchiving ? (
+    {isLoading ? (
+      <Spinner color="white" size="sm" thickness="2px" />
+    ) : (
+      <MdOutlineArchive />
+    )}
+  </Button>
+);
+
+export const ResetButton = ({
+  isLoading,
+  handleRequest,
+}: {
+  isLoading?: boolean;
+  handleRequest?: () => void;
+}) => (
+  <Button
+    size="sm"
+    gap={2}
+    aria-label="archive table"
+    colorScheme="orange"
+    onClick={handleRequest}
+  >
+    Reset
+    {isLoading ? (
       <Spinner color="white" size="sm" thickness="2px" />
     ) : (
       <MdOutlineArchive />

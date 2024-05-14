@@ -94,7 +94,12 @@ const Reviews = () => {
     user: userFilter,
     transcriptId: transcriptIdFilter,
   });
-  const { data, totalPages, currentPage } = adminReviews ?? {};
+  const {
+    data,
+    totalPages,
+    currentPage,
+    totalItems: totalReviews,
+  } = adminReviews ?? {};
 
   const sortedData = data?.sort((a, b) => {
     if (a.createdAt > b.createdAt) return -1;
@@ -130,6 +135,7 @@ const Reviews = () => {
       const name = e.target.name;
       if (val !== "") {
         handleFilterSelect(name, val);
+        removeFilter("page");
       } else {
         if (urlParams.get(name)) {
           removeFilter(name);
@@ -202,6 +208,9 @@ const Reviews = () => {
                 Reset
               </Button>
             )}
+            <Text fontWeight="bold" fontSize="14px" color="gray.500">
+              Results: {totalReviews ?? 0}
+            </Text>
           </Flex>
         </Flex>
         <AdminReviewsTable
@@ -209,6 +218,7 @@ const Reviews = () => {
           isError={isError}
           isLoading={isLoading}
           hasFilters={showReset}
+          totalPages={totalPages}
         />
         {totalPages && currentPage ? (
           <Pagination

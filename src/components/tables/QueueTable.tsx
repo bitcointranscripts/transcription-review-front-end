@@ -41,6 +41,7 @@ import Pagination from "./Pagination";
 import { ArchiveButton } from "./TableItems";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
+import { ArchiveButton } from "./TableItems";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -408,6 +409,7 @@ const QueueTable = () => {
             showAdminControls
             tableHeader="Transcripts waiting for review"
             tableStructure={tableStructure}
+            ActionButton={ArchiveButton}
           />
           <Pagination
             setCurrentPage={setCurrentPage}
