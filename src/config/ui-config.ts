@@ -7,7 +7,7 @@ export const ROUTES_CONFIG = {
   TRANSCRIPTS: "transcripts",
   WALLET: "wallet",
   TRANSACTIONS: "transactions",
-  ALL_REVIEWS: "reviews?status=active",
+  ALL_REVIEWS: "admin/reviews?status=active",
   REVIEWS: "reviews",
 };
 

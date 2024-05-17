@@ -1,3 +1,8 @@
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  RefetchQueryFilters,
+} from "@tanstack/react-query";
 import { ReactElement } from "react";
 
 export type tableStructureItemType =
@@ -27,3 +32,7 @@ export type TableDataElement<T> = {
 export type TableData<T> = {
   data: T;
 };
+
+export type Refetch = <TPageData>(
+  options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
+) => Promise<QueryObserverResult<any, unknown>>;

@@ -19,7 +19,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { FaGithub } from "react-icons/fa";
-import { MdOutlineArchive } from "react-icons/md";
+import { MdLockReset, MdOutlineArchive } from "react-icons/md";
 import { TbReload } from "react-icons/tb";
 import { GroupedDataType, ReviewTranscript } from "../../../types";
 import TablePopover from "../TablePopover";
@@ -304,7 +304,7 @@ export const ResetButton = ({
     {isLoading ? (
       <Spinner color="white" size="sm" thickness="2px" />
     ) : (
-      <MdOutlineArchive />
+      <MdLockReset />
     )}
   </Button>
 );

@@ -13,6 +13,12 @@ function isGreaterThan24Hours(date: Date): boolean | null {
 }
 
 export const getReviewStatus = (review: AdminReview) => {
+  const isExpired =
+    !review.mergedAt &&
+    review.archivedAt &&
+    !review.submittedAt &&
+    isGreaterThan24Hours(review.createdAt);
+
   if (review.mergedAt) {
     return "Merged";
   } else if (
@@ -21,7 +27,7 @@ export const getReviewStatus = (review: AdminReview) => {
     review.pr_url
   ) {
     return "Pending";
-  } else if (isGreaterThan24Hours(review.createdAt) && !review.mergedAt) {
+  } else if (isExpired) {
     return "Expired";
   } else {
     return "Active";

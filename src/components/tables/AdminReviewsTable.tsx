@@ -7,7 +7,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import BaseTable from "./BaseTable";
-import type { TableStructure } from "./types";
+import type { Refetch, TableStructure } from "./types";
 import { AdminReview } from "@/services/api/admin/useReviews";
 import { GroupedLinks, ResetButton } from "./TableItems";
 import { useState } from "react";
@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useResetReview } from "@/services/api/reviews/useResetReviews";
 import { dateFormatGeneral, getFormattedTime } from "@/utils";
 import { getReviewStatus } from "@/utils/review";
+import { format } from "date-fns";
 
 const tableStructure = [
   {
@@ -45,7 +46,10 @@ const tableStructure = [
     component: (data) => (
       <Td>
         <Tooltip
-          label={`${getFormattedTime(data.createdAt)}`}
+          label={`${format(
+            new Date(data.createdAt),
+            "MMM d, yyyy, 	h:m aa OO "
+          )}`}
           cursor={"pointer"}
         >
           <Text cursor={"pointer"}>{`${dateFormatGeneral(
@@ -90,13 +94,14 @@ type Props = {
   hasFilters: boolean;
   reviews: AdminReview[] | undefined;
   totalPages: number | undefined;
+  refetch: Refetch;
 };
 
 type AdminResetSelectProps = {
   children: (props: {
     handleReset: () => Promise<void>;
     hasAdminSelected: boolean;
-    isArchiving: boolean;
+    isResetting: boolean;
   }) => React.ReactNode;
 };
 const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
@@ -105,6 +110,7 @@ const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
   const { data: userSession } = useSession();
   const queryClient = useQueryClient();
   const resetReview = useResetReview();
+
   const handleCheckboxToggle = (values: (string | number)[]) => {
     setSelectedIds(values.map(String));
   };
@@ -120,9 +126,8 @@ const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
             })
           )
         );
-
-        queryClient.invalidateQueries(["reviews"]);
         setSelectedIds([]);
+        queryClient.invalidateQueries(["all_reviews"]);
         toast({
           status: "success",
           title: "Reset Reviews Successfully",
@@ -146,7 +151,7 @@ const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
       {children({
         handleReset,
         hasAdminSelected: selectedIds.length > 0,
-        isArchiving: true,
+        isResetting: resetReview.isLoading,
       })}
     </CheckboxGroup>
   );
@@ -157,16 +162,17 @@ const AdminReviewsTable = ({
   isError,
   hasFilters,
   reviews,
-  totalPages,
+  refetch,
 }: Props) => {
   return (
     <AdminResetSelect>
-      {({ handleReset, hasAdminSelected, isArchiving }) => (
+      {({ handleReset, hasAdminSelected, isResetting }) => (
         <BaseTable
           data={reviews}
           emptyView={<EmptyView hasFilters={hasFilters} />}
           isLoading={isLoading}
           isError={isError}
+          isArchiving={isResetting} // takes action-loading as isArchiving
           tableStructure={tableStructure}
           hasAdminSelected={hasAdminSelected}
           handleArchive={handleReset}

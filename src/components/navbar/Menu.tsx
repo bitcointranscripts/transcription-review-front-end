@@ -34,6 +34,7 @@ const Menu = () => {
 
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
+  const fullCurrentRoute = router.asPath;
   const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => {
@@ -174,7 +175,7 @@ const Menu = () => {
                             icon={HiOutlineSwitchHorizontal}
                           />
                           <MenuNav
-                            currentRoute={currentRoute}
+                            currentRoute={fullCurrentRoute}
                             routeName={ROUTES_CONFIG.REVIEWS}
                             routeLink={ROUTES_CONFIG.ALL_REVIEWS}
                             handleClose={closeMenu}

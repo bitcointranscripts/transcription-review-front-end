@@ -21,6 +21,7 @@ import { UI_CONFIG } from "@/config/ui-config";
 import AdminReviewsTable from "@/components/tables/AdminReviewsTable";
 import { useGetAllReviews } from "@/services/api/admin/useReviews";
 import { RefetchButton } from "@/components/tables/TableItems";
+import { useEffect } from "react";
 
 type OnSelect<T> = (name: string, item: T) => void;
 
@@ -146,7 +147,12 @@ const Reviews = () => {
     UI_CONFIG.DEBOUNCE_DELAY
   );
 
-  if (!isLoading && !isAdmin) {
+  useEffect(() => {
+    if (statusFilter && transcriptIdFilter && userFilter) {
+    }
+  }, [statusFilter, transcriptIdFilter, userFilter, pageQuery]);
+
+  if (!isAdmin) {
     return (
       <AuthStatus
         title="Unauthorized"
@@ -220,6 +226,7 @@ const Reviews = () => {
           isLoading={isLoading}
           hasFilters={showReset}
           totalPages={totalPages}
+          refetch={refetch}
         />
         {totalPages && currentPage ? (
           <Pagination

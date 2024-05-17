@@ -15,8 +15,12 @@ const MenuNav = ({
   handleClose?: () => void;
   icon?: IconType;
 }) => {
-  const isCurrentRoute = currentRoute.split("?")[0] === routeLink.split("?")[0];
-
+  // to remove leading /
+  const indexOfRoute = currentRoute.indexOf("/") + 1;
+  console.log(indexOfRoute);
+  // to remove  params so route can be exact
+  const isCurrentRoute = currentRoute.substring(indexOfRoute) === routeLink.split("?")[0];
+  console.log(currentRoute.substring(indexOfRoute), routeLink.split("?")[0]);
   return (
     <Link onClick={handleClose} href={`/${routeLink}`}>
       <Flex
