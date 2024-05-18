@@ -3,7 +3,7 @@
 export const ROUTES_CONFIG = {
   HOME: "",
   HOME_DUP: "home",
-  TUTORIAL: "tutorial",
+  TUTORIAL: "home#tutorial",
   TRANSCRIPTS: "transcripts",
   WALLET: "wallet",
   TRANSACTIONS: "transactions",
