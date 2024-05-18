@@ -4,8 +4,19 @@ import PlayIcon from "../svgs/PlayIcon";
 import YoutubePortal, { YoutubeModalInfo } from "./YoutubePortal";
 import YoutubeComponent from "./YoutubeComponent";
 import { YouTubePlayer } from "react-youtube";
-import { PreverVideoProps } from "./Steps";
 import { UI_CONFIG } from "@/config/ui-config";
+
+type PreverVideoProps = {
+  handlePreferVideo: (
+    // eslint-disable-next-line no-unused-vars
+    e: React.MouseEvent<HTMLButtonElement>,
+    // eslint-disable-next-line no-unused-vars
+    step: 1 | 2 | 3
+  ) => void;
+  step: 1 | 2 | 3;
+  width?: React.ComponentProps<typeof Box>["w"];
+};
+
 interface IStepLayout {
   children: React.ReactNode;
   heading: string;
