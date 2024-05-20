@@ -27,15 +27,11 @@ type SuggestModalProps = {
 };
 
 type FormValues = {
-  speakers: string[];
-  tags: string[];
   title: string;
   url: string;
 };
 
 const defaultFormValues = {
-  speakers: [],
-  tags: [],
   title: "",
   url: "",
 } satisfies FormValues;
@@ -79,6 +75,9 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
       );
 
       if (urlExists) {
+        // TODO: Add a link to the existing transcript if a source exists.
+        // This would help users who want to add a source by pointing them to the existing transcript.
+        // Modifications to <https://btctranscripts.com/status.json> are needed to make the transcript URL accessible.
         setUrlError("A transcript for this source already exists");
         return;
       }
@@ -100,8 +99,6 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
         url: formValues.url,
         transcribedText: "",
         prRepo: getPRRepo(),
-        tags: formValues.tags,
-        speakers: formValues.speakers,
         needs: "transcript",
       },
       {
@@ -131,34 +128,35 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
     !!(formValues.title.trim() && formValues.url.trim()) && !urlError;
 
   return (
-    <Modal isOpen={isOpen} onClose={resetAndCloseForm}>
+    <Modal isOpen={isOpen} onClose={resetAndCloseForm} isCentered>
       <ModalOverlay />
       <ModalContent
         mx={{ base: "16px", lg: "0px" }}
         maxW={{ base: "400px", lg: "580px" }}
+        maxH="80vh"
+        overflowY={"auto"}
         borderRadius={20}
       >
-        <Flex p={10} flexDir="column">
-          <ModalHeader p={0} mb={{ base: "24px", lg: "36px" }}>
+          <ModalHeader>
             <Text
               fontSize={{ base: "md", lg: "xl" }}
               mb={{ base: "4px", lg: "8px" }}
               textAlign="center"
             >
-              Help Expand Our Source Library
+              Suggest a Source for Transcription
             </Text>
             <Text
               fontWeight="600"
               fontSize={{ base: "xs", lg: "sm" }}
               textAlign="center"
             >
-              Suggest a source for transcription. We manually review every
-              suggestion to ensure it meets our standards for reliable,
+              We manually review every suggestion to ensure it meets our
+              standards for reliable,
               technical Bitcoin content.
             </Text>
           </ModalHeader>
           <form onSubmit={handleSubmit}>
-            <ModalBody p={0}>
+            <ModalBody>
               <Flex flexDir="column" gap={{ base: "24px", lg: "32px" }}>
                 <FormControl isRequired gap={{ base: "6px", lg: "xs" }}>
                   <FormLabel>Title</FormLabel>
@@ -191,49 +189,14 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                     </FormHelperText>
                   )}
                 </FormControl>
-                <FormControl gap={{ base: "6px", lg: "xs" }}>
-                  <FormLabel>Tags</FormLabel>
-                  <OnlySelectField
-                    name="tags"
-                    editedData={formValues.tags}
-                    updateData={(tags) =>
-                      setFormValues((v) => ({
-                        ...v,
-                        tags,
-                      }))
-                    }
-                    autoCompleteList={selectableListData?.tags ?? []}
-                    userCanAddToList
-                    horizontal
-                  />
-                </FormControl>
-                <FormControl gap={{ base: "6px", lg: "xs" }}>
-                  <FormLabel>Speakers</FormLabel>
-                  <OnlySelectField
-                    name="speakers"
-                    editedData={formValues.speakers}
-                    updateData={(speakers) =>
-                      setFormValues((v) => ({
-                        ...v,
-                        speakers,
-                      }))
-                    }
-                    autoCompleteList={selectableListData?.speakers ?? []}
-                    userCanAddToList
-                    horizontal
-                  />
-                </FormControl>
               </Flex>
             </ModalBody>
-            <ModalFooter
-              mt={{ base: "24px", lg: "32px" }}
-              p={0}
+            <ModalFooter             
               gap={{ base: "8px", lg: "md" }}
               w="full"
             >
               <Button
                 w="full"
-                py={3}
                 mx="auto"
                 rounded="10px"
                 isDisabled={createPR.isLoading}
@@ -244,7 +207,6 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
               <Button
                 w="full"
                 isLoading={createPR.isLoading}
-                py={3}
                 mx="auto"
                 colorScheme="orange"
                 rounded="10px"
@@ -255,7 +217,6 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
               </Button>
             </ModalFooter>
           </form>
-        </Flex>
       </ModalContent>
     </Modal>
   );

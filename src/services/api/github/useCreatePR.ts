@@ -9,8 +9,6 @@ type CreatePRProps = Record<string, any> & {
   url: string;
   transcribedText: string;
   prRepo: TranscriptSubmitOptions;
-  tags: string[];
-  speakers: string[];
 };
 
 const createPR = (props: CreatePRProps) => axios.post("/api/github/pr", props);
