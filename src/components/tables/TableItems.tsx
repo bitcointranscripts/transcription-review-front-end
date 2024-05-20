@@ -1,4 +1,9 @@
-import { dateFormat, deriveFileSlug, derivePublishUrl } from "@/utils";
+import {
+  dateFormat,
+  deriveFileSlug,
+  derivePublishUrl,
+  getTimeLeft,
+} from "@/utils";
 import config from "../../config/config.json";
 import {
   Box,
@@ -12,6 +17,7 @@ import {
   Td,
   Text,
   Th,
+  Tooltip,
   Tr,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
@@ -26,6 +32,9 @@ import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableData, TableDataElement, TableStructure } from "./types";
 import { resolveGHApiUrl } from "@/utils/github";
+import { getReviewStatus } from "@/utils/review";
+import { AdminReview } from "@/services/api/admin/useReviews";
+import { format } from "date-fns";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -324,7 +333,6 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
           {isMerged ? "LIVE" : isSubmitted ? "CLOSED" : "EXPIRED"}
         </Text>
       </Box>
-      {/* <GroupedLinks data={data} /> */}
     </>
   );
 };
@@ -374,5 +382,67 @@ export const GroupedLinks = ({ data }: TableData<GroupedDataType>) => {
         </Link>
       )}
     </Flex>
+  );
+};
+
+export const OtherFields = ({ data }: TableData<AdminReview>) => {
+  const status = getReviewStatus(data);
+  const submitTime = data.submittedAt || "";
+  const mergedTime = data.mergedAt || "";
+  const returnField = () => {
+    switch (status) {
+      case "Pending":
+        return (
+          <>
+            {data.submittedAt && (
+              <Tooltip
+                label={`${format(
+                  new Date(submitTime),
+                  "MMM d, yyyy, 	h:m aa OO "
+                )}`}
+                cursor={"pointer"}
+              >
+                <Text cursor={"pointer"}>
+                  {" "}
+                  Submission ({`${format(
+                    new Date(submitTime),
+                    "yyyy-MM-d"
+                  )}`}){" "}
+                </Text>
+              </Tooltip>
+            )}
+          </>
+        );
+      case "Merged":
+        return (
+          <>
+            {data.mergedAt && (
+              <Tooltip
+                label={`${format(
+                  new Date(mergedTime),
+                  "MMM d, yyyy, 	h:m aa OO "
+                )}`}
+                cursor={"pointer"}
+              >
+                <Text cursor={"pointer"}>
+                  {" "}
+                  Merged({`${format(new Date(mergedTime), "yyyy-MM-d")}`}){" "}
+                </Text>
+              </Tooltip>
+            )}
+          </>
+        );
+      case "Active":
+        return <Text>Time left: {getTimeLeft(data.createdAt)} hours</Text>;
+      default:
+        break;
+    }
+  };
+  return (
+    <Td>
+      <Flex alignItems="center" gap={2}>
+        {returnField()}
+      </Flex>
+    </Td>
   );
 };

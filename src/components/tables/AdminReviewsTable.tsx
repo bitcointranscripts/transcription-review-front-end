@@ -9,12 +9,12 @@ import {
 import BaseTable from "./BaseTable";
 import type { Refetch, TableStructure } from "./types";
 import { AdminReview } from "@/services/api/admin/useReviews";
-import { GroupedLinks, ResetButton } from "./TableItems";
+import { GroupedLinks, OtherFields, ResetButton } from "./TableItems";
 import { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useResetReview } from "@/services/api/reviews/useResetReviews";
-import { dateFormatGeneral, getFormattedTime } from "@/utils";
+import { dateFormatGeneral } from "@/utils";
 import { getReviewStatus } from "@/utils/review";
 import { format } from "date-fns";
 
@@ -59,6 +59,12 @@ const tableStructure = [
         </Tooltip>
       </Td>
     ),
+  },
+  {
+    name: "Others",
+    type: "default",
+    modifier: (data) => data,
+    component: (data) => <OtherFields data={data} />,
   },
   {
     name: "Link",
