@@ -150,7 +150,7 @@ const Menu = () => {
                       />
                       <MenuNav
                         currentRoute={currentRoute}
-                        routeName={ROUTES_CONFIG.TUTORIAL}
+                        routeName={"Tutorial"}
                         routeLink={ROUTES_CONFIG.TUTORIAL}
                         handleClose={closeMenu}
                         icon={HiOutlineBookOpen}

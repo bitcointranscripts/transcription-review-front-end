@@ -6,6 +6,7 @@ import OptimalSetup from "./review/OptimalSetup";
 const ReviewingProcess = () => {
   return (
     <Box
+      id="tips"
       as="section"
       py={{ base: "60px", lg: "100px" }}
       width={"100%"}
