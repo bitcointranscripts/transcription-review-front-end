@@ -116,7 +116,6 @@ const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
   const { data: userSession } = useSession();
   const queryClient = useQueryClient();
   const resetReview = useResetReview();
-
   const handleCheckboxToggle = (values: (string | number)[]) => {
     setSelectedIds(values.map(String));
   };
@@ -168,7 +167,6 @@ const AdminReviewsTable = ({
   isError,
   hasFilters,
   reviews,
-  refetch,
 }: Props) => {
   return (
     <AdminResetSelect>

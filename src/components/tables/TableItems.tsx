@@ -127,6 +127,8 @@ export const TableAction = <T extends object>({
     if (!tableItem.action) return;
     tableItem.action(row);
   };
+  //  checks if it a review if it isn't returns false
+  const isAdminReviews = getReviewStatus(row as AdminReview);
 
   const isAdmin = userSession?.user?.permissions === "admin";
   const showCheckBox = isAdmin && showControls;
@@ -148,8 +150,15 @@ export const TableAction = <T extends object>({
             {tableItem.actionName}
           </Button>
         )}
+        {/* For reviews */}
+        {isAdminReviews === "Active" && showCheckBox && (
+          <Checkbox value={String("id" in row && row.id)} />
+        )}
+
         {/* checkbox */}
-        {showCheckBox && <Checkbox value={String("id" in row && row.id)} />}
+        {showCheckBox && !isAdminReviews && (
+          <Checkbox value={String("id" in row && row.id)} />
+        )}
       </Flex>
     </Td>
   );
@@ -420,13 +429,13 @@ export const OtherFields = ({ data }: TableData<AdminReview>) => {
               <Tooltip
                 label={`${format(
                   new Date(mergedTime),
-                  "MMM d, yyyy, 	h:m aa OO "
+                  "MMM d, yyyy, 	h:mm aa OO "
                 )}`}
                 cursor={"pointer"}
               >
                 <Text cursor={"pointer"}>
                   {" "}
-                  Merged({`${format(new Date(mergedTime), "yyyy-MM-d")}`}){" "}
+                  Merged ({`${format(new Date(mergedTime), "yyyy-MM-d")}`}){" "}
                 </Text>
               </Tooltip>
             )}

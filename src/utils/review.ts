@@ -13,6 +13,10 @@ function isGreaterThan24Hours(date: Date): boolean | null {
 }
 
 export const getReviewStatus = (review: AdminReview) => {
+  // checks if it is a review, NB: it is used in  the tableItems file
+  if (!review?.transcript?.status) {
+    return false;
+  }
   const isExpired =
     !review.mergedAt &&
     review.archivedAt &&
