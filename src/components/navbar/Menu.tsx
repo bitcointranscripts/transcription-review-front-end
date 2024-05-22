@@ -168,8 +168,8 @@ const Menu = () => {
                       <AdminMenu>
                         <Flex direction="column" gap={2}>
                           <MenuNav
-                            currentRoute={currentRoute}
-                            routeName={ROUTES_CONFIG.TRANSACTIONS}
+                            currentRoute={fullCurrentRoute}
+                            routeName={"Transactions"}
                             routeLink={ROUTES_CONFIG.TRANSACTIONS}
                             handleClose={closeMenu}
                             icon={HiOutlineSwitchHorizontal}
