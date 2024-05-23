@@ -26,8 +26,18 @@ const tableStructure = [
   },
   {
     name: "transcript name",
-    type: "text-long",
+    type: "default",
     modifier: (data) => data.transcript.content.title,
+    component: (data) => (
+      <Td>
+        <Tooltip
+          label={`Transcript Id: ${data.transcriptId}`}
+          cursor={"pointer"}
+        >
+          <Text cursor={"pointer"}>{data.transcript.content.title}</Text>
+        </Tooltip>
+      </Td>
+    ),
   },
   {
     name: "username",
