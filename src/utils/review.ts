@@ -17,11 +17,12 @@ export const getReviewStatus = (review: AdminReview) => {
   if (!review?.transcript?.status) {
     return false;
   }
+
   const isExpired =
     !review.mergedAt &&
     review.archivedAt &&
-    !review.submittedAt &&
-    isGreaterThan24Hours(review.createdAt);
+    (isGreaterThan24Hours(review.createdAt) ||
+      review.transcript.status?.toLowerCase() === "queued");
 
   if (review.mergedAt) {
     return "Merged";

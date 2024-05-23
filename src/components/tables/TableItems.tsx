@@ -442,7 +442,11 @@ export const OtherFields = ({ data }: TableData<AdminReview>) => {
           </>
         );
       case "Active":
-        return <Text>Time left: {getTimeLeft(data.createdAt)} hours</Text>;
+        return (
+          getTimeLeft(data.createdAt) && (
+            <Text>Time left: {getTimeLeft(data.createdAt)} hours</Text>
+          )
+        );
       default:
         break;
     }
