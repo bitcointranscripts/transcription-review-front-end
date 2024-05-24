@@ -33,7 +33,7 @@ export default async function handler(
     const speakers = transformToSelectableMetadata(data.speakers);
     const tags = transformToSelectableMetadata(data.tags);
 
-    res.status(200).json({ categories, speakers, tags });
+    res.status(200).json({ categories, speakers, tags, media: data.media });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error occurred while fetching metadata" });

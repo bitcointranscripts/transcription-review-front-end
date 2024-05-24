@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-query";
 import React from "react";
 import {
-  ArchiveButton,
   DataEmpty,
   LoadingSkeleton,
   RefetchButton,
@@ -16,6 +15,7 @@ import {
 import type { TableStructure } from "./types";
 
 type Props<T> = {
+  actionItems?: JSX.Element;
   data: T[] | undefined;
   emptyView?: React.ReactNode;
   isLoading: boolean;
@@ -27,12 +27,10 @@ type Props<T> = {
   tableHeader?: string;
   tableHeaderComponent?: React.ReactNode;
   showAdminControls?: boolean;
-  handleArchive?: () => Promise<void>;
-  isArchiving?: boolean;
-  hasAdminSelected?: boolean;
 };
 
 const BaseTable = <T extends object>({
+  actionItems,
   data,
   emptyView,
   isLoading,
@@ -41,9 +39,6 @@ const BaseTable = <T extends object>({
   tableHeader,
   tableHeaderComponent,
   showAdminControls = false,
-  handleArchive,
-  isArchiving,
-  hasAdminSelected,
 }: Props<T>) => {
   return (
     <Box fontSize="sm" py={4} isolation="isolate">
@@ -55,12 +50,7 @@ const BaseTable = <T extends object>({
             </Heading>
           )}
       <Flex gap={2} justifyContent="flex-end" mb={2}>
-        {hasAdminSelected && (
-          <ArchiveButton
-            isArchiving={isArchiving}
-            handleArchive={handleArchive}
-          />
-        )}
+        {actionItems}
         {refetch && <RefetchButton refetch={refetch} />}
       </Flex>
       <Table
