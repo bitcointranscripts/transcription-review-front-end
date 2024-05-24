@@ -13,7 +13,14 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
-import { Button, CheckboxGroup, Flex, Text, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  CheckboxGroup,
+  Flex,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -26,9 +33,12 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { BiBookAdd } from "react-icons/bi";
 import { Transcript } from "../../../types";
+import { SuggestModal } from "../modals/SuggestModal";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
+import { ArchiveButton } from "./TableItems";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
 
@@ -99,6 +109,11 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
 const QueueTable = () => {
   const { data: session, status } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
+  const {
+    isOpen: showSuggestModal,
+    onClose: closeSuggestModal,
+    onOpen: openSuggestModal,
+  } = useDisclosure();
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
@@ -173,8 +188,8 @@ const QueueTable = () => {
               ghSourcePath: transcript.transcriptUrl,
               owner,
               env_owner,
-            })
-            branchUrl = result.data.branchUrl
+            });
+            branchUrl = result.data.branchUrl;
           }
 
           // Claim transcript
@@ -203,17 +218,17 @@ const QueueTable = () => {
               },
 
               onError: (err) => {
-                throw err
+                throw err;
               },
             }
           );
         } catch (error: any) {
           // handles all errors from claiming process
-          let errorTitle = error.message
+          let errorTitle = error.message;
           if (error.response) {
             // for errors coming from axios requests
             // we display our custom error message
-            errorTitle = error.response.data.message
+            errorTitle = error.response.data.message;
           }
           setSelectedTranscriptId(-1);
           toast({
@@ -365,12 +380,29 @@ const QueueTable = () => {
       {({ handleArchive, hasAdminSelected, isArchiving }) => (
         <>
           <BaseTable
+            actionItems={
+              <>
+                <Button
+                  size="sm"
+                  gap={2}
+                  colorScheme="orange"
+                  variant="outline"
+                  onClick={openSuggestModal}
+                >
+                  Suggest source
+                  <BiBookAdd />
+                </Button>
+                {hasAdminSelected && (
+                  <ArchiveButton
+                    isArchiving={isArchiving}
+                    handleArchive={handleArchive}
+                  />
+                )}
+              </>
+            }
             data={data?.data}
             emptyView="There are no transcripts awaiting review"
-            handleArchive={handleArchive}
-            hasAdminSelected={hasAdminSelected}
             isError={isError}
-            isArchiving={isArchiving}
             isLoading={isLoading}
             refetch={refetch}
             showAdminControls
@@ -381,6 +413,10 @@ const QueueTable = () => {
             setCurrentPage={setCurrentPage}
             currentPage={currentPage}
             pages={totalPages}
+          />
+          <SuggestModal
+            handleClose={closeSuggestModal}
+            isOpen={showSuggestModal}
           />
         </>
       )}

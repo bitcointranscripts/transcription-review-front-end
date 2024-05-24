@@ -82,7 +82,9 @@ export class Metadata {
 
     const jsonData = {
       title: fileTitle,
-      transcript_by: `${transcript_by} via ${config.app_tag}`,
+      transcript_by: transcript_by
+        ? `${transcript_by} via ${config.app_tag}`
+        : undefined,
       media: url,
       ...otherMetadata,
     };
@@ -328,3 +330,20 @@ export const discordInvites = {
   review_guidelines: "https://discord.gg/jqj4maCs8p",
   feedback: "https://discord.gg/W4cmWRhMnr",
 };
+
+export function compareUrls(url1: URL, url2: URL) {
+  const host1 = url1.host.replace("www.", "");
+  const host2 = url2.host.replace("www.", "");
+
+  return (
+    host1.toLowerCase() === host2.toLowerCase() &&
+    url1.pathname.toLowerCase() === url2.pathname.toLowerCase() &&
+    url1.search.toLowerCase() === url2.search.toLowerCase()
+  );
+}
+
+export function getPRRepo() {
+  return process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+    ? "btc transcript"
+    : "user";
+}
