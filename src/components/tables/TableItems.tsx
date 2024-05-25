@@ -407,7 +407,7 @@ export const OtherFields = ({ data }: TableData<AdminReview>) => {
               <Tooltip
                 label={`${format(
                   new Date(submitTime),
-                  "MMM d, yyyy, 	h:m aa OO "
+                  "MMM d, yyyy, 	h:mm aa OO "
                 )}`}
                 cursor={"pointer"}
               >

@@ -58,7 +58,7 @@ const tableStructure = [
         <Tooltip
           label={`${format(
             new Date(data.createdAt),
-            "MMM d, yyyy, 	h:m aa OO "
+            "MMM d, yyyy, 	h:mm aa OO "
           )}`}
           cursor={"pointer"}
         >
