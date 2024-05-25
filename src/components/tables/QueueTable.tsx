@@ -41,7 +41,6 @@ import Pagination from "./Pagination";
 import { ArchiveButton } from "./TableItems";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
-import { ArchiveButton } from "./TableItems";
 
 type AdminArchiveSelectProps = {
   children: (props: {
@@ -393,10 +392,11 @@ const QueueTable = () => {
                   Suggest source
                   <BiBookAdd />
                 </Button>
+
                 {hasAdminSelected && (
                   <ArchiveButton
-                    isArchiving={isArchiving}
-                    handleArchive={handleArchive}
+                    isLoading={isArchiving}
+                    handleRequest={handleArchive}
                   />
                 )}
               </>

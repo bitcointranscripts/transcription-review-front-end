@@ -186,12 +186,20 @@ const AdminReviewsTable = ({
           emptyView={<EmptyView hasFilters={hasFilters} />}
           isLoading={isLoading}
           isError={isError}
-          isArchiving={isResetting} // takes action-loading as isArchiving
+          // takes action-loading as isArchiving
           tableStructure={tableStructure}
           hasAdminSelected={hasAdminSelected}
-          handleArchive={handleReset}
           showAdminControls
-          ActionButton={ResetButton}
+          actionItems={
+            <>
+              {hasAdminSelected && (
+                <ResetButton
+                  isLoading={isResetting}
+                  handleRequest={handleReset}
+                />
+              )}
+            </>
+          }
         />
       )}
     </AdminResetSelect>
