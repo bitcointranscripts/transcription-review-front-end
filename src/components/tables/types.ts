@@ -32,7 +32,3 @@ export type TableDataElement<T> = {
 export type TableData<T> = {
   data: T;
 };
-
-export type Refetch = <TPageData>(
-  options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
-) => Promise<QueryObserverResult<any, unknown>>;

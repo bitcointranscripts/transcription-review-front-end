@@ -26,13 +26,15 @@ export const getReviewStatus = (review: AdminReview) => {
 
   if (review.mergedAt) {
     return "Merged";
-  } else if (
+  }
+  if (
     review.transcript.status?.toLowerCase() === "not queued" &&
     !review.mergedAt &&
     review.pr_url
   ) {
     return "Pending";
-  } else if (isExpired) {
+  }
+  if (isExpired) {
     return "Expired";
   } else {
     return "Active";

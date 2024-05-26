@@ -147,11 +147,6 @@ const Reviews = () => {
     UI_CONFIG.DEBOUNCE_DELAY
   );
 
-  useEffect(() => {
-    if (statusFilter && transcriptIdFilter && userFilter) {
-    }
-  }, [statusFilter, transcriptIdFilter, userFilter, pageQuery]);
-
   if (!isAdmin) {
     return (
       <AuthStatus

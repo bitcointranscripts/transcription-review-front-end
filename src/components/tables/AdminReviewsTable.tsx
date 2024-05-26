@@ -7,7 +7,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import BaseTable from "./BaseTable";
-import type { Refetch, TableStructure } from "./types";
+import type { TableStructure } from "./types";
 import { AdminReview } from "@/services/api/admin/useReviews";
 import { GroupedLinks, OtherFields, ResetButton } from "./TableItems";
 import { useState } from "react";
@@ -110,7 +110,7 @@ type Props = {
   hasFilters: boolean;
   reviews: AdminReview[] | undefined;
   totalPages: number | undefined;
-  refetch: Refetch;
+  refetch: () => void;
 };
 
 type AdminResetSelectProps = {
