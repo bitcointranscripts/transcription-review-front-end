@@ -188,7 +188,6 @@ const AdminReviewsTable = ({
           isError={isError}
           // takes action-loading as isArchiving
           tableStructure={tableStructure}
-          hasAdminSelected={hasAdminSelected}
           showAdminControls
           actionItems={
             <>

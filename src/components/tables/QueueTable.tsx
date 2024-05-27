@@ -409,7 +409,6 @@ const QueueTable = () => {
             showAdminControls
             tableHeader="Transcripts waiting for review"
             tableStructure={tableStructure}
-            ActionButton={ArchiveButton}
           />
           <Pagination
             setCurrentPage={setCurrentPage}

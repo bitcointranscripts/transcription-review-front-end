@@ -1,8 +1,3 @@
-import {
-  QueryObserverResult,
-  RefetchOptions,
-  RefetchQueryFilters,
-} from "@tanstack/react-query";
 import { ReactElement } from "react";
 
 export type tableStructureItemType =

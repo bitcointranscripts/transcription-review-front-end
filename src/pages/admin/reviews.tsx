@@ -21,7 +21,6 @@ import { UI_CONFIG } from "@/config/ui-config";
 import AdminReviewsTable from "@/components/tables/AdminReviewsTable";
 import { useGetAllReviews } from "@/services/api/admin/useReviews";
 import { RefetchButton } from "@/components/tables/TableItems";
-import { useEffect } from "react";
 
 type OnSelect<T> = (name: string, item: T) => void;
 
