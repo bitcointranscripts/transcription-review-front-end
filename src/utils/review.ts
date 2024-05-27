@@ -36,7 +36,6 @@ export const getReviewStatus = (review: AdminReview) => {
   }
   if (isExpired) {
     return "Expired";
-  } else {
-    return "Active";
   }
+  return "Active";
 };
