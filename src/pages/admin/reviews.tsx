@@ -94,7 +94,12 @@ const Reviews = () => {
     user: userFilter,
     transcriptId: transcriptIdFilter,
   });
-  const { data, totalPages, currentPage } = adminReviews ?? {};
+  const {
+    data,
+    totalPages,
+    currentPage,
+    totalItems: totalReviews,
+  } = adminReviews ?? {};
 
   const sortedData = data?.sort((a, b) => {
     if (a.createdAt > b.createdAt) return -1;
@@ -119,6 +124,7 @@ const Reviews = () => {
 
   const handleFilterSelect = <T extends string>(name: string, item: T) => {
     urlParams.set(name, item);
+    removeFilter("page");
     router.push(router.pathname + "?" + urlParams.toString(), undefined, {
       shallow: true,
     });
@@ -130,6 +136,7 @@ const Reviews = () => {
       const name = e.target.name;
       if (val !== "") {
         handleFilterSelect(name, val);
+        removeFilter("page");
       } else {
         if (urlParams.get(name)) {
           removeFilter(name);
@@ -139,7 +146,7 @@ const Reviews = () => {
     UI_CONFIG.DEBOUNCE_DELAY
   );
 
-  if (!isLoading && !isAdmin) {
+  if (!isAdmin) {
     return (
       <AuthStatus
         title="Unauthorized"
@@ -202,6 +209,9 @@ const Reviews = () => {
                 Reset
               </Button>
             )}
+            <Text fontWeight="bold" fontSize="14px" color="gray.500">
+              Results: {totalReviews ?? 0}
+            </Text>
           </Flex>
         </Flex>
         <AdminReviewsTable
@@ -209,6 +219,8 @@ const Reviews = () => {
           isError={isError}
           isLoading={isLoading}
           hasFilters={showReset}
+          totalPages={totalPages}
+          refetch={refetch}
         />
         {totalPages && currentPage ? (
           <Pagination

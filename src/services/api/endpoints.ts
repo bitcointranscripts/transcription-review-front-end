@@ -48,6 +48,8 @@ function buildQueryParams(options: any) {
 
 const ARCHIVE_TRANSCRIPTS_BY_ID = (id: number) => `transcripts/${id}/archive`;
 
+const ARCHIVE_REVIEWS_BY_ID = (id: number) => `reviews/${id}/reset`;
+
 const CLAIM_TRANSCRIPT = (id: number) => `transcripts/${id}/claim`;
 
 const GET_TRANSCRIPTS = () => `transcripts`;
@@ -112,6 +114,7 @@ const USER_SIGN_OUT = () => `logout`;
 
 const endpoints = {
   ARCHIVE_TRANSCRIPTS_BY_ID,
+  ARCHIVE_REVIEWS_BY_ID,
   CLAIM_TRANSCRIPT,
   GET_TRANSCRIPTS,
   GET_TRANSCRIPTS_BY_ID,

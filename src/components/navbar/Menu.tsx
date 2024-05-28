@@ -34,6 +34,7 @@ const Menu = () => {
 
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
+  const fullCurrentRoute = router.asPath;
   const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => {
@@ -167,14 +168,14 @@ const Menu = () => {
                       <AdminMenu>
                         <Flex direction="column" gap={2}>
                           <MenuNav
-                            currentRoute={currentRoute}
-                            routeName={ROUTES_CONFIG.TRANSACTIONS}
+                            currentRoute={fullCurrentRoute}
+                            routeName={"Transactions"}
                             routeLink={ROUTES_CONFIG.TRANSACTIONS}
                             handleClose={closeMenu}
                             icon={HiOutlineSwitchHorizontal}
                           />
                           <MenuNav
-                            currentRoute={currentRoute}
+                            currentRoute={fullCurrentRoute}
                             routeName={ROUTES_CONFIG.REVIEWS}
                             routeLink={ROUTES_CONFIG.ALL_REVIEWS}
                             handleClose={closeMenu}

@@ -6,8 +6,8 @@ export const ROUTES_CONFIG = {
   TUTORIAL: "home#tutorial",
   TRANSCRIPTS: "transcripts",
   WALLET: "wallet",
-  TRANSACTIONS: "transactions",
-  ALL_REVIEWS: "reviews?status=active",
+  TRANSACTIONS: "admin/transactions",
+  ALL_REVIEWS: "admin/reviews?status=active",
   REVIEWS: "reviews",
 };
 

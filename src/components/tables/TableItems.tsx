@@ -1,4 +1,9 @@
-import { dateFormat, deriveFileSlug, derivePublishUrl } from "@/utils";
+import {
+  dateFormat,
+  deriveFileSlug,
+  derivePublishUrl,
+  getTimeLeft,
+} from "@/utils";
 import config from "../../config/config.json";
 import {
   Box,
@@ -12,6 +17,7 @@ import {
   Td,
   Text,
   Th,
+  Tooltip,
   Tr,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
@@ -19,13 +25,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { FaGithub } from "react-icons/fa";
-import { MdOutlineArchive } from "react-icons/md";
+import { MdLockReset, MdOutlineArchive } from "react-icons/md";
 import { TbReload } from "react-icons/tb";
 import { GroupedDataType, ReviewTranscript } from "../../../types";
 import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableData, TableDataElement, TableStructure } from "./types";
 import { resolveGHApiUrl } from "@/utils/github";
+import { getReviewStatus } from "@/utils/review";
+import { AdminReview } from "@/services/api/admin/useReviews";
+import { format } from "date-fns";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -118,6 +127,8 @@ export const TableAction = <T extends object>({
     if (!tableItem.action) return;
     tableItem.action(row);
   };
+  //  checks if it a review if it isn't returns false
+  const isAdminReviews = getReviewStatus(row as AdminReview);
 
   const isAdmin = userSession?.user?.permissions === "admin";
   const showCheckBox = isAdmin && showControls;
@@ -139,8 +150,15 @@ export const TableAction = <T extends object>({
             {tableItem.actionName}
           </Button>
         )}
+        {/* For reviews */}
+        {isAdminReviews === "Active" && showCheckBox && (
+          <Checkbox value={String("id" in row && row.id)} />
+        )}
+
         {/* checkbox */}
-        {showCheckBox && <Checkbox value={String("id" in row && row.id)} />}
+        {showCheckBox && !isAdminReviews && (
+          <Checkbox value={String("id" in row && row.id)} />
+        )}
       </Flex>
     </Td>
   );
@@ -264,24 +282,47 @@ export const RefetchButton = ({
 );
 
 export const ArchiveButton = ({
-  isArchiving,
-  handleArchive,
+  isLoading,
+  handleRequest,
 }: {
-  isArchiving?: boolean;
-  handleArchive?: () => void;
+  isLoading?: boolean;
+  handleRequest?: () => void;
 }) => (
   <Button
     size="sm"
     gap={2}
     aria-label="archive table"
     colorScheme="orange"
-    onClick={handleArchive}
+    onClick={handleRequest}
   >
     Archive
-    {isArchiving ? (
+    {isLoading ? (
       <Spinner color="white" size="sm" thickness="2px" />
     ) : (
       <MdOutlineArchive />
+    )}
+  </Button>
+);
+
+export const ResetButton = ({
+  isLoading,
+  handleRequest,
+}: {
+  isLoading?: boolean;
+  handleRequest?: () => void;
+}) => (
+  <Button
+    size="sm"
+    gap={2}
+    aria-label="archive table"
+    colorScheme="orange"
+    onClick={handleRequest}
+  >
+    Reset
+    {isLoading ? (
+      <Spinner color="white" size="sm" thickness="2px" />
+    ) : (
+      <MdLockReset />
     )}
   </Button>
 );
@@ -301,7 +342,6 @@ export const ReviewStatus = ({ data }: { data: ReviewTranscript }) => {
           {isMerged ? "LIVE" : isSubmitted ? "CLOSED" : "EXPIRED"}
         </Text>
       </Box>
-      {/* <GroupedLinks data={data} /> */}
     </>
   );
 };
@@ -351,5 +391,71 @@ export const GroupedLinks = ({ data }: TableData<GroupedDataType>) => {
         </Link>
       )}
     </Flex>
+  );
+};
+
+export const OtherFields = ({ data }: TableData<AdminReview>) => {
+  const status = getReviewStatus(data);
+  const submitTime = data.submittedAt || "";
+  const mergedTime = data.mergedAt || "";
+  const returnField = () => {
+    switch (status) {
+      case "Pending":
+        return (
+          <>
+            {data.submittedAt && (
+              <Tooltip
+                label={`${format(
+                  new Date(submitTime),
+                  "MMM d, yyyy, 	h:mm aa OO "
+                )}`}
+                cursor={"pointer"}
+              >
+                <Text cursor={"pointer"}>
+                  {" "}
+                  Submission ({`${format(
+                    new Date(submitTime),
+                    "yyyy-MM-d"
+                  )}`}){" "}
+                </Text>
+              </Tooltip>
+            )}
+          </>
+        );
+      case "Merged":
+        return (
+          <>
+            {data.mergedAt && (
+              <Tooltip
+                label={`${format(
+                  new Date(mergedTime),
+                  "MMM d, yyyy, 	h:mm aa OO "
+                )}`}
+                cursor={"pointer"}
+              >
+                <Text cursor={"pointer"}>
+                  {" "}
+                  Merged ({`${format(new Date(mergedTime), "yyyy-MM-d")}`}){" "}
+                </Text>
+              </Tooltip>
+            )}
+          </>
+        );
+      case "Active":
+        return (
+          getTimeLeft(data.createdAt) && (
+            <Text>Time left: {getTimeLeft(data.createdAt)} hours</Text>
+          )
+        );
+      default:
+        break;
+    }
+  };
+  return (
+    <Td>
+      <Flex alignItems="center" gap={2}>
+        {returnField()}
+      </Flex>
+    </Td>
   );
 };

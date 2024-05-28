@@ -392,10 +392,11 @@ const QueueTable = () => {
                   Suggest source
                   <BiBookAdd />
                 </Button>
+
                 {hasAdminSelected && (
                   <ArchiveButton
-                    isArchiving={isArchiving}
-                    handleArchive={handleArchive}
+                    isLoading={isArchiving}
+                    handleRequest={handleArchive}
                   />
                 )}
               </>
