@@ -4,13 +4,19 @@ import { TransactionQueryStatus, TransactionQueryType } from "../../../types";
 export type ReviewQueryOptions = {
   userId?: number;
   username?: string;
-  status?: "active" | "pending" | "inactive";
+  status?: ReviewQueryStatus;
   page?: number;
   /* To be used for only multiple request with useQueries */
   multipleStatus?: ReviewQueryStatus[];
 };
 
-export type ReviewQueryStatus = "active" | "pending" | "inactive";
+export type ReviewQueryStatus =
+  | "active"
+  | "pending"
+  | "inactive"
+  | "expired"
+  | "merged"
+  | "all";
 
 export type TransactionQueryOptions = {
   userId?: number;
@@ -19,6 +25,15 @@ export type TransactionQueryOptions = {
   status?: TransactionQueryStatus;
   type?: TransactionQueryType;
   page?: number;
+};
+
+export type ReviewAdminQueryOptions = {
+  userId?: number;
+  user?: string;
+  reviewId?: string;
+  status?: ReviewQueryStatus | null;
+  page?: number;
+  txId?: string;
 };
 
 function buildQueryParams(options: any) {
@@ -32,6 +47,8 @@ function buildQueryParams(options: any) {
 }
 
 const ARCHIVE_TRANSCRIPTS_BY_ID = (id: number) => `transcripts/${id}/archive`;
+
+const ARCHIVE_REVIEWS_BY_ID = (id: number) => `reviews/${id}/reset`;
 
 const CLAIM_TRANSCRIPT = (id: number) => `transcripts/${id}/claim`;
 
@@ -80,12 +97,24 @@ const GET_TRANSACTIONS_ADMIN = ({
   );
 };
 
+const GET_REVIEWS_ADMIN = ({
+  status,
+  page,
+  user,
+  txId,
+}: ReviewAdminQueryOptions) => {
+  return (
+    "reviews/all" + buildQueryParams({ status, page, user, transcriptId: txId })
+  );
+};
+
 const GET_WALLET = (id?: number) => `users/${id}/wallet`;
 
 const USER_SIGN_OUT = () => `logout`;
 
 const endpoints = {
   ARCHIVE_TRANSCRIPTS_BY_ID,
+  ARCHIVE_REVIEWS_BY_ID,
   CLAIM_TRANSCRIPT,
   GET_TRANSCRIPTS,
   GET_TRANSCRIPTS_BY_ID,
@@ -100,6 +129,7 @@ const endpoints = {
   PAY_INVOICE,
   GET_TRANSACTIONS,
   GET_TRANSACTIONS_ADMIN,
+  GET_REVIEWS_ADMIN,
   GET_WALLET,
   USER_SIGN_OUT,
 };

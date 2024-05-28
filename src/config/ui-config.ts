@@ -3,10 +3,12 @@
 export const ROUTES_CONFIG = {
   HOME: "",
   HOME_DUP: "home",
-  TUTORIAL: "tutorial",
+  TUTORIAL: "home#tutorial",
   TRANSCRIPTS: "transcripts",
   WALLET: "wallet",
-  TRANSACTIONS: "transactions",
+  TRANSACTIONS: "admin/transactions",
+  ALL_REVIEWS: "admin/reviews?status=active",
+  REVIEWS: "reviews",
 };
 
 export const UI_CONFIG = {

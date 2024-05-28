@@ -9,15 +9,17 @@ import {
 import config from "@/config/config.json";
 import { resolveGHApiUrl } from "@/utils/github";
 
-
 const resolveTranscriptUrl = (transcriptUrl: string | null) => {
   if (transcriptUrl) {
-    const { filePath, srcDirPath } = resolveGHApiUrl(transcriptUrl)
+    const { filePath, srcDirPath } = resolveGHApiUrl(transcriptUrl);
     // btctranscripts.com url for this transcript
-    return { url: `${config.btctranscripts_base_url}${filePath.slice(0, -3)}`, loc: srcDirPath }
+    return {
+      url: `${config.btctranscripts_base_url}${filePath.slice(0, -3)}`,
+      loc: srcDirPath,
+    };
   }
-  return null
-}
+  return null;
+};
 
 type TitleWithTagsProps = {
   title: string;
@@ -47,8 +49,7 @@ const TitleWithTags = ({
     (trs) => trs.slug.toLowerCase() === stringCategories.toLocaleLowerCase()
   );
   const tags = shouldSlice ? allTags.slice(0, 1) : allTags;
-  const transcript = resolveTranscriptUrl(transcriptUrl)
-
+  const transcript = resolveTranscriptUrl(transcriptUrl);
   return (
     <Td width="40%">
       <Flex gap={2} flexDir="column">

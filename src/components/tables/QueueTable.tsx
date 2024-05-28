@@ -13,7 +13,14 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
-import { Button, CheckboxGroup, Flex, Text, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  CheckboxGroup,
+  Flex,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -26,9 +33,12 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { BiBookAdd } from "react-icons/bi";
 import { Transcript } from "../../../types";
+import { SuggestModal } from "../modals/SuggestModal";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
+import { ArchiveButton } from "./TableItems";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
 
@@ -99,6 +109,11 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
 const QueueTable = () => {
   const { data: session, status } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
+  const {
+    isOpen: showSuggestModal,
+    onClose: closeSuggestModal,
+    onOpen: openSuggestModal,
+  } = useDisclosure();
   const router = useRouter();
   const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
@@ -110,9 +125,7 @@ const QueueTable = () => {
 
   const retriedClaim = useRef(0);
 
-  const [claimState, setClaimState] = useState({
-    rowId: -1,
-  });
+  const [selectedTranscriptId, setSelectedTranscriptId] = useState(-1);
   const { data: multipleStatusData } = useUserMultipleReviews({
     userId: session?.user?.id,
     multipleStatus: ["pending", "active", "inactive"],
@@ -156,75 +169,73 @@ const QueueTable = () => {
         return;
       }
       if (session?.user?.id) {
-        setClaimState((prev) => ({ ...prev, rowId: transcriptId }));
+        setSelectedTranscriptId(transcriptId);
 
-        // Fork repo
-        const forkResult = await axios.post("/api/github/fork");
-        const owner = forkResult.data.owner.login;
+        try {
+          // Fork repo
+          const forkResult = await axios.post("/api/github/fork");
+          const owner = forkResult.data.owner.login;
 
-        const env_owner =
-          process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
-            ? forkResult.data.owner.login
-            : upstreamOwner;
+          const env_owner =
+            process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+              ? forkResult.data.owner.login
+              : upstreamOwner;
 
-        let branchUrl;
+          let branchUrl;
 
-        if (transcript && transcript.transcriptUrl) {
-          try {
-            await axios
-              .post("/api/github/newBranch", {
-                ghSourcePath: transcript.transcriptUrl,
-                owner,
-                env_owner,
-              })
-              .then((res) => {
-                branchUrl = res.data.branchUrl;
-              })
-              .catch((err) => {
+          if (transcript && transcript.transcriptUrl) {
+            const result = await axios.post("/api/github/newBranch", {
+              ghSourcePath: transcript.transcriptUrl,
+              owner,
+              env_owner,
+            });
+            branchUrl = result.data.branchUrl;
+          }
+
+          // Claim transcript
+          claimTranscript.mutate(
+            { userId: session.user.id, transcriptId, branchUrl },
+            {
+              onSuccess: async (data) => {
+                try {
+                  const reviewId = data.id;
+                  if (!reviewId) {
+                    throw new Error("failed to claim transcript");
+                  }
+
+                  if (data instanceof Error) {
+                    await retryLoginAndClaim(transcriptId);
+                    return;
+                  }
+                  if (multipleStatusData.length > 0) {
+                    router.push(`/reviews/${data.id}`);
+                  } else {
+                    router.push(`/reviews/${data.id}?first_review=true`);
+                  }
+                } catch (err) {
+                  console.error(err);
+                }
+              },
+
+              onError: (err) => {
                 throw err;
-              });
-          } catch (err: any) {
-            console.error(err);
-            throw new Error(err.message);
+              },
+            }
+          );
+        } catch (error: any) {
+          // handles all errors from claiming process
+          let errorTitle = error.message;
+          if (error.response) {
+            // for errors coming from axios requests
+            // we display our custom error message
+            errorTitle = error.response.data.message;
           }
+          setSelectedTranscriptId(-1);
+          toast({
+            status: "error",
+            title: errorTitle,
+          });
         }
-
-        // Claim transcript
-        claimTranscript.mutate(
-          { userId: session.user.id, transcriptId, branchUrl },
-          {
-            onSuccess: async (data) => {
-              try {
-                const reviewId = data.id;
-                if (!reviewId) {
-                  throw new Error("failed to claim transcript");
-                }
-
-                setClaimState((prev) => ({ ...prev, rowId: -1 }));
-                if (data instanceof Error) {
-                  await retryLoginAndClaim(transcriptId);
-                  return;
-                }
-                if (multipleStatusData.length > 0) {
-                  router.push(`/reviews/${data.id}`);
-                } else {
-                  router.push(`/reviews/${data.id}?first_review=true`);
-                }
-              } catch (err) {
-                console.error(err);
-              }
-            },
-
-            onError: (err) => {
-              const error = err as Error;
-              setClaimState((prev) => ({ ...prev, rowId: -1 }));
-              toast({
-                status: "error",
-                title: error?.message,
-              });
-            },
-          }
-        );
       } else {
         await retryLoginAndClaim(transcriptId);
       }
@@ -347,6 +358,8 @@ const QueueTable = () => {
           modifier: (data) => data.id,
           component: (data) => (
             <Button
+              isDisabled={selectedTranscriptId !== -1}
+              isLoading={data.id == selectedTranscriptId}
               bgColor={"#EB9B00"}
               color="white"
               _hover={{ bgColor: "#EB9B00AE" }}
@@ -359,7 +372,7 @@ const QueueTable = () => {
           ),
         },
       ] as TableStructure<Transcript>[],
-    [handleClaim]
+    [handleClaim, selectedTranscriptId]
   );
 
   return (
@@ -367,13 +380,30 @@ const QueueTable = () => {
       {({ handleArchive, hasAdminSelected, isArchiving }) => (
         <>
           <BaseTable
-            actionState={claimState}
+            actionItems={
+              <>
+                <Button
+                  size="sm"
+                  gap={2}
+                  colorScheme="orange"
+                  variant="outline"
+                  onClick={openSuggestModal}
+                >
+                  Suggest source
+                  <BiBookAdd />
+                </Button>
+
+                {hasAdminSelected && (
+                  <ArchiveButton
+                    isLoading={isArchiving}
+                    handleRequest={handleArchive}
+                  />
+                )}
+              </>
+            }
             data={data?.data}
             emptyView="There are no transcripts awaiting review"
-            handleArchive={handleArchive}
-            hasAdminSelected={hasAdminSelected}
             isError={isError}
-            isArchiving={isArchiving}
             isLoading={isLoading}
             refetch={refetch}
             showAdminControls
@@ -384,6 +414,10 @@ const QueueTable = () => {
             setCurrentPage={setCurrentPage}
             currentPage={currentPage}
             pages={totalPages}
+          />
+          <SuggestModal
+            handleClose={closeSuggestModal}
+            isOpen={showSuggestModal}
           />
         </>
       )}

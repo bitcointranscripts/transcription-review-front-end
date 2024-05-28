@@ -34,6 +34,7 @@ const Menu = () => {
 
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
+  const fullCurrentRoute = router.asPath;
   const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => {
@@ -150,7 +151,7 @@ const Menu = () => {
                       />
                       <MenuNav
                         currentRoute={currentRoute}
-                        routeName={ROUTES_CONFIG.TUTORIAL}
+                        routeName={"Tutorial"}
                         routeLink={ROUTES_CONFIG.TUTORIAL}
                         handleClose={closeMenu}
                         icon={HiOutlineBookOpen}
@@ -165,13 +166,22 @@ const Menu = () => {
                     </Flex>
                     {isAdmin ? (
                       <AdminMenu>
-                        <MenuNav
-                          currentRoute={currentRoute}
-                          routeName={ROUTES_CONFIG.TRANSACTIONS}
-                          routeLink={ROUTES_CONFIG.TRANSACTIONS}
-                          handleClose={closeMenu}
-                          icon={HiOutlineSwitchHorizontal}
-                        />
+                        <Flex direction="column" gap={2}>
+                          <MenuNav
+                            currentRoute={fullCurrentRoute}
+                            routeName={"Transactions"}
+                            routeLink={ROUTES_CONFIG.TRANSACTIONS}
+                            handleClose={closeMenu}
+                            icon={HiOutlineSwitchHorizontal}
+                          />
+                          <MenuNav
+                            currentRoute={fullCurrentRoute}
+                            routeName={ROUTES_CONFIG.REVIEWS}
+                            routeLink={ROUTES_CONFIG.ALL_REVIEWS}
+                            handleClose={closeMenu}
+                            icon={CgTranscript}
+                          />
+                        </Flex>
                       </AdminMenu>
                     ) : null}
                   </Box>

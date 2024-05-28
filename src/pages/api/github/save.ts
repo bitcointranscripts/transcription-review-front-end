@@ -13,7 +13,7 @@ import axios from "axios";
 type SaveEditProps = {
   octokit: InstanceType<typeof Octokit>;
   transcriptData: {
-    metaData: Metadata;
+    metadata: Metadata;
     body: string;
   };
   ghSourcePath: string;
@@ -48,7 +48,7 @@ async function saveEdits({
     resolveGHApiUrl(ghSourcePath);
 
   const directoryName = srcDirPath;
-  const transcriptToSave = `${transcriptData.metaData.toString()}${
+  const transcriptToSave = `${transcriptData.metadata.toString()}${
     transcriptData.body
   }`;
 
@@ -132,7 +132,7 @@ async function saveEdits({
       owner,
       repo: upstreamRepo,
       path: `${directoryName}/${fileName}`,
-      message: `Updated "${transcriptData.metaData.fileTitle}" transcript submitted by ${owner}`,
+      message: `Updated "${transcriptData.metadata.fileTitle}" transcript submitted by ${owner}`,
       content: fileContent,
       branch: ghBranchName,
       sha: fileToUpdateSha,
@@ -176,6 +176,7 @@ export default async function handler(
     ghBranchUrl,
     directoryPath,
     reviewId,
+    ...otherMetadata
   } = req.body;
 
   const newMetadata = new Metadata({
@@ -186,10 +187,11 @@ export default async function handler(
     tags,
     speakers,
     categories,
+    ...otherMetadata,
   });
 
   const transcriptData = {
-    metaData: newMetadata,
+    metadata: newMetadata,
     body: transcribedText,
   };
 
