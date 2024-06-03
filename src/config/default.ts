@@ -32,5 +32,11 @@ export const ReviewStatus = {
   ACTIVE: "active",
   ALL: "all",
 } as const;
+
+export const UserRoles = {
+  REVIEWER: "reviewer",
+  ADMIN: "admin",
+} as const;
+
 export const upstreamOwner = "bitcointranscripts";
 export const upstreamRepo = "bitcointranscripts";

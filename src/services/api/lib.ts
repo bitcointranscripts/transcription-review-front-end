@@ -64,3 +64,18 @@ export const updateUserProfile = async (
     username,
   });
 };
+
+export const updateUserRole = async ({
+  id,
+  username,
+  permissions,
+}: Omit<UpdateUserProp, "email">): Promise<{ data: UserData }> => {
+  if (!id) {
+    throw new Error("User id is required");
+  }
+
+  return axios.put(endpoints.USER_BY_ID(id), {
+    username,
+    permissions,
+  });
+};

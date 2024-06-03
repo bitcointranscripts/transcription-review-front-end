@@ -30,6 +30,22 @@ export type AdminReview = {
   transcript: Transcript;
   user: UserData;
 };
+
+export type AllUsers = {
+  id: number;
+  submittedAt: Nullable<Date>;
+  archivedAt: Nullable<Date>;
+  mergedAt: Nullable<Date>;
+  pr_url: string;
+  branchUrl: string;
+  userId: number;
+  transcriptId: number;
+  createdAt: Date;
+  updatedAt: Nullable<Date>;
+  transcript: Transcript;
+  user: UserData;
+};
+
 type ReviewsQueryFromURL = {
   page: string | null;
   status: string | null;
