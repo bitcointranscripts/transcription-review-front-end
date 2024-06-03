@@ -2,7 +2,7 @@ import { Flex, Select, Td, Text, Tooltip } from "@chakra-ui/react";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { AdminUsers } from "@/services/api/admin/useUsers";
 import { updateUserRole } from "@/services/api/lib";
@@ -45,12 +45,15 @@ const AllUsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
       });
       await queryClient.invalidateQueries(["all_users"]);
     } catch {
-      queryClient.invalidateQueries(["all_users"]);
       return "Something went wrong";
     } finally {
       setIsUpdating(false);
     }
   };
+  useEffect(() => {
+    queryClient.invalidateQueries(["all_users"]);
+  }, [isUpdating, queryClient]);
+
   const tableStructure = [
     {
       name: "id",
@@ -117,7 +120,7 @@ const AllUsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
     <BaseTable
       data={users}
       emptyView={<EmptyView hasFilters={hasFilters} />}
-      isLoading={isLoading || isUpdating}
+      isLoading={isLoading}
       isError={isError}
       tableStructure={tableStructure}
       showAdminControls
