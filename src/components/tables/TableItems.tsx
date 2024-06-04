@@ -242,7 +242,6 @@ export const RowData = <T extends object>({
   tableItem,
   showControls,
 }: TableDataElement<T> & { showControls: boolean }) => {
-  console.log(tableItem.actionTableType, "test");
   switch (tableItem.type) {
     case "date":
       return <DateText key={tableItem.name} tableItem={tableItem} row={row} />;
