@@ -29,6 +29,7 @@ const tableStructure = [
   {
     name: "Joined",
     type: "action",
+    actionTableType: "user",
     modifier: (data) => data.createdAt,
     component: (data) => (
       <Tooltip

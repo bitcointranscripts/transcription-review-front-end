@@ -134,10 +134,15 @@ export const TableAction = <T extends object>({
   };
   //  checks if it a review if it isn't returns false
   const isAdminReviews = getReviewStatus(row as AdminReview);
+  const isAllUsersTable = tableItem.actionTableType === "user";
 
   const isAdmin = userSession?.user?.permissions === "admin";
   const showCheckBox = isAdmin && showControls;
 
+  /* Forced the type here because it uses a dynamic type so Ts isn't aware of Id in rows
+  also from other tables every row has an id
+  */
+  const rowId = row as { id: number };
   return (
     <Td>
       <Flex justifyContent="space-between" alignItems="center">
@@ -161,7 +166,11 @@ export const TableAction = <T extends object>({
         )}
 
         {/* checkbox */}
-        {showCheckBox && !isAdminReviews && (
+        {showCheckBox && !isAdminReviews && !isAllUsersTable && (
+          <Checkbox value={String("id" in row && row.id)} />
+        )}
+
+        {isAllUsersTable && rowId?.id !== userSession?.user?.id && (
           <Checkbox value={String("id" in row && row.id)} />
         )}
       </Flex>
@@ -233,6 +242,7 @@ export const RowData = <T extends object>({
   tableItem,
   showControls,
 }: TableDataElement<T> & { showControls: boolean }) => {
+  console.log(tableItem.actionTableType, "test");
   switch (tableItem.type) {
     case "date":
       return <DateText key={tableItem.name} tableItem={tableItem} row={row} />;
