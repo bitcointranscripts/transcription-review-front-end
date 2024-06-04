@@ -1,14 +1,50 @@
-import { Flex, Select, Td, Text, Tooltip } from "@chakra-ui/react";
+import { CheckboxGroup, Flex, Text, Tooltip, useToast } from "@chakra-ui/react";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
-import { AdminUsers } from "@/services/api/admin/useUsers";
-import { updateUserRole } from "@/services/api/lib";
-import { UserRole } from "../../../types";
-import { UserRoles } from "@/config/default";
+import { AdminUsers, useUpdateUserRole } from "@/services/api/admin/useUsers";
 import { useQueryClient } from "@tanstack/react-query";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { UpdateRole } from "./TableItems";
+import { UserRole } from "../../../types";
+
+const tableStructure = [
+  {
+    name: "id",
+    type: "text-short",
+    modifier: (data) => data.id,
+  },
+  {
+    name: "username",
+    type: "text-short",
+    modifier: (data) => data.githubUsername,
+  },
+  {
+    name: "Role",
+    type: "text-short",
+    modifier: (data) => data.permissions,
+  },
+  {
+    name: "Joined",
+    type: "action",
+    modifier: (data) => data.createdAt,
+    component: (data) => (
+      <Tooltip
+        label={`${format(
+          new Date(data.createdAt),
+          "MMM d, yyyy, 	h:mm aa OO "
+        )}`}
+        cursor={"pointer"}
+      >
+        <Text cursor={"pointer"}>
+          {format(new Date(data.createdAt), "yyyy-MM-dd")}
+        </Text>
+      </Tooltip>
+    ),
+  },
+] satisfies TableStructure<AdminUsers>[];
 
 const EmptyView = ({ hasFilters }: { hasFilters: boolean }) => {
   return (
@@ -29,102 +65,91 @@ type Props = {
   refetch: () => void;
 };
 
-const AllUsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
+type AdminUsersSelectProps = {
+  children: (props: {
+    handleUpdate: (role: UserRole) => Promise<void>;
+    hasAdminSelected: boolean;
+    isUpdating: boolean;
+  }) => React.ReactNode;
+};
+const AdminUsersSelect = ({ children }: AdminUsersSelectProps) => {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const toast = useToast();
+  const { data: userSession } = useSession();
   const queryClient = useQueryClient();
-  const [isUpdating, setIsUpdating] = useState(false);
-  const onSelectRoles = async (
-    e: ChangeEvent<HTMLSelectElement>,
-    data: { id: number; username: string; permissions: UserRole }
-  ) => {
-    setIsUpdating(true);
-    try {
-      updateUserRole({
-        id: data.id,
-        username: data.username,
-        permissions: e.target.value as UserRole,
-      });
-      await queryClient.invalidateQueries(["all_users"]);
-    } catch {
-      return "Something went wrong";
-    } finally {
-      setIsUpdating(false);
+  const updateUser = useUpdateUserRole();
+  const handleCheckboxToggle = (values: (string | number)[]) => {
+    setSelectedIds(values.map(String));
+  };
+  const handleUpdate = async (role: UserRole) => {
+    const ids = selectedIds.map(Number);
+
+    if (userSession?.user?.id) {
+      try {
+        await Promise.all(
+          ids.map((userId) =>
+            updateUser.mutateAsync({ id: userId, permissions: role })
+          )
+        );
+        queryClient.invalidateQueries(["all_users"]);
+        setSelectedIds([]);
+        toast({
+          status: "success",
+          title: "Updated Roles Successfully",
+        });
+      } catch (err) {
+        const error = err as Error;
+        toast({
+          status: "error",
+          title: "Error while updating roles",
+          description: error?.message,
+        });
+      }
+    } else {
+      await signOut({ redirect: false });
+      signIn("github");
     }
   };
-  useEffect(() => {
-    queryClient.invalidateQueries(["all_users"]);
-  }, [isUpdating, queryClient]);
 
-  const tableStructure = [
-    {
-      name: "id",
-      type: "text-short",
-      modifier: (data) => data.id,
-    },
-    {
-      name: "username",
-      type: "text-short",
-      modifier: (data) => data.githubUsername,
-    },
-    {
-      name: "Role Permissions",
-      type: "text-short",
-      modifier: (data) => data.permissions,
-    },
-    {
-      name: "Joined",
-      type: "default",
-      modifier: (data) => data.createdAt,
-      component: (data) => (
-        <Td>
-          <Tooltip
-            label={`${format(
-              new Date(data.createdAt),
-              "MMM d, yyyy, 	h:mm aa OO "
-            )}`}
-            cursor={"pointer"}
-          >
-            <Text cursor={"pointer"}>
-              {format(new Date(data.createdAt), "yyyy-MM-dd")}
-            </Text>
-          </Tooltip>
-        </Td>
-      ),
-    },
-    {
-      name: "Select Role",
-      type: "default",
-      modifier: (data) => data.createdAt,
-      component: (data) => (
-        <Td>
-          <Select
-            onChange={(e) =>
-              onSelectRoles(e, {
-                id: data.id,
-                username: data.githubUsername,
-                permissions: e.target.value as UserRole,
-              })
-            }
-            defaultValue={data.permissions}
-          >
-            {Object.values(UserRoles).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </Select>
-        </Td>
-      ),
-    },
-  ] satisfies TableStructure<AdminUsers>[];
   return (
-    <BaseTable
-      data={users}
-      emptyView={<EmptyView hasFilters={hasFilters} />}
-      isLoading={isLoading}
-      isError={isError}
-      tableStructure={tableStructure}
-      showAdminControls
-    />
+    <CheckboxGroup
+      value={selectedIds}
+      colorScheme="orange"
+      onChange={handleCheckboxToggle}
+    >
+      {children({
+        handleUpdate,
+        hasAdminSelected: selectedIds.length > 0,
+        isUpdating: updateUser.isLoading,
+      })}
+    </CheckboxGroup>
+  );
+};
+
+const AllUsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
+  return (
+    <AdminUsersSelect>
+      {({ handleUpdate, hasAdminSelected, isUpdating }) => (
+        <BaseTable
+          data={users}
+          emptyView={<EmptyView hasFilters={hasFilters} />}
+          isLoading={isLoading}
+          isError={isError}
+          tableStructure={tableStructure}
+          showAdminControls
+          actionItems={
+            <>
+              {hasAdminSelected && (
+                <UpdateRole
+                  isLoading={isUpdating}
+                  handleRequest={handleUpdate}
+                />
+              )}
+            </>
+          }
+        />
+      )}
+    </AdminUsersSelect>
   );
 };
 

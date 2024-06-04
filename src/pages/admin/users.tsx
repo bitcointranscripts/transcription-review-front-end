@@ -32,29 +32,6 @@ const AllUsers = () => {
         <Heading size={"md"} mb={10}>
           All Users
         </Heading>
-        <Flex
-          gap={6}
-          wrap="wrap"
-          justifyContent="space-between"
-          alignItems={"center"}
-        >
-          {/* <Flex gap={4} alignItems={"center"}>
-            {refetch && <RefetchButton refetch={refetch} />}
-            {showReset && (
-              <Button
-                onClick={resetFilters}
-                size={"xs"}
-                colorScheme={"red"}
-                variant={"outline"}
-              >
-                Reset
-              </Button>
-            )}
-            <Text fontWeight="bold" fontSize="14px" color="gray.500">
-              Results: {totalReviews ?? 0}
-            </Text>
-          </Flex> */}
-        </Flex>
         <AllUsersTable
           users={sortedData ?? []}
           isError={isError}

@@ -12,6 +12,10 @@ import {
   Flex,
   Icon,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Skeleton,
   Spinner,
   Td,
@@ -25,9 +29,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { FaGithub } from "react-icons/fa";
-import { MdLockReset, MdOutlineArchive } from "react-icons/md";
+import { MdArrowDropDown, MdLockReset, MdOutlineArchive } from "react-icons/md";
 import { TbReload } from "react-icons/tb";
-import { GroupedDataType, ReviewTranscript } from "../../../types";
+import { GroupedDataType, ReviewTranscript, UserRole } from "../../../types";
 import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableData, TableDataElement, TableStructure } from "./types";
@@ -35,6 +39,7 @@ import { resolveGHApiUrl } from "@/utils/github";
 import { getReviewStatus } from "@/utils/review";
 import { AdminReview } from "@/services/api/admin/useReviews";
 import { format } from "date-fns";
+import { UserRoles } from "@/config/default";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -459,3 +464,42 @@ export const OtherFields = ({ data }: TableData<AdminReview>) => {
     </Td>
   );
 };
+
+export const UpdateRole = ({
+  isLoading,
+  handleRequest,
+}: {
+  isLoading?: boolean;
+  handleRequest: (role: UserRole) => void;
+}) => (
+  <Menu>
+    <MenuButton
+      as={Button}
+      isLoading={isLoading}
+      size="sm"
+      gap={2}
+      aria-label="users table"
+      colorScheme="orange"
+      px={3}
+      borderLeftWidth={1.5}
+    >
+      <Flex gap={2} alignItems={"center"}>
+        <Text> Apply Role </Text>
+        <MdArrowDropDown size={20} />
+      </Flex>
+    </MenuButton>
+    <MenuList color="black">
+      {Object.values(UserRoles).map((role) => (
+        <MenuItem
+          key={role}
+          textTransform={"capitalize"}
+          onClick={() => {
+            handleRequest(role);
+          }}
+        >
+          {role}
+        </MenuItem>
+      ))}
+    </MenuList>
+  </Menu>
+);

@@ -99,7 +99,7 @@ const GET_TRANSACTIONS_ADMIN = ({
 
 const GET_USERS_ADMIN = () => `users`;
 
-const UPDATE_USER_ROLE = (id: string) => `/users/${id}`;
+const UPDATE_USER_ROLE = (id: number) => `/users/${id}`;
 
 const GET_REVIEWS_ADMIN = ({
   status,
