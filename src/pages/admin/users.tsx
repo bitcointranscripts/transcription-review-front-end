@@ -1,15 +1,15 @@
 import { Flex, Heading } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import AuthStatus from "@/components/transcript/AuthStatus";
-import { useGetAllUsers } from "@/services/api/admin/useUsers";
-import AllUsersTable from "@/components/tables/AllUsersTable";
+import { useGetUsers } from "@/services/api/admin/useUsers";
+import UsersTable from "@/components/tables/UsersTable";
 
-const AllUsers = () => {
+const Users = () => {
   const { data: sessionData } = useSession();
 
   const isAdmin = sessionData?.user?.permissions === "admin";
 
-  const { data: usersResponse, isLoading, isError, refetch } = useGetAllUsers();
+  const { data: usersResponse, isLoading, isError, refetch } = useGetUsers();
 
   const sortedData = usersResponse?.sort((a, b) => {
     if (a.createdAt > b.createdAt) return -1;
@@ -30,9 +30,9 @@ const AllUsers = () => {
     <>
       <Flex flexDir="column">
         <Heading size={"md"} mb={10}>
-          All Users
+          Users
         </Heading>
-        <AllUsersTable
+        <UsersTable
           users={sortedData ?? []}
           isError={isError}
           isLoading={isLoading}
@@ -45,4 +45,4 @@ const AllUsers = () => {
   );
 };
 
-export default AllUsers;
+export default Users;

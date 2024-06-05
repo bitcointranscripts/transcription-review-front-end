@@ -12,16 +12,16 @@ export type AdminUsers = {
   createdAt: string;
 };
 
-export const getAllUsers = async (): Promise<AdminUsers[]> => {
+export const getUsers = async (): Promise<AdminUsers[]> => {
   return axios
     .get(endpoints.GET_USERS_ADMIN())
     .then((res) => res.data)
     .catch((err) => err);
 };
 
-export const useGetAllUsers = () =>
+export const useGetUsers = () =>
   useQuery({
-    queryFn: () => getAllUsers(),
+    queryFn: () => getUsers(),
     queryKey: ["all_users"],
     refetchOnWindowFocus: false,
     enabled: true,

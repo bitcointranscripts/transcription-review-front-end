@@ -127,7 +127,7 @@ const AdminUsersSelect = ({ children }: AdminUsersSelectProps) => {
   );
 };
 
-const AllUsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
+const UsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
   return (
     <AdminUsersSelect>
       {({ handleUpdate, hasAdminSelected, isUpdating }) => (
@@ -154,4 +154,4 @@ const AllUsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
   );
 };
 
-export default AllUsersTable;
+export default UsersTable;

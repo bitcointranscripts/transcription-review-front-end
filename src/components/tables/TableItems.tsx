@@ -134,7 +134,7 @@ export const TableAction = <T extends object>({
   };
   //  checks if it a review if it isn't returns false
   const isAdminReviews = getReviewStatus(row as AdminReview);
-  const isAllUsersTable = tableItem.actionTableType === "user";
+  const isUsersTable = tableItem.actionTableType === "user";
 
   const isAdmin = userSession?.user?.permissions === "admin";
   const showCheckBox = isAdmin && showControls;
@@ -166,11 +166,11 @@ export const TableAction = <T extends object>({
         )}
 
         {/* checkbox */}
-        {showCheckBox && !isAdminReviews && !isAllUsersTable && (
+        {showCheckBox && !isAdminReviews && !isUsersTable && (
           <Checkbox value={String("id" in row && row.id)} />
         )}
 
-        {isAllUsersTable && rowId?.id !== userSession?.user?.id && (
+        {isUsersTable && rowId?.id !== userSession?.user?.id && (
           <Checkbox value={String("id" in row && row.id)} />
         )}
       </Flex>
