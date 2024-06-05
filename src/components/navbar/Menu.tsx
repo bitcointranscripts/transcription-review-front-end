@@ -183,8 +183,8 @@ const Menu = () => {
                           />
                           <MenuNav
                             currentRoute={fullCurrentRoute}
-                            routeName={"All Users"}
-                            routeLink={ROUTES_CONFIG.ALL_USERS}
+                            routeName={"Users"}
+                            routeLink={ROUTES_CONFIG.USERS}
                             handleClose={closeMenu}
                             icon={FiUsers}
                           />

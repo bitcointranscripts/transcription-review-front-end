@@ -92,7 +92,7 @@ const AdminUsersSelect = ({ children }: AdminUsersSelectProps) => {
             updateUser.mutateAsync({ id: userId, permissions: role })
           )
         );
-        queryClient.invalidateQueries(["all_users"]);
+        queryClient.invalidateQueries(["users"]);
         setSelectedIds([]);
         toast({
           status: "success",

@@ -22,7 +22,7 @@ export const getUsers = async (): Promise<AdminUsers[]> => {
 export const useGetUsers = () =>
   useQuery({
     queryFn: () => getUsers(),
-    queryKey: ["all_users"],
+    queryKey: ["users"],
     refetchOnWindowFocus: false,
     enabled: true,
   });
