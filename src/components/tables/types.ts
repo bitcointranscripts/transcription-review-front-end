@@ -11,6 +11,7 @@ export type tableStructureItemType =
 export type TableStructure<T> = {
   name: string;
   actionName?: string;
+  actionTableType?: string;
   type: tableStructureItemType;
   modifier: (data: T) => any;
   action?: (data: T) => void;

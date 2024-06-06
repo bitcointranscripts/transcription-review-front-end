@@ -22,7 +22,7 @@ import { useState } from "react";
 import { BiWallet } from "react-icons/bi";
 import { CgTranscript } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
-import { FiUser } from "react-icons/fi";
+import { FiUser, FiUsers } from "react-icons/fi";
 import { HiOutlineBookOpen, HiOutlineSwitchHorizontal } from "react-icons/hi";
 import MenuNav from "./MenuNav";
 import AdminMenu from "./AdminMenu";
@@ -180,6 +180,13 @@ const Menu = () => {
                             routeLink={ROUTES_CONFIG.ALL_REVIEWS}
                             handleClose={closeMenu}
                             icon={CgTranscript}
+                          />
+                          <MenuNav
+                            currentRoute={fullCurrentRoute}
+                            routeName={"Users"}
+                            routeLink={ROUTES_CONFIG.USERS}
+                            handleClose={closeMenu}
+                            icon={FiUsers}
                           />
                         </Flex>
                       </AdminMenu>

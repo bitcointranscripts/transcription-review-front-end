@@ -30,6 +30,7 @@ export type AdminReview = {
   transcript: Transcript;
   user: UserData;
 };
+
 type ReviewsQueryFromURL = {
   page: string | null;
   status: string | null;
