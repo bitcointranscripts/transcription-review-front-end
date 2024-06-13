@@ -111,7 +111,7 @@ export type IDir = {
   nestDir?: IDir[];
 };
 
-export type UserRole = "reviewer" | "admin";
+export type UserRole = "reviewer" | "evaluator" | "admin";
 
 export type UserData = {
   permissions: UserRole;

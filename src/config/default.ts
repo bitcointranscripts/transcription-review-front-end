@@ -35,6 +35,7 @@ export const ReviewStatus = {
 
 export const UserRoles = {
   REVIEWER: "reviewer",
+  EVALUATOR: "evaluator",
   ADMIN: "admin",
 } as const;
 
