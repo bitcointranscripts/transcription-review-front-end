@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import { UserRole } from "../../types";
 
+// Reason eslint for some reason does not see this enum being used.
 enum Privileges {
   REVIEWER = 0,
   EVALUATOR,

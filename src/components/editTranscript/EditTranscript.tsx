@@ -28,9 +28,10 @@ import { FaBook } from "react-icons/fa";
 import SubmitTranscriptMenu, {
   TranscriptSubmitOptions,
 } from "../menus/SubmitTranscriptMenu";
-import { TranscriptContent, UserReviewData } from "../../../types";
+import { TranscriptContent, UserReviewData, UserRole } from "../../../types";
 import { useSession } from "next-auth/react";
 import { useUpdateTranscript } from "@/services/api/transcripts";
+import { checkPermissionPrivileges } from "@/utils/permissions";
 
 // Interfaces for react-markdown-editior
 export interface IHandleEditorChange {
@@ -82,7 +83,9 @@ const EditTranscript = ({
     !!reviewData.branchUrl && !!reviewData.pr_url;
 
   const { data: userSession } = useSession();
-  const isAdmin = userSession?.user?.permissions === "admin";
+  const currentUserRole = userSession?.user?.permissions as UserRole;
+  const isAdmin = checkPermissionPrivileges(currentUserRole, "admin");
+
   const { isLoading: saveLoading } = useUpdateTranscript();
 
   const handleSave = async () => {

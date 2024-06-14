@@ -9,10 +9,8 @@ import {
   MenuList,
   Text,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
 import { BiChevronDown } from "react-icons/bi";
 import { IoIosFunnel } from "react-icons/io";
-import AuthStatus from "@/components/transcript/AuthStatus";
 import { useGetTransactions } from "@/services/api/admin";
 import { useRouter } from "next/router";
 import {
@@ -25,6 +23,7 @@ import Pagination from "@/components/tables/Pagination";
 import { useDebouncedCallback } from "use-debounce";
 import { UI_CONFIG } from "@/config/ui-config";
 import { RefetchButton } from "@/components/tables/TableItems";
+import withAccess from "@/hoc/withAccess";
 
 // eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (name: string, item: T) => void;
@@ -85,10 +84,6 @@ const Transactions = () => {
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
 
-  const { data: sessionData } = useSession();
-
-  const isAdmin = sessionData?.user?.permissions === "admin";
-
   const {
     data: transactionResponse,
     isLoading,
@@ -147,15 +142,6 @@ const Transactions = () => {
     },
     UI_CONFIG.DEBOUNCE_DELAY
   );
-
-  if (!isAdmin) {
-    return (
-      <AuthStatus
-        title="Unauthorized"
-        message="You are not authorized to access this page"
-      />
-    );
-  }
 
   return (
     <>
@@ -239,4 +225,4 @@ const Transactions = () => {
   );
 };
 
-export default Transactions;
+export default withAccess(Transactions, "admin");

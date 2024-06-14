@@ -17,6 +17,8 @@ import { useResetReview } from "@/services/api/reviews/useResetReviews";
 import { dateFormatGeneral } from "@/utils";
 import { getReviewStatus } from "@/utils/review";
 import { format } from "date-fns";
+import { checkPermissionPrivileges } from "@/utils/permissions";
+import { UserRole } from "../../../types";
 
 const tableStructure = [
   {
@@ -118,12 +120,15 @@ type AdminResetSelectProps = {
     handleReset: () => Promise<void>;
     hasAdminSelected: boolean;
     isResetting: boolean;
+    isAdmin: boolean;
   }) => React.ReactNode;
 };
 const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const toast = useToast();
   const { data: userSession } = useSession();
+  const currentUserRole = userSession?.user?.permissions as UserRole;
+  const isAdmin = checkPermissionPrivileges(currentUserRole, "admin");
   const queryClient = useQueryClient();
   const resetReview = useResetReview();
   const handleCheckboxToggle = (values: (string | number)[]) => {
@@ -167,6 +172,7 @@ const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
         handleReset,
         hasAdminSelected: selectedIds.length > 0,
         isResetting: resetReview.isLoading,
+        isAdmin,
       })}
     </CheckboxGroup>
   );
@@ -180,15 +186,14 @@ const AdminReviewsTable = ({
 }: Props) => {
   return (
     <AdminResetSelect>
-      {({ handleReset, hasAdminSelected, isResetting }) => (
+      {({ handleReset, hasAdminSelected, isResetting, isAdmin }) => (
         <BaseTable
           data={reviews}
           emptyView={<EmptyView hasFilters={hasFilters} />}
           isLoading={isLoading}
           isError={isError}
-          // takes action-loading as isArchiving
           tableStructure={tableStructure}
-          showAdminControls
+          showAdminControls={isAdmin}
           actionItems={
             <>
               {hasAdminSelected && (

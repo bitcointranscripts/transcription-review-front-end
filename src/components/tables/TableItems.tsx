@@ -40,6 +40,7 @@ import { getReviewStatus } from "@/utils/review";
 import { AdminReview } from "@/services/api/admin/useReviews";
 import { format } from "date-fns";
 import { UserRoles } from "@/config/default";
+import { checkPermissionPrivileges } from "@/utils/permissions";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -136,7 +137,9 @@ export const TableAction = <T extends object>({
   const isAdminReviews = getReviewStatus(row as AdminReview);
   const isUsersTable = tableItem.actionTableType === "user";
 
-  const isAdmin = userSession?.user?.permissions === "admin";
+  const currentUserRole = userSession?.user?.permissions as UserRole;
+  const isAdmin = checkPermissionPrivileges(currentUserRole, "admin");
+
   const showCheckBox = isAdmin && showControls;
 
   /* Forced the type here because it uses a dynamic type so Ts isn't aware of Id in rows

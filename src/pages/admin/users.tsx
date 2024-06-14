@@ -1,14 +1,9 @@
 import { Flex, Heading } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
-import AuthStatus from "@/components/transcript/AuthStatus";
 import { useGetUsers } from "@/services/api/admin/useUsers";
 import UsersTable from "@/components/tables/UsersTable";
+import withAccess from "@/hoc/withAccess";
 
 const Users = () => {
-  const { data: sessionData } = useSession();
-
-  const isAdmin = sessionData?.user?.permissions === "admin";
-
   const { data: usersResponse, isLoading, isError, refetch } = useGetUsers();
 
   const sortedData = usersResponse?.sort((a, b) => {
@@ -16,15 +11,6 @@ const Users = () => {
     if (a.createdAt < b.createdAt) return 1;
     return 0;
   });
-
-  if (!isAdmin) {
-    return (
-      <AuthStatus
-        title="Unauthorized"
-        message="You are not authorized to access this page"
-      />
-    );
-  }
 
   return (
     <>
@@ -45,4 +31,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default withAccess(Users, "admin");
