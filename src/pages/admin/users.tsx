@@ -1,10 +1,12 @@
 import { Flex, Heading } from "@chakra-ui/react";
 import { useGetUsers } from "@/services/api/admin/useUsers";
 import UsersTable from "@/components/tables/UsersTable";
-import withAccess from "@/hoc/withAccess";
+import { useHasPermission } from "@/hooks/useHasPermissions";
+import AuthStatus from "@/components/transcript/AuthStatus";
 
 const Users = () => {
   const { data: usersResponse, isLoading, isError, refetch } = useGetUsers();
+  const canAccessUser = useHasPermission("accessUsers");
 
   const sortedData = usersResponse?.sort((a, b) => {
     if (a.createdAt > b.createdAt) return -1;
@@ -12,6 +14,14 @@ const Users = () => {
     return 0;
   });
 
+  if (!canAccessUser) {
+    return (
+      <AuthStatus
+        title="Unauthorized"
+        message="You are not authorized to access this page"
+      />
+    );
+  }
   return (
     <>
       <Flex flexDir="column">
@@ -31,4 +41,4 @@ const Users = () => {
   );
 };
 
-export default withAccess(Users, "admin");
+export default Users;
