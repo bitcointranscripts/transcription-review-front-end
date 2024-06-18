@@ -4,20 +4,23 @@
     "accessUsers": true,
     "resetReviews": true,
     "accessTransactions": true,
-    "accessAdminNav": true
+    "accessAdminNav": true,
+    "editAdminTranscripts": true
   },
   "evaluator": {
     "accessReviews": true,
     "accessUsers": false,
     "resetReviews": false,
     "accessTransactions": false,
-    "accessAdminNav": true
+    "accessAdminNav": true,
+    "editAdminTranscripts": false
   },
   "reviewer": {
     "accessReviews": false,
     "accessUsers": false,
     "resetReviews": false,
     "accessTransactions": false,
-    "accessAdminNav": false
+    "accessAdminNav": false,
+    "editAdminTranscripts": false
   }
 }

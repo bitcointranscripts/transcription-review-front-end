@@ -28,11 +28,9 @@ import { FaBook } from "react-icons/fa";
 import SubmitTranscriptMenu, {
   TranscriptSubmitOptions,
 } from "../menus/SubmitTranscriptMenu";
-import { TranscriptContent, UserReviewData, UserRole } from "../../../types";
-import { useSession } from "next-auth/react";
+import { TranscriptContent, UserReviewData } from "../../../types";
 import { useUpdateTranscript } from "@/services/api/transcripts";
-import { checkPermissionPrivileges } from "@/utils/permissions";
-
+import { useHasPermission } from "@/hooks/useHasPermissions";
 // Interfaces for react-markdown-editior
 export interface IHandleEditorChange {
   text: string;
@@ -82,9 +80,7 @@ const EditTranscript = ({
   const reviewSubmissionDisabled =
     !!reviewData.branchUrl && !!reviewData.pr_url;
 
-  const { data: userSession } = useSession();
-  const currentUserRole = userSession?.user?.permissions as UserRole;
-  const isAdmin = checkPermissionPrivileges(currentUserRole, "admin");
+  const canEditAdminTranscripts = useHasPermission("editAdminTranscripts");
 
   const { isLoading: saveLoading } = useUpdateTranscript();
 
@@ -218,10 +214,10 @@ const EditTranscript = ({
                   onClick={onOpen}
                   isDisabled={reviewSubmissionDisabled}
                 >
-                  Submit {isAdmin ? `(${prRepo})` : ""}
+                  Submit {canEditAdminTranscripts ? `(${prRepo})` : ""}
                 </Button>
               </Tooltip>
-              {isAdmin && (
+              {canEditAdminTranscripts && (
                 <>
                   <SubmitTranscriptMenu setPrRepo={setPrRepo} />
                 </>
