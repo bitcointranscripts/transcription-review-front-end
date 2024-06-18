@@ -111,7 +111,13 @@ export type IDir = {
   nestDir?: IDir[];
 };
 
-export type UserRole = "reviewer" | "evaluator" | "admin";
+export const UserRoles = {
+  reviewer: "reviewer",
+  evaluator: "evaluator",
+  admin: "admin",
+};
+
+export type UserRole = keyof typeof UserRoles;
 
 export type UserData = {
   permissions: UserRole;

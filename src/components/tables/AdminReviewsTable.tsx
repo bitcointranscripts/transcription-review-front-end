@@ -180,7 +180,7 @@ const AdminReviewsTable = ({
   hasFilters,
   reviews,
 }: Props) => {
-  const resetReviews = useHasPermission("resetReviews");
+  const canResetReviews = useHasPermission("resetReviews");
   return (
     <AdminResetSelect>
       {({ handleReset, hasAdminSelected, isResetting }) => (
@@ -190,7 +190,7 @@ const AdminReviewsTable = ({
           isLoading={isLoading}
           isError={isError}
           tableStructure={tableStructure}
-          showAdminControls={resetReviews}
+          showAdminControls={canResetReviews}
           actionItems={
             <>
               {hasAdminSelected && (

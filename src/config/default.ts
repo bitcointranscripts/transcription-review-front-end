@@ -33,11 +33,5 @@ export const ReviewStatus = {
   ALL: "all",
 } as const;
 
-export const UserRoles = {
-  REVIEWER: "reviewer",
-  EVALUATOR: "evaluator",
-  ADMIN: "admin",
-} as const;
-
 export const upstreamOwner = "bitcointranscripts";
 export const upstreamRepo = "bitcointranscripts";

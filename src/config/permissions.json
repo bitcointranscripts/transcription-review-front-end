@@ -1,20 +1,23 @@
 {
-    "admin": {
-        "accessReviews": true,
-        "accessUsers": true,
-        "resetReviews": true,
-        "accessTransactions":true
-      },
-      "evaluator": {
-        "accessReviews": true,
-        "accessUsers": false,
-        "resetReviews": false,
-        "accessTransactions":false
-      },
-      "reviewer": {
-        "accessReviews": false,
-        "accessUsers": false,
-        "resetReviews": false,
-        "accessTransactions":false
-      }
+  "admin": {
+    "accessReviews": true,
+    "accessUsers": true,
+    "resetReviews": true,
+    "accessTransactions": true,
+    "accessAdminNav": true
+  },
+  "evaluator": {
+    "accessReviews": true,
+    "accessUsers": false,
+    "resetReviews": false,
+    "accessTransactions": false,
+    "accessAdminNav": true
+  },
+  "reviewer": {
+    "accessReviews": false,
+    "accessUsers": false,
+    "resetReviews": false,
+    "accessTransactions": false,
+    "accessAdminNav": false
+  }
 }

@@ -26,14 +26,14 @@ import { FiUser, FiUsers } from "react-icons/fi";
 import { HiOutlineBookOpen, HiOutlineSwitchHorizontal } from "react-icons/hi";
 import MenuNav from "./MenuNav";
 import AdminMenu from "./AdminMenu";
-import { checkPermissionPrivileges } from "@/utils/permissions";
-import { UserRole } from "../../../types";
+import { useHasPermission } from "@/hooks/useHasPermissions";
 
 const Menu = () => {
   const { data: userSession } = useSession();
-  const currentUserRole = userSession?.user?.permissions as UserRole;
-  const isPermitted = checkPermissionPrivileges(currentUserRole, "evaluator");
-  const isAdmin = currentUserRole === "admin";
+  // Permissions check
+  const isPermitted = useHasPermission("accessAdminNav");
+  const canAccessTransactions = useHasPermission("accessTransactions");
+  const canAccessUsers = useHasPermission("accessUsers");
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
   const fullCurrentRoute = router.asPath;
@@ -169,7 +169,7 @@ const Menu = () => {
                     {isPermitted ? (
                       <AdminMenu role={userSession.user?.permissions}>
                         <Flex direction="column" gap={2}>
-                          {isAdmin && (
+                          {canAccessTransactions && (
                             <MenuNav
                               currentRoute={fullCurrentRoute}
                               routeName={"Transactions"}
@@ -185,7 +185,7 @@ const Menu = () => {
                             handleClose={closeMenu}
                             icon={CgTranscript}
                           />
-                          {isAdmin && (
+                          {canAccessUsers && (
                             <MenuNav
                               currentRoute={fullCurrentRoute}
                               routeName={"Users"}

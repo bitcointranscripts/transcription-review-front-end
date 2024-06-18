@@ -7,6 +7,7 @@ type Permissions = {
   accessUsers: boolean;
   resetReviews: boolean;
   accessTransactions: boolean;
+  accessAdminNav: boolean;
 };
 
 export const useHasPermission = (permission: keyof Permissions) => {
