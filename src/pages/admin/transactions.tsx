@@ -23,7 +23,8 @@ import Pagination from "@/components/tables/Pagination";
 import { useDebouncedCallback } from "use-debounce";
 import { UI_CONFIG } from "@/config/ui-config";
 import { RefetchButton } from "@/components/tables/TableItems";
-import withAccess from "@/hoc/withAccess";
+import { useHasPermission } from "@/hooks/useHasPermissions";
+import AuthStatus from "@/components/transcript/AuthStatus";
 
 // eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (name: string, item: T) => void;
@@ -77,6 +78,8 @@ const Transactions = () => {
   const router = useRouter();
   const queryString = router.asPath.split("?").slice(1).join("");
   const urlParams = new URLSearchParams(queryString);
+
+  const canAccessTransactions = useHasPermission("accessTransactions");
 
   const userFilter = urlParams.get(FilterQueryNames.user);
   const txIdFilter = urlParams.get(FilterQueryNames.txId);
@@ -143,6 +146,14 @@ const Transactions = () => {
     UI_CONFIG.DEBOUNCE_DELAY
   );
 
+  if (!canAccessTransactions) {
+    return (
+      <AuthStatus
+        title="Unauthorized"
+        message="You are not authorized to access this page"
+      />
+    );
+  }
   return (
     <>
       <Flex flexDir="column">
@@ -225,4 +236,4 @@ const Transactions = () => {
   );
 };
 
-export default withAccess(Transactions, "admin");
+export default Transactions;

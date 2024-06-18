@@ -33,7 +33,7 @@ const Menu = () => {
   const { data: userSession } = useSession();
   const currentUserRole = userSession?.user?.permissions as UserRole;
   const isPermitted = checkPermissionPrivileges(currentUserRole, "evaluator");
-  const isAdmin = checkPermissionPrivileges(currentUserRole, "admin");
+  const isAdmin = currentUserRole === "admin";
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
   const fullCurrentRoute = router.asPath;

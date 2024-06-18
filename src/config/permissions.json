@@ -2,16 +2,19 @@
     "admin": {
         "accessReviews": true,
         "accessUsers": true,
-        "resetReviews": true
+        "resetReviews": true,
+        "accessTransactions":true
       },
       "evaluator": {
         "accessReviews": true,
         "accessUsers": false,
-        "resetReviews": false
+        "resetReviews": false,
+        "accessTransactions":false
       },
       "reviewer": {
         "accessReviews": false,
         "accessUsers": false,
-        "resetReviews": false
+        "resetReviews": false,
+        "accessTransactions":false
       }
 }

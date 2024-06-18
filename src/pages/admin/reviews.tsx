@@ -19,7 +19,8 @@ import { UI_CONFIG } from "@/config/ui-config";
 import AdminReviewsTable from "@/components/tables/AdminReviewsTable";
 import { useGetAllReviews } from "@/services/api/admin/useReviews";
 import { RefetchButton } from "@/components/tables/TableItems";
-import withAccess from "@/hoc/withAccess";
+import { useHasPermission } from "@/hooks/useHasPermissions";
+import AuthStatus from "@/components/transcript/AuthStatus";
 
 type OnSelect<T> = (name: string, item: T) => void;
 
@@ -77,6 +78,8 @@ const Reviews = () => {
   const transcriptIdFilter = urlParams.get(FilterQueryNames.transcriptId);
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
+
+  const canAccessReviews = useHasPermission("accessReviews");
 
   const {
     data: adminReviews,
@@ -141,6 +144,14 @@ const Reviews = () => {
     UI_CONFIG.DEBOUNCE_DELAY
   );
 
+  if (!canAccessReviews) {
+    return (
+      <AuthStatus
+        title="Unauthorized"
+        message="You are not authorized to access this page"
+      />
+    );
+  }
   return (
     <>
       <Flex flexDir="column">
@@ -220,4 +231,4 @@ const Reviews = () => {
   );
 };
 
-export default withAccess(Reviews, "evaluator");
+export default Reviews;

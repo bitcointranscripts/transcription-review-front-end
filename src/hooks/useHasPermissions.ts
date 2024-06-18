@@ -6,6 +6,7 @@ type Permissions = {
   accessReviews: boolean;
   accessUsers: boolean;
   resetReviews: boolean;
+  accessTransactions: boolean;
 };
 
 export const useHasPermission = (permission: keyof Permissions) => {
@@ -13,5 +14,5 @@ export const useHasPermission = (permission: keyof Permissions) => {
   const userRole = userSession?.user?.permissions as UserRole;
   const userPermissions = permissions[userRole];
 
-  return !!userPermissions[permission];
+  return !!userPermissions?.[permission];
 };
