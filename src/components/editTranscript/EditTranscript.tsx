@@ -29,9 +29,8 @@ import SubmitTranscriptMenu, {
   TranscriptSubmitOptions,
 } from "../menus/SubmitTranscriptMenu";
 import { TranscriptContent, UserReviewData } from "../../../types";
-import { useSession } from "next-auth/react";
 import { useUpdateTranscript } from "@/services/api/transcripts";
-
+import { useHasPermission } from "@/hooks/useHasPermissions";
 // Interfaces for react-markdown-editior
 export interface IHandleEditorChange {
   text: string;
@@ -81,8 +80,8 @@ const EditTranscript = ({
   const reviewSubmissionDisabled =
     !!reviewData.branchUrl && !!reviewData.pr_url;
 
-  const { data: userSession } = useSession();
-  const isAdmin = userSession?.user?.permissions === "admin";
+  const canEditAdminTranscripts = useHasPermission("editAdminTranscripts");
+
   const { isLoading: saveLoading } = useUpdateTranscript();
 
   const handleSave = async () => {
@@ -215,10 +214,10 @@ const EditTranscript = ({
                   onClick={onOpen}
                   isDisabled={reviewSubmissionDisabled}
                 >
-                  Submit {isAdmin ? `(${prRepo})` : ""}
+                  Submit {canEditAdminTranscripts ? `(${prRepo})` : ""}
                 </Button>
               </Tooltip>
-              {isAdmin && (
+              {canEditAdminTranscripts && (
                 <>
                   <SubmitTranscriptMenu setPrRepo={setPrRepo} />
                 </>

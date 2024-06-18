@@ -1,15 +1,12 @@
 import { Flex, Heading } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
-import AuthStatus from "@/components/transcript/AuthStatus";
 import { useGetUsers } from "@/services/api/admin/useUsers";
 import UsersTable from "@/components/tables/UsersTable";
+import { useHasPermission } from "@/hooks/useHasPermissions";
+import AuthStatus from "@/components/transcript/AuthStatus";
 
 const Users = () => {
-  const { data: sessionData } = useSession();
-
-  const isAdmin = sessionData?.user?.permissions === "admin";
-
   const { data: usersResponse, isLoading, isError, refetch } = useGetUsers();
+  const canAccessUser = useHasPermission("accessUsers");
 
   const sortedData = usersResponse?.sort((a, b) => {
     if (a.createdAt > b.createdAt) return -1;
@@ -17,7 +14,7 @@ const Users = () => {
     return 0;
   });
 
-  if (!isAdmin) {
+  if (!canAccessUser) {
     return (
       <AuthStatus
         title="Unauthorized"
@@ -25,7 +22,6 @@ const Users = () => {
       />
     );
   }
-
   return (
     <>
       <Flex flexDir="column">
