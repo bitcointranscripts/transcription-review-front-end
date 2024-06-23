@@ -31,6 +31,8 @@ type SelectBoxProps = {
   addItem?: (_x: string) => void;
   autoCompleteList: Array<AutoCompleteData>;
   handleAutoCompleteSelect: (data: AutoCompleteData) => void;
+  // This is for single selection
+  selectedValue?: string;
 };
 
 type ConfirmModalState = {
@@ -104,6 +106,7 @@ export const SelectBox = ({
         >
           <PopoverTrigger>
             <Flex
+              tabIndex={0}
               w="full"
               bgColor="blackAlpha.100"
               px={2}
@@ -116,7 +119,7 @@ export const SelectBox = ({
               justifyContent="space-between"
             >
               <Text color="gray.600" fontSize="14px" fontWeight={500}>
-                Add {name}
+                {selectedValue ? selectedValue : `Add ${name}`}
               </Text>
               <Icon color="gray.600" as={FaSortDown} />
             </Flex>

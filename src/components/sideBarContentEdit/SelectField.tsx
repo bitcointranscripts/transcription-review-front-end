@@ -3,11 +3,10 @@ import { Flex, IconButton, Text } from "@chakra-ui/react";
 import { BiX } from "react-icons/bi";
 import { SelectBox } from "./selectbox";
 
-type Props = {
+type Props<T extends string | string[]> = {
   name: string;
-  editedData: string[];
-  // eslint-disable-next-line no-unused-vars
-  updateData: (x: string[]) => void;
+  editedData: T;
+  updateData: (x: T) => void;
   autoCompleteList: Array<AutoCompleteData>;
   userCanAddToList?: boolean;
   horizontal?: boolean;
@@ -24,35 +23,45 @@ export type SelectEditState = {
   autoCompleteValue: string;
 };
 
-export const SelectField = ({
+export function SelectField<T extends string | string[]>({
   name,
   editedData,
   updateData,
   autoCompleteList,
   userCanAddToList,
   horizontal,
-}: Props) => {
+}: Props<T>) {
+  const isSingleSelect = typeof editedData === "string";
+
   const handleAddItem = (value: string) => {
-    let updatedList = [...editedData];
-    updatedList.push(value);
-    updateData(updatedList);
+    if (isSingleSelect) {
+      updateData(value as T);
+    } else {
+      const updatedList = [...(editedData as string[]), value];
+      updateData(updatedList as T);
+    }
   };
 
   const handleRemoveItem = (idx: number) => {
-    let updatedList = [...editedData];
-    updatedList.splice(idx, 1);
-    updateData(updatedList);
+    if (!isSingleSelect) {
+      const updatedList = [...(editedData as string[])];
+      updatedList.splice(idx, 1);
+      updateData(updatedList as T);
+    }
   };
 
   const handleAutoCompleteSelect = (data: AutoCompleteData) => {
     handleAddItem(data.value);
   };
 
-  // remove previuosly selected option from list
   const newAutoCompleteList =
     autoCompleteList.length > UI_CONFIG.MAX_AUTOCOMPLETE_LENGTH_TO_FILTER
       ? autoCompleteList
-      : autoCompleteList.filter((item) => !editedData.includes(item.value));
+      : autoCompleteList.filter((item) =>
+          isSingleSelect
+            ? item.value !== editedData
+            : !(editedData as string[]).includes(item.value)
+        );
 
   return (
     <>
@@ -62,16 +71,17 @@ export const SelectField = ({
         addItem={userCanAddToList ? handleAddItem : undefined}
         autoCompleteList={newAutoCompleteList}
         handleAutoCompleteSelect={handleAutoCompleteSelect}
+        selectedValue={isSingleSelect ? (editedData as string) : undefined}
       />
       <Flex
         flexWrap="wrap"
         gap={horizontal ? 2 : undefined}
         flexDir={horizontal ? "row" : "column"}
       >
-        {editedData?.map((speaker: string, idx: number) => {
-          return (
+        {!isSingleSelect &&
+          (editedData as string[]).map((item: string, idx: number) => (
             <Flex
-              key={`${speaker}-idx-${idx}`}
+              key={`${item}-idx-${idx}`}
               justifyContent="space-between"
               alignItems="center"
               py={1}
@@ -84,7 +94,7 @@ export const SelectField = ({
                 textTransform={name !== "speakers" ? "lowercase" : "none"}
                 fontSize="14px"
               >
-                {speaker}
+                {item}
               </Text>
               <IconButton
                 fontSize="16px"
@@ -94,13 +104,12 @@ export const SelectField = ({
                 h="auto"
                 variant="ghost"
                 onClick={() => handleRemoveItem(idx)}
-                aria-label="edit speaker"
+                aria-label={`remove ${name}`}
                 icon={<BiX />}
               />
             </Flex>
-          );
-        })}
+          ))}
       </Flex>
     </>
   );
-};
+}
