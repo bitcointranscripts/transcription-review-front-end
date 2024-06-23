@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
-
 import { Octokit } from "@octokit/core";
+
+import { upstreamMetadataRepo } from "@/config/default";
 
 import { newIndexFile } from ".";
 
@@ -284,4 +285,14 @@ export function constructGithubBranchApiUrl({
   newBranchName,
 }: BranchUrlConstructor) {
   return `https://api.github.com/repos/${owner}/bitcointranscripts/contents/${filePath}?ref=${newBranchName}`;
+}
+
+export function constructDpeUrl(
+  transcriptUrl: string
+) {
+  const { srcOwner, srcBranch, srcDirPath, fileNameWithoutExtension } = resolveGHApiUrl(transcriptUrl);
+  const dpeFilePath = `${srcDirPath}/${fileNameWithoutExtension}/dpe.json`;
+  // hacky way to avoid for now to keep extra information about the metadata repo in the db
+  const metadataRepoBaseBranch = srcBranch == "master" ? "main" : srcBranch
+  return `https://api.github.com/repos/${srcOwner}/${upstreamMetadataRepo}/contents/${dpeFilePath}?ref=${metadataRepoBaseBranch}`
 }

@@ -3,8 +3,16 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 
-import { upstreamOwner, upstreamRepo } from "@/config/default";
-import { constructGithubBranchApiUrl, resolveGHApiUrl } from "@/utils/github";
+import {
+  upstreamMetadataRepo,
+  upstreamOwner,
+  upstreamRepo,
+} from "@/config/default";
+import {
+  constructDpeUrl,
+  constructGithubBranchApiUrl,
+  resolveGHApiUrl,
+} from "@/utils/github";
 import { useUserMultipleReviews } from "@/services/api/reviews";
 
 import backendAxios from "../axios";
@@ -30,10 +38,23 @@ const claimTranscript = async ({
   transcriptId,
   userId,
 }: ClaimTranscriptParams): Promise<Review> => {
+  // Check if the dpe.json file exists on the specific branch of the metadata repository
+  const dpeUrl = constructDpeUrl(transcriptUrl);
+  try {
+    await githubApi.get(dpeUrl);
+  } catch (error) {
+    throw new Error(`The DPE file does not exist for this transcript`);
+  }
+
   // Fork the main repository
   const forkMainRepoResult = await githubApi.post("/fork", {
     owner: upstreamOwner,
     repo: upstreamRepo,
+  });
+  // Fork the metadata repository
+  await githubApi.post("/fork", {
+    owner: upstreamOwner,
+    repo: upstreamMetadataRepo,
   });
 
   // Create new branch from the main repository
@@ -50,6 +71,13 @@ const claimTranscript = async ({
     owner: forkMainRepoResult.data.owner.login,
     filePath,
     newBranchName: branchName,
+  });
+  // Create new branch from the metadata repository
+  await githubApi.post("/newBranch", {
+    upstreamRepo: upstreamMetadataRepo,
+    // hacky way to avoid for now to keep extra information about the metadata repo in the db
+    baseBranch: srcBranch == "master" ? "main" : srcBranch,
+    branchName,
   });
 
   // Claim transcript
