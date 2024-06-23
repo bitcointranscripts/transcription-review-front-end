@@ -20,6 +20,7 @@ import {
   ReviewGuidelinesModal,
   SubmitTranscriptModal,
   RestoreOriginalModal,
+  SelectSpeakerModal,
 } from "@/components/modals";
 import { useGetMetadata } from "@/services/api/transcripts/useGetMetadata";
 import SubmitTranscriptMenu, {
@@ -211,6 +212,7 @@ const TranscriptEditor = ({ reviewData }: { reviewData: TranscriptReview }) => {
           handleSaveEditor={saveTranscript}
           autoSaveContentType={"slate"}
           buttonConfig={{ export: false, musicNote: false, replaceText: false }}
+          SelectSpeakerModalComponent={SelectSpeakerModal}
           isDirty={isContentModified}
         >
           <Flex paddingTop={5} direction="column" gap={6}>
