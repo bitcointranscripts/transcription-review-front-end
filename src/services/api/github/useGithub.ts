@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 
-import { upstreamOwner, upstreamRepo } from "@/config/default";
+import { upstreamMetadataRepo, upstreamOwner, upstreamRepo } from "@/config/default";
 import { constructGithubBranchApiUrl, resolveGHApiUrl } from "@/utils/github";
 import { useUserMultipleReviews } from "@/services/api/reviews";
 
@@ -36,6 +36,11 @@ const claimTranscript = async ({
         owner: upstreamOwner,
         repo: upstreamRepo
     })
+    // Fork the metadata repository
+    await githubApi.post('/fork', {
+        owner: upstreamOwner,
+        repo: upstreamMetadataRepo
+    })
 
     // Create new branch from the main repository
     const { srcBranch, srcRepo, filePath, fileNameWithoutExtension } = resolveGHApiUrl(transcriptUrl);
@@ -51,6 +56,13 @@ const claimTranscript = async ({
         filePath,
         newBranchName: branchName,
     });
+    // Create new branch from the metadata repository
+    await githubApi.post('/newBranch', {
+        upstreamRepo: upstreamMetadataRepo,
+        // hacky way to avoid for now to keep extra information about the metadata repo in the db
+        baseBranch: srcBranch == "master" ? "main" : srcBranch,
+        branchName
+    })
 
     // Claim transcript
     const result = await backendAxios.put(endpoints.CLAIM_TRANSCRIPT(transcriptId), {
