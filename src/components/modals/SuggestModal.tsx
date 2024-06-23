@@ -35,7 +35,7 @@ const defaultFormValues = {
   url: "",
 } satisfies FormValues;
 
-export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
+const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
   const toast = useToast();
   const createPR = useCreatePR();
   const [urlError, setUrlError] = useState("");
@@ -209,3 +209,5 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
     </Modal>
   );
 }
+
+export default SuggestModal
