@@ -33,7 +33,7 @@ import React, {
 } from "react";
 import { BiBookAdd } from "react-icons/bi";
 import { Transcript } from "../../../types";
-import { SuggestModal } from "../modals/SuggestModal";
+import { SuggestModal } from "@/components/modals";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
 import { ArchiveButton } from "./TableItems";
