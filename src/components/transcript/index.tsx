@@ -10,7 +10,7 @@ import { FaBook } from "react-icons/fa";
 //@ts-ignore
 import { SlateTranscriptEditor } from "slate-transcript-editor";
 
-import { ReviewGuidelinesModal, SubmitTranscriptModal, RestoreOriginalModal } from "@/components/modals"
+import { ReviewGuidelinesModal, SubmitTranscriptModal, RestoreOriginalModal, SelectSpeakerModal } from "@/components/modals"
 import { useGetMetadata } from "@/services/api/transcripts/useGetMetadata";
 import SubmitTranscriptMenu, { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
 import { compareTranscriptBetweenSave } from "@/utils/transcript";
@@ -187,6 +187,7 @@ const TranscriptEditor = ({ reviewData }: { reviewData: TranscriptReview }) => {
           handleSaveEditor={saveTranscript}
           autoSaveContentType={"slate"}
           buttonConfig={{ export: false, musicNote: false, replaceText: false }}
+          SelectSpeakerModalComponent={SelectSpeakerModal}
           isDirty={isContentModified}
         >
 
