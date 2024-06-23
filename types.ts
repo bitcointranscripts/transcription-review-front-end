@@ -109,17 +109,17 @@ export type DigitalPaperEditFormat = {
   paragraphs: DigitalPaperEditParagraph[];
 };
 
-type Nullable<T> = T | null;
-
-export type MetadataProps = Record<string, any> & {
-  fileTitle: string;
-  transcript_by: string;
-  url: string;
-  date: string;
-  tags?: string[];
-  speakers?: string[];
-  categories?: string[];
+export type SlateNode = {
+  children: { text: string; words: DigitalPaperEditWord[] };
+  speaker: string;
+  start: number;
+  startTimecode: string;
+  previousTimings: string;
+  type: string;
+  chapter?: string;
 };
+
+type Nullable<T> = T | null;
 
 export type AbstractedChakraComponentProps<T> = {
   children: React.ReactNode;
@@ -221,28 +221,6 @@ export type TransactionQueryType =
 
 export type TransactionQueryStatus =
   (typeof TransactionStatus)[keyof typeof TransactionStatus];
-
-export type SaveToGHData = {
-  directoryPath: string;
-  fileName?: string;
-  url: string | null;
-  date:
-    | string
-    | {
-        day: string;
-        month: string;
-        year: string;
-      }
-    | null;
-  tags?: string[];
-  speakers?: string[];
-  categories?: string[];
-  transcribedText: string;
-  transcript_by?: string;
-  ghSourcePath: string | null;
-  ghBranchUrl: string | null;
-  reviewId: number;
-};
 
 // Reviews for admin;
 export type ReviewQueryStatus =

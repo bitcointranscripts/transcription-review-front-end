@@ -1,7 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import { useToast } from "@chakra-ui/react";
+import yaml from "js-yaml";
 import axios from "axios";
+//@ts-ignore
+import { converSlateToDpe, slateToMarkdown } from "slate-transcript-editor";
 
 import {
   upstreamMetadataRepo,
@@ -14,9 +18,10 @@ import {
   resolveGHApiUrl,
 } from "@/utils/github";
 import { useUserMultipleReviews } from "@/services/api/reviews";
+import config from "@/config/config.json";
 
 import backendAxios from "../axios";
-import { Review } from "../../../../types";
+import { Review, TranscriptMetadata } from "../../../../types";
 import endpoints from "../endpoints";
 
 interface BaseParams {
@@ -26,6 +31,19 @@ interface BaseParams {
 interface ClaimTranscriptParams extends BaseParams {
   transcriptId: number;
   userId: number;
+}
+
+interface SaveProgressParams extends BaseParams {
+  branchUrl: string;
+  metadata: TranscriptMetadata;
+  transcriptSlate: any;
+}
+
+export interface SubmitReviewParams extends BaseParams {
+  branchUrl: string;
+  reviewId: number;
+  targetRepository: string;
+  metadata: TranscriptMetadata;
 }
 
 const githubApi = axios.create({
@@ -92,8 +110,92 @@ const claimTranscript = async ({
   return result.data;
 };
 
+const saveProgress = async ({
+  transcriptUrl,
+  branchUrl,
+  metadata,
+  transcriptSlate,
+}: SaveProgressParams) => {
+  const { srcRepo, srcDirPath, filePath, fileNameWithoutExtension } =
+    resolveGHApiUrl(transcriptUrl);
+  const { srcBranch, srcOwner } = resolveGHApiUrl(branchUrl);
+  // Save main branch
+  const transcriptMarkdown =
+    `---\n` +
+    yaml.dump(
+      {
+        ...metadata,
+        transcript_by: `${srcOwner} via ${config.app_tag}`,
+        date: metadata["date"].toISOString().split("T")[0],
+      },
+      {
+        forceQuotes: true,
+      }
+    ) +
+    "---\n" +
+    `${slateToMarkdown(transcriptSlate)}`;
+  await githubApi.post("/save", {
+    repo: srcRepo,
+    filePath,
+    fileContent: transcriptMarkdown,
+    branch: srcBranch,
+  });
+
+  // Save metadata branch
+  const transcriptDpe = converSlateToDpe(transcriptSlate);
+  await githubApi.post("/save", {
+    repo: upstreamMetadataRepo,
+    filePath: `${srcDirPath}/${fileNameWithoutExtension}/dpe.json`,
+    fileContent: JSON.stringify(transcriptDpe, null, 4),
+    // hacky way to avoid for now to keep extra information about the metadata repo in the db
+    branch: srcBranch == "master" ? "main" : srcBranch,
+  });
+};
+
+const submitReview = async ({
+  reviewId,
+  targetRepository,
+  transcriptUrl,
+  branchUrl,
+  metadata,
+}: SubmitReviewParams) => {
+  const { srcBranch: targetBranch } = resolveGHApiUrl(transcriptUrl);
+  const { srcOwner, srcRepo, srcBranch, srcDirPath } =
+    resolveGHApiUrl(branchUrl);
+  const title = `review: "${metadata.title}" of ${srcDirPath}`;
+  // submit PR on main branch
+  const prResult = await githubApi.post("/pr", {
+    owner: targetRepository === "user" ? srcOwner : upstreamOwner,
+    repo: targetRepository === "user" ? srcRepo : upstreamRepo,
+    title,
+    body: `This PR is a review of the [${metadata.title}](${metadata.media}) AI-generated transcript.`,
+    head: `${srcOwner}:${srcBranch}`,
+    base: targetBranch,
+  });
+  // submit PR on metadata branch
+  await githubApi.post("/pr", {
+    owner: targetRepository === "user" ? srcOwner : upstreamOwner,
+    // we don't have any other option here for repo because we don't currently
+    // store information about the metadata branch
+    repo: upstreamMetadataRepo,
+    title,
+    body: `This PR contains the Digital Paper Edit (DPE) format of the transcript and is used as input for the review process.
+        It is not part of the evaluation process, it updates automatically and will be merged after the [review submission PR](${prResult.data.html_url}) is merged.`,
+    head: `${srcOwner}:${srcBranch}`,
+    // hacky way to avoid for now to keep extra information about the metadata repo in the db
+    base: targetBranch == "master" ? "main" : targetBranch,
+  });
+  // update backend
+  await backendAxios.put(endpoints.SUBMIT_REVIEW(reviewId), {
+    pr_url: prResult.data.html_url,
+  });
+  return prResult.data.html_url;
+};
+
 export function useGithub() {
   const { data: session } = useSession();
+  const toast = useToast();
+  const queryClient = useQueryClient();
   const router = useRouter();
   const { data: multipleStatusData } = useUserMultipleReviews({
     userId: session?.user?.id,
@@ -115,8 +217,33 @@ export function useGithub() {
       throw err;
     },
   });
+  const mutationSaveProgress = useMutation(saveProgress, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["review", router.query.id]);
+      toast({
+        title: "Saved successfully",
+        description: "Your changes have been saved.",
+        status: "success",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error saving changes",
+        description:
+          error.response?.data?.message || "An unknown error occurred.",
+        status: "error",
+      });
+    },
+  });
+  const mutationSubmitReview = useMutation(submitReview, {
+    onSettled: () => {
+      queryClient.invalidateQueries(["review", router.query.id]);
+    },
+  });
 
   return {
     claimTranscript: mutationClaimTranscript,
+    saveProgress: mutationSaveProgress,
+    submitReview: mutationSubmitReview,
   };
 }
