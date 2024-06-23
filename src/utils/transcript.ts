@@ -1,8 +1,7 @@
 import { createHash } from "crypto";
-import { SaveToGHData } from "../../types";
 import config from "@/config/config.json";
 
-export const compareTranscriptBetweenSave = (data: SaveToGHData) => {
+export const compareTranscriptBetweenSave = (data: any) => {
   const transcriptAsString = JSON.stringify(data);
   const lastSavedReviewHash = localStorage.getItem(
     config.local_storage_hash_query
