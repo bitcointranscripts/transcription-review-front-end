@@ -1,18 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  Tooltip,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Tooltip, useToast } from "@chakra-ui/react";
 
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
@@ -31,6 +17,8 @@ import SubmitTranscriptMenu, {
 import { TranscriptContent, UserReviewData } from "../../../types";
 import { useUpdateTranscript } from "@/services/api/transcripts";
 import { useHasPermission } from "@/hooks/useHasPermissions";
+import { RestoreOriginalModal } from "@/components/modals";
+
 // Interfaces for react-markdown-editior
 export interface IHandleEditorChange {
   text: string;
@@ -236,33 +224,11 @@ const EditTranscript = ({
           />
         </Box>
       </Box>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <Text align="center" fontWeight={600} fontSize="md" color="red.600">
-              Restore Original
-            </Text>
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>Are you sure? All changes will be lost.</Text>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsModalOpen(false)}
-              mr={2}
-            >
-              Cancel
-            </Button>
-            <Button colorScheme="red" size="sm" onClick={onClickRestore}>
-              Yes, Restore!
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <RestoreOriginalModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalopen(false)}
+        onClick={onClickRestore}
+      />
     </>
   );
 };

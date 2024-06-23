@@ -35,7 +35,7 @@ const defaultFormValues = {
   url: "",
 } satisfies FormValues;
 
-export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
+const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
   const toast = useToast();
   const createPR = useCreatePR();
   const [urlError, setUrlError] = useState("");
@@ -49,13 +49,12 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
   };
 
   const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormValues((v) => ({ ...v, url: e.target.value }))
+    setFormValues((v) => ({ ...v, url: e.target.value }));
     setUrlError("");
-  }
+  };
 
   const validateUrl = (urlString: string): boolean => {
     try {
-
       const url = new URL(urlString.trim());
 
       const urlExists = selectableListData?.media.some((mediaUrl) =>
@@ -109,7 +108,7 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
             status: "success",
             title: "Suggestion submitted successfully",
           });
-          resetAndCloseForm()
+          resetAndCloseForm();
         },
       }
     );
@@ -140,9 +139,8 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
             fontSize={{ base: "xs", lg: "sm" }}
             textAlign="center"
           >
-            We manually review every suggestion to ensure it meets our
-            standards for reliable,
-            technical Bitcoin content.
+            We manually review every suggestion to ensure it meets our standards
+            for reliable, technical Bitcoin content.
           </Text>
         </ModalHeader>
         <form onSubmit={handleSubmit}>
@@ -158,7 +156,11 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
                   required
                 />
               </FormControl>
-              <FormControl isRequired gap={{ base: "6px", lg: "xs" }} isInvalid={!!urlError}>
+              <FormControl
+                isRequired
+                gap={{ base: "6px", lg: "xs" }}
+                isInvalid={!!urlError}
+              >
                 <FormLabel>Source&apos;s URL</FormLabel>
                 <Input
                   type="url"
@@ -179,10 +181,7 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
               </FormControl>
             </Flex>
           </ModalBody>
-          <ModalFooter
-            gap={{ base: "8px", lg: "md" }}
-            w="full"
-          >
+          <ModalFooter gap={{ base: "8px", lg: "md" }} w="full">
             <Button
               w="full"
               mx="auto"
@@ -208,4 +207,6 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
       </ModalContent>
     </Modal>
   );
-}
+};
+
+export default SuggestModal;
