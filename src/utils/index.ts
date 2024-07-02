@@ -1,8 +1,6 @@
 import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
-import yaml from "js-yaml";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { MetadataProps } from "../../types";
 import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
@@ -53,7 +51,7 @@ export const getTimeLeftText = (date: Date | null) => {
   if (!hours) {
     return "expired";
   }
-  return `${hours} hours to review and submit`;
+  return `${hours} hours to review and`;
 };
 
 export const wordsFormat = new Intl.NumberFormat("en-US", {
@@ -65,42 +63,6 @@ export const getCount = (item: number | string) => {
   const formattedItem = typeof item === "string" ? item.length : item;
   return wordsFormat.format(formattedItem);
 };
-
-export class Metadata {
-  private metadata: string;
-  public fileTitle: string;
-  public source: string;
-
-  constructor({
-    fileTitle,
-    transcript_by,
-    url,
-    ...otherMetadata
-  }: MetadataProps) {
-    this.fileTitle = fileTitle;
-    this.source = url;
-
-    const jsonData = {
-      title: fileTitle,
-      transcript_by: transcript_by
-        ? `${transcript_by} via ${config.app_tag}`
-        : undefined,
-      media: url,
-      ...otherMetadata,
-    };
-
-    this.metadata =
-      `---\n` +
-      yaml.dump(jsonData, {
-        forceQuotes: true,
-      }) +
-      "---\n";
-  }
-
-  public toString(): string {
-    return this.metadata;
-  }
-}
 
 export async function retryApiCall<T>(
   apiCallFunc: () => Promise<T>,

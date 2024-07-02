@@ -1,5 +1,4 @@
-import config from "@/config/config.json";
-import { useCreatePR } from "@/services/api/github";
+import { useGithub } from "@/services/api/github";
 import { useGetMetadata } from "@/services/api/transcripts/useGetMetadata";
 import { compareUrls, getPRRepo } from "@/utils";
 import {
@@ -35,9 +34,8 @@ const defaultFormValues = {
   url: "",
 } satisfies FormValues;
 
-export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
-  const toast = useToast();
-  const createPR = useCreatePR();
+const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
+  const { suggestSource } = useGithub()
   const [urlError, setUrlError] = useState("");
   const [formValues, setFormValues] = useState<FormValues>(defaultFormValues);
   const { data: selectableListData } = useGetMetadata();
@@ -77,42 +75,21 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
     }
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const isUrlValid = validateUrl(formValues.url);
     if (!isUrlValid) return;
 
-    createPR.mutate(
-      {
-        directoryPath: config.defaultDirectoryPath,
-        fileName: formValues.title,
-        url: formValues.url,
-        transcribedText: "",
-        prRepo: getPRRepo(),
-        needs: "transcript",
-      },
-      {
-        onError: (e) => {
-          const description =
-            e instanceof Error
-              ? e.message
-              : "An error occurred while submitting suggestion";
-          toast({
-            status: "error",
-            title: "Error submitting",
-            description,
-          });
-        },
-        onSuccess: () => {
-          toast({
-            status: "success",
-            title: "Suggestion submitted successfully",
-          });
-          resetAndCloseForm()
-        },
+    await suggestSource.mutateAsync({
+      title: formValues.title,
+      media: formValues.url,
+      targetRepository: getPRRepo()
+    }, {
+      onSuccess: () => {
+        resetAndCloseForm()
       }
-    );
+    })
   };
 
   const formIsComplete = !!(formValues.title.trim() && formValues.url.trim());
@@ -187,14 +164,14 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
               w="full"
               mx="auto"
               rounded="10px"
-              isDisabled={createPR.isLoading}
+              isDisabled={suggestSource.isLoading}
               onClick={handleClose}
             >
               Cancel
             </Button>
             <Button
               w="full"
-              isLoading={createPR.isLoading}
+              isLoading={suggestSource.isLoading}
               mx="auto"
               colorScheme="orange"
               rounded="10px"
@@ -209,3 +186,5 @@ export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
     </Modal>
   );
 }
+
+export default SuggestModal

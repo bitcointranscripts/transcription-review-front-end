@@ -14,6 +14,7 @@ type Props = {
   autoCompleteList: Array<AutoCompleteData>;
   userCanAddToList?: boolean;
   horizontal?: boolean;
+  single?: boolean;
 };
 
 export type AutoCompleteData = {
@@ -101,10 +102,10 @@ const SelectField = ({
     editState.idx === idx
       ? setEditState(initialEditState)
       : setEditState((prev) => ({
-          ...prev,
-          idx,
-          value: editedData[idx] ?? "",
-        }));
+        ...prev,
+        idx,
+        value: editedData[idx] ?? "",
+      }));
   };
 
   const addNewSpeaker = () => {
@@ -184,11 +185,17 @@ export const OnlySelectField = ({
   autoCompleteList,
   userCanAddToList,
   horizontal,
+  single
 }: Props) => {
   const handleAddItem = (value: string) => {
-    let updatedList = [...editedData];
-    updatedList.push(value);
-    updateData(updatedList);
+    if (single) {
+      updateData([value]);
+    }
+    else {
+      let updatedList = [...editedData];
+      updatedList.push(value);
+      updateData(updatedList);
+    }
   };
 
   const handleRemoveItem = (idx: number) => {
@@ -215,13 +222,14 @@ export const OnlySelectField = ({
         addItem={userCanAddToList ? handleAddItem : undefined}
         autoCompleteList={newAutoCompleteList}
         handleAutoCompleteSelect={handleAutoCompleteSelect}
+        selectedValue={single ? editedData[0] : undefined}
       />
       <Flex
         flexWrap="wrap"
         gap={horizontal ? 2 : undefined}
         flexDir={horizontal ? "row" : "column"}
       >
-        {editedData?.map((speaker: string, idx: number) => {
+        {!single && editedData?.map((speaker: string, idx: number) => {
           return (
             <Flex
               key={`${speaker}-idx-${idx}`}
