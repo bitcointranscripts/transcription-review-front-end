@@ -26,12 +26,14 @@ import { FiUser, FiUsers } from "react-icons/fi";
 import { HiOutlineBookOpen, HiOutlineSwitchHorizontal } from "react-icons/hi";
 import MenuNav from "./MenuNav";
 import AdminMenu from "./AdminMenu";
+import { useHasPermission } from "@/hooks/useHasPermissions";
 
 const Menu = () => {
   const { data: userSession } = useSession();
-
-  const isAdmin = userSession?.user?.permissions === "admin";
-
+  // Permissions check
+  const canAccessAdminNav = useHasPermission("accessAdminNav");
+  const canAccessTransactions = useHasPermission("accessTransactions");
+  const canAccessUsers = useHasPermission("accessUsers");
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
   const fullCurrentRoute = router.asPath;
@@ -164,16 +166,18 @@ const Menu = () => {
                         icon={BiWallet}
                       />
                     </Flex>
-                    {isAdmin ? (
-                      <AdminMenu>
+                    {canAccessAdminNav ? (
+                      <AdminMenu role={userSession.user?.permissions}>
                         <Flex direction="column" gap={2}>
-                          <MenuNav
-                            currentRoute={fullCurrentRoute}
-                            routeName={"Transactions"}
-                            routeLink={ROUTES_CONFIG.TRANSACTIONS}
-                            handleClose={closeMenu}
-                            icon={HiOutlineSwitchHorizontal}
-                          />
+                          {canAccessTransactions && (
+                            <MenuNav
+                              currentRoute={fullCurrentRoute}
+                              routeName={"Transactions"}
+                              routeLink={ROUTES_CONFIG.TRANSACTIONS}
+                              handleClose={closeMenu}
+                              icon={HiOutlineSwitchHorizontal}
+                            />
+                          )}
                           <MenuNav
                             currentRoute={fullCurrentRoute}
                             routeName={ROUTES_CONFIG.REVIEWS}
@@ -181,13 +185,15 @@ const Menu = () => {
                             handleClose={closeMenu}
                             icon={CgTranscript}
                           />
-                          <MenuNav
-                            currentRoute={fullCurrentRoute}
-                            routeName={"Users"}
-                            routeLink={ROUTES_CONFIG.USERS}
-                            handleClose={closeMenu}
-                            icon={FiUsers}
-                          />
+                          {canAccessUsers && (
+                            <MenuNav
+                              currentRoute={fullCurrentRoute}
+                              routeName={"Users"}
+                              routeLink={ROUTES_CONFIG.USERS}
+                              handleClose={closeMenu}
+                              icon={FiUsers}
+                            />
+                          )}
                         </Flex>
                       </AdminMenu>
                     ) : null}

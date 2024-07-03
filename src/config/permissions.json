@@ -1,0 +1,27 @@
+{
+  "admin": {
+    "accessReviews": true,
+    "accessUsers": true,
+    "resetReviews": true,
+    "accessTransactions": true,
+    "accessAdminNav": true,
+    "submitToOwnRepo": true
+  },
+  "evaluator": {
+    "accessReviews": true,
+    "accessUsers": false,
+    "resetReviews": false,
+    "accessTransactions": false,
+    "accessAdminNav": true,
+    "submitToOwnRepo": false
+  },
+  "reviewer": {
+    "accessReviews": false,
+    "accessUsers": false,
+    "resetReviews": false,
+    "accessTransactions": false,
+    "accessAdminNav": false,
+    "submitToOwnRepo": false
+  }
+  
+}

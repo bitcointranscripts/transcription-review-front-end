@@ -39,7 +39,8 @@ import { resolveGHApiUrl } from "@/utils/github";
 import { getReviewStatus } from "@/utils/review";
 import { AdminReview } from "@/services/api/admin/useReviews";
 import { format } from "date-fns";
-import { UserRoles } from "@/config/default";
+import { useHasPermission } from "@/hooks/useHasPermissions";
+import { UserRoles } from "../../../types";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -136,7 +137,8 @@ export const TableAction = <T extends object>({
   const isAdminReviews = getReviewStatus(row as AdminReview);
   const isUsersTable = tableItem.actionTableType === "user";
 
-  const isAdmin = userSession?.user?.permissions === "admin";
+  const isAdmin = useHasPermission("accessAdminNav");
+
   const showCheckBox = isAdmin && showControls;
 
   /* Forced the type here because it uses a dynamic type so Ts isn't aware of Id in rows
@@ -503,7 +505,7 @@ export const UpdateRole = ({
           key={role}
           textTransform={"capitalize"}
           onClick={() => {
-            handleRequest(role);
+            handleRequest(role as UserRole);
           }}
         >
           {role}

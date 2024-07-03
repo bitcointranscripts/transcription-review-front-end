@@ -17,6 +17,7 @@ import { useResetReview } from "@/services/api/reviews/useResetReviews";
 import { dateFormatGeneral } from "@/utils";
 import { getReviewStatus } from "@/utils/review";
 import { format } from "date-fns";
+import { useHasPermission } from "@/hooks/useHasPermissions";
 
 const tableStructure = [
   {
@@ -124,6 +125,7 @@ const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const toast = useToast();
   const { data: userSession } = useSession();
+
   const queryClient = useQueryClient();
   const resetReview = useResetReview();
   const handleCheckboxToggle = (values: (string | number)[]) => {
@@ -178,6 +180,7 @@ const AdminReviewsTable = ({
   hasFilters,
   reviews,
 }: Props) => {
+  const canResetReviews = useHasPermission("resetReviews");
   return (
     <AdminResetSelect>
       {({ handleReset, hasAdminSelected, isResetting }) => (
@@ -186,9 +189,8 @@ const AdminReviewsTable = ({
           emptyView={<EmptyView hasFilters={hasFilters} />}
           isLoading={isLoading}
           isError={isError}
-          // takes action-loading as isArchiving
           tableStructure={tableStructure}
-          showAdminControls
+          showAdminControls={canResetReviews}
           actionItems={
             <>
               {hasAdminSelected && (
