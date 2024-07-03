@@ -73,14 +73,14 @@ const EditTranscript = ({
   onOpen: () => void;
 }) => {
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
-  const [isModalOpen, setIsModalopen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const toast = useToast();
   const mdParser = new MarkdownIt();
 
   const reviewSubmissionDisabled =
     !!reviewData.branchUrl && !!reviewData.pr_url;
 
-  const canEditAdminTranscripts = useHasPermission("editAdminTranscripts");
+  const canSubmitToOwnRepo = useHasPermission("submitToOwnRepo");
 
   const { isLoading: saveLoading } = useUpdateTranscript();
 
@@ -148,7 +148,7 @@ const EditTranscript = ({
   // restoreOriginal content function
   const onClickRestore = () => {
     restoreOriginal();
-    setIsModalopen(false);
+    setIsModalOpen(false);
   };
 
   return (
@@ -179,7 +179,7 @@ const EditTranscript = ({
             </Button>
             <Button
               colorScheme="gray"
-              onClick={() => setIsModalopen(true)}
+              onClick={() => setIsModalOpen(true)}
               size="xs"
               ml="auto"
               display="block"
@@ -214,10 +214,10 @@ const EditTranscript = ({
                   onClick={onOpen}
                   isDisabled={reviewSubmissionDisabled}
                 >
-                  Submit {canEditAdminTranscripts ? `(${prRepo})` : ""}
+                  Submit {canSubmitToOwnRepo ? `(${prRepo})` : ""}
                 </Button>
               </Tooltip>
-              {canEditAdminTranscripts && (
+              {canSubmitToOwnRepo && (
                 <>
                   <SubmitTranscriptMenu setPrRepo={setPrRepo} />
                 </>
@@ -236,7 +236,7 @@ const EditTranscript = ({
           />
         </Box>
       </Box>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalopen(false)}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -252,7 +252,7 @@ const EditTranscript = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsModalopen(false)}
+              onClick={() => setIsModalOpen(false)}
               mr={2}
             >
               Cancel

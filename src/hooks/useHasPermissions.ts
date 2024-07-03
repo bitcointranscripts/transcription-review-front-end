@@ -8,7 +8,7 @@ type Permissions = {
   resetReviews: boolean;
   accessTransactions: boolean;
   accessAdminNav: boolean;
-  editAdminTranscripts: boolean;
+  submitToOwnRepo: boolean;
 };
 
 export const useHasPermission = (permission: keyof Permissions) => {

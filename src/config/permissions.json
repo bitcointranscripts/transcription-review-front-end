@@ -5,7 +5,7 @@
     "resetReviews": true,
     "accessTransactions": true,
     "accessAdminNav": true,
-    "editAdminTranscripts": true
+    "submitToOwnRepo": true
   },
   "evaluator": {
     "accessReviews": true,
@@ -13,7 +13,7 @@
     "resetReviews": false,
     "accessTransactions": false,
     "accessAdminNav": true,
-    "editAdminTranscripts": false
+    "submitToOwnRepo": false
   },
   "reviewer": {
     "accessReviews": false,
@@ -21,6 +21,7 @@
     "resetReviews": false,
     "accessTransactions": false,
     "accessAdminNav": false,
-    "editAdminTranscripts": false
+    "submitToOwnRepo": false
   }
+  
 }

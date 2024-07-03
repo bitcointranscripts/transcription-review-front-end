@@ -1,6 +1,7 @@
 import { Box, Divider, Flex, Heading, Icon } from "@chakra-ui/react";
 import React from "react";
-import { BiLockOpenAlt } from "react-icons/bi";;
+import { BiLockOpenAlt } from "react-icons/bi";
+
 const AdminMenu = ({
   children,
   role,

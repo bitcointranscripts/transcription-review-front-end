@@ -31,7 +31,7 @@ import { useHasPermission } from "@/hooks/useHasPermissions";
 const Menu = () => {
   const { data: userSession } = useSession();
   // Permissions check
-  const isPermitted = useHasPermission("accessAdminNav");
+  const canAccessAdminNav = useHasPermission("accessAdminNav");
   const canAccessTransactions = useHasPermission("accessTransactions");
   const canAccessUsers = useHasPermission("accessUsers");
   const router = useRouter();
@@ -166,7 +166,7 @@ const Menu = () => {
                         icon={BiWallet}
                       />
                     </Flex>
-                    {isPermitted ? (
+                    {canAccessAdminNav ? (
                       <AdminMenu role={userSession.user?.permissions}>
                         <Flex direction="column" gap={2}>
                           {canAccessTransactions && (
