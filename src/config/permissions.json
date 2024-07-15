@@ -3,6 +3,7 @@
     "accessReviews": true,
     "accessUsers": true,
     "resetReviews": true,
+    "archiveTranscripts": true,
     "accessTransactions": true,
     "accessAdminNav": true,
     "submitToOwnRepo": true
@@ -11,6 +12,7 @@
     "accessReviews": true,
     "accessUsers": false,
     "resetReviews": false,
+    "archiveTranscripts": true,
     "accessTransactions": false,
     "accessAdminNav": true,
     "submitToOwnRepo": false

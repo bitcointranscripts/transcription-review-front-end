@@ -6,6 +6,7 @@ type Permissions = {
   accessReviews: boolean;
   accessUsers: boolean;
   resetReviews: boolean;
+  archiveTranscripts: boolean;
   accessTransactions: boolean;
   accessAdminNav: boolean;
   submitToOwnRepo: boolean;

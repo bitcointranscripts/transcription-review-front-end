@@ -8,7 +8,6 @@ import config from "../../config/config.json";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   Icon,
   IconButton,
@@ -25,7 +24,6 @@ import {
   Tr,
   useToast,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -40,7 +38,6 @@ import { resolveGHApiUrl } from "@/utils/github";
 import { getReviewStatus } from "@/utils/review";
 import { AdminReview } from "@/services/api/admin/useReviews";
 import { format } from "date-fns";
-import { useHasPermission } from "@/hooks/useHasPermissions";
 import { UserRoles } from "../../../types";
 import useCopyToClipboard from "@/hooks/useCopyToClipboard";
 import CopyIcon from "../svgs/CopyIcon";
@@ -128,26 +125,12 @@ export const Tags = <T extends object>({
 export const TableAction = <T extends object>({
   tableItem,
   row,
-  showControls,
-}: TableDataElement<T> & { showControls: boolean }) => {
-  const { data: userSession } = useSession();
-
+}: TableDataElement<T>) => {
   const handleClick = () => {
     if (!tableItem.action) return;
     tableItem.action(row);
   };
-  //  checks if it a review if it isn't returns false
-  const isAdminReviews = getReviewStatus(row as AdminReview);
-  const isUsersTable = tableItem.actionTableType === "user";
 
-  const isAdmin = useHasPermission("accessAdminNav");
-
-  const showCheckBox = isAdmin && showControls;
-
-  /* Forced the type here because it uses a dynamic type so Ts isn't aware of Id in rows
-  also from other tables every row has an id
-  */
-  const rowId = row as { id: number };
   return (
     <Td>
       <Flex justifyContent="space-between" alignItems="center">
@@ -165,19 +148,6 @@ export const TableAction = <T extends object>({
             {tableItem.actionName}
           </Button>
         )}
-        {/* For reviews */}
-        {isAdminReviews === "Active" && showCheckBox && (
-          <Checkbox value={String("id" in row && row.id)} />
-        )}
-
-        {/* checkbox */}
-        {showCheckBox && !isAdminReviews && !isUsersTable && (
-          <Checkbox value={String("id" in row && row.id)} />
-        )}
-
-        {isUsersTable && rowId?.id !== userSession?.user?.id && (
-          <Checkbox value={String("id" in row && row.id)} />
-        )}
       </Flex>
     </Td>
   );
@@ -185,11 +155,14 @@ export const TableAction = <T extends object>({
 
 export const TableHeader = <T extends object>({
   tableStructure,
+  showCheckboxes,
 }: {
   tableStructure: TableStructure<T>[];
+  showCheckboxes: boolean;
 }) => {
   return (
     <Tr>
+      {showCheckboxes && <Th key="checkbox" width="1%" />}
       {tableStructure.map((tableItem, idx) => {
         return (
           <Th key={idx} width={tableItem.type === "text-long" ? "25%" : "auto"}>
@@ -245,8 +218,7 @@ export const DataEmpty = ({
 export const RowData = <T extends object>({
   row,
   tableItem,
-  showControls,
-}: TableDataElement<T> & { showControls: boolean }) => {
+}: TableDataElement<T>) => {
   switch (tableItem.type) {
     case "date":
       return <DateText key={tableItem.name} tableItem={tableItem} row={row} />;
@@ -262,12 +234,7 @@ export const RowData = <T extends object>({
 
     case "action":
       return (
-        <TableAction
-          showControls={showControls}
-          key={tableItem.name}
-          tableItem={tableItem}
-          row={row}
-        />
+        <TableAction key={tableItem.name} tableItem={tableItem} row={row} />
       );
 
     default:
