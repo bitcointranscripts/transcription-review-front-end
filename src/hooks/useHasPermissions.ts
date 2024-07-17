@@ -5,6 +5,7 @@ import permissions from "../config/permissions.json";
 type Permissions = {
   accessReviews: boolean;
   accessUsers: boolean;
+  accessTranscription: boolean;
   resetReviews: boolean;
   archiveTranscripts: boolean;
   accessTransactions: boolean;

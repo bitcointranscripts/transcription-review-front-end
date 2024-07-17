@@ -4,6 +4,7 @@
     "accessUsers": true,
     "resetReviews": true,
     "archiveTranscripts": true,
+    "accessTranscription": true,
     "accessTransactions": true,
     "accessAdminNav": true,
     "submitToOwnRepo": true
@@ -13,6 +14,7 @@
     "accessUsers": false,
     "resetReviews": false,
     "archiveTranscripts": true,
+    "accessTranscription": true,
     "accessTransactions": false,
     "accessAdminNav": true,
     "submitToOwnRepo": false
@@ -21,6 +23,8 @@
     "accessReviews": false,
     "accessUsers": false,
     "resetReviews": false,
+    "archiveTranscripts": false,
+    "accessTranscription": false,
     "accessTransactions": false,
     "accessAdminNav": false,
     "submitToOwnRepo": false
