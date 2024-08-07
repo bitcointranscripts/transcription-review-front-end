@@ -46,7 +46,7 @@ export const getTransaction = async ({
     )
       ? (status as TransactionQueryStatus)
       : undefined,
-    page: page ? parseInt(page) - 1 ?? 0 : 0,
+    page: page ? parseInt(page) ?? 0 : 0,
   };
   return axios
     .get(endpoints.GET_TRANSACTIONS_ADMIN(transactionQueryOptions))

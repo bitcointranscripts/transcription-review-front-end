@@ -25,6 +25,7 @@ import { UI_CONFIG } from "@/config/ui-config";
 import { RefetchButton } from "@/components/tables/TableItems";
 import { useHasPermission } from "@/hooks/useHasPermissions";
 import AuthStatus from "@/components/transcript/AuthStatus";
+import { useState } from "react";
 
 // eslint-disable-next-line no-unused-vars
 type OnSelect<T> = (name: string, item: T) => void;
@@ -103,6 +104,8 @@ const Transactions = () => {
   const { data, totalPages, totalTransactions, page } =
     transactionResponse ?? {};
 
+  const [paginationNumber, setPaginationNumber] = useState<number>(page ?? 1);
+
   const sortedData = data?.sort((a, b) => {
     if (a.createdAt > b.createdAt) return -1;
     if (a.createdAt < b.createdAt) return 1;
@@ -154,6 +157,7 @@ const Transactions = () => {
       />
     );
   }
+  console.log(page, pageQuery);
   return (
     <>
       <Flex flexDir="column">
@@ -226,8 +230,8 @@ const Transactions = () => {
         {totalPages && page ? (
           <Pagination
             pages={totalPages}
-            setCurrentPage={() => {}}
-            currentPage={page}
+            setCurrentPage={setPaginationNumber}
+            currentPage={paginationNumber}
           />
         ) : null}
       </Flex>
