@@ -43,7 +43,6 @@ import { format } from "date-fns";
 import { useHasPermission } from "@/hooks/useHasPermissions";
 import { UserRoles } from "../../../types";
 import useCopyToClipboard from "@/hooks/useCopyToClipboard";
-import { te } from "date-fns/locale";
 import CopyIcon from "../svgs/CopyIcon";
 
 // eslint-disable-next-line no-unused-vars
