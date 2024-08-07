@@ -157,7 +157,7 @@ const Transactions = () => {
       />
     );
   }
-  console.log(page, pageQuery);
+
   return (
     <>
       <Flex flexDir="column">

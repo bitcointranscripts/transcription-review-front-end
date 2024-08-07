@@ -164,6 +164,7 @@ export type Transaction = {
   amount: string;
   transactionType: "credit" | "debit";
   transactionStatus: "success" | "pending" | "failed";
+  invoice?: null | string;
   createdAt: string;
   updatedAt: string;
 };
