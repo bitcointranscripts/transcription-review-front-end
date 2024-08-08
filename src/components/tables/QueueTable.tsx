@@ -1,11 +1,9 @@
-import { upstreamOwner } from "@/config/default";
 import {
   useHasExceededMaxActiveReviews,
   useUserMultipleReviews,
 } from "@/services/api/reviews";
 import {
   useArchiveTranscript,
-  useClaimTranscript,
   useTranscripts,
 } from "@/services/api/transcripts";
 import {
@@ -13,6 +11,7 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
+import { useGithub } from "@/services/api/github";
 import {
   Button,
   CheckboxGroup,
@@ -22,7 +21,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -35,7 +33,7 @@ import React, {
 } from "react";
 import { BiBookAdd } from "react-icons/bi";
 import { Transcript } from "../../../types";
-import { SuggestModal } from "../modals/SuggestModal";
+import { SuggestModal } from "@/components/modals";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
 import { ArchiveButton } from "./TableItems";
@@ -115,7 +113,7 @@ const QueueTable = () => {
     onOpen: openSuggestModal,
   } = useDisclosure();
   const router = useRouter();
-  const claimTranscript = useClaimTranscript();
+  const { claimTranscript } = useGithub();
   const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
   const hasExceededActiveReviewLimit = useHasExceededMaxActiveReviews(
     session?.user?.id
@@ -168,60 +166,15 @@ const QueueTable = () => {
         });
         return;
       }
-      if (session?.user?.id) {
+      if (session?.user?.id && transcript) {
         setSelectedTranscriptId(transcriptId);
 
         try {
-          // Fork repo
-          const forkResult = await axios.post("/api/github/fork");
-          const owner = forkResult.data.owner.login;
-
-          const env_owner =
-            process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
-              ? forkResult.data.owner.login
-              : upstreamOwner;
-
-          let branchUrl;
-
-          if (transcript && transcript.transcriptUrl) {
-            const result = await axios.post("/api/github/newBranch", {
-              ghSourcePath: transcript.transcriptUrl,
-              owner,
-              env_owner,
-            });
-            branchUrl = result.data.branchUrl;
-          }
-
-          // Claim transcript
-          claimTranscript.mutate(
-            { userId: session.user.id, transcriptId, branchUrl },
-            {
-              onSuccess: async (data) => {
-                try {
-                  const reviewId = data.id;
-                  if (!reviewId) {
-                    throw new Error("failed to claim transcript");
-                  }
-
-                  if (data instanceof Error) {
-                    await retryLoginAndClaim(transcriptId);
-                    return;
-                  }
-                  if (multipleStatusData.length > 0) {
-                    router.push(`/reviews/${data.id}`);
-                  } else {
-                    router.push(`/reviews/${data.id}?first_review=true`);
-                  }
-                } catch (err) {
-                  console.error(err);
-                }
-              },
-
-              onError: (err) => {
-                throw err;
-              },
-            }
-          );
+          await claimTranscript.mutateAsync({
+            transcriptUrl: transcript.transcriptUrl,
+            transcriptId,
+            userId: session.user.id,
+          });
         } catch (error: any) {
           // handles all errors from claiming process
           let errorTitle = error.message;

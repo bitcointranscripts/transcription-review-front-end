@@ -5,7 +5,6 @@ import {
   Flex,
   FormControl,
   Icon,
-  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -21,8 +20,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import { BiCheck, BiX } from "react-icons/bi";
+import { useRef, useState } from "react";
 import { FaSortDown } from "react-icons/fa";
 import AutoComplete from "./autocomplete";
 import type { AutoCompleteData, SelectEditState } from "./SelectField";
@@ -30,87 +28,11 @@ import type { AutoCompleteData, SelectEditState } from "./SelectField";
 type SelectBoxProps = {
   idx: number;
   name: string;
-  handleUpdateEdit: (idx: number, name?: string) => void;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  editState: SelectEditState;
-  autoCompleteList?: Array<AutoCompleteData>;
-  handleAutoCompleteSelect?: (e: any) => void;
-};
-
-const SelectBox = ({
-  idx,
-  handleUpdateEdit,
-  handleInputChange,
-  editState,
-  name,
-  autoCompleteList,
-  handleAutoCompleteSelect,
-}: SelectBoxProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  return (
-    <>
-      <FormControl>
-        <Flex gap={1} alignItems="center">
-          <Box position="relative" w="full">
-            <Input
-              p={1}
-              h="auto"
-              fontSize="inherit"
-              value={editState?.value}
-              onChange={handleInputChange}
-              ref={inputRef}
-            />
-            {autoCompleteList && handleAutoCompleteSelect && (
-              <AutoComplete
-                editState={editState}
-                autoCompleteList={autoCompleteList}
-                onAutoCompleteSelect={handleAutoCompleteSelect}
-                inputRef={inputRef}
-                name={name}
-              />
-            )}
-          </Box>
-          <Flex direction="row" justifyContent="space-around" gap={1}>
-            <IconButton
-              name="add"
-              size="sm"
-              fontSize="16px"
-              colorScheme="green"
-              variant="outline"
-              onClick={() => handleUpdateEdit(idx, "add")}
-              aria-label="confirm speaker editing"
-              icon={<BiCheck />}
-            />
-            <IconButton
-              name="cancel"
-              size="sm"
-              fontSize="16px"
-              colorScheme="red"
-              variant="outline"
-              onClick={() => handleUpdateEdit(idx, "cancel")}
-              aria-label="reject speaker editing"
-              icon={<BiX />}
-            />
-          </Flex>
-        </Flex>
-      </FormControl>
-    </>
-  );
-};
-
-export default SelectBox;
-
-type OnlySelectBoxProps = {
-  idx: number;
-  name: string;
   addItem?: (_x: string) => void;
   autoCompleteList: Array<AutoCompleteData>;
   handleAutoCompleteSelect: (data: AutoCompleteData) => void;
+  // This is for single selection
+  selectedValue?: string;
 };
 
 type ConfirmModalState = {
@@ -118,13 +40,14 @@ type ConfirmModalState = {
   data: string;
 };
 
-export const OnlySelectBox = ({
+export const SelectBox = ({
   idx,
   name,
   addItem,
   autoCompleteList,
   handleAutoCompleteSelect,
-}: OnlySelectBoxProps) => {
+  selectedValue,
+}: SelectBoxProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { onClose, onOpen, isOpen } = useDisclosure();
   const [confirmModal, setConfirmModal] = useState<ConfirmModalState>({
@@ -183,6 +106,7 @@ export const OnlySelectBox = ({
         >
           <PopoverTrigger>
             <Flex
+              tabIndex={0}
               w="full"
               bgColor="blackAlpha.100"
               px={2}
@@ -195,7 +119,7 @@ export const OnlySelectBox = ({
               justifyContent="space-between"
             >
               <Text color="gray.600" fontSize="14px" fontWeight={500}>
-                Add {name}
+                {selectedValue ? selectedValue : `Add ${name}`}
               </Text>
               <Icon color="gray.600" as={FaSortDown} />
             </Flex>

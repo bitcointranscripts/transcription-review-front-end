@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
-
 import { Octokit } from "@octokit/core";
+
+import { upstreamMetadataRepo } from "@/config/default";
 
 import { newIndexFile } from ".";
 
@@ -9,6 +10,36 @@ type BranchUrlConstructor = {
   newBranchName: string;
   filePath: string;
 };
+
+// Base interface for common GitHub repository parameters
+interface GitHubRepoParams {
+  octokit: Octokit;
+  owner: string;
+  repo: string;
+}
+
+// Interface for operations on a specific file with branch details
+interface GitHubFileParams extends GitHubRepoParams {
+  path: string;
+  branch: string;
+}
+
+// Interface for getting a file SHA
+interface GetFileShaParams extends GitHubFileParams {}
+
+// Interface for updating or creating a file with optional SHA
+interface UpdateOrCreateFileParams extends GitHubFileParams {
+  fileContent: string;
+  sha: string | null;
+}
+
+// Interface for creating a pull request
+interface CreatePullRequestParams extends GitHubRepoParams {
+  title: string;
+  head: string; // Branch with changes
+  base: string; // Branch to merge into
+  body: string; // Description of the pull request
+}
 
 export async function deleteIndexMdIfDirectoryEmpty(
   octokit: InstanceType<typeof Octokit>,
@@ -100,6 +131,79 @@ export async function ensureIndexMdExists(
         throw error;
       }
     }
+  }
+}
+
+/**
+ * Fetches the SHA of a file in a given GitHub repository using named parameters.
+ */
+export async function getFileSha(
+  params: GetFileShaParams
+): Promise<string | null> {
+  const { octokit, owner, repo, path, branch } = params;
+  try {
+    const response = await octokit.request(
+      "GET /repos/{owner}/{repo}/contents/{path}",
+      {
+        owner,
+        repo,
+        path,
+        ref: branch,
+      }
+    );
+    const data = response.data as { sha: string };
+    return data.sha;
+  } catch (err: any) {
+    return null;
+    throw new Error(`Cannot find ${path} SHA. Error: ${err.message}`);
+  }
+}
+
+/**
+ * Updates or creates a file in a given GitHub repository using named parameters.
+ */
+export async function updateOrCreateFile(params: UpdateOrCreateFileParams) {
+  const { octokit, owner, repo, path, fileContent, branch, sha } = params;
+  const timestamp = new Date().toISOString();
+  try {
+    const response = await octokit.request(
+      "PUT /repos/:owner/:repo/contents/:path",
+      {
+        owner,
+        repo,
+        path,
+        message: `Save Edits (${timestamp})`,
+        content: Buffer.from(fileContent).toString("base64"),
+        branch,
+        sha,
+      }
+    );
+    return response;
+  } catch (err) {
+    console.error({ err });
+    throw new Error("Error updating or creating new file");
+  }
+}
+
+/**
+ * Creates a pull request in a specified GitHub repository using named parameters.
+ */
+export async function createPullRequest(params: CreatePullRequestParams) {
+  const { octokit, owner, repo, title, head, base, body } = params;
+  try {
+    const response = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
+      owner,
+      repo,
+      title,
+      head,
+      base,
+      body,
+    });
+    return response;
+  } catch (err: any) {
+    throw new Error(
+      `Error creating Pull Request: ${err.response.data.errors[0].message}`
+    );
   }
 }
 
@@ -284,4 +388,13 @@ export function constructGithubBranchApiUrl({
   newBranchName,
 }: BranchUrlConstructor) {
   return `https://api.github.com/repos/${owner}/bitcointranscripts/contents/${filePath}?ref=${newBranchName}`;
+}
+
+export function constructDpeUrl(transcriptUrl: string) {
+  const { srcOwner, srcBranch, srcDirPath, fileNameWithoutExtension } =
+    resolveGHApiUrl(transcriptUrl);
+  const dpeFilePath = `${srcDirPath}/${fileNameWithoutExtension}/dpe.json`;
+  // hacky way to avoid for now to keep extra information about the metadata repo in the db
+  const metadataRepoBaseBranch = srcBranch == "master" ? "main" : srcBranch;
+  return `https://api.github.com/repos/${srcOwner}/${upstreamMetadataRepo}/contents/${dpeFilePath}?ref=${metadataRepoBaseBranch}`;
 }

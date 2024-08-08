@@ -17,7 +17,7 @@ export type Transcript = {
   transcriptHash: string;
   claimedBy: Nullable<number>;
   contentTotalWords: number;
-  transcriptUrl: Nullable<string>;
+  transcriptUrl: string;
 };
 export type TranscriptData = {
   totalItems: number;
@@ -43,7 +43,15 @@ export type Review = {
   submittedAt: Nullable<Date>;
   mergedAt: Nullable<Date>;
   pr_url: Nullable<string>;
-  branchUrl: Nullable<string>;
+  branchUrl: string;
+};
+
+export type TranscriptReview = Review & {
+  transcript: {
+    dpe: DigitalPaperEditFormat;
+    metadata: TranscriptMetadata;
+    url: string;
+  };
 };
 
 export type UserReviewData = Review & {
@@ -72,17 +80,46 @@ export type TranscriptContent = Record<string, any> & {
   loc?: string;
 };
 
-type Nullable<T> = T | null;
-
-export type MetadataProps = Record<string, any> & {
-  fileTitle: string;
+export type TranscriptMetadata = {
+  date: Date;
+  source_file: string;
+  media: string;
+  speakers: string[];
+  tags: string[];
+  title: string;
   transcript_by: string;
-  url: string;
-  date: string;
-  tags?: string[];
-  speakers?: string[];
-  categories?: string[];
 };
+
+export type DigitalPaperEditWord = {
+  id: number;
+  start: number;
+  end: number;
+  text: string;
+};
+
+export type DigitalPaperEditParagraph = {
+  id: number;
+  start: number;
+  end: number;
+  speaker: string;
+};
+
+export type DigitalPaperEditFormat = {
+  words: DigitalPaperEditWord[];
+  paragraphs: DigitalPaperEditParagraph[];
+};
+
+export type SlateNode = {
+  children: { text: string; words: DigitalPaperEditWord[] };
+  speaker: string;
+  start: number;
+  startTimecode: string;
+  previousTimings: string;
+  type: string;
+  chapter?: string;
+};
+
+type Nullable<T> = T | null;
 
 export type AbstractedChakraComponentProps<T> = {
   children: React.ReactNode;
@@ -184,28 +221,6 @@ export type TransactionQueryType =
 
 export type TransactionQueryStatus =
   (typeof TransactionStatus)[keyof typeof TransactionStatus];
-
-export type SaveToGHData = {
-  directoryPath: string;
-  fileName?: string;
-  url: string | null;
-  date:
-    | string
-    | {
-        day: string;
-        month: string;
-        year: string;
-      }
-    | null;
-  tags?: string[];
-  speakers?: string[];
-  categories?: string[];
-  transcribedText: string;
-  transcript_by?: string;
-  ghSourcePath: string | null;
-  ghBranchUrl: string | null;
-  reviewId: number;
-};
 
 // Reviews for admin;
 export type ReviewQueryStatus =
