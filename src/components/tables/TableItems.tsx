@@ -524,11 +524,11 @@ export const CopyTextContainer = ({
   text: string | null;
   children: React.ReactNode;
 }) => {
-  const setCopiedValue = useCopyToClipboard();
+  const copyText = useCopyToClipboard();
   const toast = useToast();
   const onClickCopy = () => {
     if (!text) return null;
-    setCopiedValue(text);
+    copyText(text);
     toast({
       orientation: "horizontal",
       position: "bottom",
