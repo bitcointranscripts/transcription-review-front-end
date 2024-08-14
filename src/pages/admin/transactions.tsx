@@ -87,6 +87,7 @@ const Transactions = () => {
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
 
+  const page = pageQuery ? parseInt(pageQuery) ?? 1 : 1;
   const {
     data: transactionResponse,
     isLoading,
@@ -97,11 +98,10 @@ const Transactions = () => {
     txId: txIdFilter,
     type: typeFilter,
     status: statusFilter,
-    page: pageQuery,
+    page: page,
   });
 
-  const { data, totalPages, totalTransactions, page } =
-    transactionResponse ?? {};
+  const { data, totalPages, totalTransactions } = transactionResponse ?? {};
 
   const sortedData = data?.sort((a, b) => {
     if (a.createdAt > b.createdAt) return -1;
