@@ -86,8 +86,8 @@ const Transactions = () => {
   const typeFilter = urlParams.get(FilterQueryNames.type);
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
-
   const page = pageQuery ? parseInt(pageQuery) ?? 1 : 1;
+
   const {
     data: transactionResponse,
     isLoading,
