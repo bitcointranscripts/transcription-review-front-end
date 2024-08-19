@@ -86,6 +86,7 @@ const Transactions = () => {
   const typeFilter = urlParams.get(FilterQueryNames.type);
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
+  const page = pageQuery ? parseInt(pageQuery) ?? 1 : 1;
 
   const {
     data: transactionResponse,
@@ -97,17 +98,11 @@ const Transactions = () => {
     txId: txIdFilter,
     type: typeFilter,
     status: statusFilter,
-    page: pageQuery,
+    page: page,
   });
 
-  const { data, totalPages, totalTransactions, page } =
-    transactionResponse ?? {};
+  const { data, totalPages, totalTransactions } = transactionResponse ?? {};
 
-  const sortedData = data?.sort((a, b) => {
-    if (a.createdAt > b.createdAt) return -1;
-    if (a.createdAt < b.createdAt) return 1;
-    return 0;
-  });
 
   const resetFilters = () => {
     router.push(router.pathname, undefined, {
@@ -154,6 +149,7 @@ const Transactions = () => {
       />
     );
   }
+
   return (
     <>
       <Flex flexDir="column">
@@ -218,7 +214,7 @@ const Transactions = () => {
           </Flex>
         </Flex>
         <AdminTransactionsTable
-          transactions={sortedData ?? []}
+          transactions={data ?? []}
           isError={isError}
           isLoading={isLoading}
           hasFilters={showReset}

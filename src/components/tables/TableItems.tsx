@@ -23,6 +23,7 @@ import {
   Th,
   Tooltip,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -41,6 +42,8 @@ import { AdminReview } from "@/services/api/admin/useReviews";
 import { format } from "date-fns";
 import { useHasPermission } from "@/hooks/useHasPermissions";
 import { UserRoles } from "../../../types";
+import useCopyToClipboard from "@/hooks/useCopyToClipboard";
+import CopyIcon from "../svgs/CopyIcon";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -514,3 +517,35 @@ export const UpdateRole = ({
     </MenuList>
   </Menu>
 );
+export const CopyTextContainer = ({
+  text,
+  children,
+}: {
+  text: string | null;
+  children: React.ReactNode;
+}) => {
+  const copyText = useCopyToClipboard();
+  const toast = useToast();
+  const onClickCopy = () => {
+    if (!text) return null;
+    copyText(text);
+    toast({
+      orientation: "horizontal",
+      position: "bottom",
+      title: "Copied Invoice",
+      colorScheme: "green",
+    });
+  };
+  return (
+    <Flex
+      cursor={"pointer"}
+      gap={1}
+      alignItems={"center"}
+      onClick={onClickCopy}
+      maxWidth={"max-content"}
+    >
+      <Text cursor={"pointer"}>{children}</Text>
+      {text && <CopyIcon />}
+    </Flex>
+  );
+};

@@ -1,7 +1,8 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex, Td, Text, Tooltip } from "@chakra-ui/react";
 import { AdminTransaction } from "../../../types";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
+import { CopyTextContainer } from "./TableItems";
 
 const tableStructure = [
   {
@@ -23,6 +24,20 @@ const tableStructure = [
     name: "type",
     type: "text-short",
     modifier: (data) => data.transactionType,
+  },
+  {
+    name: "invoice",
+    type: "default",
+    modifier: (data) => data?.invoice,
+    component: (data) => (
+      <Td>
+        <Tooltip label={`Invoice: ${data?.invoice}`} cursor={"pointer"}>
+          <CopyTextContainer text={data.invoice ?? ""}>
+            {data.invoice?.slice(0, 15)} {data?.invoice ? "..." : ""}
+          </CopyTextContainer>
+        </Tooltip>
+      </Td>
+    ),
   },
   {
     name: "status",
