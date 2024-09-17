@@ -1,10 +1,11 @@
 import { upstreamOwner } from "@/config/default";
-import { Octokit } from "@octokit/core";
+import { Octokit } from "@octokit/rest";
 import { NextApiRequest, NextApiResponse } from "next";
-import { auth } from "../auth/[...nextauth]";
+import { getOctokit } from "@/utils/getOctokit";
+import { withGithubErrorHandler } from "@/utils/githubApiErrorHandler";
 
 type NewBranchArgs = {
-  octokit: InstanceType<typeof Octokit>;
+  octokit: Octokit;
   upstreamRepo: string;
   baseBranch: string;
   branchName: string;
@@ -50,38 +51,25 @@ export async function createNewBranch({
     });
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  // Check if the user is authenticated
-  const session = await auth(req, res);
-  if (!session || !session.accessToken || !session.user?.githubUsername) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { octokit, owner } = await getOctokit(req, res);
   const { upstreamRepo, baseBranch, branchName } = req.body;
 
-  // Initialize Octokit with the user's access token
-  const octokit = new Octokit({ auth: session.accessToken });
+  const result = await createNewBranch({
+    octokit,
+    upstreamRepo,
+    baseBranch,
+    branchName,
+    owner,
+  });
 
-  try {
-    // Call the createNewBranch function
-    const result = await createNewBranch({
-      octokit,
-      upstreamRepo,
-      baseBranch,
-      branchName,
-      owner: session.user.githubUsername,
-    });
-
-    res.status(200).json({
-      message: "succesfully created a new branch",
-      ...result,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      message: error?.message ?? "Error occurred while creating new branch",
-    });
-  }
+  res.status(200).json({
+    message: "successfully created a new branch",
+    ...result,
+  });
 }
+
+export default withGithubErrorHandler(
+  handler,
+  "Error occurred while creating new branch"
+);

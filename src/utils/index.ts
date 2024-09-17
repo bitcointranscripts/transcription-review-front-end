@@ -119,7 +119,7 @@ export function deriveFileSlug(title: string, regex?: RegExp) {
   const fileSlug = slugify(_trimmedFileName, {
     strict: false,
     lower: true,
-    remove: regex,
+    remove: regex || /[:'"]/g, // Removes colons, single quotes, and double quotes
   });
   return fileSlug;
 }
