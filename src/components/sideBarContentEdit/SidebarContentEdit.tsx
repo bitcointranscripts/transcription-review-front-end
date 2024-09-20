@@ -179,7 +179,7 @@ const SidebarContentEdit = ({
           </Text>
           <OnlySelectField
             name="speakers"
-            editedData={sideBarData.list.speakers}
+            editedData={sideBarData.list.speakers || []}
             updateData={updateSpeaker}
             autoCompleteList={selectableListData?.speakers ?? []}
             userCanAddToList
@@ -206,7 +206,7 @@ const SidebarContentEdit = ({
           </Text>
           <SingleSelectField
             name="category"
-            editedData={sideBarData.list.categories}
+            editedData={sideBarData.list.categories || []}
             updateData={updateCategories}
             autoCompleteList={selectableListData?.categories ?? []}
           />
@@ -228,7 +228,7 @@ const SidebarContentEdit = ({
           </Flex>
           <OnlySelectField
             name="tags"
-            editedData={sideBarData.list.tags}
+            editedData={sideBarData.list.tags || []}
             updateData={updateTags}
             autoCompleteList={selectableListData?.tags ?? []}
           />
