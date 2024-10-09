@@ -19,7 +19,6 @@ import {
 } from "@/utils/github";
 import { useUserMultipleReviews } from "@/services/api/reviews";
 import config from "@/config/config.json";
-import { deriveFileSlug } from "@/utils";
 
 import backendAxios from "../axios";
 import { Review, TranscriptMetadata } from "../../../../types";
@@ -203,64 +202,12 @@ const suggestSource = async ({
   media,
   targetRepository,
 }: SuggestSourceParams) => {
-  // Fork repository
-  const forkMainRepoResult = await githubApi.post("/fork", {
-    owner: upstreamOwner,
-    repo: upstreamRepo,
+  const result = await githubApi.post("/suggestSource", {
+    title,
+    media,
+    targetRepository,
   });
-  const owner = forkMainRepoResult.data.owner.login;
-
-  // Create a new branch
-  const timeInSeconds = Math.floor(Date.now() / 1000);
-  const fileName = deriveFileSlug(title);
-  const branchName = `${timeInSeconds}-${fileName}`;
-  await githubApi.post("/newBranch", {
-    upstreamRepo,
-    // TODO: needs better handling of base branch
-    baseBranch:
-      process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
-        ? "master"
-        : "staging",
-    branchName,
-  });
-
-  // Save file
-  const transcriptMarkdown =
-    `---\n` +
-    yaml.dump(
-      {
-        title,
-        media,
-        needs: "transcript",
-      },
-      {
-        forceQuotes: true,
-      }
-    ) +
-    "---\n";
-  await githubApi.post("/save", {
-    repo: upstreamRepo,
-    // for now misc is the default directory for suggestions
-    filePath: `misc/${fileName}.md`,
-    fileContent: transcriptMarkdown,
-    branch: branchName,
-  });
-
-  // Open PR with user's suggestion
-  const prResult = await githubApi.post("/pr", {
-    owner: targetRepository === "user" ? owner : upstreamOwner,
-    // we don't expect that the user will have a different name for their fork
-    repo: upstreamRepo,
-    title: `suggest: "${title}"`,
-    body: `This PR is a suggestion for the transcription of [${title}](${media}).`,
-    head: `${owner}:${branchName}`,
-    // TODO: needs better handling of base branch
-    base:
-      process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
-        ? "master"
-        : "staging",
-  });
-  return prResult.data.html_url;
+  return result.data.pr_url;
 };
 
 export function useGithub() {
@@ -313,10 +260,11 @@ export function useGithub() {
   });
 
   const mutationSuggestSource = useMutation(suggestSource, {
-    onSuccess: () => {
+    onSuccess: (pr_url) => {
       toast({
         status: "success",
         title: "Suggestion submitted successfully",
+        description: `Find your suggestion at ${pr_url}`,
       });
     },
     onError: (e) => {

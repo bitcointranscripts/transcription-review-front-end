@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { Octokit } from "@octokit/core";
+import { Octokit } from "@octokit/rest";
 
 import { upstreamMetadataRepo } from "@/config/default";
 
