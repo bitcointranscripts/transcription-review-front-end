@@ -1,4 +1,4 @@
-import { CheckboxGroup, Flex, Text, Tooltip, useToast } from "@chakra-ui/react";
+import { Flex, Text, Tooltip, useToast } from "@chakra-ui/react";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 
@@ -29,7 +29,6 @@ const tableStructure = [
   {
     name: "Joined",
     type: "action",
-    actionTableType: "user",
     modifier: (data) => data.createdAt,
     component: (data) => (
       <Tooltip
@@ -66,22 +65,13 @@ type Props = {
   refetch: () => void;
 };
 
-type AdminUsersSelectProps = {
-  children: (props: {
-    handleUpdate: (role: UserRole) => Promise<void>;
-    hasAdminSelected: boolean;
-    isUpdating: boolean;
-  }) => React.ReactNode;
-};
-const AdminUsersSelect = ({ children }: AdminUsersSelectProps) => {
+const UsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const toast = useToast();
   const { data: userSession } = useSession();
   const queryClient = useQueryClient();
   const updateUser = useUpdateUserRole();
-  const handleCheckboxToggle = (values: (string | number)[]) => {
-    setSelectedIds(values.map(String));
-  };
+
   const handleUpdate = async (role: UserRole) => {
     const ids = selectedIds.map(Number);
 
@@ -113,44 +103,29 @@ const AdminUsersSelect = ({ children }: AdminUsersSelectProps) => {
   };
 
   return (
-    <CheckboxGroup
-      value={selectedIds}
-      colorScheme="orange"
-      onChange={handleCheckboxToggle}
-    >
-      {children({
-        handleUpdate,
-        hasAdminSelected: selectedIds.length > 0,
-        isUpdating: updateUser.isLoading,
-      })}
-    </CheckboxGroup>
-  );
-};
-
-const UsersTable = ({ isLoading, isError, hasFilters, users }: Props) => {
-  return (
-    <AdminUsersSelect>
-      {({ handleUpdate, hasAdminSelected, isUpdating }) => (
-        <BaseTable
-          data={users}
-          emptyView={<EmptyView hasFilters={hasFilters} />}
-          isLoading={isLoading}
-          isError={isError}
-          tableStructure={tableStructure}
-          showAdminControls
-          actionItems={
-            <>
-              {hasAdminSelected && (
-                <UpdateRole
-                  isLoading={isUpdating}
-                  handleRequest={handleUpdate}
-                />
-              )}
-            </>
-          }
-        />
-      )}
-    </AdminUsersSelect>
+    <>
+      <BaseTable
+        data={users}
+        emptyView={<EmptyView hasFilters={hasFilters} />}
+        isLoading={isLoading}
+        isError={isError}
+        tableStructure={tableStructure}
+        enableCheckboxes
+        selectedRowIds={selectedIds}
+        onSelectedRowIdsChange={setSelectedIds}
+        getRowId={(row) => `${row.id}`}
+        actionItems={
+          <>
+            {selectedIds.length > 0 && (
+              <UpdateRole
+                isLoading={updateUser.isLoading}
+                handleRequest={handleUpdate}
+              />
+            )}
+          </>
+        }
+      />
+    </>
   );
 };
 
