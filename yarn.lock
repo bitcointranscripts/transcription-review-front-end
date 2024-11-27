@@ -57,6 +57,14 @@
     "@babel/helper-validator-identifier" "^7.22.5"
     to-fast-properties "^2.0.0"
 
+"@bitcoin-dev-project/bdp-ui@^1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@bitcoin-dev-project/bdp-ui/-/bdp-ui-1.5.1.tgz#951401551bcbf1e0a7cf143561b505f3fa81608c"
+  integrity sha512-bT3MnRJKp918pPHL8aC+ZbrH8Zwon12EWgeToSsoS7nrva+45OR9Qm/C4TDGP96nXBReuMMhAyyLGjtlLBnxeQ==
+  dependencies:
+    clsx "^2.1.1"
+    tailwind-merge "^2.5.2"
+
 "@chakra-ui/accordion@2.3.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@chakra-ui/accordion/-/accordion-2.3.0.tgz#2c85fd2d2734b176f019f8db9f4e075007b4e1fb"
@@ -4172,6 +4180,11 @@ synckit@^0.8.5:
   dependencies:
     "@pkgr/utils" "^2.3.1"
     tslib "^2.5.0"
+
+tailwind-merge@^2.5.2:
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-2.5.5.tgz#98167859b856a2a6b8d2baf038ee171b9d814e39"
+  integrity sha512-0LXunzzAZzo0tEPxV3I297ffKZPlKDrjj7NXphC8V5ak9yHC5zRmxnOe2m/Rd/7ivsOMJe3JZ2JVocoDdQTRBA==
 
 tapable@^2.2.0:
   version "2.2.1"

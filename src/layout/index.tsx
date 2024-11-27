@@ -8,12 +8,13 @@ import { useRouter } from "next/router";
 import Navbar from "@/components/navbar/Navbar";
 import config from "@/config/config.json";
 import Script from "next/script";
+import BossBanner from "@/components/banner/BossBanner";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isReviewSite, setIsReviewSite] = useState(false);
   const { noRestriction } = useNoContainerLimit();
   const router = useRouter();
-  const isHomePage = router.pathname === "/";
+  const isRoot = router.pathname === "/";
   const isHomeRouter = router.pathname === "/home";
 
   useEffect(() => {
@@ -53,16 +54,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             content="https://review.btctranscripts.com/btctranscripts.png"
           ></meta>
         </Head>
-        {!isHomePage && <Navbar />}
+        {!isRoot && <Navbar />}
+        {(isRoot || isHomeRouter) && <BossBanner top={isRoot ? 0 : 12} />}
         <GlobalContainer
           flexGrow={1}
-          py={!isHomePage ? 4 : 0}
-          mt={!isHomePage ? 12 : 0}
+          py={!isRoot ? 4 : 0}
+          mt={!isRoot ? 12 : 0}
           {...(noRestriction ? { maxW: "none", p: 0 } : {})}
         >
           {children}
         </GlobalContainer>
-        {!isHomePage && !isHomeRouter && <Footer />}
+        {!isRoot && !isHomeRouter && <Footer />}
         {isReviewSite && (
           <Script
             async

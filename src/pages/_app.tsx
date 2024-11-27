@@ -2,6 +2,7 @@ import theme from "@/chakra/chakra-theme";
 import Layout from "@/layout";
 import { ApiProvider } from "@/services/api/provider";
 import "@splidejs/react-splide/css";
+import "@bitcoin-dev-project/bdp-ui/styles.css";
 import "@/styles/globals.css";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
