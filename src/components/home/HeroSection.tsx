@@ -24,6 +24,7 @@ const HeroSection = ({ getStarted }: { getStarted: () => void }) => {
       className="hero-section "
       flexDir={"column"}
       width={"100%"}
+      pt={{ base: 6, lg: 12 }}
       id="hero-section"
       position={"relative"}
     >
