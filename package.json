@@ -11,7 +11,7 @@
     "compile:scripts": "tsc --project tsconfig.scripts.json"
   },
   "dependencies": {
-    "@bitcoin-dev-project/bdp-ui": "^1.5.1",
+    "@bitcoin-dev-project/bdp-ui": "^1.5.2",
     "@chakra-ui/react": "^2.8.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",

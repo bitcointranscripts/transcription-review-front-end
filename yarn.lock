@@ -57,10 +57,10 @@
     "@babel/helper-validator-identifier" "^7.22.5"
     to-fast-properties "^2.0.0"
 
-"@bitcoin-dev-project/bdp-ui@^1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@bitcoin-dev-project/bdp-ui/-/bdp-ui-1.5.1.tgz#951401551bcbf1e0a7cf143561b505f3fa81608c"
-  integrity sha512-bT3MnRJKp918pPHL8aC+ZbrH8Zwon12EWgeToSsoS7nrva+45OR9Qm/C4TDGP96nXBReuMMhAyyLGjtlLBnxeQ==
+"@bitcoin-dev-project/bdp-ui@^1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@bitcoin-dev-project/bdp-ui/-/bdp-ui-1.5.2.tgz#018183023b4bfc0d8d3640a09e2c1be63aee2993"
+  integrity sha512-lZy/DZlp0ih7w6immMT6iEOuoVS55P6eOtd0UJab4JusxuUX16P1zknr4eIuLiwWQ3j8h8FPoS92m/wxjGE90g==
   dependencies:
     clsx "^2.1.1"
     tailwind-merge "^2.5.2"
@@ -1818,6 +1818,11 @@ client-only@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/client-only/-/client-only-0.0.1.tgz#38bba5d403c41ab150bff64a95c85013cf73bca1"
   integrity sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==
+
+clsx@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.1.tgz#eed397c9fd8bd882bfb18deab7102049a2f32999"
+  integrity sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==
 
 color-convert@^1.9.0:
   version "1.9.3"
