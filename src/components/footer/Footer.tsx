@@ -24,7 +24,7 @@ const Footer = () => {
         </Text>
         <Text textAlign="center">
           <Link
-            href="https://cryptpad.fr/form/#/2/form/view/3P2CsohsHOkcH7C+WdtX0-tvqjBHqXnAmz5D9yx0e04/"
+            href="https://forms.gle/aLtBMjAeLZiKCFxn8"
             isExternal
             fontSize={{ base: "12px", md: "16px" }}
             color="white"

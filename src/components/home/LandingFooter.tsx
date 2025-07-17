@@ -43,7 +43,7 @@ const LandingFooter = () => {
             We’d love to hear your feedback on this project
           </Text>
           <Link
-            href="https://cryptpad.fr/form/#/2/form/view/3P2CsohsHOkcH7C+WdtX0-tvqjBHqXnAmz5D9yx0e04/"
+            href="https://forms.gle/aLtBMjAeLZiKCFxn8"
             isExternal
             fontSize={{
               base: "0.875rem",
