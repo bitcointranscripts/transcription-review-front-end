@@ -1,5 +1,4 @@
 import {
-  CheckboxGroup,
   Flex,
   Td,
   Text,
@@ -18,6 +17,7 @@ import { dateFormatGeneral } from "@/utils";
 import { getReviewStatus } from "@/utils/review";
 import { format } from "date-fns";
 import { useHasPermission } from "@/hooks/useHasPermissions";
+import { useRouter } from "next/router";
 
 const tableStructure = [
   {
@@ -114,23 +114,23 @@ type Props = {
   refetch: () => void;
 };
 
-type AdminResetSelectProps = {
-  children: (props: {
-    handleReset: () => Promise<void>;
-    hasAdminSelected: boolean;
-    isResetting: boolean;
-  }) => React.ReactNode;
-};
-const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
+const AdminReviewsTable = ({
+  isLoading,
+  isError,
+  hasFilters,
+  reviews,
+}: Props) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const toast = useToast();
+  const router = useRouter();
   const { data: userSession } = useSession();
 
   const queryClient = useQueryClient();
   const resetReview = useResetReview();
-  const handleCheckboxToggle = (values: (string | number)[]) => {
-    setSelectedIds(values.map(String));
-  };
+
+  const canResetReviews = useHasPermission("resetReviews");
+  const { status } = router.query;
+
   const handleReset = async () => {
     const ids = selectedIds.map(Number);
 
@@ -164,46 +164,29 @@ const AdminResetSelect = ({ children }: AdminResetSelectProps) => {
   };
 
   return (
-    <CheckboxGroup colorScheme="orange" onChange={handleCheckboxToggle}>
-      {children({
-        handleReset,
-        hasAdminSelected: selectedIds.length > 0,
-        isResetting: resetReview.isLoading,
-      })}
-    </CheckboxGroup>
-  );
-};
-
-const AdminReviewsTable = ({
-  isLoading,
-  isError,
-  hasFilters,
-  reviews,
-}: Props) => {
-  const canResetReviews = useHasPermission("resetReviews");
-  return (
-    <AdminResetSelect>
-      {({ handleReset, hasAdminSelected, isResetting }) => (
-        <BaseTable
-          data={reviews}
-          emptyView={<EmptyView hasFilters={hasFilters} />}
-          isLoading={isLoading}
-          isError={isError}
-          tableStructure={tableStructure}
-          showAdminControls={canResetReviews}
-          actionItems={
-            <>
-              {hasAdminSelected && (
-                <ResetButton
-                  isLoading={isResetting}
-                  handleRequest={handleReset}
-                />
-              )}
-            </>
-          }
-        />
-      )}
-    </AdminResetSelect>
+    <>
+      <BaseTable
+        data={reviews}
+        emptyView={<EmptyView hasFilters={hasFilters} />}
+        isLoading={isLoading}
+        isError={isError}
+        tableStructure={tableStructure}
+        enableCheckboxes={canResetReviews && status == "active"}
+        selectedRowIds={selectedIds}
+        onSelectedRowIdsChange={setSelectedIds}
+        getRowId={(row) => `${row.id}`}
+        actionItems={
+          <>
+            {selectedIds.length > 0 && (
+              <ResetButton
+                isLoading={resetReview.isLoading}
+                handleRequest={handleReset}
+              />
+            )}
+          </>
+        }
+      />
+    </>
   );
 };
 
