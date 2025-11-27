@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import Navbar from "@/components/navbar/Navbar";
 import config from "@/config/config.json";
 import Script from "next/script";
+import BossBanner from "@/components/banner/BossBanner";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isReviewSite, setIsReviewSite] = useState(false);
@@ -54,6 +55,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           ></meta>
         </Head>
         {!isRoot && <Navbar />}
+        {(isRoot || isHomeRouter) && <BossBanner top={isRoot ? 0 : 12} />}
         <GlobalContainer
           flexGrow={1}
           py={!isRoot ? 4 : 0}
