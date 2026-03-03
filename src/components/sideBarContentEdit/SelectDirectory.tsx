@@ -39,7 +39,9 @@ interface PropsSelectDirectory {
   isDirLoading?: boolean;
   setPath: Dispatch<SetStateAction<string>>;
   customPath?: string;
-  getUpdatedTranscript: () => TranscriptContent;
+  /** Provide either getUpdatedTranscript (transcript editor) or displayValue (standalone use) */
+  getUpdatedTranscript?: () => TranscriptContent;
+  displayValue?: string;
   // eslint-disable-next-line no-unused-vars
   updateData: (x: string) => void;
 }
@@ -138,10 +140,11 @@ const SelectDirectory = ({
   isDirLoading,
   setPath,
   getUpdatedTranscript,
+  displayValue,
   updateData,
 }: PropsSelectDirectory) => {
   const { onClose, isOpen, onOpen } = useDisclosure();
-  const updatedTranscript = getUpdatedTranscript();
+  const updatedTranscript = getUpdatedTranscript?.();
   const {
     onClose: confirmOnClose,
     isOpen: confirmIsOpen,
@@ -223,7 +226,7 @@ const SelectDirectory = ({
             }}
             height={8}
             onChange={handleChange}
-            placeholder={!isOpen ? updatedTranscript?.loc : path}
+            placeholder={!isOpen ? (displayValue ?? updatedTranscript?.loc) : path}
           />
         </PopoverTrigger>
         <PopoverContent mt={2} w="full" overflowY={"scroll"}>
