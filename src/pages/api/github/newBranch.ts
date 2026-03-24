@@ -21,19 +21,30 @@ export async function createNewBranch({
     resolveGHApiUrl(ghSourcePath);
 
   let baseRefSha = "";
-  // Get baseBranch sha
-  try {
-    const baseBranch = await octokit.request(
-      "GET /repos/{owner}/{repo}/git/ref/{ref}",
-      {
-        owner: env_owner,
-        repo: srcRepo,
-        ref: `heads/${srcBranch}`,
-      }
+  // Get baseBranch sha — try srcBranch first, fall back to "main"
+  const branchesToTry = srcBranch ? [srcBranch, "master", "main"] : ["master", "main"];
+  let branchFound = false;
+  for (const branch of branchesToTry) {
+    try {
+      const baseBranch = await octokit.request(
+        "GET /repos/{owner}/{repo}/git/ref/{ref}",
+        {
+          owner: env_owner,
+          repo: srcRepo,
+          ref: `heads/${branch}`,
+        }
+      );
+      baseRefSha = baseBranch.data.object.sha;
+      branchFound = true;
+      break;
+    } catch {
+      // try next branch
+    }
+  }
+  if (!branchFound) {
+    throw new Error(
+      `Cannot find source branch${srcBranch ? ` "${srcBranch}"` : ""}, "master", or "main" in ${env_owner}/${srcRepo}`
     );
-    baseRefSha = baseBranch.data.object.sha;
-  } catch (err: any) {
-    throw new Error(err?.message ?? "Cannot find base branch");
   }
 
   // Create new branch

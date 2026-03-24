@@ -217,8 +217,12 @@ const QueueTable = () => {
                 }
               },
 
-              onError: (err) => {
-                throw err;
+              onError: (err: unknown) => {
+                setSelectedTranscriptId(-1);
+                toast({
+                  status: "error",
+                  title: err instanceof Error ? err.message : "Please try again later",
+                });
               },
             }
           );
