@@ -1,5 +1,9 @@
-import { upstreamRepo } from "@/config/default";
-import { constructGithubBranchApiUrl, resolveGHApiUrl } from "@/utils/github";
+import { upstreamOwner, upstreamRepo } from "@/config/default";
+import {
+  constructGithubBranchApiUrl,
+  resolveGHApiUrl,
+  syncForkWithUpstream,
+} from "@/utils/github";
 import { Octokit } from "@octokit/core";
 import { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "../auth/[...nextauth]";
@@ -81,6 +85,14 @@ export default async function handler(
   const octokit = new Octokit({ auth: session.accessToken });
 
   try {
+    await syncForkWithUpstream({
+      octokit,
+      upstreamOwner,
+      upstreamRepo,
+      forkOwner: owner,
+      forkRepo: upstreamRepo,
+    });
+
     // Call the createNewBranch function
     const branchUrl = await createNewBranch({
       octokit,
