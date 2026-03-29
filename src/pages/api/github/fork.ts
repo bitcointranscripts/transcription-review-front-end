@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Octokit } from "@octokit/core";
 import { upstreamOwner, upstreamRepo } from "@/config/default";
+import { syncForkWithUpstream } from "@/utils/github";
 import { auth } from "../auth/[...nextauth]";
 
 export async function createFork(octokit: InstanceType<typeof Octokit>) {
@@ -9,6 +10,23 @@ export async function createFork(octokit: InstanceType<typeof Octokit>) {
     owner: upstreamOwner,
     repo: upstreamRepo,
   });
+
+  const forkOwner = forkResult.data.owner.login;
+
+  try {
+    await syncForkWithUpstream({
+      octokit,
+      upstreamOwner,
+      upstreamRepo,
+      forkOwner,
+      forkRepo: upstreamRepo,
+    });
+  } catch (err) {
+    console.warn(
+      "Fork sync after creation failed (fork may still be initializing):",
+      err
+    );
+  }
 
   return forkResult;
 }
