@@ -70,7 +70,15 @@ const TranscriptEditor = ({ reviewData }: { reviewData: TranscriptReview }) => {
 
   const canSubmitToOwnRepo = useHasPermission("submitToOwnRepo");
   const reviewSubmissionDisabled =
-    !!reviewData.branchUrl && !!reviewData.pr_url;
+    !!reviewData.branchUrl && !!reviewData.pr_url && !isReviewExpired(reviewData.claimedAt);
+
+  const isReviewExpired = (ClaimedAt: Nullable<Date>, expiryHours: number = 24) => {
+    if (!ClaimedAt) return false;
+    const claimTime = new Date(ClaimedAt).getTime();
+    const currentTime = new Date().getTime();
+    const expiryTime = claimTime + (expiryHours * 60 * 60 * 1000);
+    return currentTime > expiryTime;
+  };
 
   const metadata: TranscriptMetadata = useMemo(() => {
     return {
