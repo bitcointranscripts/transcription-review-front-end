@@ -24,6 +24,7 @@ import { CgTranscript } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
 import { FiUser, FiUsers } from "react-icons/fi";
 import { HiOutlineBookOpen, HiOutlineSwitchHorizontal } from "react-icons/hi";
+import { MdOutlineSource } from "react-icons/md";
 import MenuNav from "./MenuNav";
 import AdminMenu from "./AdminMenu";
 import { useHasPermission } from "@/hooks/useHasPermissions";
@@ -34,6 +35,7 @@ const Menu = () => {
   const canAccessAdminNav = useHasPermission("accessAdminNav");
   const canAccessTransactions = useHasPermission("accessTransactions");
   const canAccessUsers = useHasPermission("accessUsers");
+  const canAccessTranscription = useHasPermission("accessTranscription");
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
   const fullCurrentRoute = router.asPath;
@@ -192,6 +194,15 @@ const Menu = () => {
                               routeLink={ROUTES_CONFIG.USERS}
                               handleClose={closeMenu}
                               icon={FiUsers}
+                            />
+                          )}
+                          {canAccessTranscription && (
+                            <MenuNav
+                              currentRoute={fullCurrentRoute}
+                              routeName={"Transcription"}
+                              routeLink={ROUTES_CONFIG.TRANSCRIPTION}
+                              handleClose={closeMenu}
+                              icon={MdOutlineSource}
                             />
                           )}
                         </Flex>

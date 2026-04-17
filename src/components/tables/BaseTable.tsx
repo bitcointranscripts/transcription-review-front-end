@@ -1,4 +1,15 @@
-import { Box, Flex, Heading, Table, Tbody, Thead, Tr } from "@chakra-ui/react";
+import {
+  Box,
+  Checkbox,
+  CheckboxGroup,
+  Flex,
+  Heading,
+  Table,
+  Tbody,
+  Thead,
+  Tr,
+  Td,
+} from "@chakra-ui/react";
 import {
   QueryObserverResult,
   RefetchOptions,
@@ -26,7 +37,10 @@ type Props<T> = {
   tableStructure: TableStructure<T>[];
   tableHeader?: string;
   tableHeaderComponent?: React.ReactNode;
-  showAdminControls?: boolean;
+  enableCheckboxes?: boolean;
+  selectedRowIds?: string[];
+  onSelectedRowIdsChange?: (selectedRowIds: string[]) => void;
+  getRowId?: (row: T) => string;
 };
 
 const BaseTable = <T extends object>({
@@ -38,7 +52,10 @@ const BaseTable = <T extends object>({
   tableStructure,
   tableHeader,
   tableHeaderComponent,
-  showAdminControls = false,
+  enableCheckboxes = false, // Default to no checkboxes
+  selectedRowIds = [],
+  onSelectedRowIdsChange: setSelectedIds,
+  getRowId,
 }: Props<T>) => {
   return (
     <Box fontSize="sm" py={4} isolation="isolate">
@@ -53,36 +70,46 @@ const BaseTable = <T extends object>({
         {actionItems}
         {refetch && <RefetchButton refetch={refetch} />}
       </Flex>
-      <Table
-        boxShadow="lg"
-        borderTop="4px solid"
-        borderTopColor="orange.400"
-        borderRadius="xl"
+      <CheckboxGroup
+        colorScheme="orange"
+        value={selectedRowIds}
+        onChange={setSelectedIds}
       >
-        <Thead>
-          <TableHeader tableStructure={tableStructure} />
-        </Thead>
-        <Tbody fontWeight="medium">
-          {isLoading ? (
-            <LoadingSkeleton rowsLength={tableStructure.length} />
-          ) : !data ? (
-            <DataEmpty />
-          ) : data?.length ? (
-            data.map((dataRow, idx) => (
-              <TableRow
-                showControls={showAdminControls}
-                key={`data-id-${
-                  "id" in dataRow ? dataRow.id : ""
-                }-data-row-${idx}`}
-                row={dataRow}
-                ts={tableStructure}
+        <Table
+          boxShadow="lg"
+          borderTop="4px solid"
+          borderTopColor="orange.400"
+          borderRadius="xl"
+        >
+          <Thead>
+            <TableHeader
+              tableStructure={tableStructure}
+              showCheckboxes={enableCheckboxes}
+            />
+          </Thead>
+          <Tbody fontWeight="medium">
+            {isLoading ? (
+              <LoadingSkeleton
+                rowsLength={tableStructure.length + (enableCheckboxes ? 1 : 0)}
               />
-            ))
-          ) : (
-            <DataEmpty message={emptyView} />
-          )}
-        </Tbody>
-      </Table>
+            ) : !data ? (
+              <DataEmpty />
+            ) : data?.length ? (
+              data.map((dataRow, idx) => (
+                <TableRow
+                  key={getRowId ? getRowId(dataRow) : idx}
+                  row={dataRow}
+                  ts={tableStructure}
+                  enableCheckboxes={enableCheckboxes}
+                  rowId={getRowId ? getRowId(dataRow) : `${idx}`}
+                />
+              ))
+            ) : (
+              <DataEmpty message={emptyView} />
+            )}
+          </Tbody>
+        </Table>
+      </CheckboxGroup>
     </Box>
   );
 };
@@ -90,21 +117,23 @@ const BaseTable = <T extends object>({
 const TableRow = <T extends object>({
   row,
   ts,
-  showControls,
+  enableCheckboxes,
+  rowId,
 }: {
   row: T;
   ts: TableStructure<T>[];
-  showControls: boolean;
+  enableCheckboxes: boolean;
+  rowId: string;
 }) => {
   return (
     <Tr>
+      {enableCheckboxes && (
+        <Td>
+          <Checkbox value={rowId} key={rowId} width="1%" />
+        </Td>
+      )}
       {ts.map((tableItem) => (
-        <RowData
-          showControls={showControls}
-          key={tableItem.name}
-          tableItem={tableItem}
-          row={row}
-        />
+        <RowData key={tableItem.name} tableItem={tableItem} row={row} />
       ))}
     </Tr>
   );

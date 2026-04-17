@@ -88,6 +88,18 @@ export type TranscriptMetadata = {
   tags: string[];
   title: string;
   transcript_by: string;
+  loc: string;
+};
+
+export type TranscriptionQueueItem = TranscriptMetadata & { status: string };
+
+export type SourceType = {
+  title: string;
+  source: string;
+  categories: string[];
+  loc: string;
+  cutoff_date: string;
+  transcription_coverage: "full" | "none";
 };
 
 export type DigitalPaperEditWord = {
