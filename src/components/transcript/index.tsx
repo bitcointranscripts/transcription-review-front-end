@@ -68,9 +68,6 @@ const TranscriptEditor = ({ reviewData }: { reviewData: TranscriptReview }) => {
     onClose: closeGuidelines,
   } = useDisclosure({ defaultIsOpen: router.query?.first_review === "true" });
 
-  const canSubmitToOwnRepo = useHasPermission("submitToOwnRepo");
-  const reviewSubmissionDisabled =
-    !!reviewData.branchUrl && !!reviewData.pr_url && !isReviewExpired(reviewData.claimedAt);
 
   const isReviewExpired = (ClaimedAt: Nullable<Date>, expiryHours: number = 24) => {
     if (!ClaimedAt) return false;
@@ -80,6 +77,10 @@ const TranscriptEditor = ({ reviewData }: { reviewData: TranscriptReview }) => {
     return currentTime > expiryTime;
   };
 
+  const canSubmitToOwnRepo = useHasPermission("submitToOwnRepo");
+  const reviewSubmissionDisabled =
+    !!reviewData.branchUrl && !!reviewData.pr_url && !isReviewExpired(reviewData.claimedAt);
+  
   const metadata: TranscriptMetadata = useMemo(() => {
     return {
       ...reviewData.transcript.metadata,
