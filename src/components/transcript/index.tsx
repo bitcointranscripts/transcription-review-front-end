@@ -23,6 +23,7 @@ import {
   SelectSpeakerModal,
 } from "@/components/modals";
 import { useGetMetadata } from "@/services/api/transcripts/useGetMetadata";
+import { useYoutubeVideoUrl } from "@/services/api/reviews/useYoutubeVideoUrl";
 import SubmitTranscriptMenu, {
   TranscriptSubmitOptions,
 } from "@/components/menus/SubmitTranscriptMenu";
@@ -44,6 +45,9 @@ const TranscriptEditor = ({ reviewData }: { reviewData: TranscriptReview }) => {
   const router = useRouter();
   const { data: allMetadata } = useGetMetadata();
   const { saveProgress, submitReview } = useGithub();
+  const { data: resolvedVideoUrl } = useYoutubeVideoUrl(
+    reviewData.transcript.metadata.media
+  );
   const [title, setTitle] = useState(reviewData.transcript.metadata.title);
   const [tags, setTags] = useState(reviewData.transcript.metadata.tags);
   const [date, setDate] = useState(
@@ -206,9 +210,25 @@ const TranscriptEditor = ({ reviewData }: { reviewData: TranscriptReview }) => {
             </Flex>
           </Flex>
         </Flex>
+        {!resolvedVideoUrl && reviewData.transcript.metadata.media && (
+          <Flex align="center" gap={2} mb={2}>
+            <Text fontSize="sm" color="gray.500">
+              Video loading in background —
+            </Text>
+            <Link
+              href={reviewData.transcript.metadata.media}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Text fontSize="sm" color="blue.500" textDecoration="underline">
+                open on YouTube
+              </Text>
+            </Link>
+          </Flex>
+        )}
         <SlateTranscriptEditor
           transcriptData={reviewData.transcript.dpe}
-          mediaUrl={reviewData.transcript.metadata.source_file}
+          mediaUrl={resolvedVideoUrl ?? reviewData.transcript.metadata.source_file}
           handleSaveEditor={saveTranscript}
           autoSaveContentType={"slate"}
           buttonConfig={{ export: false, musicNote: false, replaceText: false }}
