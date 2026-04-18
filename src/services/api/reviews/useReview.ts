@@ -13,11 +13,6 @@ import type {
 import backendAxios from "../axios";
 import endpoints from "../endpoints";
 
-// TODO: move this to a new folder when more endpoints are added
-const transcriptionServerAxios = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_APP_TRANSCRIPTION_BASE_URL ?? "",
-});
-
 // Helper function to fetch transcript's metadata
 const getMetadata = async (branchUrl: string): Promise<TranscriptMetadata> => {
   const response = await axios.post(`/api/github/read`, { branchUrl });
@@ -28,29 +23,12 @@ const getMetadata = async (branchUrl: string): Promise<TranscriptMetadata> => {
   if (matches && matches[1]) {
     const metadata = yaml.load(matches[1]) as TranscriptMetadata;
 
-    // Check if media is a YouTube link
+    // If media is a YouTube link, leave source_file unset so the background
+    // hook (useYoutubeVideoUrl) can resolve the direct URL after page load.
     const youtubeRegex =
       /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
-    if (youtubeRegex.test(metadata.media)) {
-      try {
-        // If media is a YouTube link, call the transcription server endpoint
-        // to get the direct video URL and overwrite the source_file with it.
-        // We need the direct video URL for media playback and YouTube links
-        // are not directly usable for that purpose.
-        const youtubeResponse = await transcriptionServerAxios.post(
-          `/media/youtube-video-url`,
-          {
-            youtube_url: metadata.media,
-          }
-        );
-        metadata.source_file = youtubeResponse.data.video_url;
-      } catch (error: any) {
-        throw new Error(
-          error.response?.data?.message ||
-            error.message ||
-            "Failed to fetch YouTube video URL"
-        );
-      }
+    if (!youtubeRegex.test(metadata.media)) {
+      metadata.source_file = metadata.media;
     }
 
     return metadata;
