@@ -327,8 +327,8 @@ export const guidelinesReviewArray = [
 ];
 
 export const discordInvites = {
-  review_guidelines: "https://discord.gg/jqj4maCs8p",
-  feedback: "https://discord.gg/W4cmWRhMnr",
+  review_guidelines: "https://discord.gg/HmTsxggaFJ",
+  feedback: "https://discord.gg/hqkwqTCzaW",
 };
 
 export function compareUrls(url1: URL, url2: URL) {
