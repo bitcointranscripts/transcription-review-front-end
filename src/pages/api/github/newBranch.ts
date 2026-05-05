@@ -38,6 +38,19 @@ export async function createNewBranch({
       throw new Error(err?.message ?? "Cannot find base branch");
     });
 
+  // Ensure the fork has the baseBranch (syncs from upstream, creates if missing)
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV !== "development") {
+    await octokit
+      .request("POST /repos/{owner}/{repo}/merge-upstream", {
+        owner,
+        repo: upstreamRepo,
+        branch: baseBranch,
+      })
+      .catch(() => {
+        // Ignore errors — branch may already be up-to-date
+      });
+  }
+
   // Create new branch
   return await octokit
     .request("POST /repos/{owner}/{repo}/git/refs", {
