@@ -13,13 +13,7 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
-import {
-  Button,
-  Flex,
-  Text,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Flex, Text, useDisclosure, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -55,7 +49,7 @@ const QueueTable = () => {
     onOpen: openSuggestModal,
   } = useDisclosure();
   const router = useRouter();
-  const { claimTranscript } = useGithub();
+  const claimTranscript = useClaimTranscript();
   const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
   const hasExceededActiveReviewLimit = useHasExceededMaxActiveReviews(
     session?.user?.id
@@ -105,42 +99,6 @@ const QueueTable = () => {
       signIn("github");
     }
   };
-
-  return (
-    <CheckboxGroup colorScheme="orange" onChange={handleCheckboxToggle}>
-      {children({
-        handleArchive,
-        hasAdminSelected: selectedIds.length > 0,
-        isArchiving: archiveTranscript.isLoading,
-      })}
-    </CheckboxGroup>
-  );
-};
-
-const QueueTable = () => {
-  const { data: session, status } = useSession();
-  const [currentPage, setCurrentPage] = useState(1);
-  const {
-    isOpen: showSuggestModal,
-    onClose: closeSuggestModal,
-    onOpen: openSuggestModal,
-  } = useDisclosure();
-  const router = useRouter();
-  const claimTranscript = useClaimTranscript();
-  const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
-  const hasExceededActiveReviewLimit = useHasExceededMaxActiveReviews(
-    session?.user?.id
-  );
-  const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
-  const toast = useToast();
-
-  const retriedClaim = useRef(0);
-
-  const [selectedTranscriptId, setSelectedTranscriptId] = useState(-1);
-  const { data: multipleStatusData } = useUserMultipleReviews({
-    userId: session?.user?.id,
-    multipleStatus: ["pending", "active", "inactive"],
-  });
 
   const retryLoginAndClaim = async (transcriptId: number) => {
     await signOut({ redirect: false });

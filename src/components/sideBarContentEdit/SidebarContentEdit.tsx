@@ -56,10 +56,10 @@ const SidebarContentEdit = ({
   getUpdatedTranscript: () => TranscriptContent;
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
-  const [path, setPath] = useState<string>("");
+  const [, setPath] = useState<string>("");
   const [initialCount, setInitialCount] = useState(1);
   const { data: selectableListData } = useGetMetadata();
-  const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
+  const [, setDirectoryList] = useState<IDir[] | []>([]);
   const updateTitle = (newTitle: string) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.title = newTitle;

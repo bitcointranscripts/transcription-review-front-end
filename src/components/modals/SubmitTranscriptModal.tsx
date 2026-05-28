@@ -69,10 +69,10 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
                       stepLoading
                         ? "orange.400"
                         : stepCompleted
-                          ? "green.400"
-                          : stepNotRun
-                            ? "gray.300"
-                            : "red.400"
+                        ? "green.400"
+                        : stepNotRun
+                        ? "gray.300"
+                        : "red.400"
                     }
                     fontWeight={stepNotRun ? 300 : 600}
                   >
@@ -129,7 +129,7 @@ const SubmitTranscriptModal = ({ submitState, onClose }: Props) => {
                     .
                   </Text>
                   <Divider marginY={2} />
-                  <Text fontSize="sm" alignSelf='end'>
+                  <Text fontSize="sm" alignSelf="end">
                     Help us improve!{" "}
                     <Link
                       href={discordInvites.feedback}

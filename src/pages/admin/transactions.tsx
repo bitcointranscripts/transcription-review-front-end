@@ -103,7 +103,6 @@ const Transactions = () => {
 
   const { data, totalPages, totalTransactions } = transactionResponse ?? {};
 
-
   const resetFilters = () => {
     router.push(router.pathname, undefined, {
       shallow: true,

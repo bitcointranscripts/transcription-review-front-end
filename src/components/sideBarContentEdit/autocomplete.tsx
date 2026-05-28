@@ -60,7 +60,7 @@ const AutoComplete = ({
             className="select-option"
             role="button"
             key={speaker.slug}
-            textTransform={name==="tags"?"lowercase":"capitalize"}
+            textTransform={name === "tags" ? "lowercase" : "capitalize"}
             onClick={() => handleClick(speaker)}
             color="gray.800"
             _hover={{ bg: "blue.600", color: "gray.100" }}

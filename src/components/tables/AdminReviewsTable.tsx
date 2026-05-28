@@ -1,10 +1,4 @@
-import {
-  Flex,
-  Td,
-  Text,
-  Tooltip,
-  useToast,
-} from "@chakra-ui/react";
+import { Flex, Td, Text, Tooltip, useToast } from "@chakra-ui/react";
 import BaseTable from "./BaseTable";
 import type { TableStructure } from "./types";
 import { AdminReview } from "@/services/api/admin/useReviews";

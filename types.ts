@@ -84,6 +84,28 @@ export type MetadataProps = Record<string, any> & {
   categories?: string[];
 };
 
+export type TranscriptMetadata = {
+  date: Date;
+  source_file: string;
+  media: string;
+  speakers: string[];
+  tags: string[];
+  title: string;
+  transcript_by: string;
+  loc: string;
+};
+
+export type TranscriptionQueueItem = TranscriptMetadata & { status: string };
+
+export type SourceType = {
+  title: string;
+  source: string;
+  categories: string[];
+  loc: string;
+  cutoff_date: string;
+  transcription_coverage: "full" | "none";
+};
+
 export type AbstractedChakraComponentProps<T> = {
   children: React.ReactNode;
 } & Omit<T, "children">;
@@ -206,16 +228,6 @@ export type SaveToGHData = {
   ghSourcePath: string | null;
   ghBranchUrl: string | null;
   reviewId: number;
-};
-
-// Reviews for admin;
-export type ReviewQueryStatus =
-  (typeof ReviewStatus)[keyof typeof ReviewStatus];
-
-export type GroupedDataType = {
-  review: AdminReview | Review;
-  transcriptUrl?: Nullable<string>;
-  content?: TranscriptContent;
 };
 
 // Reviews for admin;

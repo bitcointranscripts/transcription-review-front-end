@@ -1,43 +1,45 @@
-import { upstreamRepo } from "@/config/default";
-import { constructGithubBranchApiUrl, resolveGHApiUrl } from "@/utils/github";
-import { Octokit } from "@octokit/core";
-import { NextApiRequest, NextApiResponse } from "next";
+import { upstreamOwner, upstreamRepo } from "@/config/default";
+import {
+  constructGithubBranchApiUrl,
+  resolveGHApiUrl,
+  syncForkWithUpstream,
+} from "@/utils/github";
 import { getOctokit } from "@/utils/getOctokit";
 import { withGithubErrorHandler } from "@/utils/githubApiErrorHandler";
+import { Octokit } from "@octokit/rest";
+import { NextApiRequest, NextApiResponse } from "next";
 
 type NewBranchArgs = {
-  octokit: InstanceType<typeof Octokit>;
-  ghSourcePath: string;
+  octokit: Octokit;
+  upstreamRepo: string;
+  baseBranch: string;
+  branchName: string;
   owner: string;
-  env_owner: string;
 };
 
 export async function createNewBranch({
   octokit,
-  ghSourcePath,
+  upstreamRepo,
+  baseBranch,
+  branchName,
   owner,
-  env_owner,
 }: NewBranchArgs) {
-  const { srcBranch, srcRepo, srcDirPath, filePath } =
-    resolveGHApiUrl(ghSourcePath);
+  const repositoryOwner =
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+      ? owner
+      : upstreamOwner;
 
-  let baseRefSha = "";
-  // Get baseBranch sha
-  try {
-    const baseBranch = await octokit.request(
-      "GET /repos/{owner}/{repo}/git/ref/{ref}",
-      {
-        owner: env_owner,
-        repo: srcRepo,
-        ref: `heads/${srcBranch}`,
-      }
-    );
-    baseRefSha = baseBranch.data.object.sha;
-  } catch (err: any) {
-    throw new Error(err?.message ?? "Cannot find base branch");
-  }
+  const baseRefSha = await octokit
+    .request("GET /repos/{owner}/{repo}/git/ref/{ref}", {
+      owner: repositoryOwner,
+      repo: upstreamRepo,
+      ref: `heads/${baseBranch}`,
+    })
+    .then((result) => result.data.object.sha)
+    .catch((err: any) => {
+      throw new Error(err?.message ?? "Cannot find base branch");
+    });
 
-  // Ensure the fork has the baseBranch (syncs from upstream, creates if missing)
   if (process.env.NEXT_PUBLIC_VERCEL_ENV !== "development") {
     await octokit
       .request("POST /repos/{owner}/{repo}/merge-upstream", {
@@ -50,73 +52,79 @@ export async function createNewBranch({
       });
   }
 
-  // Create new branch
+  return await octokit
+    .request("POST /repos/{owner}/{repo}/git/refs", {
+      owner,
+      repo: upstreamRepo,
+      ref: `refs/heads/${branchName}`,
+      sha: baseRefSha,
+    })
+    .catch((err) => {
+      throw new Error(err?.message ?? "Error creating new branch");
+    });
+}
+
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { octokit, owner } = await getOctokit(req, res);
+  const { ghSourcePath, env_owner } = req.body;
+
+  const { srcBranch, srcRepo, srcDirPath, filePath } =
+    resolveGHApiUrl(ghSourcePath);
+
+  await syncForkWithUpstream({
+    octokit,
+    upstreamOwner,
+    upstreamRepo,
+    forkOwner: owner,
+    forkRepo: upstreamRepo,
+  });
+
+  // Resolve base branch SHA — try srcBranch first, fall back to master/main
+  let baseRefSha = "";
+  const branchesToTry = srcBranch
+    ? [srcBranch, "master", "main"]
+    : ["master", "main"];
+  for (const branch of branchesToTry) {
+    try {
+      const ref = await octokit.request(
+        "GET /repos/{owner}/{repo}/git/ref/{ref}",
+        { owner: env_owner, repo: srcRepo, ref: `heads/${branch}` }
+      );
+      baseRefSha = ref.data.object.sha;
+      break;
+    } catch {
+      // try next
+    }
+  }
+  if (!baseRefSha) {
+    throw new Error(`Cannot find source branch in ${env_owner}/${srcRepo}`);
+  }
+
   const timeInSeconds = Math.floor(Date.now() / 1000);
   const baseDirName = srcDirPath.replaceAll("/", "--");
   const newBranchName = `${timeInSeconds}-${baseDirName}`;
 
-  const newBranch = await octokit
+  await octokit
     .request("POST /repos/{owner}/{repo}/git/refs", {
       owner,
       repo: upstreamRepo,
       ref: `refs/heads/${newBranchName}`,
       sha: baseRefSha,
     })
-    .then(async () => {
-      // construct branchUrl, used to populate branchUrl column
-      const newBranchUrl = constructGithubBranchApiUrl({
-        owner,
-        filePath,
-        newBranchName,
-      });
-      return newBranchUrl;
-    })
     .catch((_err) => {
-      throw new Error(
-        _err.message ? _err.message : "Error creating new branch"
-      );
+      throw new Error(_err.message ?? "Error creating new branch");
     });
-  return newBranch;
-}
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  // Check if the user is authenticated
-  const session = await auth(req, res);
-  if (!session || !session.accessToken || !session.user?.githubUsername) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  const { ghSourcePath, owner, env_owner } = req.body;
-
-  const result = await createNewBranch({
-    octokit,
-    upstreamRepo,
-    baseBranch,
-    branchName,
+  const branchUrl = constructGithubBranchApiUrl({
     owner,
+    filePath,
+    newBranchName,
   });
 
-  try {
-    // Call the createNewBranch function
-    const branchUrl = await createNewBranch({
-      octokit,
-      ghSourcePath,
-      owner,
-      env_owner,
-    });
-
-    res.status(200).json({
-      message: "succesfully created a new branch",
-      branchUrl,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      message: error?.message ?? "Error occurred while creating new branch",
-    });
-  }
+  res.status(200).json({
+    message: "successfully created a new branch",
+    branchUrl,
+  });
 }
 
 export default withGithubErrorHandler(

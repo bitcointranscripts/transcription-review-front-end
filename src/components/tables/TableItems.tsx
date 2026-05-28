@@ -130,8 +130,6 @@ export const TableAction = <T extends object>({
     if (!tableItem.action) return;
     tableItem.action(row);
   };
-  //  checks if it a review if it isn't returns false
-  const isAdminReviews = getReviewStatus(row as AdminReview);
 
   return (
     <Td>
