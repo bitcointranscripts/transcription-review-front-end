@@ -1,4 +1,5 @@
-import { useGithub } from "@/services/api/github";
+import config from "@/config/config.json";
+import { useCreatePR } from "@/services/api/github";
 import { useGetMetadata } from "@/services/api/transcripts/useGetMetadata";
 import { compareUrls, getPRRepo } from "@/utils";
 import {
@@ -15,6 +16,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { type FormEvent, useState, ChangeEvent } from "react";
 
@@ -33,8 +35,9 @@ const defaultFormValues = {
   url: "",
 } satisfies FormValues;
 
-const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
-  const { suggestSource } = useGithub();
+export function SuggestModal({ handleClose, isOpen }: SuggestModalProps) {
+  const toast = useToast();
+  const createPR = useCreatePR();
   const [urlError, setUrlError] = useState("");
   const [formValues, setFormValues] = useState<FormValues>(defaultFormValues);
   const { data: selectableListData } = useGetMetadata();
@@ -46,12 +49,13 @@ const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
   };
 
   const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormValues((v) => ({ ...v, url: e.target.value }));
+    setFormValues((v) => ({ ...v, url: e.target.value }))
     setUrlError("");
-  };
+  }
 
   const validateUrl = (urlString: string): boolean => {
     try {
+
       const url = new URL(urlString.trim());
 
       const urlExists = selectableListData?.media.some((mediaUrl) =>
@@ -73,21 +77,39 @@ const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     const isUrlValid = validateUrl(formValues.url);
     if (!isUrlValid) return;
 
-    await suggestSource.mutateAsync(
+    createPR.mutate(
       {
-        title: formValues.title,
-        media: formValues.url,
-        targetRepository: getPRRepo(),
+        directoryPath: config.defaultDirectoryPath,
+        fileName: formValues.title,
+        url: formValues.url,
+        transcribedText: "",
+        prRepo: getPRRepo(),
+        needs: "transcript",
       },
       {
+        onError: (e) => {
+          const description =
+            e instanceof Error
+              ? e.message
+              : "An error occurred while submitting suggestion";
+          toast({
+            status: "error",
+            title: "Error submitting",
+            description,
+          });
+        },
         onSuccess: () => {
-          resetAndCloseForm();
+          toast({
+            status: "success",
+            title: "Suggestion submitted successfully",
+          });
+          resetAndCloseForm()
         },
       }
     );
@@ -118,8 +140,9 @@ const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
             fontSize={{ base: "xs", lg: "sm" }}
             textAlign="center"
           >
-            We manually review every suggestion to ensure it meets our standards
-            for reliable, technical Bitcoin content.
+            We manually review every suggestion to ensure it meets our
+            standards for reliable,
+            technical Bitcoin content.
           </Text>
         </ModalHeader>
         <form onSubmit={handleSubmit}>
@@ -135,11 +158,7 @@ const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
                   required
                 />
               </FormControl>
-              <FormControl
-                isRequired
-                gap={{ base: "6px", lg: "xs" }}
-                isInvalid={!!urlError}
-              >
+              <FormControl isRequired gap={{ base: "6px", lg: "xs" }} isInvalid={!!urlError}>
                 <FormLabel>Source&apos;s URL</FormLabel>
                 <Input
                   type="url"
@@ -160,19 +179,22 @@ const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
               </FormControl>
             </Flex>
           </ModalBody>
-          <ModalFooter gap={{ base: "8px", lg: "md" }} w="full">
+          <ModalFooter
+            gap={{ base: "8px", lg: "md" }}
+            w="full"
+          >
             <Button
               w="full"
               mx="auto"
               rounded="10px"
-              isDisabled={suggestSource.isLoading}
+              isDisabled={createPR.isLoading}
               onClick={handleClose}
             >
               Cancel
             </Button>
             <Button
               w="full"
-              isLoading={suggestSource.isLoading}
+              isLoading={createPR.isLoading}
               mx="auto"
               colorScheme="orange"
               rounded="10px"
@@ -186,6 +208,4 @@ const SuggestModal = ({ handleClose, isOpen }: SuggestModalProps) => {
       </ModalContent>
     </Modal>
   );
-};
-
-export default SuggestModal;
+}

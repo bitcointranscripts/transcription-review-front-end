@@ -1,1 +1,1 @@
-export * from "./useGithub";
+export * from "./useCreatePR";
