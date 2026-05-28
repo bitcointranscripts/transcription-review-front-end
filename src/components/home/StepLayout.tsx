@@ -110,7 +110,7 @@ const StepLayout: FC<IStepLayout> = ({
           </Text>
           <Text
             fontFamily={"Aeonik Fono"}
-            whiteSpace={{ base: "normal",  md: "pre-line" }}
+            whiteSpace={{ base: "normal", md: "pre-line" }}
             fontSize={{
               base: "1rem",
               lg: "1.18rem",

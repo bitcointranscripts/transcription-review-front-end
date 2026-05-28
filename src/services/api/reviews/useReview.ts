@@ -7,10 +7,7 @@ const getReview = async (reviewId: number): Promise<UserReviewData> => {
   return axios
     .get(endpoints.REVIEW_BY_ID(reviewId))
     .then((res) => res.data)
-    .catch((err) => {
-      const message = err?.response?.data?.message ?? err?.message ?? "Please try again later";
-      throw new Error(message);
-    });
+    .catch((err) => err);
 };
 
 export const useReview = (id: number) =>

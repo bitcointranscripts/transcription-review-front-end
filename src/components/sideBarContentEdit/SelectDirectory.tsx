@@ -226,7 +226,9 @@ const SelectDirectory = ({
             }}
             height={8}
             onChange={handleChange}
-            placeholder={!isOpen ? (displayValue ?? updatedTranscript?.loc) : path}
+            placeholder={
+              !isOpen ? displayValue ?? updatedTranscript?.loc : path
+            }
           />
         </PopoverTrigger>
         <PopoverContent mt={2} w="full" overflowY={"scroll"}>

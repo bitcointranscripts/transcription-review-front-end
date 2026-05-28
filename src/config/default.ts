@@ -32,5 +32,7 @@ export const ReviewStatus = {
   ACTIVE: "active",
   ALL: "all",
 } as const;
+
 export const upstreamOwner = "bitcointranscripts";
 export const upstreamRepo = "bitcointranscripts";
+export const upstreamMetadataRepo = "bitcointranscripts-metadata";

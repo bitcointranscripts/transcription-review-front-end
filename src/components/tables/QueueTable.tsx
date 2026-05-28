@@ -13,14 +13,7 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
-import {
-  Button,
-  CheckboxGroup,
-  Flex,
-  Text,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Flex, Text, useDisclosure, useToast } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -41,30 +34,42 @@ import Pagination from "./Pagination";
 import { ArchiveButton } from "./TableItems";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
+import { useHasPermission } from "@/hooks/useHasPermissions";
 
-type AdminArchiveSelectProps = {
-  children: (props: {
-    handleArchive: () => Promise<void>;
-    hasAdminSelected: boolean;
-    isArchiving: boolean;
-  }) => React.ReactNode;
-};
-
-const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
+const QueueTable = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const toast = useToast();
-  const { data: userSession } = useSession();
   const queryClient = useQueryClient();
   const archiveTranscript = useArchiveTranscript();
+  const canArchiveTranscripts = useHasPermission("archiveTranscripts");
+  const { data: session, status } = useSession();
+  const [currentPage, setCurrentPage] = useState(1);
+  const {
+    isOpen: showSuggestModal,
+    onClose: closeSuggestModal,
+    onOpen: openSuggestModal,
+  } = useDisclosure();
+  const router = useRouter();
+  const claimTranscript = useClaimTranscript();
+  const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
+  const hasExceededActiveReviewLimit = useHasExceededMaxActiveReviews(
+    session?.user?.id
+  );
+  const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
+  const toast = useToast();
 
-  const handleCheckboxToggle = (values: (string | number)[]) => {
-    setSelectedIds(values.map(String));
-  };
+  const retriedClaim = useRef(0);
+
+  const [selectedTranscriptId, setSelectedTranscriptId] = useState(-1);
+  const { data: multipleStatusData } = useUserMultipleReviews({
+    userId: session?.user?.id,
+    multipleStatus: ["pending", "active", "inactive"],
+  });
+
   const handleArchive = async () => {
     const ids = selectedIds.map(Number);
 
-    if (userSession?.user?.id) {
-      const archivedBy = userSession?.user?.id;
+    if (session?.user?.id) {
+      const archivedBy = session?.user?.id;
       try {
         await Promise.all(
           ids.map((transcriptId) =>
@@ -94,42 +99,6 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
       signIn("github");
     }
   };
-
-  return (
-    <CheckboxGroup colorScheme="orange" onChange={handleCheckboxToggle}>
-      {children({
-        handleArchive,
-        hasAdminSelected: selectedIds.length > 0,
-        isArchiving: archiveTranscript.isLoading,
-      })}
-    </CheckboxGroup>
-  );
-};
-
-const QueueTable = () => {
-  const { data: session, status } = useSession();
-  const [currentPage, setCurrentPage] = useState(1);
-  const {
-    isOpen: showSuggestModal,
-    onClose: closeSuggestModal,
-    onOpen: openSuggestModal,
-  } = useDisclosure();
-  const router = useRouter();
-  const claimTranscript = useClaimTranscript();
-  const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
-  const hasExceededActiveReviewLimit = useHasExceededMaxActiveReviews(
-    session?.user?.id
-  );
-  const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
-  const toast = useToast();
-
-  const retriedClaim = useRef(0);
-
-  const [selectedTranscriptId, setSelectedTranscriptId] = useState(-1);
-  const { data: multipleStatusData } = useUserMultipleReviews({
-    userId: session?.user?.id,
-    multipleStatus: ["pending", "active", "inactive"],
-  });
 
   const retryLoginAndClaim = async (transcriptId: number) => {
     await signOut({ redirect: false });
@@ -217,12 +186,8 @@ const QueueTable = () => {
                 }
               },
 
-              onError: (err: unknown) => {
-                setSelectedTranscriptId(-1);
-                toast({
-                  status: "error",
-                  title: err instanceof Error ? err.message : "Please try again later",
-                });
+              onError: (err) => {
+                throw err;
               },
             }
           );
@@ -380,52 +345,48 @@ const QueueTable = () => {
   );
 
   return (
-    <AdminArchiveSelect>
-      {({ handleArchive, hasAdminSelected, isArchiving }) => (
-        <>
-          <BaseTable
-            actionItems={
-              <>
-                <Button
-                  size="sm"
-                  gap={2}
-                  colorScheme="orange"
-                  variant="outline"
-                  onClick={openSuggestModal}
-                >
-                  Suggest source
-                  <BiBookAdd />
-                </Button>
+    <>
+      <BaseTable
+        actionItems={
+          <>
+            <Button
+              size="sm"
+              gap={2}
+              colorScheme="orange"
+              variant="outline"
+              onClick={openSuggestModal}
+            >
+              Suggest source
+              <BiBookAdd />
+            </Button>
 
-                {hasAdminSelected && (
-                  <ArchiveButton
-                    isLoading={isArchiving}
-                    handleRequest={handleArchive}
-                  />
-                )}
-              </>
-            }
-            data={data?.data}
-            emptyView="There are no transcripts awaiting review"
-            isError={isError}
-            isLoading={isLoading}
-            refetch={refetch}
-            showAdminControls
-            tableHeader="Transcripts waiting for review"
-            tableStructure={tableStructure}
-          />
-          <Pagination
-            setCurrentPage={setCurrentPage}
-            currentPage={currentPage}
-            pages={totalPages}
-          />
-          <SuggestModal
-            handleClose={closeSuggestModal}
-            isOpen={showSuggestModal}
-          />
-        </>
-      )}
-    </AdminArchiveSelect>
+            {selectedIds.length > 0 && (
+              <ArchiveButton
+                isLoading={archiveTranscript.isLoading}
+                handleRequest={handleArchive}
+              />
+            )}
+          </>
+        }
+        data={data?.data}
+        emptyView="There are no transcripts awaiting review"
+        isError={isError}
+        isLoading={isLoading}
+        refetch={refetch}
+        enableCheckboxes={canArchiveTranscripts}
+        selectedRowIds={selectedIds}
+        onSelectedRowIdsChange={setSelectedIds}
+        getRowId={(row) => `${row.id}`}
+        tableHeader="Transcripts waiting for review"
+        tableStructure={tableStructure}
+      />
+      <Pagination
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
+        pages={totalPages}
+      />
+      <SuggestModal handleClose={closeSuggestModal} isOpen={showSuggestModal} />
+    </>
   );
 };
 

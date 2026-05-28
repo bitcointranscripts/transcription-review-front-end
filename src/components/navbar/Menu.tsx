@@ -22,16 +22,20 @@ import { useState } from "react";
 import { BiWallet } from "react-icons/bi";
 import { CgTranscript } from "react-icons/cg";
 import { FaGithub } from "react-icons/fa";
-import { FiUser } from "react-icons/fi";
+import { FiUser, FiUsers } from "react-icons/fi";
 import { HiOutlineBookOpen, HiOutlineSwitchHorizontal } from "react-icons/hi";
+import { MdOutlineSource } from "react-icons/md";
 import MenuNav from "./MenuNav";
 import AdminMenu from "./AdminMenu";
+import { useHasPermission } from "@/hooks/useHasPermissions";
 
 const Menu = () => {
   const { data: userSession } = useSession();
-
-  const isAdmin = userSession?.user?.permissions === "admin";
-
+  // Permissions check
+  const canAccessAdminNav = useHasPermission("accessAdminNav");
+  const canAccessTransactions = useHasPermission("accessTransactions");
+  const canAccessUsers = useHasPermission("accessUsers");
+  const canAccessTranscription = useHasPermission("accessTranscription");
   const router = useRouter();
   const currentRoute = router.asPath?.split("/")[1] ?? "";
   const fullCurrentRoute = router.asPath;
@@ -164,16 +168,18 @@ const Menu = () => {
                         icon={BiWallet}
                       />
                     </Flex>
-                    {isAdmin ? (
-                      <AdminMenu>
+                    {canAccessAdminNav ? (
+                      <AdminMenu role={userSession.user?.permissions}>
                         <Flex direction="column" gap={2}>
-                          <MenuNav
-                            currentRoute={fullCurrentRoute}
-                            routeName={"Transactions"}
-                            routeLink={ROUTES_CONFIG.TRANSACTIONS}
-                            handleClose={closeMenu}
-                            icon={HiOutlineSwitchHorizontal}
-                          />
+                          {canAccessTransactions && (
+                            <MenuNav
+                              currentRoute={fullCurrentRoute}
+                              routeName={"Transactions"}
+                              routeLink={ROUTES_CONFIG.TRANSACTIONS}
+                              handleClose={closeMenu}
+                              icon={HiOutlineSwitchHorizontal}
+                            />
+                          )}
                           <MenuNav
                             currentRoute={fullCurrentRoute}
                             routeName={ROUTES_CONFIG.REVIEWS}
@@ -181,6 +187,24 @@ const Menu = () => {
                             handleClose={closeMenu}
                             icon={CgTranscript}
                           />
+                          {canAccessUsers && (
+                            <MenuNav
+                              currentRoute={fullCurrentRoute}
+                              routeName={"Users"}
+                              routeLink={ROUTES_CONFIG.USERS}
+                              handleClose={closeMenu}
+                              icon={FiUsers}
+                            />
+                          )}
+                          {canAccessTranscription && (
+                            <MenuNav
+                              currentRoute={fullCurrentRoute}
+                              routeName={"Transcription"}
+                              routeLink={ROUTES_CONFIG.TRANSCRIPTION}
+                              handleClose={closeMenu}
+                              icon={MdOutlineSource}
+                            />
+                          )}
                         </Flex>
                       </AdminMenu>
                     ) : null}

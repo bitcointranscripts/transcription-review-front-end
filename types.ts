@@ -84,6 +84,28 @@ export type MetadataProps = Record<string, any> & {
   categories?: string[];
 };
 
+export type TranscriptMetadata = {
+  date: Date;
+  source_file: string;
+  media: string;
+  speakers: string[];
+  tags: string[];
+  title: string;
+  transcript_by: string;
+  loc: string;
+};
+
+export type TranscriptionQueueItem = TranscriptMetadata & { status: string };
+
+export type SourceType = {
+  title: string;
+  source: string;
+  categories: string[];
+  loc: string;
+  cutoff_date: string;
+  transcription_coverage: "full" | "none";
+};
+
 export type AbstractedChakraComponentProps<T> = {
   children: React.ReactNode;
 } & Omit<T, "children">;
@@ -111,7 +133,13 @@ export type IDir = {
   nestDir?: IDir[];
 };
 
-export type UserRole = "reviewer" | "admin";
+export const UserRoles = {
+  reviewer: "reviewer",
+  evaluator: "evaluator",
+  admin: "admin",
+};
+
+export type UserRole = keyof typeof UserRoles;
 
 export type UserData = {
   permissions: UserRole;
@@ -158,6 +186,7 @@ export type Transaction = {
   amount: string;
   transactionType: "credit" | "debit";
   transactionStatus: "success" | "pending" | "failed";
+  invoice?: null | string;
   createdAt: string;
   updatedAt: string;
 };
