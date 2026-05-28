@@ -1,8 +1,11 @@
 import { createHash } from "crypto";
-import { SaveToGHData } from "../../types";
 import config from "@/config/config.json";
+import { SlateNode, TranscriptMetadata } from "../../types";
 
-export const compareTranscriptBetweenSave = (data: SaveToGHData) => {
+export const compareTranscriptBetweenSave = (data: {
+  transcriptSlate: SlateNode[];
+  metadata: TranscriptMetadata;
+}) => {
   const transcriptAsString = JSON.stringify(data);
   const lastSavedReviewHash = localStorage.getItem(
     config.local_storage_hash_query

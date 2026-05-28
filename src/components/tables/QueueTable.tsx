@@ -1,11 +1,9 @@
-import { upstreamOwner } from "@/config/default";
 import {
   useHasExceededMaxActiveReviews,
   useUserMultipleReviews,
 } from "@/services/api/reviews";
 import {
   useArchiveTranscript,
-  useClaimTranscript,
   useTranscripts,
 } from "@/services/api/transcripts";
 import {
@@ -13,16 +11,15 @@ import {
   convertStringToArray,
   displaySatCoinImage,
 } from "@/utils";
+import { useGithub } from "@/services/api/github";
 import {
   Button,
-  CheckboxGroup,
   Flex,
   Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -35,36 +32,48 @@ import React, {
 } from "react";
 import { BiBookAdd } from "react-icons/bi";
 import { Transcript } from "../../../types";
-import { SuggestModal } from "../modals/SuggestModal";
+import { SuggestModal } from "@/components/modals";
 import BaseTable from "./BaseTable";
 import Pagination from "./Pagination";
 import { ArchiveButton } from "./TableItems";
 import TitleWithTags from "./TitleWithTags";
 import { TableStructure } from "./types";
+import { useHasPermission } from "@/hooks/useHasPermissions";
 
-type AdminArchiveSelectProps = {
-  children: (props: {
-    handleArchive: () => Promise<void>;
-    hasAdminSelected: boolean;
-    isArchiving: boolean;
-  }) => React.ReactNode;
-};
-
-const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
+const QueueTable = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const toast = useToast();
-  const { data: userSession } = useSession();
   const queryClient = useQueryClient();
   const archiveTranscript = useArchiveTranscript();
+  const canArchiveTranscripts = useHasPermission("archiveTranscripts");
+  const { data: session, status } = useSession();
+  const [currentPage, setCurrentPage] = useState(1);
+  const {
+    isOpen: showSuggestModal,
+    onClose: closeSuggestModal,
+    onOpen: openSuggestModal,
+  } = useDisclosure();
+  const router = useRouter();
+  const { claimTranscript } = useGithub();
+  const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
+  const hasExceededActiveReviewLimit = useHasExceededMaxActiveReviews(
+    session?.user?.id
+  );
+  const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
+  const toast = useToast();
 
-  const handleCheckboxToggle = (values: (string | number)[]) => {
-    setSelectedIds(values.map(String));
-  };
+  const retriedClaim = useRef(0);
+
+  const [selectedTranscriptId, setSelectedTranscriptId] = useState(-1);
+  const { data: multipleStatusData } = useUserMultipleReviews({
+    userId: session?.user?.id,
+    multipleStatus: ["pending", "active", "inactive"],
+  });
+
   const handleArchive = async () => {
     const ids = selectedIds.map(Number);
 
-    if (userSession?.user?.id) {
-      const archivedBy = userSession?.user?.id;
+    if (session?.user?.id) {
+      const archivedBy = session?.user?.id;
       try {
         await Promise.all(
           ids.map((transcriptId) =>
@@ -94,42 +103,6 @@ const AdminArchiveSelect = ({ children }: AdminArchiveSelectProps) => {
       signIn("github");
     }
   };
-
-  return (
-    <CheckboxGroup colorScheme="orange" onChange={handleCheckboxToggle}>
-      {children({
-        handleArchive,
-        hasAdminSelected: selectedIds.length > 0,
-        isArchiving: archiveTranscript.isLoading,
-      })}
-    </CheckboxGroup>
-  );
-};
-
-const QueueTable = () => {
-  const { data: session, status } = useSession();
-  const [currentPage, setCurrentPage] = useState(1);
-  const {
-    isOpen: showSuggestModal,
-    onClose: closeSuggestModal,
-    onOpen: openSuggestModal,
-  } = useDisclosure();
-  const router = useRouter();
-  const claimTranscript = useClaimTranscript();
-  const { data, isLoading, isError, refetch } = useTranscripts(currentPage);
-  const hasExceededActiveReviewLimit = useHasExceededMaxActiveReviews(
-    session?.user?.id
-  );
-  const [totalPages, setTotalPages] = useState<number>(data?.totalPages || 0);
-  const toast = useToast();
-
-  const retriedClaim = useRef(0);
-
-  const [selectedTranscriptId, setSelectedTranscriptId] = useState(-1);
-  const { data: multipleStatusData } = useUserMultipleReviews({
-    userId: session?.user?.id,
-    multipleStatus: ["pending", "active", "inactive"],
-  });
 
   const retryLoginAndClaim = async (transcriptId: number) => {
     await signOut({ redirect: false });
@@ -168,64 +141,15 @@ const QueueTable = () => {
         });
         return;
       }
-      if (session?.user?.id) {
+      if (session?.user?.id && transcript) {
         setSelectedTranscriptId(transcriptId);
 
         try {
-          // Fork repo
-          const forkResult = await axios.post("/api/github/fork");
-          const owner = forkResult.data.owner.login;
-
-          const env_owner =
-            process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
-              ? forkResult.data.owner.login
-              : upstreamOwner;
-
-          let branchUrl;
-
-          if (transcript && transcript.transcriptUrl) {
-            const result = await axios.post("/api/github/newBranch", {
-              ghSourcePath: transcript.transcriptUrl,
-              owner,
-              env_owner,
-            });
-            branchUrl = result.data.branchUrl;
-          }
-
-          // Claim transcript
-          claimTranscript.mutate(
-            { userId: session.user.id, transcriptId, branchUrl },
-            {
-              onSuccess: async (data) => {
-                try {
-                  const reviewId = data.id;
-                  if (!reviewId) {
-                    throw new Error("failed to claim transcript");
-                  }
-
-                  if (data instanceof Error) {
-                    await retryLoginAndClaim(transcriptId);
-                    return;
-                  }
-                  if (multipleStatusData.length > 0) {
-                    router.push(`/reviews/${data.id}`);
-                  } else {
-                    router.push(`/reviews/${data.id}?first_review=true`);
-                  }
-                } catch (err) {
-                  console.error(err);
-                }
-              },
-
-              onError: (err: unknown) => {
-                setSelectedTranscriptId(-1);
-                toast({
-                  status: "error",
-                  title: err instanceof Error ? err.message : "Please try again later",
-                });
-              },
-            }
-          );
+          await claimTranscript.mutateAsync({
+            transcriptUrl: transcript.transcriptUrl,
+            transcriptId,
+            userId: session.user.id,
+          });
         } catch (error: any) {
           // handles all errors from claiming process
           let errorTitle = error.message;
@@ -380,52 +304,48 @@ const QueueTable = () => {
   );
 
   return (
-    <AdminArchiveSelect>
-      {({ handleArchive, hasAdminSelected, isArchiving }) => (
-        <>
-          <BaseTable
-            actionItems={
-              <>
-                <Button
-                  size="sm"
-                  gap={2}
-                  colorScheme="orange"
-                  variant="outline"
-                  onClick={openSuggestModal}
-                >
-                  Suggest source
-                  <BiBookAdd />
-                </Button>
+    <>
+      <BaseTable
+        actionItems={
+          <>
+            <Button
+              size="sm"
+              gap={2}
+              colorScheme="orange"
+              variant="outline"
+              onClick={openSuggestModal}
+            >
+              Suggest source
+              <BiBookAdd />
+            </Button>
 
-                {hasAdminSelected && (
-                  <ArchiveButton
-                    isLoading={isArchiving}
-                    handleRequest={handleArchive}
-                  />
-                )}
-              </>
-            }
-            data={data?.data}
-            emptyView="There are no transcripts awaiting review"
-            isError={isError}
-            isLoading={isLoading}
-            refetch={refetch}
-            showAdminControls
-            tableHeader="Transcripts waiting for review"
-            tableStructure={tableStructure}
-          />
-          <Pagination
-            setCurrentPage={setCurrentPage}
-            currentPage={currentPage}
-            pages={totalPages}
-          />
-          <SuggestModal
-            handleClose={closeSuggestModal}
-            isOpen={showSuggestModal}
-          />
-        </>
-      )}
-    </AdminArchiveSelect>
+            {selectedIds.length > 0 && (
+              <ArchiveButton
+                isLoading={archiveTranscript.isLoading}
+                handleRequest={handleArchive}
+              />
+            )}
+          </>
+        }
+        data={data?.data}
+        emptyView="There are no transcripts awaiting review"
+        isError={isError}
+        isLoading={isLoading}
+        refetch={refetch}
+        enableCheckboxes={canArchiveTranscripts}
+        selectedRowIds={selectedIds}
+        onSelectedRowIdsChange={setSelectedIds}
+        getRowId={(row) => `${row.id}`}
+        tableHeader="Transcripts waiting for review"
+        tableStructure={tableStructure}
+      />
+      <Pagination
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
+        pages={totalPages}
+      />
+      <SuggestModal handleClose={closeSuggestModal} isOpen={showSuggestModal} />
+    </>
   );
 };
 

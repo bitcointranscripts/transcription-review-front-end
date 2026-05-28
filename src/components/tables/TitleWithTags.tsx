@@ -27,6 +27,7 @@ type TitleWithTagsProps = {
   categories: string | string[];
   loc?: string;
   transcriptUrl?: string | null;
+  url?: string;
   allTags: string[];
   length: number;
   shouldSlice?: boolean;
@@ -37,6 +38,7 @@ const TitleWithTags = ({
   categories,
   loc,
   transcriptUrl = null,
+  url,
   id,
   length,
   shouldSlice = true,
@@ -50,13 +52,14 @@ const TitleWithTags = ({
   );
   const tags = shouldSlice ? allTags.slice(0, 1) : allTags;
   const transcript = resolveTranscriptUrl(transcriptUrl);
+  const hyperlink = transcript?.url || url;
   return (
     <Td width="40%">
       <Flex gap={2} flexDir="column">
         <Box>
-          {!transcript && <Text>{title}</Text>}
-          {transcript && (
-            <Link target="_blank" rel="noopener" href={transcript.url}>
+          {!hyperlink && <Text>{title}</Text>}
+          {hyperlink && (
+            <Link target="_blank" rel="noopener" href={hyperlink}>
               <Text>{title}</Text>
             </Link>
           )}

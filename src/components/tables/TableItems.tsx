@@ -8,10 +8,13 @@ import config from "../../config/config.json";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   Icon,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Skeleton,
   Spinner,
   Td,
@@ -19,15 +22,15 @@ import {
   Th,
   Tooltip,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { FaGithub } from "react-icons/fa";
-import { MdLockReset, MdOutlineArchive } from "react-icons/md";
+import { MdArrowDropDown, MdLockReset, MdOutlineArchive } from "react-icons/md";
 import { TbReload } from "react-icons/tb";
-import { GroupedDataType, ReviewTranscript } from "../../../types";
+import { GroupedDataType, ReviewTranscript, UserRole } from "../../../types";
 import TablePopover from "../TablePopover";
 import styles from "./tableItems.module.scss";
 import type { TableData, TableDataElement, TableStructure } from "./types";
@@ -35,6 +38,9 @@ import { resolveGHApiUrl } from "@/utils/github";
 import { getReviewStatus } from "@/utils/review";
 import { AdminReview } from "@/services/api/admin/useReviews";
 import { format } from "date-fns";
+import { UserRoles } from "../../../types";
+import useCopyToClipboard from "@/hooks/useCopyToClipboard";
+import CopyIcon from "../svgs/CopyIcon";
 
 // eslint-disable-next-line no-unused-vars
 const defaultUndefined = <TData, TCb extends (data: TData) => any>(
@@ -119,19 +125,13 @@ export const Tags = <T extends object>({
 export const TableAction = <T extends object>({
   tableItem,
   row,
-  showControls,
-}: TableDataElement<T> & { showControls: boolean }) => {
-  const { data: userSession } = useSession();
-
+}: TableDataElement<T>) => {
   const handleClick = () => {
     if (!tableItem.action) return;
     tableItem.action(row);
   };
   //  checks if it a review if it isn't returns false
   const isAdminReviews = getReviewStatus(row as AdminReview);
-
-  const isAdmin = userSession?.user?.permissions === "admin";
-  const showCheckBox = isAdmin && showControls;
 
   return (
     <Td>
@@ -150,15 +150,6 @@ export const TableAction = <T extends object>({
             {tableItem.actionName}
           </Button>
         )}
-        {/* For reviews */}
-        {isAdminReviews === "Active" && showCheckBox && (
-          <Checkbox value={String("id" in row && row.id)} />
-        )}
-
-        {/* checkbox */}
-        {showCheckBox && !isAdminReviews && (
-          <Checkbox value={String("id" in row && row.id)} />
-        )}
       </Flex>
     </Td>
   );
@@ -166,11 +157,14 @@ export const TableAction = <T extends object>({
 
 export const TableHeader = <T extends object>({
   tableStructure,
+  showCheckboxes,
 }: {
   tableStructure: TableStructure<T>[];
+  showCheckboxes: boolean;
 }) => {
   return (
     <Tr>
+      {showCheckboxes && <Th key="checkbox" width="1%" />}
       {tableStructure.map((tableItem, idx) => {
         return (
           <Th key={idx} width={tableItem.type === "text-long" ? "25%" : "auto"}>
@@ -226,8 +220,7 @@ export const DataEmpty = ({
 export const RowData = <T extends object>({
   row,
   tableItem,
-  showControls,
-}: TableDataElement<T> & { showControls: boolean }) => {
+}: TableDataElement<T>) => {
   switch (tableItem.type) {
     case "date":
       return <DateText key={tableItem.name} tableItem={tableItem} row={row} />;
@@ -243,12 +236,7 @@ export const RowData = <T extends object>({
 
     case "action":
       return (
-        <TableAction
-          showControls={showControls}
-          key={tableItem.name}
-          tableItem={tableItem}
-          row={row}
-        />
+        <TableAction key={tableItem.name} tableItem={tableItem} row={row} />
       );
 
     default:
@@ -457,5 +445,76 @@ export const OtherFields = ({ data }: TableData<AdminReview>) => {
         {returnField()}
       </Flex>
     </Td>
+  );
+};
+
+export const UpdateRole = ({
+  isLoading,
+  handleRequest,
+}: {
+  isLoading?: boolean;
+  handleRequest: (role: UserRole) => void;
+}) => (
+  <Menu>
+    <MenuButton
+      as={Button}
+      isLoading={isLoading}
+      size="sm"
+      gap={2}
+      aria-label="users table"
+      colorScheme="orange"
+      px={3}
+      borderLeftWidth={1.5}
+    >
+      <Flex gap={2} alignItems={"center"}>
+        <Text> Apply Role </Text>
+        <MdArrowDropDown size={20} />
+      </Flex>
+    </MenuButton>
+    <MenuList color="black">
+      {Object.values(UserRoles).map((role) => (
+        <MenuItem
+          key={role}
+          textTransform={"capitalize"}
+          onClick={() => {
+            handleRequest(role as UserRole);
+          }}
+        >
+          {role}
+        </MenuItem>
+      ))}
+    </MenuList>
+  </Menu>
+);
+export const CopyTextContainer = ({
+  text,
+  children,
+}: {
+  text: string | null;
+  children: React.ReactNode;
+}) => {
+  const copyText = useCopyToClipboard();
+  const toast = useToast();
+  const onClickCopy = () => {
+    if (!text) return null;
+    copyText(text);
+    toast({
+      orientation: "horizontal",
+      position: "bottom",
+      title: "Copied Invoice",
+      colorScheme: "green",
+    });
+  };
+  return (
+    <Flex
+      cursor={"pointer"}
+      gap={1}
+      alignItems={"center"}
+      onClick={onClickCopy}
+      maxWidth={"max-content"}
+    >
+      <Text cursor={"pointer"}>{children}</Text>
+      {text && <CopyIcon />}
+    </Flex>
   );
 };

@@ -2,7 +2,6 @@ import { format, hoursToMilliseconds, millisecondsToHours } from "date-fns";
 import yaml from "js-yaml";
 import { NextApiRequest } from "next";
 import slugify from "slugify";
-import { MetadataProps } from "../../types";
 import ClockIcon from "../components/svgs/ClockIcon";
 import GithubIcon from "../components/svgs/GithubIcon";
 import LaptopIcon from "../components/svgs/LaptopIcon";
@@ -53,7 +52,7 @@ export const getTimeLeftText = (date: Date | null) => {
   if (!hours) {
     return "expired";
   }
-  return `${hours} hours to review and submit`;
+  return `${hours} hours to review and`;
 };
 
 export const wordsFormat = new Intl.NumberFormat("en-US", {
@@ -65,42 +64,6 @@ export const getCount = (item: number | string) => {
   const formattedItem = typeof item === "string" ? item.length : item;
   return wordsFormat.format(formattedItem);
 };
-
-export class Metadata {
-  private metadata: string;
-  public fileTitle: string;
-  public source: string;
-
-  constructor({
-    fileTitle,
-    transcript_by,
-    url,
-    ...otherMetadata
-  }: MetadataProps) {
-    this.fileTitle = fileTitle;
-    this.source = url;
-
-    const jsonData = {
-      title: fileTitle,
-      transcript_by: transcript_by
-        ? `${transcript_by} via ${config.app_tag}`
-        : undefined,
-      media: url,
-      ...otherMetadata,
-    };
-
-    this.metadata =
-      `---\n` +
-      yaml.dump(jsonData, {
-        forceQuotes: true,
-      }) +
-      "---\n";
-  }
-
-  public toString(): string {
-    return this.metadata;
-  }
-}
 
 export async function retryApiCall<T>(
   apiCallFunc: () => Promise<T>,
@@ -157,7 +120,7 @@ export function deriveFileSlug(title: string, regex?: RegExp) {
   const fileSlug = slugify(_trimmedFileName, {
     strict: false,
     lower: true,
-    remove: regex,
+    remove: regex || /[:'"]/g, // Removes colons, single quotes, and double quotes
   });
   return fileSlug;
 }
@@ -327,8 +290,8 @@ export const guidelinesReviewArray = [
 ];
 
 export const discordInvites = {
-  review_guidelines: "https://discord.gg/HmTsxggaFJ",
-  feedback: "https://discord.gg/hqkwqTCzaW",
+  review_guidelines: "https://discord.gg/jqj4maCs8p",
+  feedback: "https://discord.gg/W4cmWRhMnr",
 };
 
 export function compareUrls(url1: URL, url2: URL) {

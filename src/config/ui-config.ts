@@ -9,6 +9,8 @@ export const ROUTES_CONFIG = {
   TRANSACTIONS: "admin/transactions",
   ALL_REVIEWS: "admin/reviews?status=active",
   REVIEWS: "reviews",
+  USERS: "admin/users",
+  TRANSCRIPTION: "admin/transcription",
 };
 
 export const UI_CONFIG = {
