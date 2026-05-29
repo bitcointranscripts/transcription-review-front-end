@@ -9,10 +9,8 @@ import {
   MenuList,
   Text,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
 import { BiChevronDown } from "react-icons/bi";
 import { IoIosFunnel } from "react-icons/io";
-import AuthStatus from "@/components/transcript/AuthStatus";
 import { useRouter } from "next/router";
 import { FilterQueryNames, ReviewStatus } from "@/config/default";
 import Pagination from "@/components/tables/Pagination";
@@ -21,6 +19,8 @@ import { UI_CONFIG } from "@/config/ui-config";
 import AdminReviewsTable from "@/components/tables/AdminReviewsTable";
 import { useGetAllReviews } from "@/services/api/admin/useReviews";
 import { RefetchButton } from "@/components/tables/TableItems";
+import { useHasPermission } from "@/hooks/useHasPermissions";
+import AuthStatus from "@/components/transcript/AuthStatus";
 
 type OnSelect<T> = (name: string, item: T) => void;
 
@@ -79,9 +79,7 @@ const Reviews = () => {
   const statusFilter = urlParams.get(FilterQueryNames.status);
   const pageQuery = urlParams.get(FilterQueryNames.page);
 
-  const { data: sessionData } = useSession();
-
-  const isAdmin = sessionData?.user?.permissions === "admin";
+  const canAccessReviews = useHasPermission("accessReviews");
 
   const {
     data: adminReviews,
@@ -146,7 +144,7 @@ const Reviews = () => {
     UI_CONFIG.DEBOUNCE_DELAY
   );
 
-  if (!isAdmin) {
+  if (!canAccessReviews) {
     return (
       <AuthStatus
         title="Unauthorized"
@@ -154,7 +152,6 @@ const Reviews = () => {
       />
     );
   }
-
   return (
     <>
       <Flex flexDir="column">

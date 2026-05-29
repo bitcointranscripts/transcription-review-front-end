@@ -6,7 +6,11 @@ import Step3 from "./steps/Step3";
 
 const EverythingYouNeed = () => {
   return (
-    <Box id="tutorial" py={{ base: "80px", lg: "120px" }} className="bg-container">
+    <Box
+      id="tutorial"
+      py={{ base: "80px", lg: "120px" }}
+      className="bg-container"
+    >
       <Text
         textAlign={"center"}
         fontFamily={"Polysans"}

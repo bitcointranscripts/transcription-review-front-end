@@ -1,56 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Octokit } from "@octokit/core";
+
 import { upstreamOwner, upstreamRepo } from "@/config/default";
-import { syncForkWithUpstream } from "@/utils/github";
-import { auth } from "../auth/[...nextauth]";
+import { getOctokit } from "@/utils/getOctokit";
+import { withGithubErrorHandler } from "@/utils/githubApiErrorHandler";
 
-export async function createFork(octokit: InstanceType<typeof Octokit>) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { octokit } = await getOctokit(req, res);
+  const { repo } = req.body;
+
   // Fork the repository
-  const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
+  const result = await octokit.request("POST /repos/{owner}/{repo}/forks", {
     owner: upstreamOwner,
-    repo: upstreamRepo,
+    repo: repo ?? upstreamRepo,
   });
-
-  const forkOwner = forkResult.data.owner.login;
-
-  try {
-    await syncForkWithUpstream({
-      octokit,
-      upstreamOwner,
-      upstreamRepo,
-      forkOwner,
-      forkRepo: upstreamRepo,
-    });
-  } catch (err) {
-    console.warn(
-      "Fork sync after creation failed (fork may still be initializing):",
-      err
-    );
-  }
-
-  return forkResult;
+  res.status(200).json(result.data);
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  // Check if the user is authenticated
-  const session = await auth(req, res);
-  if (!session || !session.accessToken || !session.user?.githubUsername) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  // Initialize Octokit with the user's access token
-  const octokit = new Octokit({ auth: session.accessToken });
-
-  try {
-    // Call the createForkAndPR function
-    const forkResult = await createFork(octokit);
-    res.status(200).json(forkResult.data);
-  } catch (error) {
-    console.error("fork failed");
-    console.error(error);
-    res.status(500).json({ message: "Error occurred while creating fork" });
-  }
-}
+export default withGithubErrorHandler(
+  handler,
+  "Error occurred while creating fork"
+);

@@ -56,10 +56,10 @@ const SidebarContentEdit = ({
   getUpdatedTranscript: () => TranscriptContent;
   saveTranscript: (updatedContent: TranscriptContent) => Promise<void>;
 }) => {
-  const [path, setPath] = useState<string>("");
+  const [, setPath] = useState<string>("");
   const [initialCount, setInitialCount] = useState(1);
   const { data: selectableListData } = useGetMetadata();
-  const [directoryList, setDirectoryList] = useState<IDir[] | []>([]);
+  const [, setDirectoryList] = useState<IDir[] | []>([]);
   const updateTitle = (newTitle: string) => {
     const updatedTranscript = getUpdatedTranscript();
     updatedTranscript.title = newTitle;
@@ -179,7 +179,7 @@ const SidebarContentEdit = ({
           </Text>
           <OnlySelectField
             name="speakers"
-            editedData={sideBarData.list.speakers || []}
+            editedData={sideBarData.list.speakers}
             updateData={updateSpeaker}
             autoCompleteList={selectableListData?.speakers ?? []}
             userCanAddToList
@@ -206,7 +206,7 @@ const SidebarContentEdit = ({
           </Text>
           <SingleSelectField
             name="category"
-            editedData={sideBarData.list.categories || []}
+            editedData={sideBarData.list.categories}
             updateData={updateCategories}
             autoCompleteList={selectableListData?.categories ?? []}
           />
@@ -228,7 +228,7 @@ const SidebarContentEdit = ({
           </Flex>
           <OnlySelectField
             name="tags"
-            editedData={sideBarData.list.tags || []}
+            editedData={sideBarData.list.tags}
             updateData={updateTags}
             autoCompleteList={selectableListData?.tags ?? []}
           />

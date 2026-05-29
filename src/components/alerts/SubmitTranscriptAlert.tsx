@@ -40,7 +40,7 @@ const SubmitTranscriptAlert = ({
 
   return (
     <AlertDialog
-      size={'xl'}
+      size={"xl"}
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
       onClose={handleClose}
@@ -89,12 +89,14 @@ const PromptStepOne = forwardRef<HTMLButtonElement, PromptOneProps>(
           </UnorderedList>
           <Flex my={4} direction="column" gap={3}>
             <Text size="sm" pb={2}>
-              <Text fontWeight="bold">Did you follow the Review Guidelines?</Text>
+              <Text fontWeight="bold">
+                Did you follow the Review Guidelines?
+              </Text>
               Please confirm you have corrected AI errors, adopted a clean
               verbatim transcription style, maintained structure and organized
               chapters effectively, attributed speakers accurately, and
-              conducted a final coherence check to ensure the transcript
-              is not only accurate but also readable.
+              conducted a final coherence check to ensure the transcript is not
+              only accurate but also readable.
             </Text>
             <Button size="sm" mx="auto" ref={ref} onClick={onCancel}>
               Let me check a few things

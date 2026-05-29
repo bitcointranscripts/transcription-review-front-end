@@ -59,7 +59,7 @@ const ReadyToReview = ({ getStarted }: { getStarted: () => void }) => {
             borderRadius={{ base: "8px", xl: "12px" }}
             py={{ base: "14px", lg: "28px", xl: "32px", "2xl": "36px" }}
             px={{ base: "18px", lg: "28px", xl: "32px", "2xl": "36px" }}
-            fontSize={{ base: "", lg:"24px", "2xl": "30px" }}
+            fontSize={{ base: "", lg: "24px", "2xl": "30px" }}
             color={"#F7F7F7"}
             variant="outline"
             onClick={getStarted}

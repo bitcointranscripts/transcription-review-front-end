@@ -25,7 +25,7 @@ type TransactionQueryFromURL = {
   txId: string | null;
   status: string | null;
   type: string | null;
-  page: string | null;
+  page: number;
 };
 
 export const getTransaction = async ({
@@ -46,7 +46,7 @@ export const getTransaction = async ({
     )
       ? (status as TransactionQueryStatus)
       : undefined,
-    page: page ? parseInt(page) - 1 ?? 0 : 0,
+    page: page,
   };
   return axios
     .get(endpoints.GET_TRANSACTIONS_ADMIN(transactionQueryOptions))

@@ -157,7 +157,7 @@ export function deriveFileSlug(title: string, regex?: RegExp) {
   const fileSlug = slugify(_trimmedFileName, {
     strict: false,
     lower: true,
-    remove: regex,
+    remove: regex || /[:'"]/g, // Removes colons, single quotes, and double quotes
   });
   return fileSlug;
 }
@@ -327,8 +327,8 @@ export const guidelinesReviewArray = [
 ];
 
 export const discordInvites = {
-  review_guidelines: "https://discord.gg/HmTsxggaFJ",
-  feedback: "https://discord.gg/hqkwqTCzaW",
+  review_guidelines: "https://discord.gg/jqj4maCs8p",
+  feedback: "https://discord.gg/W4cmWRhMnr",
 };
 
 export function compareUrls(url1: URL, url2: URL) {
