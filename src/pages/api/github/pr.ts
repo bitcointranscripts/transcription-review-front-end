@@ -4,8 +4,8 @@ import { getOctokit } from "@/utils/getOctokit";
 import { withGithubErrorHandler } from "@/utils/githubApiErrorHandler";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { octokit, owner } = await getOctokit(req, res);
-  const { repo, title, body, head, base } = req.body;
+  const { octokit } = await getOctokit(req, res);
+  const { owner, repo, title, body, head, base } = req.body;
 
   const prResult = await createPullRequest({
     octokit,
