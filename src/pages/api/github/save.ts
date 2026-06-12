@@ -1,6 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { getFileSha, updateOrCreateFile } from "@/utils/github";
+import { upstreamRepo } from "@/config/default";
+import { Metadata } from "@/utils";
+import {
+  getFileSha,
+  resolveGHApiUrl,
+  updateOrCreateFile,
+} from "@/utils/github";
 import { getOctokit } from "@/utils/getOctokit";
 import { withGithubErrorHandler } from "@/utils/githubApiErrorHandler";
 
@@ -17,12 +23,42 @@ export const config = {
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { octokit, owner } = await getOctokit(req, res);
 
-  const { repo, filePath, fileContent, branch } = req.body;
+  const {
+    fileName,
+    url,
+    date,
+    tags,
+    speakers,
+    categories,
+    transcribedText,
+    transcript_by,
+    ghSourcePath,
+    ghBranchUrl,
+    directoryPath,
+    reviewId,
+    ...otherMetadata
+  } = req.body;
+
+  const newMetadata = new Metadata({
+    fileTitle: fileName,
+    transcript_by,
+    url,
+    date,
+    tags,
+    speakers,
+    categories,
+    ...otherMetadata,
+  });
+
+  const { filePath } = resolveGHApiUrl(ghSourcePath);
+  const { srcBranch: branch } = resolveGHApiUrl(ghBranchUrl);
+
+  const fileContent = `${newMetadata.toString()}${transcribedText}`;
 
   const fileSha = await getFileSha({
     octokit,
     owner,
-    repo,
+    repo: upstreamRepo,
     path: filePath,
     branch,
   });
@@ -30,7 +66,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   await updateOrCreateFile({
     octokit,
     owner,
-    repo,
+    repo: upstreamRepo,
     path: filePath,
     fileContent,
     branch,
@@ -42,5 +78,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 export default withGithubErrorHandler(
   handler,
-  "Error occurred while creating the Pull Request"
+  "Error occurred while saving edits"
 );
