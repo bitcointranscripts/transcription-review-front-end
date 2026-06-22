@@ -1,26 +1,463 @@
+import type { TranscriptSubmitOptions } from "@/components/menus/SubmitTranscriptMenu";
+import { AxiosError } from "axios";
+
+import config from "@/config/config.json";
+import { Octokit } from "@octokit/rest";
+
+import {
+  deriveFileSlug,
+  extractPullNumber,
+  Metadata,
+  newIndexFile,
+} from "@/utils";
+import {
+  deleteIndexMdIfDirectoryEmpty,
+  ensureIndexMdExists,
+  resolveGHApiUrl,
+  syncForkWithUpstream,
+} from "@/utils/github";
+import { auth } from "@/pages/api/auth/[...nextauth]";
+
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createPullRequest } from "@/utils/github";
-import { getOctokit } from "@/utils/getOctokit";
-import { withGithubErrorHandler } from "@/utils/githubApiErrorHandler";
+import { upstreamOwner, upstreamRepo } from "@/config/default";
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { octokit, owner } = await getOctokit(req, res);
-  const { repo, title, body, head, base } = req.body;
+async function pullAndUpdatedPR(
+  octokit: InstanceType<typeof Octokit>,
+  directoryPath: string,
+  fileName: string,
+  transcribedText: string,
+  metadata: Metadata,
+  pull_number: number,
+  prRepo: TranscriptSubmitOptions,
+  oldDirectoryList: string[]
+) {
+  const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
+    owner: upstreamOwner,
+    repo: upstreamRepo,
+  });
+  const forkOwner = forkResult.data.owner.login;
+  const forkRepo = upstreamRepo;
+  const owner = prRepo === "user" ? forkOwner : upstreamOwner;
+  const repo = prRepo === "user" ? forkRepo : upstreamRepo;
 
-  const prResult = await createPullRequest({
+  await syncForkWithUpstream({
     octokit,
-    owner,
-    repo,
-    title,
-    body,
-    head,
-    base,
+    upstreamOwner,
+    upstreamRepo,
+    forkOwner,
+    forkRepo,
+    branch: forkResult.data.default_branch,
   });
 
-  return res.status(200).json(prResult.data);
+  const pullDetails = await octokit
+    .request("GET /repos/:owner/:repo/pulls/:pull_number", {
+      owner,
+      repo,
+      pull_number,
+    })
+    .then((data) => data)
+    .catch((err) => {
+      console.error(err);
+      throw new Error("Error in fetching the pull request details");
+    });
+
+  if (pullDetails?.data?.merged) {
+    throw new Error("Your transcript has been merged!");
+  }
+
+  const prBranch = pullDetails.data.head.ref;
+
+  await ensureIndexMdExists(octokit, forkOwner, repo, directoryPath, prBranch);
+
+  const newFilePath = `${directoryPath}/${deriveFileSlug(fileName)}.md`;
+  let oldFilePath;
+  let oldFileSha;
+  // loop through the old directory list and get the one that doesn't return a 404
+  for (const directory of oldDirectoryList) {
+    try {
+      const response = await octokit.request(
+        "GET /repos/{owner}/{repo}/contents/{path}",
+        {
+          owner: forkOwner,
+          repo,
+          path: `${directory?.trim()}/${deriveFileSlug(fileName)}.md`,
+          ref: prBranch,
+        }
+      );
+      oldFilePath = `${directory?.trim()}/${deriveFileSlug(fileName)}.md`;
+      const dataWithSha = response.data as { sha: string };
+      oldFileSha = dataWithSha.sha;
+      break;
+    } catch (error) {
+      if ((error as AxiosError).status !== 404) {
+        console.error("err from oldDir", error);
+        throw error;
+      }
+    }
+  }
+
+  if (oldFilePath && oldFileSha) {
+    try {
+      await octokit.request("DELETE /repos/{owner}/{repo}/contents/{path}", {
+        owner: forkOwner,
+        repo,
+        path: oldFilePath,
+        message: `Remove outdated file in old directory path for ${fileName}`,
+        sha: oldFileSha,
+        branch: prBranch,
+      });
+
+      const oldDirectory = oldFilePath.substring(
+        0,
+        oldFilePath.lastIndexOf("/")
+      );
+      await deleteIndexMdIfDirectoryEmpty(
+        octokit,
+        forkOwner,
+        repo,
+        oldDirectory,
+        prBranch,
+        deriveFileSlug(fileName) + ".md"
+      );
+    } catch (error) {
+      console.error(error);
+      if ((error as AxiosError).status !== 404) {
+        console.error(error);
+        throw error;
+      }
+    }
+  }
+
+  const fileContent = Buffer.from(`${metadata}\n${transcribedText}\n`).toString(
+    "base64"
+  );
+  let finalResult: any;
+
+  try {
+    const { data: fileData } = await octokit.request(
+      "GET /repos/{owner}/{repo}/contents/{path}",
+      {
+        owner: forkOwner,
+        repo,
+        path: newFilePath,
+        ref: prBranch,
+      }
+    );
+    const dataWithSha = fileData as { sha: string };
+    const fileSha = dataWithSha.sha;
+
+    finalResult = await octokit.request(
+      "PUT /repos/{owner}/{repo}/contents/{path}",
+      {
+        owner: forkOwner,
+        repo,
+        path: newFilePath,
+        message: `Updated ${fileName}`,
+        content: fileContent,
+        branch: prBranch,
+        sha: fileSha,
+      }
+    );
+
+    if (finalResult.status < 200 || finalResult.status > 299) {
+      throw new Error("Error updating the file content");
+    }
+  } catch (error) {
+    // If the file doesn't exist, it needs to be created instead of updated
+    if ((error as AxiosError).status === 404) {
+      finalResult = await octokit.request(
+        "PUT /repos/{owner}/{repo}/contents/{path}",
+        {
+          owner: forkOwner,
+          repo,
+          path: newFilePath,
+          message: `Updated ${fileName}`,
+          content: fileContent,
+          branch: prBranch,
+        }
+      );
+      if (finalResult.status < 200 || finalResult.status > 299) {
+        throw new Error("Error updating the file content");
+      }
+    } else {
+      console.error(error);
+      throw new Error("Error updating the file content");
+    }
+  }
+
+  if (oldFilePath !== newFilePath) {
+    const prTitle = `Add ${deriveFileSlug(fileName)} to ${directoryPath}`;
+    const prDescription = `This PR adds [${fileName}](${metadata.source}) transcript to the ${directoryPath} directory.`;
+    const prResult = await octokit.request(
+      "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+      {
+        owner,
+        repo,
+        pull_number,
+        title: prTitle,
+        body: prDescription,
+      }
+    );
+    if (prResult.status < 200 || prResult.status > 299) {
+      throw new Error("Error updating pull request title");
+    }
+  }
+
+  return {
+    data: {
+      ...finalResult.data,
+      html_url: pullDetails?.data?.html_url,
+    },
+  };
 }
 
-export default withGithubErrorHandler(
-  handler,
-  "Error occurred while creating the Pull Request"
-);
+async function createForkAndPR(
+  octokit: InstanceType<typeof Octokit>,
+  directoryPath: string,
+  fileName: string,
+  transcribedText: string,
+  metadata: Metadata,
+  prRepo: TranscriptSubmitOptions
+) {
+  const directoryName = directoryPath.split("/").slice(-1)[0];
+  const forkResult = await octokit.request("POST /repos/{owner}/{repo}/forks", {
+    owner: upstreamOwner,
+    repo: upstreamRepo,
+  });
+  if (forkResult.status < 200 || forkResult.status > 299) {
+    throw new Error("Error forking the repository");
+  }
+  const forkOwner = forkResult.data.owner.login;
+  const forkRepo = upstreamRepo;
+  const baseBranchName = forkResult.data.default_branch;
+
+  // recursion, run through path delimited by `/` and create _index.md file if it doesn't exist
+  async function checkDirAndInitializeIndexFile(
+    path: string,
+    branch: string,
+    currentLevelIdx = 0
+  ) {
+    let pathLevels = path.split("/");
+    if (pathLevels.length > config.maximum_nested_directory_depth) {
+      throw new Error("maximum nested directory depth reached");
+    }
+    const topPathLevel = pathLevels[currentLevelIdx];
+    if (!topPathLevel) return;
+    const currentDirPath = pathLevels.slice(0, currentLevelIdx + 1).join("/");
+
+    const pathHasIndexFile = await octokit
+      .request("GET /repos/:owner/:repo/contents/:path", {
+        owner: forkOwner,
+        repo: forkRepo,
+        path: `${currentDirPath}/_index.md`,
+        branch,
+      })
+      .then((_data) => true)
+      .catch((err) => {
+        if (err?.status === 404) {
+          return false;
+        }
+        throw new Error("Error checking if _index.md exists");
+      });
+
+    if (!pathHasIndexFile) {
+      const indexFile = newIndexFile(topPathLevel);
+      const indexContent = Buffer.from(indexFile).toString("base64");
+      await octokit
+        .request("PUT /repos/:owner/:repo/contents/:path", {
+          owner: forkOwner,
+          repo: forkRepo,
+          path: `${currentDirPath}/_index.md`,
+          message: `Initialised _index.md file in ${topPathLevel} directory`,
+          content: indexContent,
+          branch,
+        })
+        .then()
+        .catch((_err) => {
+          throw new Error("Error creating _index.md file");
+        });
+    }
+    await checkDirAndInitializeIndexFile(path, branch, currentLevelIdx + 1);
+  }
+
+  const baseBranch = await octokit.request(
+    "GET /repos/{owner}/{repo}/git/ref/{ref}",
+    {
+      owner: forkOwner,
+      repo: forkRepo,
+      ref: `heads/${baseBranchName}`,
+    }
+  );
+
+  const timeInSeconds = Math.floor(Date.now() / 1000);
+  const newBranchName = `${timeInSeconds}-${directoryName}`;
+  const baseRefSha = baseBranch.data.object.sha;
+  await octokit
+    .request("POST /repos/{owner}/{repo}/git/refs", {
+      owner: forkOwner,
+      repo: forkRepo,
+      ref: `refs/heads/${newBranchName}`,
+      sha: baseRefSha,
+    })
+    .then()
+    .catch((_err) => {
+      throw new Error("Error creating new branch");
+    });
+
+  const transcriptData = `${metadata.toString()}\n${transcribedText}\n`;
+  const fileContent = Buffer.from(transcriptData).toString("base64");
+
+  await checkDirAndInitializeIndexFile(directoryPath, newBranchName);
+
+  const fileSlug = deriveFileSlug(fileName);
+
+  let fileToUpdateSha = "";
+  await octokit
+    .request("GET /repos/{owner}/{repo}/contents/{path}", {
+      owner: forkOwner,
+      repo: forkRepo,
+      path: `${directoryPath}/${fileSlug}.md`,
+      ref: newBranchName,
+    })
+    .then((res) => {
+      const data = res.data as { sha: string };
+      fileToUpdateSha = data.sha;
+    })
+    .catch((err) => {});
+
+  await octokit
+    .request("PUT /repos/:owner/:repo/contents/:path", {
+      owner: forkOwner,
+      repo: forkRepo,
+      path: `${directoryPath}/${fileSlug}.md`,
+      message: `Added "${metadata.fileTitle}" transcript submitted by ${forkOwner}`,
+      content: fileContent,
+      branch: newBranchName,
+      sha: fileToUpdateSha || undefined,
+    })
+    .then()
+    .catch((_err) => {
+      throw new Error("Error creating new file");
+    });
+
+  const prTitle = `Add ${fileSlug} to ${directoryPath}`;
+  const prDescription = `This PR adds [${fileName}](${metadata.source}) transcript to the ${directoryPath} directory.`;
+  const prResult = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
+    owner: prRepo === "user" ? forkOwner : upstreamOwner,
+    repo: prRepo === "user" ? forkRepo : upstreamRepo,
+    title: prTitle,
+    body: prDescription,
+    head: `${forkOwner}:${newBranchName}`,
+    base: baseBranchName,
+  });
+  if (prResult.status < 200 || prResult.status > 299) {
+    throw new Error("Error creating pull request");
+  }
+  return prResult;
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const session = await auth(req, res);
+  if (!session || !session.accessToken || !session.user?.githubUsername) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const octokit = new Octokit({ auth: session.accessToken });
+
+  const {
+    directoryPath,
+    oldDirectoryList,
+    fileName,
+    url,
+    date,
+    tags,
+    speakers,
+    categories,
+    transcribedText,
+    transcript_by,
+    prRepo,
+    prUrl,
+    ghSourcePath,
+    ghBranchUrl,
+    ...otherMetadata
+  } = req.body;
+  const pull_number = extractPullNumber(prUrl || "");
+  try {
+    const newMetadata = new Metadata({
+      fileTitle: fileName,
+      transcript_by: transcript_by,
+      url,
+      date,
+      tags,
+      speakers,
+      categories,
+      ...otherMetadata,
+    });
+
+    if (ghBranchUrl) {
+      // we are already saving to a branch and the branch has a pr no need to create a pr
+      if (prUrl) {
+        return res.status(200).json({ html_url: prUrl });
+      }
+
+      const { fileNameWithoutExtension, srcBranch } =
+        resolveGHApiUrl(ghSourcePath);
+      const {
+        srcOwner: owner,
+        srcRepo: repo,
+        srcBranch: branch,
+        srcDirPath: dir,
+      } = resolveGHApiUrl(ghBranchUrl);
+
+      const prTitle = `Add ${fileNameWithoutExtension} review to ${dir}`;
+      const prDescription = `This PR adds [${fileNameWithoutExtension}](${newMetadata.source}) transcript review to the ${dir} directory.`;
+      const prResult = await octokit.request(
+        "POST /repos/{owner}/{repo}/pulls",
+        {
+          owner: prRepo === "user" ? owner : upstreamOwner,
+          repo: prRepo === "user" ? repo : upstreamRepo,
+          title: prTitle,
+          body: prDescription,
+          head: `${owner}:${branch}`,
+          base: srcBranch,
+        }
+      );
+      if (prResult.status < 200 || prResult.status > 299) {
+        throw new Error("Error creating pull request");
+      }
+      return res.status(200).json(prResult.data);
+    }
+    if (!pull_number) {
+      const prResult = await createForkAndPR(
+        octokit,
+        directoryPath,
+        fileName,
+        transcribedText,
+        newMetadata,
+        prRepo
+      );
+      res.status(200).json(prResult.data);
+    } else {
+      const updatedPR = await pullAndUpdatedPR(
+        octokit,
+        directoryPath,
+        fileName,
+        transcribedText,
+        newMetadata,
+        +pull_number,
+        prRepo,
+        oldDirectoryList
+      );
+      res.status(200).json(updatedPR.data);
+    }
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({
+      message:
+        error?.message ?? "Error occurred while creating the fork and PR",
+    });
+  }
+}
