@@ -91,7 +91,17 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
-export default NextAuth(authOptions);
+const handler = NextAuth(authOptions);
+
+export default function nextAuthHandler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.query.iss) {
+    delete req.query.iss;
+  }
+  return handler(req, res);
+}
 
 export function auth(
   ...args:
